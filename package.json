@@ -1,0 +1,33 @@
+{
+  "name": "greener",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx tsx watch ./backend/src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atmosabp/greener.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/atmosabp/greener/issues"
+  },
+  "homepage": "https://github.com/atmosabp/greener#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsx": "^4.23.15"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1"
+  }
+}
