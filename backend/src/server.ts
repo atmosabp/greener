@@ -1,12 +1,14 @@
 import express from 'express';
+import dotenv from 'dotenv';
 const app = express();
+dotenv.config();
 
 // Define a porta onde o servidor vai rodar
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 // Configura uma rota principal (página inicial do site)
 app.get('/', (req, res) => {
-    res.send('<h1>Olá! Meu servidor está online e funcionando!</h1>');
+    res.send('<h1>Servidor funcionando</h1>');
 });
 
 // Configura outra rota de exemplo (ex: localhost:3000/sobre)
