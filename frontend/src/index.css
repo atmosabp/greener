@@ -1,0 +1,33 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Tema padrão */
+:root {
+  --background: #F9EEDC;
+  --text: #38322E;
+  --primary: #99C47C;
+  --primary-light: #BFC47C;
+  --primary-dark: #73915F;
+  --secundary: #AB876E;
+}
+
+/* Quando criarmos as outras cores, colocar aqui:
+
+[data-theme="light-02"] : root {}
+[data-theme="dark-01"] : root {}
+[data-theme="dark-02"] : root {}
+
+*/
+
+html, body{
+  max-width: 100%;
+  min-height: 100%;
+}
+
+/* Colocar nas páginas para englobar bonitinho e manter todas com esse padding*/
+main{
+  padding: 30px;
+}

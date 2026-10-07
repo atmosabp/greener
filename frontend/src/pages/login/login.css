@@ -1,0 +1,10 @@
+header{
+   padding: 15px;
+}
+
+header a{
+    display: flex;
+    align-items: center;
+    color: var(--text);
+    text-decoration: none;
+}
