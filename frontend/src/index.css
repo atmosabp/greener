@@ -1,4 +1,6 @@
-*{
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -22,12 +24,20 @@
 
 */
 
-html, body{
+html,
+body {
   max-width: 100%;
   min-height: 100%;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background);
 }
 
 /* Colocar nas páginas para englobar bonitinho e manter todas com esse padding*/
-main{
+main {
   padding: 30px;
+}
+
+::selection{
+  background-color: var(--primary-dark);
+  color: var(--background);
 }
