@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import "./login.css";
 import logo from "../../assets/logo-greener-n-text.svg";
 import logoText from "../../assets/greener-text.svg";
+import trees from "../../assets/footer.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 
 function Login() {
@@ -22,19 +23,27 @@ function Login() {
         </a>
       </header>
       <main>
-        <p>Faça login com seu e-mail coorporativo.</p>
+        <span>Faça login com seu e-mail corporativo.</span>
         <LoginForm />
-        <ShieldCheck />
-        <p>
-          Seus dados são processados de acordo com a LGPD, estão seguros
-          conosco.
-        </p>
-        <p>
-          Ainda não possui conta? Peça a um funcionário com acesso
-          administrativo da sua empresa para te adicionar!
-        </p>
-        <p className="copyright">Desenvolvido por Atmos &copy; 2026</p>
+        <div className="info-txt">
+          <div className="safe-warning">
+            <ShieldCheck fill="var(--primary-dark)"/>
+            <p>
+              Seus dados são processados de acordo com a LGPD, <br/>
+              estão seguros conosco.
+            </p>
+          </div>
+          <p>
+            Ainda não possui conta? <br /> 
+            Peça a um funcionário com acesso administrativo <br/>
+            da sua empresa para te adicionar!
+          </p>
+        </div>
       </main>
+      <footer>
+        <img src={trees} alt="Árvores" />
+        <p className="copyright">Desenvolvido por Atmos &copy; 2026</p>
+      </footer>
     </>
   );
 }

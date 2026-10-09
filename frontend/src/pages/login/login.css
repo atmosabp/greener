@@ -5,40 +5,40 @@ ESTILO DO HEADER
 */
 
 header {
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  width: 100%;
 }
 
 header .btn-back {
-    display: flex;
-    align-items: center;
-    color: var(--text);
-    text-decoration: none;
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  text-decoration: none;
 }
 
 .btn-back span {
-    position: relative;
-    /* font-weight: 500; */
-    font-size: 1.15rem;
+  position: relative;
 }
 
 .btn-back span::after {
-    content: "";
-    height: 2px;
-    width: 0%;
-    border-radius: 2px;
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    background-color: var(--text);
-    transition: width 0.5s;
+  content: "";
+  height: 2px;
+  width: 0%;
+  border-radius: 2px;
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  background-color: var(--text);
+  transition: width 0.5s;
 }
 
 header .btn-back:hover span::after {
-    content: "";
-    width: 100%;
+  content: "";
+  width: 100%;
 }
 
 .brand {
@@ -81,11 +81,81 @@ header .btn-back:hover span::after {
 ESTILO DO CONTEÚDO
 -=-=-=-=-=-=-=-=-=-=-=- 
 */
-main{
-    text-align: center;
-    color: var(--text);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+
+main {
+  text-align: center;
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+}
+
+span {
+  color: var(--text);
+}
+
+.safe-warning {
+  display: flex;
+  /* gap: 10px; */
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  width: 500px;
+}
+
+.safe-warning svg {
+  color: var(--background);
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.info-txt {
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  gap: 30px;
+}
+
+footer {
+  padding: 0px 15px;
+}
+
+footer img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.copyright {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--secundary);
+  font-size: 0.9rem;
+}
+
+/*
+-=-=-=-=-=-=-=-=-
+RESPONSIVIDADE
+-=-=-=-=-=-=-=-=-
+*/
+
+@media screen and (max-width:480px) {
+  .brand {
+    display: none;
+  }
+
+  .safe-warning {
+    width: 400px;
+    max-width: 100%;
+  }
+
 }
