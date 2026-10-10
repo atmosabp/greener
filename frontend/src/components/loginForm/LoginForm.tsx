@@ -47,7 +47,7 @@ function LoginForm() {
     if (newErrors.email || newErrors.password) return;
 
     // Depois adicionar aqui o login e etc
-    navigate("/teste");
+    navigate("/home");
   };
 
   return (

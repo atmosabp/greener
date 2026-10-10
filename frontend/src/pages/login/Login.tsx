@@ -8,7 +8,7 @@ import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 
-function Login() {
+export default function Login() {
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
@@ -67,4 +67,3 @@ function Login() {
   );
 }
 
-export default Login;

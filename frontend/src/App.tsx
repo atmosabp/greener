@@ -5,10 +5,10 @@ import './App.css'
 function App() {
 
   return (
-    <>
-      <h1>Teste de rota login</h1>
-      <Link to="/login"> Ir para o login.</Link>
-    </>
+    <main>
+      <h1>Landing Page</h1>
+      <Link to="/login"> Ir para o login</Link>
+    </main>
   )
 }
 
