@@ -4,11 +4,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import Login from "./pages/login/Login.tsx";
-import Homepage from "./pages/home/homepage.tsx";
-import Dashboard from "./pages/dashboard/dashboard.tsx";
-import Ranking from "./pages/ranking/ranking.tsx";
-import Comparison from "./pages/comparison/comparison.tsx";
-import Admin from "./pages/admin/admin.tsx";
+import Homepage from "./pages/home/Homepage.tsx";
+import Dashboard from "./pages/dashboard/Dashboard.tsx";
+import Ranking from "./pages/ranking/Ranking.tsx";
+import Comparison from "./pages/comparison/Comparison.tsx";
+import Admin from "./pages/admin/Admin.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
