@@ -2,13 +2,14 @@
   "name": "greener",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsx watch ./backend/src/server.ts"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "npx tsx watch src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -22,12 +23,20 @@
     "url": "https://github.com/atmosabp/greener/issues"
   },
   "homepage": "https://github.com/atmosabp/greener#readme",
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "tsx": "^4.23.15"
-  },
   "dependencies": {
     "dotenv": "^18.0.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "path": "^0.12.7",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.4",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
