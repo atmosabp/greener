@@ -123,23 +123,28 @@ span {
   gap: 30px;
 }
 
-footer {
-  padding: 0px 15px;
+.login-footer {
+  position: relative;
+  width: 100%;
+  margin-top: auto;
 }
 
-footer img {
+.login-footer img {
   width: 100%;
   display: block;
   object-fit: cover;
+  object-position: center bottom;
 }
 
-.copyright {
+.login-footer .copyright {
   position: absolute;
-  bottom: 15px;
   left: 50%;
+  bottom: 12px;
   transform: translateX(-50%);
   color: var(--secundary);
   font-size: 0.9rem;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /*
@@ -148,14 +153,38 @@ RESPONSIVIDADE
 -=-=-=-=-=-=-=-=-
 */
 
+@media screen and (max-width: 768px) {
+  .login-footer .copyright {
+    bottom: 0.65rem;
+    font-size: 0.72rem;
+  }
+}
+
 @media screen and (max-width:480px) {
   .brand {
     display: none;
   }
 
   .safe-warning {
-    width: 400px;
+    width: min(100%, 22rem);
     max-width: 100%;
+    gap: 0.5rem;
   }
 
+  .safe-warning p {
+    font-size: 0.78rem;
+  }
+
+  .info-txt {
+    font-size: 0.8rem;
+  }
+
+  .login-footer .copyright {
+    bottom: 0.4rem;
+    font-size: 0.68rem;
+  }
+
+  .desktop-break{
+    display: none;
+  }
 }

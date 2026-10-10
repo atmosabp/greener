@@ -1,13 +1,29 @@
 import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
-import { ShieldCheck } from "lucide-react";
+import { ChevronLeft, ShieldCheck } from "lucide-react";
 import "./login.css";
 import logo from "../../assets/logo-greener-n-text.svg";
 import logoText from "../../assets/greener-text.svg";
 import trees from "../../assets/footer.png";
+import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
+import { useEffect, useState } from "react";
 
 function Login() {
+  const [isMobile, setIsMobile] = useState<boolean>(
+    () => window.innerWidth < 768,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const footerImage = isMobile ? treesMobile : trees;
+
   return (
     <>
       <header>
@@ -27,21 +43,24 @@ function Login() {
         <LoginForm />
         <div className="info-txt">
           <div className="safe-warning">
-            <ShieldCheck fill="var(--primary-dark)"/>
+            <ShieldCheck fill="var(--primary-dark)" />
             <p>
-              Seus dados são processados de acordo com a LGPD, <br/>
+              Seus dados são processados de acordo com a LGPD, <br className="desktop-break"/>
               estão seguros conosco.
             </p>
           </div>
           <p>
-            Ainda não possui conta? <br /> 
-            Peça a um funcionário com acesso administrativo <br/>
+            Ainda não possui conta? <br />
+            Peça a um funcionário com acesso administrativo <br />
             da sua empresa para te adicionar!
           </p>
         </div>
       </main>
-      <footer>
-        <img src={trees} alt="Árvores" />
+      <footer className="login-footer">
+        <img
+          src={footerImage}
+          alt={isMobile ? "Árvores em versão mobile" : "Árvores"}
+        />
         <p className="copyright">Desenvolvido por Atmos &copy; 2026</p>
       </footer>
     </>

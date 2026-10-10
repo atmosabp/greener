@@ -55,7 +55,7 @@ function LoginForm() {
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="email" title="Campo obrigatório">
-            E-mail*
+           {errors.email ? "E-mail" : "Email*"} 
           </label>
           {errors.email && (
             <span id="email-error" className="error-msg">
@@ -82,7 +82,7 @@ function LoginForm() {
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="password" title="campo obrigatório.">
-            Senha*
+             {errors.password ? "Senha" : "Senha*"} 
           </label>
           {errors.password && (
             <span id="password-error" className="error-msg">
