@@ -1,1 +1,421 @@
-/* Estilo da homepage */
+.homepage {
+    --panel-background: var(--primary-light);
+    --panel-text: var(--text);
+    --panel-border: var(--text);
+    --service-background: var(--background);
+    --globe-marker-active: #99c47c;
+    --globe-marker-incomplete: #dfd044;
+    --globe-marker-inactive: #df7779;
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--text);
+    font-family: "Roboto", sans-serif;
+}
+
+.homepage,
+.homepage * {
+    box-sizing: border-box;
+}
+
+.homepage-main {
+    width: 100%;
+    max-width: 1440px;
+    flex: 1;
+    margin: 0 auto;
+    padding: 24px 4% 20px;
+    display: grid;
+    grid-template-columns: minmax(210px, 270px) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 7vw, 100px);
+}
+
+.services-column {
+    width: 100%;
+    align-self: center;
+}
+
+.last-update {
+    margin: 0 0 2px 14px;
+    color: var(--text);
+    font-size: 13px;
+    opacity: 0.78;
+}
+
+.last-update span {
+    opacity: 0.8;
+}
+
+.services-panel {
+    min-height: 350px;
+    padding: 10px 12px 9px;
+    border: 1px solid var(--panel-border);
+    border-radius: 15px;
+    background: var(--panel-background);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 5px var(--shadow);
+}
+
+.services-panel h1 {
+    margin: 0 0 8px;
+    color: var(--panel-text);
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.services-empty {
+    padding: 12px 6px;
+    color: var(--panel-text);
+    opacity: 0.7;
+    font-size: 11px;
+    text-align: center;
+}
+
+.service-item {
+    width: 100%;
+    min-height: 27px;
+    padding: 4px 8px 4px 10px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--service-background);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+}
+
+.service-item:hover,
+.service-item-selected {
+    border-color: var(--primary-dark);
+    filter: brightness(0.97);
+}
+
+.service-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.service-arrow {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    display: inline-block;
+    border-radius: 50%;
+}
+
+.status-dot.active {
+    background: var(--globe-marker-active);
+}
+
+.status-dot.incomplete {
+    background: var(--globe-marker-incomplete);
+}
+
+.status-dot.inactive {
+    background: var(--globe-marker-inactive);
+}
+
+.service-details {
+    margin-top: 10px;
+    padding: 9px;
+    border-radius: 8px;
+    background: var(--background-transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+}
+
+.service-details strong {
+    font-size: 12px;
+}
+
+.status-legend {
+    margin-top: auto;
+    padding-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.status-legend span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.status-legend .status-dot {
+    width: 8px;
+    height: 8px;
+    flex-basis: 8px;
+}
+
+.quick-actions {
+    margin-top: 6px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.quick-button {
+    min-height: 29px;
+    padding: 5px;
+    border: 1px solid var(--text);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    background: var(--panel-background);
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.quick-button:hover {
+    filter: brightness(0.95);
+}
+
+.visualization-column {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.visualization-stage {
+    position: relative;
+    width: 100%;
+    height: clamp(320px, 53vh, 490px);
+    min-width: 0;
+}
+
+.interactive-globe {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.interactive-globe:active {
+    cursor: grabbing;
+}
+
+.interactive-globe canvas {
+    display: block;
+    outline: none;
+}
+
+.globe-status {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    z-index: 2;
+    max-width: calc(100% - 24px);
+    padding: 7px 12px;
+    transform: translateX(-50%);
+    border-radius: 20px;
+    background: var(--background-transparent);
+    color: var(--text);
+    font-size: 11px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.globe-error {
+    border: 1px solid var(--primary-dark);
+}
+
+.country-tooltip {
+    padding: 7px 10px;
+    border: 1px solid var(--primary-dark);
+    border-radius: 8px;
+    background: var(--background);
+    color: var(--text);
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    box-shadow: 0 3px 12px var(--shadow);
+}
+
+.selected-country {
+    width: min(100%, 320px);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 11px;
+}
+
+.selected-country button {
+    padding: 4px 9px;
+    border: 1px solid var(--text);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.view-switch {
+    position: relative;
+    z-index: 1;
+    width: min(200px, 80%);
+    min-height: 24px;
+    margin-top: 10px;
+    padding: 2px;
+    border: 1px solid var(--text);
+    border-radius: 20px;
+    background: var(--panel-background);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.view-switch button {
+    border: 0;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.view-switch button.active {
+    background: var(--text);
+    color: var(--background);
+}
+
+.map-placeholder {
+    width: min(100%, 430px);
+    height: 100%;
+    margin: auto;
+    padding: 24px;
+    border: 1px solid var(--text);
+    border-radius: 18px;
+    background:
+        linear-gradient(var(--background-transparent) 1px, transparent 1px),
+        linear-gradient(90deg, var(--background-transparent) 1px, transparent 1px),
+        var(--background);
+    background-size: 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.map-placeholder-icon {
+    color: var(--primary-dark);
+    font-size: 42px;
+}
+
+.map-placeholder h2 {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.map-placeholder p {
+    max-width: 260px;
+    font-size: 12px;
+    line-height: 1.6;
+    opacity: 0.75;
+}
+
+.homepage-footer {
+    padding: 14px 12px;
+    color: var(--secondary);
+    text-align: center;
+    font-size: 10px;
+}
+
+@media (min-width: 1100px) {
+    .homepage-main {
+        grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+        gap: clamp(60px, 8vw, 110px);
+        padding-right: 5%;
+        padding-left: 5%;
+    }
+
+    .services-panel {
+        min-height: 350px;
+        padding: 10px 15px;
+    }
+
+    .service-item {
+        min-height: 28px;
+    }
+
+    .service-name {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 700px) {
+    .homepage-main {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 26px;
+        padding: 18px 18px 24px;
+    }
+
+    .visualization-column {
+        grid-row: 1;
+    }
+
+    .visualization-stage {
+        height: min(78vw, 390px);
+        min-height: 270px;
+    }
+
+    .services-column {
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    .services-panel {
+        min-height: 0;
+    }
+
+    .status-legend {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .homepage-main {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .status-legend span {
+        font-size: 8px;
+    }
+}

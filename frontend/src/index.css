@@ -91,3 +91,23 @@ main {
   background-color: var(--primary-dark);
   color: var(--background);
 }
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+}
+
+button,
+input {
+  font: inherit;
+}
