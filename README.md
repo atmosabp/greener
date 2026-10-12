@@ -10,11 +10,21 @@
 
 <br>
 
+<div align="center">
+
+[Sobre](#sobre) - [Estrutura](#estrutura-de-arquivos) - [Tecnologias](#tecnologias-utilizadas) - [Documentação](#documentação) - [Cronograma](#cronograma-e-sprints) - [Instruções](#instruções-para-execução) - [Equipe](#equipe-e-cargos)
+
+</div>
+
+<br>
+
 ## Sobre
 
-[O que é a aplicação]  
+*GreenER* é uma plataforma web desenvolvida como projeto do 2º semestre da Fatec Jacareí, capaz de monitorar continuamente aplicações de software, estimar seu consumo energético e calcular suas emissões aproximadas de CO₂ equivalente (CO₂e).
+
 [Objetivo]  
-[Diferencial?]
+[Diferencial?]  
+[Equipe]
 
 <br>
 
