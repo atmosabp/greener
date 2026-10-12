@@ -1,5 +1,6 @@
+<br>
 <div align="center">
-[Logo do Projeto]
+<img src="docs/design/logo-greener.svg" width="120">
 
 <br>
 
@@ -21,12 +22,24 @@
 
 ```
 ├ docs/           # Documentação do projeto
-├ front/
+│ ├ bd/
+│ ├ design/
+│ ├ diagramas/
+│ ├ relatorios/
+│ ├ sprints/
+├ frontend/       # Arquivos da aplicação HTML 
 │ ├ src/
 | ├ README.md
-├ back/
+├ database/
+├ backend/        # Arquivos para banco de dados/histórico
 | ├ controllers/
-| ├ services/
+| ├ README.md
+├ backend/        # Servidor que conversa com frontend e API
+| ├ src/
+| ├ ├ db/
+| ├ ├ integrations/
+| ├ ├ modules/
+| ├ README.md
 └ README.md       # Guia principal
 ```
 
@@ -37,7 +50,7 @@
 | [![My Skills](https://skillicons.dev/icons?i=react)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=ts)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=figma)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=git)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=github)](https://skillicons.dev) |
 | ------ | ---- | ------- | ---- | ---- | ---- | ---- | ---- |
 | React | TypeScript | NodeJS | Docker | PostgreSQL | Figma | Git | GitHub |
-| v0.0 | v0.0 | v0.0 | v0.0 | v0.0 | v0.0 | v0.0 | v0.0 |
+| v0.0 | v0.0 | v0.0 | v0.0 | v0.0 | Web | v0.0 | Web |
 
 <br>
 
@@ -48,9 +61,9 @@ Toda a documentação do projeto pode ser encontrada em sua maioria na pasta `do
 - <a href="https://github.com/atmosabp/greener/blob/main/docs/product-backlog.md">Product Backlog</a>
 - <a href="https://github.com/atmosabp/greener/tree/main/docs/sprints">Sprint Backlogs</a>
 - <a href="#">DoD (Definition of Done)</a>
-- <a href="#">Relatórios</a>
+- <a href="https://github.com/atmosabp/greener/tree/main/docs/relatorios">Relatórios</a>
 
-Para cada diretório do `frontend` e `backend`, também há arquivos README, que juntos compõem uma documentação técnica explicando as funcionalidades de cada parte lógica da aplicação.
+Para cada diretório como `frontend/`, `backend/` e `database/`, também há arquivos README, que juntos compõem uma documentação técnica explicando as funcionalidades de cada parte lógica da aplicação.
 
 <br>
 
@@ -58,7 +71,7 @@ Para cada diretório do `frontend` e `backend`, também há arquivos README, que
 
 | N° Sprint | Data início | Status       | Relatório | Vídeo  |
 | --------- | ----------- | ------------ | --------- | ------ |
-| 1         | 28/09/2026  | Em andamento | [link]    | [link] |
+| 1         | 28/09/2026  | Em andamento | [Link](https://github.com/atmosabp/greener/tree/main/docs/sprints)    | - |
 | 2         | 19/10/2026  | Não iniciada | -         | -      |
 | 3         | 09/11/2026  | Não iniciada | -         | -      |
 
