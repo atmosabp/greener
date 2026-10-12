@@ -85,14 +85,13 @@
     justify-content: center;
 }
 
-
-
 /* 
 -=-=-=-=-=-=-=-
 RESPONSIVIDADE
 -=-=-=-=-=-=-=-
 */
 
+/* 1. Celulares */
 @media screen and (max-width:480px) {
     .menu-trigger {
         display: flex;
@@ -123,14 +122,18 @@ RESPONSIVIDADE
     }
 
     .menu {
-        height: 100vh;
+        height: 100dvh;
+        /* Coloquei para respeitar os navegadores */
         width: 40%;
         background-color: var(--background);
-        box-shadow: -4px 0px 4px 0px var(--shadow);
+        /* box-shadow: -4px 0px 4px 0px var(--shadow); */
+        border-left: 2px solid var(--text);
         right: 0;
         transform: translateX(100%);
         flex-direction: column;
-        transition: transform 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+        transition: transform 0.5s ease-in-out,
+            margin-top 0.5s ease-in-out,
+            background-color 0.5s ease-in-out;
         position: fixed;
         z-index: 998;
         text-align: center;
@@ -172,5 +175,18 @@ RESPONSIVIDADE
 
     .btn-logout {
         height: 35px;
+    }
+}
+
+/* Tablets */
+@media screen and (min-width:481px) and (max-width: 1024px) {
+    .menu-links {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 30px;
+        position: relative;
+        left: 0;
+        transform: translateX(0);
     }
 }

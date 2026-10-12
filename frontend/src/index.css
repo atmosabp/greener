@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out;
 }
 
 /* Tema padrão */
@@ -14,7 +14,7 @@
 [data-theme="light"][data-palette="green"] {
   --background: #F9EEDC;
   --background-transparent: hsla(37, 71%, 92%, 0.5);
-  --shadow: rgba(145, 124, 110, 0.51);
+  --shadow: rgba(145, 124, 110, 0.5);
   --text: #38322E;
   --primary: #99C47C;
   --primary-light: #BFC47C;
@@ -28,7 +28,7 @@
 [data-theme="dark"][data-palette="green"] {
   --background: #29342D;
   --background-transparent: rgb(41, 52, 45, 0.5);
-  --shadow: rgba(43, 43, 43, 0.25);
+  --shadow: rgba(43, 43, 43, 0.5);
   --text: #F9EEDC;
   --primary: #669546;
   --primary-light: #ADB26A;
@@ -42,7 +42,7 @@
 [data-theme="light"][data-palette="blue"] {
   --background: #F9EEDC;
   --background-transparent: hsla(37, 71%, 92%, 0.5);
-  --shadow: rgba(145, 124, 110, 0.51);
+  --shadow: rgba(145, 124, 110, 0.5);
   --text: #38322E;
   --primary: #7CA2C4;
   --primary-light: #9ED3D9;
@@ -56,7 +56,7 @@
 [data-theme="dark"][data-palette="blue"] {
   --background: #262E30;
   --background-transparent: rgb(38, 46, 48, 0.5);
-  --shadow: rgba(43, 43, 43, 0.25);
+  --shadow: rgba(43, 43, 43, 0.5);
   --text: #F9EEDC;
   --primary: #4A7092;
   --primary-light: #6DA8AE;
@@ -80,7 +80,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
-
 
 /* Colocar nas páginas para englobar bonitinho e manter todas com esse padding*/
 main {
