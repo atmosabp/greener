@@ -85,14 +85,38 @@ Portanto, iniciamos a estrutura de pastas do frontend e do backend, para no dia 
 ---
 
 #### 09/out
+**Beatriz:** Finaliza implementação tela de login  
+**Darcy:** Continuação cálculos e criação dos documentos  
+**Júlia:** Continua relatório e documentação
+**Kauã:** Finaliza design tela de comparação e versão mobile  
+**Lorenzo:** Finaliza design tela principal (desktop e mobile)  
+**Mariana:** Continua design tela de ranking mobile
 
 ---
 
 #### 10/out
+Dia focado apenas no design de telas, e melhorar o que já foi feito.
 
+**Beatriz:** Cria design avisos e alertas de erro  
+**Darcy:** Continuação cálculos e criação dos documentos  
+**Júlia:** Continua relatório e documentação  
+**Kauã:** Inicia design landing page  
+**Lorenzo:** Colabora no design  
+**Mariana:** Finaliza design tela de ranking (desktop e mobile)
+
+---
 
 #### 11/out
+Último dia de produção dos designs. Levamos um tempo considerável para entregar o melhor, mas também produzimos outras coisas ao longo da semana, como implementação de telas no site e desenvolvimento do servidor backend.
 
+**Beatriz:** Cria componente web header e inicia implementação landing page    
+**Darcy:** Faz testes de design  
+**Júlia:** Contribui nos designs da landing page e tela de comparação  
+**Kauã:** Inicia consulta do Carbon Intensity API  
+**Lorenzo:** Inicia implementação tela principal  
+**Mariana:** Faz design tela 404
+
+---
 
 #### 12/out
 
