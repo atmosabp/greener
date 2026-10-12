@@ -93,14 +93,12 @@ Para cada diretório como `frontend/`, `backend/` e `database/`, também há arq
 
 <br>
 
-## Equipe e cargos
+## Equipe
 
-- Beatriz Oliveira - Product Owner, front, design
-- Júlia Rodrigues - Scrum Master, DevOps, design
-- Darcy Salmazzo - Dev, back, banco
-- Kauã Cristian - Dev, back, front
-- Lorenzo - Dev, back, front
-- Mariana Tavares - Dev, back, banco
+|  <img src="https://avatars.githubusercontent.com/u/132356935?v=4" width="75px;" alt="Beatriz Oliveira"/> |  <img src="https://avatars.githubusercontent.com/u/132353184?v=4" width="75px;" alt="Júlia Rodrigues"/> |  <img src="https://avatars.githubusercontent.com/u/132584182?v=4" width="75px;" alt="Darcy Salmazzo"/> |  <img src="https://avatars.githubusercontent.com/u/260771590?v=4" width="75px;" alt="Kauã Cristian"/> |  <img src="https://avatars.githubusercontent.com/u/230260190?v=4" width="75px;" alt="Lorenzo Milanelo"/> |  <img src="https://avatars.githubusercontent.com/u/213532358?v=4" width="75px;" alt="Mariana Tavares"/> |
+| ------ | ---- | ------- | ---- | ---- | ---- |
+| Beatriz Oliveira | Júlia Rodrigues | Darcy Salmazzo | Kauã Cristian   | Lorenzo Milanelo | Mariana Tavares |
+| Product Owner | Scrum Master | Dev | Dev | Dev | Dev |
 
 <br>
 
