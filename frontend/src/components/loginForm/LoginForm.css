@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
-    box-shadow: 0px 4px 14px 0px rgba(145, 124, 110, 0.51);
+    box-shadow: 0px 4px 14px 0px var(--shadow);
 }
 
 .form-field {
@@ -68,7 +68,7 @@
 
 
 .error-msg {
-    color: #c0392b;
+    color: var(--error);
     font-size: 0.8rem;
     margin-bottom: 2.5px;
     animation: teste 0.5s forwards;
@@ -77,16 +77,17 @@
 }
 
 @keyframes teste {
-    0%{
+    0% {
         left: 0%
     }
-    100%{
+
+    100% {
         left: 70px;
     }
 }
 
 .input-error {
-  outline: 2px solid #c0392b;  
+    outline: 2px solid var(--error);
 }
 
 .password-input {
@@ -96,7 +97,7 @@
 }
 
 .password-input svg {
-    color: #547757;
+    color: var(--primary-darker);
 }
 
 .btn-eye {
@@ -107,7 +108,7 @@
 
 .forgotten-password {
     width: fit-content;
-    color: #547757;
+    color: var(--primary-darker);
     text-decoration: none;
     position: relative;
 }
@@ -120,7 +121,8 @@
     border-radius: 2px;
     bottom: -1px;
     left: 0;
-    background-color: #547757;
+    background-color: var(--primary-darker);
+    ;
     transition: width 0.5s;
 }
 
@@ -130,7 +132,6 @@
 
 .btn-login {
     background-color: var(--primary-dark);
-    color: var(--background);
     text-decoration: none;
     border-radius: 20px;
     border: none;
@@ -144,6 +145,15 @@
     cursor: pointer;
 }
 
+[data-theme="light"] .btn-login {
+    color: var(--background);
+}
+
+
+[data-theme="dark"] .btn-login {
+    color: var(--text);
+}
+
 /*
 -=-=-=-=-=-=-=-=-
 RESPONSIVIDADE
@@ -151,14 +161,14 @@ RESPONSIVIDADE
 */
 
 @media screen and (max-width:480px) {
-    .form-login{
+    .form-login {
         min-width: 0;
         width: 400px;
         max-width: 100%;
         gap: 15px;
     }
 
-    .form-link.password{
+    .form-link.password {
         margin-top: 0;
     }
 

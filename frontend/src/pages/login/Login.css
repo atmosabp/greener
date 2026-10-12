@@ -11,9 +11,16 @@ header {
   justify-content: space-between;
   position: fixed;
   width: 100%;
+  background-color: var(--background-transparent);
+  backdrop-filter: blur(5px);
 }
 
-header .btn-back {
+.header-btns {
+  display: flex;
+  gap: 15px;
+}
+
+.header-btns .btn-back {
   display: flex;
   align-items: center;
   color: var(--text);
@@ -91,10 +98,15 @@ main {
   flex-direction: column;
   gap: 15px;
   flex: 1;
+  margin-top: 40px;
 }
 
 span {
   color: var(--text);
+}
+
+main .logo {
+  display: none;
 }
 
 .safe-warning {
@@ -111,6 +123,7 @@ span {
   color: var(--background);
   width: 2.75rem;
   height: 2.75rem;
+  transition: color 0.5s ease-in-out;
 }
 
 .info-txt {
@@ -141,10 +154,18 @@ span {
   left: 50%;
   bottom: 12px;
   transform: translateX(-50%);
-  color: var(--secundary);
   font-size: 0.9rem;
   text-align: center;
   white-space: nowrap;
+}
+
+[data-theme="light"] .login-footer .copyright {
+  color: var(--secondary);
+
+}
+
+[data-theme="dark"] .login-footer .copyright {
+  color: var(--secondary);
 }
 
 /*
@@ -163,6 +184,13 @@ RESPONSIVIDADE
 @media screen and (max-width:480px) {
   .brand {
     display: none;
+  }
+
+  .header-btns {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    justify-content: space-between;
   }
 
   .safe-warning {
@@ -184,7 +212,11 @@ RESPONSIVIDADE
     font-size: 0.68rem;
   }
 
-  .desktop-break{
+  .desktop-break {
     display: none;
+  }
+
+  main .logo {
+    display: block;
   }
 }
