@@ -199,6 +199,8 @@
     filter: brightness(0.95);
 }
 
+/* ===== VISUALIZAÇÃO (GLOBO/MAPA) ===== */
+
 .visualization-column {
     width: 100%;
     min-width: 0;
@@ -210,8 +212,22 @@
 .visualization-stage {
     position: relative;
     width: 100%;
-    height: clamp(320px, 53vh, 490px);
+    height: clamp(320px, 55vh, 520px);
     min-width: 0;
+    min-height: 320px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+}
+
+.visualization-stage canvas {
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+    display: block;
+    outline: none;
+    border-radius: 18px;
 }
 
 .interactive-globe {

@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/header/Header";
 import InteractiveGlobe from "./InteractiveGlobe";
+import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
 
 export type ServiceStatus = "active" | "incomplete" | "inactive";
@@ -11,6 +11,9 @@ export interface Service {
   id: string;
   name: string;
   status: ServiceStatus;
+  latitude?: number;  // Adicionado para o globo
+  longitude?: number; // Adicionado para o globo
+  co2e?: number;      // Adicionado para exibir no tooltip
 }
 
 interface HomepageProps {
@@ -20,35 +23,31 @@ interface HomepageProps {
 
 type VisualizationMode = "globe" | "map";
 
-const statusLabels: Record<ServiceStatus, string> = {
-  active: "Ativo",
-  incomplete: "Incompleto",
-  inactive: "Inativo",
-};
+// const statusLabels: Record<ServiceStatus, string> = {
+//   active: "Ativo",
+//   incomplete: "Incompleto",
+//   inactive: "Inativo",
+// };
+// NÃO ULTILIZADO AINDA
+
+// Dados de exemplo (SUBSTITUA ISSO PELOS DADOS REAIS DA SUA API)
+const mockServices: Service[] = [
+  { id: "1", name: "Data Center São Paulo", status: "active", latitude: -23.5505, longitude: -46.6333, co2e: 120 },
+  { id: "2", name: "Fábrica Nova York", status: "incomplete", latitude: 40.7128, longitude: -74.0060, co2e: 340 },
+  { id: "3", name: "Escritório Londres", status: "inactive", latitude: 51.5074, longitude: -0.1278, co2e: 0 },
+  { id: "4", name: "Hub Tóquio", status: "active", latitude: 35.6895, longitude: 139.6917, co2e: 85 },
+];
 
 export default function Homepage({
-  services = [],
-  lastUpdated,
+  services = mockServices,
+  lastUpdated = "15/10/2026 14:30",
 }: HomepageProps) {
   const [mode, setMode] = useState<VisualizationMode>("globe");
-  const [selectedService, setSelectedService] =
-    useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
 
-  const activeCount = services.filter(
-    (service) => service.status === "active"
-  ).length;
-
-  const incompleteCount = services.filter(
-    (service) => service.status === "incomplete"
-  ).length;
-
-  const inactiveCount = services.filter(
-    (service) => service.status === "inactive"
-  ).length;
-
-  const selected = services.find(
-    (service) => service.id === selectedService
-  );
+  const activeCount = services.filter((s) => s.status === "active").length;
+  const incompleteCount = services.filter((s) => s.status === "incomplete").length;
+  const inactiveCount = services.filter((s) => s.status === "inactive").length;
 
   return (
     <div className="homepage">
@@ -57,8 +56,7 @@ export default function Homepage({
       <main className="homepage-main">
         <aside className="services-column">
           <p className="last-update">
-            Última atualização:{" "}
-            <span>{lastUpdated ?? "--:--"}</span>
+            Última atualização: <span>{lastUpdated}</span>
           </p>
 
           <section className="services-panel">
@@ -66,105 +64,62 @@ export default function Homepage({
 
             <div className="services-list">
               {services.length === 0 ? (
-                <p className="services-empty">
-                  Nenhum serviço disponível.
-                </p>
+                <p className="services-empty">Nenhum serviço disponível.</p>
               ) : (
                 services.map((service) => (
                   <button
                     key={service.id}
                     type="button"
-                    className={`service-item ${
-                      selectedService === service.id
-                        ? "service-item-selected"
-                        : ""
-                    }`}
+                    className={`service-item ${selectedService === service.id ? "service-item-selected" : ""
+                      }`}
                     onClick={() =>
                       setSelectedService((current) =>
-                        current === service.id
-                          ? null
-                          : service.id
+                        current === service.id ? null : service.id
                       )
                     }
                     aria-pressed={selectedService === service.id}
                   >
-                    <span
-                      className={`status-dot ${service.status}`}
-                      aria-hidden="true"
-                    />
-
-                    <span className="service-name">
-                      {service.name}
-                    </span>
-
-                    <span className="service-arrow" aria-hidden="true">
-                      →
-                    </span>
+                    <span className={`status-dot ${service.status}`} aria-hidden="true" />
+                    <span className="service-name">{service.name}</span>
+                    <span className="service-arrow" aria-hidden="true">→</span>
                   </button>
                 ))
               )}
             </div>
 
-            {selected && (
-              <div className="service-details">
-                <span>Serviço selecionado</span>
-                <strong>{selected.name}</strong>
-                <span>
-                  Status: {statusLabels[selected.status]}
-                </span>
-              </div>
-            )}
-
             <div className="status-legend">
-              <span>
-                <i className="status-dot active" />
-                Ativo ({activeCount})
-              </span>
-
-              <span>
-                <i className="status-dot incomplete" />
-                Incompleto ({incompleteCount})
-              </span>
-
-              <span>
-                <i className="status-dot inactive" />
-                Inativo ({inactiveCount})
-              </span>
+              <span><i className="status-dot active" /> Ativo ({activeCount})</span>
+              <span><i className="status-dot incomplete" /> Incompleto ({incompleteCount})</span>
+              <span><i className="status-dot inactive" /> Inativo ({inactiveCount})</span>
             </div>
           </section>
 
           <nav className="quick-actions" aria-label="Navegação do dashboard">
-            <Link to="/ranking" className="quick-button">
-              Ranking
-            </Link>
-
-            <Link to="/comparacao" className="quick-button">
-              Comparação
-            </Link>
+            <Link to="/ranking" className="quick-button">Ranking</Link>
+            <Link to="/comparacao" className="quick-button">Comparação</Link>
           </nav>
         </aside>
 
         <section className="visualization-column">
           <div className="visualization-stage">
+
             {mode === "globe" ? (
-              <InteractiveGlobe />
+              <InteractiveGlobe
+                services={services}
+                selectedServiceId={selectedService}
+                onSelectService={setSelectedService}
+              />
             ) : (
-              <div className="map-placeholder">
-                <span className="map-placeholder-icon">⌖</span>
-                <h2>Mapa de monitoramento</h2>
-                <p>
-                  A visualização geográfica será integrada aos dados
-                  de localização da API.
-                </p>
-              </div>
+              <MapVisualization
+                services={services}
+                selectedServiceId={selectedService}
+                onSelectService={setSelectedService}
+              />
             )}
+
           </div>
 
-          <div
-            className="view-switch"
-            role="group"
-            aria-label="Tipo de visualização"
-          >
+          <div className="view-switch" role="group" aria-label="Tipo de visualização">
             <button
               type="button"
               className={mode === "globe" ? "active" : ""}
@@ -173,7 +128,6 @@ export default function Homepage({
             >
               Globo
             </button>
-
             <button
               type="button"
               className={mode === "map" ? "active" : ""}
