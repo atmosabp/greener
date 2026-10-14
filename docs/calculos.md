@@ -1,55 +1,81 @@
 ## Cálculos
+Esse documento tem como objetivo descrever os cálculos realizados pelo servidor da aplicação com as métricas vindas das APIs do GreenER.  
+Todos os cálculos descritos abaixo estão aplicados nos arquivos do diretório `backend/src/integrations/`.  
+Você também pode acessar essa pasta [aqui](https://github.com/atmosabp/greener/tree/develop/backend/src/integrations).
+
+<br>
 
 ### Potência estimada (W) 
-**Fórmula:** Potência CPU +
+Será usado para determinar a estimativa de energia gasta pelo serviço.
+
+<br>
+
+**Fórmula:** `Potência CPU +
 Potência Memória +
 Potência Disco +
-Potência Rede
+Potência Rede`
 
 **Origem dos dados:** Greener Metrics Aggregator API
-
-**Função:** Será usado para determinar a estimativa de energia gasta pelo serviço
  
 ---
 
 ### Estimativa de energia(KWh)  
-**Fórmula:** Potência Estimada (W) × Tempo de Coleta (h) / 1000
+Determina a estimativa de energia gasta pelo serviço.
+
+<br>
+
+**Fórmula:** `Potência Estimada (W) × Tempo de Coleta (h) / 1000`
 
 **Origem dos dados:** Greener Metrics Aggregator API e cálculo de potência
-
-**Função:** Determina a estimativa de energia gasta pelo serviço
 
 ---
 
 ### Intensidade de Carbono equivalente(CO2e) 
-**Fórmula:** Energia (KWh) × Intensidade de Carbono (gCO₂e/kWh)
+Determina a estimativa de carbono emitido pelo serviço.
+
+<br>
+
+**Fórmula:** `Energia (KWh) × Intensidade de Carbono (gCO₂e/kWh)`
 
 **Origem dos dados:** Cálculo de energia e Greener Carbon Intensity API 
-
-**Função:** Determina a estimativa de carbono emitido pelo serviço
 
 ---
 
 ### Intensidade de Carbono
-**Fórmula:** Intensidade de Carbono equivalente(CO2e) / Energia (KWh)
+Determina a intensidade de carbono no momento da coleta de dados.  
+
+<br>
+
+**Fórmula:** `Intensidade de Carbono equivalente(CO2e) / Energia (KWh)`
 
 **Origem dos dados:** Cálculo de energia e Cálculo de Intensidade de Carbono equivalente
 
-**Função:** Determina a intensidade de carbono no momento da coleta de dados
-
 ---
 ### Emissão total 
-**Fórmula:** Intensidade de Carbono equivalente(CO2e) * tempo em horas 
+Determina a quantidade emitida de carbono em certo período de tempo.
 
-**Origem dos dados:** Cálculo de Intensidade de Carbono equivalente e usúario
+<br>
 
-**Função:** Determina a quantidade emitida de carbono em certo período de tempo
+**Fórmula:** `Intensidade de Carbono equivalente(CO2e) * tempo em horas`
+
+**Origem dos dados:** Cálculo de Intensidade de Carbono equivalente e usuário
 
 ---
 ### Intervalo de coleta de dados 
-**Fórmula:** Energia (KWh) * 1000 / Potência Estimada (W)
+Determina o Intervalo que os dados foram coletados na requisição da API.
+
+<br>
+
+**Fórmula:** `Energia (KWh) * 1000 / Potência Estimada (W)`
 
 **Origem dos dados:**  Cálculo de energia e Cálculo de potência
 
-**Função:** Determina o Intervalo que os dados foram coletados na requisição da API
+<br>
 
+---
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>
