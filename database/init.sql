@@ -1,55 +1,50 @@
-drop table if exists hour_data;
-drop table if exists minute_data;
-drop table if exists month_data;
-drop table if exists services;
-
-create table services(
-	id serial not null primary key,
+create table if not exists services(
+	id serial primary key,
 	name varchar(255),
 	max_emitted float,
 	min_emitted float
 );
 
-create table hour_data(
---id ou vai ser serial ou guid
+create table if not exists hour_data(
+-- pensar sobre o id ser guid
 	id serial primary key, 
-	services_id integer,
 	co2e float,
-	dt_pull timestamp with time zone default current_timestamp,
+	date_pull timestamp with time zone default current_timestamp,
 	kwh float,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
 	network_gb float,
 	renewable_percent integer,
+	service_id integer,
 	foreign key(services_id) references services(id)
 );
 
-create table minute_data(
+create table if not exists minute_data(
 	id serial primary key,
-	services_id integer,
 	co2e float,
 	kwh float,
-	dt_pull timestamp with time zone default current_timestamp,
+	date_pull timestamp with time zone default current_timestamp,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
 	network_gb float,
 	renewable_percent integer,
+	service_id integer,
 	foreign key(services_id) references services(id)
 );
 
-create table month_data(
+create table if not exists month_data(
 	id serial primary key,
-	services_id integer,
 	co2e float,
 	kwh float,
-	dt_pull timestamp with time zone default current_timestamp,
+	date_pull timestamp with time zone default current_timestamp,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
 	network_gb float,
 	renewable_percent integer,
+	service_id integer,
 	foreign key(services_id) references services(id)
 );
 
