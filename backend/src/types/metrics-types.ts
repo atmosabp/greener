@@ -6,9 +6,6 @@ export interface MetricsData {
 }
 
 export interface MetricsTypes {
+    collection_interval_seconds: number
     metrics?: MetricsData
-}
-
-export interface ApiErrorResponse {
-    message?:string;    
 }

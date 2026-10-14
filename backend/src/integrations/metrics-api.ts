@@ -1,20 +1,34 @@
-import type { ApiErrorResponse, MetricsTypes } from "../types/metrics-types";
+import type { MetricsTypes } from "../types/metrics-types";
 
 const metricsURL = 'https://metrics.unilaunch.org/metrics/billing-api'
 
+async function reqInterval() {
+    try {
+        const intResp = await fetch(metricsURL);
+        if (intResp.ok) {
+            const objInterval: MetricsTypes = await intResp.json();
+
+            const interval = objInterval.collection_interval_seconds;
+            return interval
+        }
+
+    } catch (error: any) {
+        throw new Error(error.message || "Não foi possivel buscar o intervalo de busca");
+    }
+
+}
 
 async function reqMetrics() {
-    const resp = await fetch(metricsURL);
 
     try {
-        if (resp.status === 200) {
+        const resp = await fetch(metricsURL);
+        if (resp.ok) {
             const objMetrics: MetricsTypes = await resp.json();
 
             const metricas = objMetrics.metrics;
             return metricas
         }
-    } catch (erro) {
-        const error: ApiErrorResponse = await resp.json();
+    } catch (error: any) {
         throw new Error(error.message || "Não foi possivel buscar a métricas");
     }
 }
@@ -37,7 +51,7 @@ async function reqMetricsMemory() {
 
     if (!respMetrics) return;
 
-    if (respMetrics.memory_gb === undefined || respMetrics.memory_gb === null) {
+    if (!respMetrics.memory_gb) {
         throw new Error("Não foi possivel capturar métricas de memory");
     }
 
@@ -50,7 +64,7 @@ async function reqMetricsDisk() {
 
     if (!respMetrics) return;
 
-    if (respMetrics.disk_gb === undefined || respMetrics.disk_gb === null) {
+    if (!respMetrics.disk_gb) {
         throw new Error("Não foi possivel capturar métricas de disk");
     }
 
@@ -63,9 +77,9 @@ async function reqMetricsNetwork() {
 
     if (!respMetrics) return;
 
-    if (respMetrics.network_gb === undefined || respMetrics.network_gb === null) {
+    if (!respMetrics.network_gb) {
         throw new Error("Não foi possivel capturar métricas de network");
-    }    
+    }
 
     const valueNetwork = respMetrics.network_gb;
     return valueNetwork
@@ -74,7 +88,7 @@ async function reqMetricsNetwork() {
 
 // pra testar
 async function iniciar() {
-    const valor = await reqMetricsNetwork();
+    const valor = await reqInterval();
     console.log(valor)
 }
 
