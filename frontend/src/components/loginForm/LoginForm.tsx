@@ -1,11 +1,11 @@
 // Importações
 import { Eye, EyeClosed } from "lucide-react";
-import "./loginForm.css";
+import "./LoginForm.css";
 import { useState } from "react";
 import { type ErrorsLogin } from "../../types/login";
 import { useNavigate } from "react-router-dom";
 
-function LoginForm() {
+export default function LoginForm() {
   // Variáveis
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -138,4 +138,3 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;

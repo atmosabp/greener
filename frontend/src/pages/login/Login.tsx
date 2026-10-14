@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronLeft, ShieldCheck } from "lucide-react";
-import "./login.css";
+import "./Login.css";
 import logo from "../../assets/logo-greener-n-text.svg";
 import logoText from "../../assets/greener-text.svg";
 import trees from "../../assets/footer.png";

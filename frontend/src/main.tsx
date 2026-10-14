@@ -9,19 +9,22 @@ import Dashboard from "./pages/dashboard/Dashboard.tsx";
 import Ranking from "./pages/ranking/Ranking.tsx";
 import Comparison from "./pages/comparison/Comparison.tsx";
 import Admin from "./pages/admin/Admin.tsx";
+import ThemeProvider from "./providers/ThemeProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Homepage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/ranking" element={<Ranking />} />
-        <Route path="/comparison" element={<Comparison />} />
-        <Route path="/admin" element={<Admin />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Homepage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/ranking" element={<Ranking />} />
+          <Route path="/comparison" element={<Comparison />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );
