@@ -13,4 +13,14 @@ export interface ServiceTypes{
     status : ServiceStatus | undefined
 }
 
-export type ServiceStatus = "disponível"|"indisponível"|"incompleta"
+export type ServiceStatus = "disponivel"|"indisponivel"|"incompleto"
+
+export interface MetricsType {
+   collection_interval_seconds?: number;
+  metrics?: {
+    cpu_percent?: number;
+    memory_gb?: number;
+    disk_gb?: number;
+    network_gb?: number;
+  };
+}
