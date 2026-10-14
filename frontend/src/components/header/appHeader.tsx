@@ -13,6 +13,7 @@ export default function AppHeader() {
     <Header
       links={appLinks}
       action={<button className="btn-logout">sair</button>}
+      message={<span>Olá, &lt;nome&gt;!</span>}
     />
   );
 }

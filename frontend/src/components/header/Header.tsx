@@ -6,14 +6,23 @@ import { useEffect, useState } from "react";
 import ThemeToggle from "../themeToggle/ThemeToggle";
 import type { HeaderProps } from "../../types/header";
 
-export default function Header({ links, action, activeHref }: HeaderProps) {
+export default function Header({
+  links,
+  action,
+  message,
+  activeHref,
+}: HeaderProps) {
   const [openMenu, setOpenMenu] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean>(
-    () => window.innerWidth < 481,
+    () => window.innerWidth < 1024,
   );
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 481);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+
+      if (window.innerWidth > 1024) setOpenMenu(false); // Para evitar bug de travar
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -23,14 +32,34 @@ export default function Header({ links, action, activeHref }: HeaderProps) {
 
   return (
     <>
-      <button
-        onClick={() => setOpenMenu((prev) => !prev)}
-        className="menu-trigger"
-      >
-        <span />
-        <span />
-        <span />
-      </button>
+      {/* Tablet: barra fixa sempre visível - Celular: só o botão (fixo no canto) */}
+      <div className="tablet-bar">
+        <img src={logo} alt="Logo Greener" className="trigger-logo" />
+        <div className="trigger-btns">
+          {message}
+          <ThemeToggle />
+          {action}
+        </div>
+        <button
+          type="button"
+          className="menu-trigger"
+          aria-label={openMenu ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={openMenu}
+          aria-controls="main-menu"
+          onClick={() => setOpenMenu((prev) => !prev)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
+    {/* Para ficar escuro */}
+      <div
+        className={`scrim ${openMenu ? "show" : ""}`}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+
       <header className={`menu ${openMenu ? "active" : ""}`}>
         <img src={headerImage} alt="Logo Greener" className="logo" />
         <nav className="menu-links">
@@ -57,7 +86,7 @@ export default function Header({ links, action, activeHref }: HeaderProps) {
           )}
         </nav>
         <div className="menu-btns">
-          <span>Olá, &lt;nome&gt;!</span>
+          {message}
           <ThemeToggle />
           {action}
         </div>

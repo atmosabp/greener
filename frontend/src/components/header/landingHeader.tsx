@@ -4,9 +4,10 @@ import type { HeaderLink } from "../../types/header";
 
 // Navegação entre seções
 const landingLinks: HeaderLink[] = [
-  { href: "#general", label: "Visão Geral" },
-  { href: "#about", label: "Sobre" },
+  { href: "#general", label: "O que é" },
+  { href: "#mission", label: "Missão" },
   { href: "#functions", label: "Funcionalidades" },
+  { href: "#result", label: "Resultado" },
 ];
 
 export default function LandingHeader() {
@@ -15,7 +16,7 @@ export default function LandingHeader() {
       links={landingLinks}
       action={
         <Link to="/login" className="btn-logout">
-          entrar
+          login 
         </Link>
       }
     />

@@ -1,0 +1,36 @@
+.footer-landing{
+    background-color: var(--text);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+.footer-landing .content{
+    display: flex;
+}
+
+.footer-landing .footer-logo{
+    flex: 1;
+}
+
+.footer-landing .footer-topics{
+    flex: 2;
+}
+
+.footer-landing .footer-topics span{
+    color: var(--background);
+    font-weight: 500;
+}
+
+.footer-landing .footer-topics a{
+    text-decoration: none;
+    color: var(--background);
+}
+
+.footer-landing.copyright{
+    color: var(--background);
+    font-size: 14px;
+}
+
+.footer-landing .copyright span{
+    color: var(--primary-light);
+}

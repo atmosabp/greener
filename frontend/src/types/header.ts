@@ -3,5 +3,6 @@ export type HeaderLink = { label: string; to: string } | { label: string; href: 
 export interface HeaderProps {
   links: HeaderLink[];
   action: React.ReactNode;
+  message?: React.ReactNode;
   activeHref?: string; // opcional: link ativo (para a landing)
 }

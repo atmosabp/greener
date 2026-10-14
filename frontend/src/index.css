@@ -13,7 +13,8 @@
 :root,
 [data-theme="light"][data-palette="green"] {
   --background: #F9EEDC;
-  --background-transparent: hsla(37, 71%, 92%, 0.5);
+  --background-transparent: #38322E;
+  --banner-shadow: rgb(56, 50, 46,0.15);
   --shadow: rgba(145, 124, 110, 0.5);
   --text: #38322E;
 
@@ -72,6 +73,7 @@
 [data-theme="dark"][data-palette="blue"] {
   --background: #262E30;
   --background-transparent: rgb(38, 46, 48, 0.5);
+
   --shadow: rgba(43, 43, 43, 0.5);
   --text: #F9EEDC;
 
