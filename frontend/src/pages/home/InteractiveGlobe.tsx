@@ -120,6 +120,8 @@ export default function InteractiveGlobe({
                         controls.enablePan = false;
                         controls.autoRotate = true;
                         controls.autoRotateSpeed = 0.7;
+                        controls.minDistance = 140;
+                        controls.maxDistance = 350;
                     }
                 }}
                 atmosphereColor={mode === "dark" ? "#ffffff" : "#000000"}
