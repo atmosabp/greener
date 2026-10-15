@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import { type Service } from "./Homepage";
 import "./InteractiveGlobe.css";
+import useTheme from "../../hooks/useTheme";
 
 interface InteractiveGlobeProps {
     services: Service[];
@@ -29,6 +30,7 @@ export default function InteractiveGlobe({
     const globeRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 600, height: 500 });
+    const { mode } = useTheme();
 
     const globeData = services.map((service) => ({
         id: service.id,
@@ -73,7 +75,7 @@ export default function InteractiveGlobe({
             const selected = globeData.find((s) => s.id === selectedServiceId);
             if (selected) {
                 globeRef.current.pointOfView(
-                    { lat: selected.lat, lng: selected.lng, altitude: 1.5 },
+                    { lat: selected.lat, lng: selected.lng, altitude: 2 },
                     1500
                 );
             }
@@ -85,7 +87,11 @@ export default function InteractiveGlobe({
             <Globe
                 ref={globeRef}
                 backgroundColor="rgba(0,0,0,0)"
-                globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+                globeImageUrl={
+                    mode === "dark" 
+                    ? "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+                    :"//unpkg.com/three-globe/example/img/earth-day.jpg"
+                }
                 width={dimensions.width}
                 height={dimensions.height}
                 pointsData={globeData}
@@ -98,10 +104,10 @@ export default function InteractiveGlobe({
                         const controls = globeRef.current.controls();
                         controls.enablePan = false;
                         controls.autoRotate = true;
-                        controls.autoRotateSpeed = 0.7;
+                        controls.autoRotateSpeed = 0.4;
                     }
                 }}
-                atmosphereColor="#ffffff"
+                atmosphereColor={mode === "dark" ? "#ffffff" : "#000000"}
                 atmosphereAltitude={0.15}
 
                 pointColor={(point: object) => {
@@ -115,7 +121,7 @@ export default function InteractiveGlobe({
                     const service = point as GlobePoint;
 
                     return service.id === selectedServiceId
-                        ? 1.5
+                        ? 2
                         : 1.5;
                 }}
             />
