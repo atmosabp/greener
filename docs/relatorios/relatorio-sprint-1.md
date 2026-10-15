@@ -112,17 +112,24 @@ Dia focado apenas no design de telas, e melhorar o que já foi feito.
 **Beatriz:** Cria componente web header e inicia implementação landing page    
 **Darcy:** Faz testes de design  
 **Júlia:** Contribui nos designs da landing page e tela de comparação  
-**Kauã:** Inicia consulta do Carbon Intensity API  
+**Kauã:** Faz consulta do Carbon Intensity API  
 **Lorenzo:** Inicia implementação tela principal  
 **Mariana:** Faz design tela 404
 
 ---
 
-#### 12/out
-
 
 #### 13/out
+Após ter finalizado os designs, estamos focando em finalizar a implementação das telas e o desenvolvimento do backend.
 
+**Beatriz:** Continua implementação landing page  
+**Darcy:** Consulta /services  
+**Júlia:** Faz relatório, documentos e colabora nos endpoints  
+**Kauã:** Inicia conexão banco de dados com backend  
+**Lorenzo:** Continua implementação tela principal  
+**Mariana:** Cria código SQL banco de dados e inicia criação de endpoints 
+
+---
 
 #### 16/out
 
