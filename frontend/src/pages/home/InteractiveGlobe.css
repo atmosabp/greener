@@ -13,125 +13,127 @@
     outline: none;
 }
 
-.globe-popup-anchor {
+/* Card flutuante do serviço selecionado */
+.globe-service-card {
     position: relative;
-    width: 0;
-    height: 0;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.globe-popup {
-    position: absolute;
-    left: 0;
-    bottom: 18px;
-    width: max-content;
-    min-width: 175px;
-    max-width: 230px;
-    padding: 11px 12px;
-    transform: translateX(-50%);
-    border: 1px solid var(--text);
-    border-top: 3px solid var(--service-color);
-    border-radius: 11px;
+    width: 240px;
+    padding: 14px 16px;
+    border-radius: 12px;
     background: var(--background);
     color: var(--text);
-    box-shadow: 0 5px 18px var(--shadow);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
     font-family: "Roboto", sans-serif;
     pointer-events: auto;
-    animation: globe-popup-enter 180ms ease-out;
-}
-
-.globe-popup::after {
-    position: absolute;
-    content: "";
-    left: 50%;
-    bottom: -7px;
-    width: 12px;
-    height: 12px;
-    transform: translateX(-50%) rotate(45deg);
-    background: var(--background);
-    border-right: 1px solid var(--text);
-    border-bottom: 1px solid var(--text);
-}
-
-.globe-popup-header {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.globe-popup-title {
-    flex: 1;
-    min-width: 0;
-    font-size: 12px;
-    line-height: 1.45;
-    font-weight: 600;
-    overflow-wrap: anywhere;
-}
-
-.globe-popup-close {
-    flex: 0 0 auto;
-    width: 21px;
-    height: 21px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: var(--primary-light);
-    color: var(--text);
-    font-size: 17px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.globe-popup-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 9px;
-    font-size: 11px;
-    opacity: 0.9;
-}
-
-.globe-popup-dot {
-    width: 8px;
-    height: 8px;
-    flex: 0 0 8px;
-    border-radius: 50%;
-    background: var(--service-color);
-}
-
-.globe-popup-emissions {
+    user-select: none;
+    animation: globe-card-appear 200ms ease-out;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-top: 10px;
-    padding-top: 9px;
-    border-top: 1px solid var(--shadow);
-    font-size: 10px;
-    opacity: 0.9;
+    gap: 8px;
+    transform-origin: center bottom;
 }
 
-.globe-popup-emissions strong {
-    font-size: 13px;
+.globe-service-card__status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    align-self: center;
+    margin-bottom: 2px;
+}
+
+.globe-service-card__title {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+.globe-service-card__location {
+    font-size: 9px;
+    opacity: 0.7;
+    text-align: center;
+    margin-top: -4px;
+}
+
+.globe-service-card__metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--shadow);
+}
+
+.globe-service-card__metric-col {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.globe-service-card__metric {
+    font-size: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.globe-service-card__metric span {
+    opacity: 0.75;
+}
+
+.globe-service-card__metric strong {
     font-weight: 600;
 }
 
-@keyframes globe-popup-enter {
+.globe-service-card__button {
+    width: 100%;
+    padding: 8px 12px;
+    margin-top: 4px;
+    border: none;
+    border-radius: 8px;
+    background: var(--text);
+    color: var(--background);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.globe-service-card__button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.globe-service-card__button:active {
+    transform: translateY(0);
+}
+
+@keyframes globe-card-appear {
     from {
         opacity: 0;
-        translate: 0 5px;
+        transform: translateY(15px) scale(0.95);
     }
 
     to {
         opacity: 1;
-        translate: 0 0;
+        transform: translateY(0) scale(1);
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .globe-popup {
-        animation: none;
+@media (max-width: 480px) {
+    .globe-service-card {
+        width: 200px;
+        padding: 12px 14px;
+    }
+
+    .globe-service-card__title {
+        font-size: 13px;
+    }
+
+    .globe-service-card__metrics {
+        gap: 4px 8px;
+    }
+
+    .globe-service-card__metric {
+        font-size: 9px;
     }
 }
