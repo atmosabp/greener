@@ -42,6 +42,21 @@ export default function InteractiveGlobe({
         co2e: Math.floor(Math.random() * 500) + 50,
     }));
 
+    const handleMouseEnter = () => {
+        if (globeRef.current) {
+            const controls = globeRef.current.controls();
+            controls.autoRotate = false;
+        }
+    };
+
+    // 💡 2. Retoma a rotação ao retirar o mouse
+    const handleMouseLeave = () => {
+        if (globeRef.current) {
+            const controls = globeRef.current.controls();
+            controls.autoRotate = true;
+        }
+    };
+
     // Detecta tamanho do container
     useEffect(() => {
         if (!containerRef.current) return;
@@ -63,7 +78,7 @@ export default function InteractiveGlobe({
     useEffect(() => {
         if (globeRef.current) {
             globeRef.current.pointOfView(
-                { lat: 20, lng: 0, altitude: 1.5 },
+                { lat: 20, lng: 0, altitude: 1.75 },
                 0
             );
         }
@@ -75,7 +90,7 @@ export default function InteractiveGlobe({
             const selected = globeData.find((s) => s.id === selectedServiceId);
             if (selected) {
                 globeRef.current.pointOfView(
-                    { lat: selected.lat, lng: selected.lng, altitude: 2 },
+                    { lat: selected.lat, lng: selected.lng, altitude: 1.75 },
                     1500
                 );
             }
@@ -83,7 +98,7 @@ export default function InteractiveGlobe({
     }, [selectedServiceId, globeData]);
 
     return (
-        <div ref={containerRef} className="globe-container">
+        <div ref={containerRef} className="globe-container" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <Globe
                 ref={globeRef}
                 backgroundColor="rgba(0,0,0,0)"
@@ -104,11 +119,11 @@ export default function InteractiveGlobe({
                         const controls = globeRef.current.controls();
                         controls.enablePan = false;
                         controls.autoRotate = true;
-                        controls.autoRotateSpeed = 0.4;
+                        controls.autoRotateSpeed = 0.7;
                     }
                 }}
                 atmosphereColor={mode === "dark" ? "#ffffff" : "#000000"}
-                atmosphereAltitude={0.15}
+                atmosphereAltitude={0.2}
 
                 pointColor={(point: object) => {
                     const service = point as GlobePoint;

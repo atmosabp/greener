@@ -91,6 +91,11 @@ export default function MapVisualization({
         (service) => service.id === selectedServiceId
     );
 
+    const VERTICAL_BOUNDS: [[number, number], [number, number]] = [
+        [-85, -360], // Sudoeste (Sul máximo, Oeste estendido)
+        [85, 360], // Nordeste (Norte máximo, Leste estendido)
+    ];
+
     return (
         <div className="map-visualization">
             <MapContainer
@@ -101,6 +106,8 @@ export default function MapVisualization({
                 scrollWheelZoom
                 worldCopyJump
                 className="atmos-map"
+                maxBounds={VERTICAL_BOUNDS}
+                maxBoundsViscosity={1.0}
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
