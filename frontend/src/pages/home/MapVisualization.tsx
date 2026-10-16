@@ -128,7 +128,10 @@ export default function MapVisualization({
                             center={[service.latitude!, service.longitude!]}
                             radius={selected ? 11 : 8}
                             pathOptions={{
-                                color: "var(--text)",
+                                color:
+                                    getComputedStyle(document.documentElement)
+                                        .getPropertyValue("--text")
+                                        .trim() || "#38322E",
                                 weight: selected ? 2.5 : 1.5,
                                 fillColor: statusColors[service.status],
                                 fillOpacity: 1,
