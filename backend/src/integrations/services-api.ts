@@ -48,7 +48,7 @@ async function checkServiceAvailiability(service: ServiceTypes): Promise<Service
     if (!response.ok) {
       service.status = "indisponivel";
     }
-  } catch (erro) {
+  } catch (error: any) {
     service.status = "indisponivel";
   } finally {
     return service;
