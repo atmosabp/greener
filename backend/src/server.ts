@@ -1,22 +1,30 @@
 import express from 'express';
 import dotenv from 'dotenv';
+const path = require("path");
+
 const app = express();
-dotenv.config();
 
-// Define a porta onde o servidor vai rodar
-const PORT = process.env.PORT;
-
-// Configura uma rota principal (página inicial do site)
-app.get('/', (req, res) => {
-    res.send('<h1>Servidor funcionando</h1>');
+dotenv.config({
+  quiet: true,
+  path: path.resolve(__dirname, "..", ".env")
 });
 
-// Configura outra rota de exemplo (ex: localhost:3000/sobre)
-app.get('/sobre', (req, res) => {
-    res.send('<h3>Esta é a página Sobre do meu site.</h3>');
+const PORT = Number(process.env.PORT ?? 3000);
+
+app.get("/", (_req, res) => {
+    res.send('<h1>Servidor funcionando!</h1>');
 });
 
-// Inicializa o servidor para "escutar" os acessos na porta definida
+// localhost:3000/health
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
+// localhost:3000/sobre
+app.get("/sobre", (_req, res) => {
+  res.send('<h3>Esta é a página Sobre.</h3>');
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor rodando com sucesso em http://localhost:${PORT}`);
 });
