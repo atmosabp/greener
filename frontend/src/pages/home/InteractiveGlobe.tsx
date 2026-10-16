@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import Globe from "react-globe.gl";
 import type { Service } from "./Homepage";
 import "./InteractiveGlobe.css";
@@ -13,23 +19,17 @@ interface InteractiveGlobeProps {
 interface GlobePoint {
     id: string;
     name: string;
-    status: string;
+    status: Service["status"];
     lat: number;
     lng: number;
     color: string;
     co2e: number;
 }
 
-const statusColors: Record<string, string> = {
+const statusColors: Record<Service["status"], string> = {
     active: "#91bd79",
     incomplete: "#e0d344",
     inactive: "#df7779",
-};
-
-const statusLabels: Record<string, string> = {
-    active: "Ativo",
-    incomplete: "Incompleto",
-    inactive: "Inativo",
 };
 
 export default function InteractiveGlobe({
@@ -39,6 +39,7 @@ export default function InteractiveGlobe({
 }: InteractiveGlobeProps) {
     const globeRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
     const [dimensions, setDimensions] = useState({
         width: 600,
         height: 500,
@@ -46,6 +47,7 @@ export default function InteractiveGlobe({
 
     const { mode } = useTheme();
 
+    // Prepara os pontos que possuem coordenadas válidas.
     const globeData = useMemo<GlobePoint[]>(() => {
         return services
             .filter((service) => {
@@ -72,51 +74,71 @@ export default function InteractiveGlobe({
                 color: statusColors[service.status] ?? "#999999",
                 co2e:
                     typeof service.co2e === "number" &&
-                    Number.isFinite(service.co2e)
+                        Number.isFinite(service.co2e)
                         ? service.co2e
                         : 0,
             }));
     }, [services]);
 
     const selectedPoint = useMemo(
-        () => globeData.find((point) => point.id === selectedServiceId),
-        [globeData, selectedServiceId],
+        () =>
+            globeData.find(
+                (point) => point.id === selectedServiceId
+            ),
+        [globeData, selectedServiceId]
     );
 
+    // Pausa a rotação automática quando o cursor entra no globo.
     const handleMouseEnter = () => {
         if (globeRef.current) {
             globeRef.current.controls().autoRotate = false;
         }
     };
 
+    // Retoma a rotação quando o cursor sai, desde que nada esteja selecionado.
     const handleMouseLeave = () => {
         if (globeRef.current) {
-            globeRef.current.controls().autoRotate = !selectedServiceId;
+            globeRef.current.controls().autoRotate =
+                !selectedServiceId;
         }
     };
 
-    // Fecha o card ao clicar fora
+    // Fecha o card quando o usuário clica fora do componente.
     useEffect(() => {
         if (!selectedServiceId) return;
 
         const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            
-            // Verifica se o clique foi fora do container do globo e dos cards
-            const isInsideGlobe = containerRef.current?.contains(target);
-            const isCard = target.closest(".globe-service-card");
+            const target = event.target;
 
-            if (!isInsideGlobe && !isCard) {
+            if (!(target instanceof Node)) return;
+
+            // Trocar entre Globo e Mapa não deve limpar a seleção.
+            if (
+                target instanceof Element &&
+                target.closest(".view-switch")
+            ) {
+                return;
+            }
+
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(target)
+            ) {
                 onSelectService(null);
             }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, [selectedServiceId, onSelectService]);
 
+    // Ajusta as dimensões do globo ao tamanho do contêiner.
     useEffect(() => {
         const container = containerRef.current;
+
         if (!container) return;
 
         const observer = new ResizeObserver(([entry]) => {
@@ -130,16 +152,19 @@ export default function InteractiveGlobe({
         });
 
         observer.observe(container);
+
         return () => observer.disconnect();
     }, []);
 
+    // Posição inicial do globo.
     useEffect(() => {
         globeRef.current?.pointOfView(
             { lat: 20, lng: 0, altitude: 1.75 },
-            0,
+            0
         );
     }, [dimensions.width, dimensions.height]);
 
+    // Centraliza o ponto selecionado sem posicionar o card sobre ele.
     useEffect(() => {
         if (!selectedPoint || !globeRef.current) return;
 
@@ -149,74 +174,13 @@ export default function InteractiveGlobe({
                 lng: selectedPoint.lng,
                 altitude: 1.75,
             },
-            1000,
+            1000
         );
 
         globeRef.current.controls().autoRotate = false;
     }, [selectedPoint]);
 
-    const createServiceCard = (point: object) => {
-        const service = point as GlobePoint;
-        const card = document.createElement("div");
-        card.className = "globe-service-card";
-
-        const statusDot = document.createElement("span");
-        statusDot.className = "globe-service-card__status-dot";
-        statusDot.style.backgroundColor = service.color;
-
-        const title = document.createElement("strong");
-        title.className = "globe-service-card__title";
-        title.textContent = service.name;
-
-        const location = document.createElement("div");
-        location.className = "globe-service-card__location";
-        location.textContent = `Lat: ${service.lat.toFixed(3)} | Long: ${service.lng.toFixed(3)}`;
-
-        const metricsGrid = document.createElement("div");
-        metricsGrid.className = "globe-service-card__metrics";
-
-        const metricLeft = document.createElement("div");
-        metricLeft.className = "globe-service-card__metric-col";
-        
-        const cpu = document.createElement("div");
-        cpu.className = "globe-service-card__metric";
-        cpu.innerHTML = `<span>CPU:</span> <strong>10%</strong>`;
-        
-        const ram = document.createElement("div");
-        ram.className = "globe-service-card__metric";
-        ram.innerHTML = `<span>RAM:</span> <strong>${Math.floor(Math.random() * 100)}%</strong>`;
-        
-        metricLeft.append(cpu, ram);
-
-        const metricRight = document.createElement("div");
-        metricRight.className = "globe-service-card__metric-col";
-        
-        const kwh = document.createElement("div");
-        kwh.className = "globe-service-card__metric";
-        kwh.innerHTML = `<span>Kwh:</span> <strong>${Math.floor(Math.random() * 20)}</strong>`;
-        
-        const co2e = document.createElement("div");
-        co2e.className = "globe-service-card__metric";
-        co2e.innerHTML = `<span>CO²e:</span> <strong>${service.co2e}</strong>`;
-        
-        metricRight.append(kwh, co2e);
-
-        metricsGrid.append(metricLeft, metricRight);
-
-        const button = document.createElement("button");
-        button.className = "globe-service-card__button";
-        button.type = "button";
-        button.textContent = "Ver detalhes";
-        button.addEventListener("click", (e) => {
-            e.stopPropagation();
-            onSelectService(service.id);
-        });
-
-        card.append(statusDot, title, location, metricsGrid, button);
-
-        return card;
-    };
-
+    // Mantém o globo e o card como elementos independentes.
     return (
         <div
             ref={containerRef}
@@ -237,41 +201,130 @@ export default function InteractiveGlobe({
                 pointsData={globeData}
                 pointLat="lat"
                 pointLng="lng"
+                onPointHover={(point) => {
+                    const canvas =
+                        containerRef.current?.querySelector("canvas");
+
+                    if (canvas) {
+                        canvas.style.cursor = point ? "pointer" : "";
+                    }
+                }}
                 pointAltitude={0.001}
                 pointsMerge={false}
                 pointColor={(point: object) => {
                     const service = point as GlobePoint;
+
                     return service.id === selectedServiceId
                         ? "#ffffff"
                         : service.color;
                 }}
                 pointRadius={(point: object) => {
                     const service = point as GlobePoint;
-                    return service.id === selectedServiceId ? 2 : 1.5;
+
+                    return service.id === selectedServiceId
+                        ? 2
+                        : 1.5;
                 }}
                 onPointClick={(point: object) => {
                     const service = point as GlobePoint;
+
                     onSelectService(
-                        service.id === selectedServiceId ? null : service.id,
+                        service.id === selectedServiceId
+                            ? null
+                            : service.id
                     );
                 }}
-                htmlElementsData={selectedPoint ? [selectedPoint] : []}
-                htmlLat="lat"
-                htmlLng="lng"
-                htmlAltitude={0.35}
-                htmlElement={createServiceCard}
-                htmlTransitionDuration={250}
                 onGlobeReady={() => {
                     if (!globeRef.current) return;
 
                     const controls = globeRef.current.controls();
+
                     controls.enablePan = false;
                     controls.autoRotate = !selectedServiceId;
                     controls.autoRotateSpeed = 0.7;
                 }}
-                atmosphereColor={mode === "dark" ? "#ffffff" : "#000000"}
+                atmosphereColor={
+                    mode === "dark" ? "#ffffff" : "#000000"
+                }
                 atmosphereAltitude={0.2}
             />
+
+            {selectedPoint && (
+                <div
+                    className="globe-service-card"
+                    role="dialog"
+                    aria-label={`Detalhes de ${selectedPoint.name}`}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseDown={(event) => event.stopPropagation()}
+                >
+                    <div className="globe-service-card__header">
+                        <span
+                            className="globe-service-card__status-dot"
+                            style={{
+                                backgroundColor: selectedPoint.color,
+                            }}
+                        />
+
+                        <strong className="globe-service-card__title">
+                            {selectedPoint.name}
+                        </strong>
+
+                        <button
+                            type="button"
+                            className="globe-service-card__close"
+                            aria-label="Fechar detalhes"
+                            onClick={() => onSelectService(null)}
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <div className="globe-service-card__location">
+                        Lat: {selectedPoint.lat.toFixed(3)} | Long:{" "}
+                        {selectedPoint.lng.toFixed(3)}
+                    </div>
+
+                    <div className="globe-service-card__metrics">
+                        <div className="globe-service-card__metric-col">
+                            <div className="globe-service-card__metric">
+                                <span>CPU</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div className="globe-service-card__metric">
+                                <span>CO₂e</span>
+                                <strong>
+                                    {selectedPoint.co2e.toLocaleString(
+                                        "pt-BR"
+                                    )}{" "}
+                                    kg
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="globe-service-card__metric-col">
+                            <div className="globe-service-card__metric">
+                                <span>RAM</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div className="globe-service-card__metric">
+                                <span>Energia (kWh)</span>
+                                <strong>—</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Link
+                        to="/dashboard"
+                        className="globe-service-card__details-button"
+
+                    >
+                        Ver detalhes
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

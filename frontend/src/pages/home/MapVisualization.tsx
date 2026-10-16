@@ -1,9 +1,8 @@
-
+import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import {
     CircleMarker,
     MapContainer,
-    Popup,
     TileLayer,
     useMap,
 } from "react-leaflet";
@@ -17,16 +16,10 @@ interface MapVisualizationProps {
     onSelectService: (id: string | null) => void;
 }
 
-const statusColors: Record<Service["status"], string> = {
+const mapStatusColors: Record<Service["status"], string> = {
     active: "#91bd79",
     incomplete: "#e0d344",
     inactive: "#df7779",
-};
-
-const statusLabels: Record<Service["status"], string> = {
-    active: "Ativo",
-    incomplete: "Incompleto",
-    inactive: "Inativo",
 };
 
 function MapController({
@@ -38,6 +31,7 @@ function MapController({
 }) {
     const map = useMap();
 
+    // Centraliza o mapa no serviço selecionado.
     useEffect(() => {
         if (!selectedService) return;
 
@@ -57,13 +51,14 @@ function MapController({
         });
     }, [map, selectedService]);
 
+    // Limpa a seleção ao clicar em uma área vazia do mapa.
     useEffect(() => {
-        const clearSelection = () => onSelectService(null);
+        const clearMapSelection = () => onSelectService(null);
 
-        map.on("click", clearSelection);
+        map.on("click", clearMapSelection);
 
         return () => {
-            map.off("click", clearSelection);
+            map.off("click", clearMapSelection);
         };
     }, [map, onSelectService]);
 
@@ -75,7 +70,8 @@ export default function MapVisualization({
     selectedServiceId,
     onSelectService,
 }: MapVisualizationProps) {
-    const validServices = services.filter(
+    // Mantém apenas serviços com coordenadas válidas.
+    const validMapServices = services.filter(
         (service) =>
             service.latitude !== undefined &&
             service.longitude !== undefined &&
@@ -87,14 +83,25 @@ export default function MapVisualization({
             service.longitude <= 180
     );
 
-    const selectedService = validServices.find(
+    const selectedMapService = validMapServices.find(
         (service) => service.id === selectedServiceId
     );
 
-    const VERTICAL_BOUNDS: [[number, number], [number, number]] = [
-        [-85, -360], // Sudoeste (Sul máximo, Oeste estendido)
-        [85, 360], // Nordeste (Norte máximo, Leste estendido)
-    ];
+    // Coordenadas próprias da visualização do mapa.
+    const selectedMapPoint = selectedMapService
+        ? {
+            latitude: selectedMapService.latitude!,
+            longitude: selectedMapService.longitude!,
+        }
+        : null;
+
+    const mapVerticalBounds: [
+        [number, number],
+        [number, number],
+    ] = [
+            [-85, -360],
+            [85, 360],
+        ];
 
     return (
         <div className="map-visualization">
@@ -106,7 +113,7 @@ export default function MapVisualization({
                 scrollWheelZoom
                 worldCopyJump
                 className="atmos-map"
-                maxBounds={VERTICAL_BOUNDS}
+                maxBounds={mapVerticalBounds}
                 maxBoundsViscosity={1.0}
             >
                 <TileLayer
@@ -115,89 +122,134 @@ export default function MapVisualization({
                 />
 
                 <MapController
-                    selectedService={selectedService}
+                    selectedService={selectedMapService}
                     onSelectService={onSelectService}
                 />
 
-                {validServices.map((service) => {
-                    const selected = service.id === selectedServiceId;
+                {validMapServices.map((service) => {
+                    const isMapServiceSelected =
+                        service.id === selectedServiceId;
 
                     return (
                         <CircleMarker
                             key={service.id}
-                            center={[service.latitude!, service.longitude!]}
-                            radius={selected ? 11 : 8}
+                            center={[
+                                service.latitude!,
+                                service.longitude!,
+                            ]}
+                            radius={isMapServiceSelected ? 11 : 8}
+                            bubblingMouseEvents={false}
                             pathOptions={{
                                 color:
-                                    getComputedStyle(document.documentElement)
+                                    getComputedStyle(
+                                        document.documentElement
+                                    )
                                         .getPropertyValue("--text")
                                         .trim() || "#38322E",
-                                weight: selected ? 2.5 : 1.5,
-                                fillColor: statusColors[service.status],
+                                weight: isMapServiceSelected ? 3 : 1.5,
+                                fillColor:
+                                    mapStatusColors[service.status],
                                 fillOpacity: 1,
                             }}
                             eventHandlers={{
-                                click: (event) => {
-                                    event.originalEvent.stopPropagation();
-
+                                click: () => {
                                     onSelectService(
-                                        selected ? null : service.id
+                                        isMapServiceSelected
+                                            ? null
+                                            : service.id
                                     );
                                 },
                             }}
-                        >
-                            {selected && (
-                                <Popup
-                                    closeButton={false}
-                                    autoPan
-                                    className="atmos-map-popup"
-                                >
-                                    <div
-                                        className="map-service-card"
-                                        onClick={(event) => event.stopPropagation()}
-                                    >
-                                        <div className="map-service-header">
-                                            <strong>{service.name}</strong>
-
-                                            <button
-                                                type="button"
-                                                aria-label="Fechar detalhes"
-                                                onClick={() => onSelectService(null)}
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
-
-                                        <div className="map-service-status">
-                                            <span
-                                                className="map-status-dot"
-                                                style={{
-                                                    backgroundColor: statusColors[service.status],
-                                                }}
-                                            />
-                                            {statusLabels[service.status]}
-                                        </div>
-
-                                        {service.co2e !== undefined &&
-                                            Number.isFinite(service.co2e) && (
-                                                <div className="map-service-emissions">
-                                                    <span>Emissões de CO₂e</span>
-                                                    <strong>
-                                                        {service.co2e.toLocaleString("pt-BR")} kg
-                                                    </strong>
-                                                </div>
-                                            )}
-                                    </div>
-                                </Popup>
-                            )}
-                        </CircleMarker>
+                        />
                     );
                 })}
             </MapContainer>
 
-            {validServices.length === 0 && (
+            {selectedMapService && (
+                <div
+                    className="map-service-card"
+                    role="dialog"
+                    aria-label={`Detalhes de ${selectedMapService.name}`}
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    <div className="map-service-header">
+                        <span
+                            className="map-service-header__dot"
+                            style={{
+                                backgroundColor:
+                                    mapStatusColors[
+                                    selectedMapService.status
+                                    ],
+                            }}
+                        />
+
+                        <strong>{selectedMapService.name}</strong>
+
+                        <button
+                            type="button"
+                            aria-label="Fechar detalhes"
+                            onClick={() => onSelectService(null)}
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    {selectedMapPoint && (
+                        <div className="map-service-card__location">
+                            Lat: {selectedMapPoint.latitude.toFixed(3)} |
+                            Long: {selectedMapPoint.longitude.toFixed(3)}
+                        </div>
+                    )}
+
+                    <div className="map-service-metrics">
+                        <div className="map-service-metric-col">
+                            <div className="map-service-metric">
+                                <span>CPU</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div className="map-service-metric">
+                                <span>CO₂e</span>
+                                <strong>
+                                    {typeof selectedMapService.co2e ===
+                                        "number" &&
+                                        Number.isFinite(
+                                            selectedMapService.co2e
+                                        )
+                                        ? `${selectedMapService.co2e.toLocaleString(
+                                            "pt-BR"
+                                        )} kg`
+                                        : "—"}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="map-service-metric-col">
+                            <div className="map-service-metric">
+                                <span>RAM</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div className="map-service-metric">
+                                <span>Energia (kWh)</span>
+                                <strong>—</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Link
+                        to="/dashboard"
+                        className="map-service-details-button"
+                    >
+                        Ver detalhes
+                    </Link>
+                </div>
+            )}
+
+            {validMapServices.length === 0 && (
                 <div className="map-empty-message">
-                    Nenhum serviço possui coordenadas válidas para exibição.
+                    Nenhum serviço possui coordenadas válidas para
+                    exibição.
                 </div>
             )}
         </div>

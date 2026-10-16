@@ -252,8 +252,7 @@ export default function Homepage({
               </div>
 
               <div className="last-update">
-                <span className="update-indicator" />
-                <span>Última atualização</span>
+                <span>Última atualização:</span>
                 <strong>{lastUpdated}</strong>
               </div>
 

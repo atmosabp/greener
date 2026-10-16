@@ -1,7 +1,13 @@
+
+/* ========================================
+   CONTAINER DO GLOBO
+======================================== */
+
 .globe-container {
     position: relative;
     width: 100%;
     height: 100%;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
     background: transparent;
@@ -13,127 +19,280 @@
     outline: none;
 }
 
-/* Card flutuante do serviço selecionado */
+/* ========================================
+   CARD DO SERVIÇO
+======================================== */
+
 .globe-service-card {
-    position: relative;
-    width: 240px;
-    padding: 14px 16px;
-    border-radius: 12px;
+    position: absolute;
+    z-index: 10;
+
+    top: 16px;
+    right: 16px;
+
+    width: min(260px, calc(100% - 32px));
+    box-sizing: border-box;
+    padding: 14px;
+
+    border: 1px solid var(--text);
+    border-radius: 14px;
+
     background: var(--background);
     color: var(--text);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+
+    box-shadow: 0 6px 24px var(--shadow);
+
     font-family: "Roboto", sans-serif;
+
     pointer-events: auto;
-    user-select: none;
-    animation: globe-card-appear 200ms ease-out;
+    user-select: text;
+
     display: flex;
     flex-direction: column;
     gap: 8px;
-    transform-origin: center bottom;
+
+    animation: globe-card-appear 200ms ease-out;
+}
+
+/* ========================================
+   CABEÇALHO
+======================================== */
+
+.globe-service-card__header {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 24px;
+    gap: 8px;
 }
 
 .globe-service-card__status-dot {
     width: 10px;
     height: 10px;
+
+    flex: 0 0 10px;
+
     border-radius: 50%;
-    align-self: center;
-    margin-bottom: 2px;
 }
 
 .globe-service-card__title {
-    font-size: 14px;
+    position: absolute;
+
+    left: 32px;
+    right: 32px;
+
+    margin: 0;
+
+    font-size: 13px;
     font-weight: 600;
+    line-height: 1.45;
+
     text-align: center;
+    overflow-wrap: anywhere;
+
+    pointer-events: none;
+}
+
+/* Botão para fechar o card */
+
+.globe-service-card__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 24px;
+
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+    margin-left: auto;
+
+    border: none;
+    border-radius: 50%;
+
+    background: var(--primary-light);
+    color: var(--text);
+
+    font-size: 19px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        transform 160ms ease,
+        filter 160ms ease;
+}
+
+.globe-service-card__close:hover {
+    filter: brightness(0.95);
+    transform: scale(1.05);
+}
+
+/* ========================================
+   STATUS E LOCALIZAÇÃO
+======================================== */
+
+.globe-service-card__status {
+    align-self: flex-start;
+
+    padding: 4px 8px;
+
+    border-radius: 6px;
+
+    background: var(--background-transparent);
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.globe-service-card__status p {
     margin: 0;
 }
 
 .globe-service-card__location {
-    font-size: 9px;
-    opacity: 0.7;
-    text-align: center;
-    margin-top: -4px;
+    font-size: 10px;
+    line-height: 1.5;
+
+    opacity: 0.75;
+
+    overflow-wrap: anywhere;
 }
+
+/* ========================================
+   MÉTRICAS
+======================================== */
 
 .globe-service-card__metrics {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px 12px;
+    gap: 8px;
+
     margin-top: 4px;
     padding-top: 10px;
+
     border-top: 1px solid var(--shadow);
 }
 
 .globe-service-card__metric-col {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 12px;
+
+    min-width: 0;
 }
 
 .globe-service-card__metric {
-    font-size: 10px;
     display: flex;
-    justify-content: space-between;
-    gap: 6px;
+    flex-direction: column;
+    gap: 4px;
+
+    min-width: 0;
+    font-size: 10px;
+
+    overflow-wrap: anywhere;
 }
 
 .globe-service-card__metric span {
-    opacity: 0.75;
+    opacity: 0.7;
 }
 
 .globe-service-card__metric strong {
+    font-size: 12px;
     font-weight: 600;
 }
 
-.globe-service-card__button {
+/* ========================================
+   BOTÃO VER DETALHES
+======================================== */
+
+.globe-service-card__details-button {
+    display: block;
     width: 100%;
-    padding: 8px 12px;
-    margin-top: 4px;
-    border: none;
+    box-sizing: border-box;
+
+    margin-top: 6px;
+    padding: 9px 12px;
+
+    border: 1px solid var(--primary-dark);
     border-radius: 8px;
-    background: var(--text);
-    color: var(--background);
-    font-size: 11px;
+
+    background: var(--primary);
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 12px;
     font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+
     cursor: pointer;
-    transition: opacity 160ms ease, transform 160ms ease;
+
+    transition:
+        filter 160ms ease,
+        transform 160ms ease;
 }
 
-.globe-service-card__button:hover {
-    opacity: 0.85;
-    transform: translateY(-1px);
+.globe-service-card__details-button:hover {
+    filter: brightness(0.96);
 }
 
-.globe-service-card__button:active {
-    transform: translateY(0);
+.globe-service-card__details-button:active {
+    transform: scale(0.98);
 }
+
+/* ========================================
+   ANIMAÇÃO
+======================================== */
 
 @keyframes globe-card-appear {
     from {
         opacity: 0;
-        transform: translateY(15px) scale(0.95);
+        transform: translateY(-5px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
 }
 
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
 @media (max-width: 480px) {
     .globe-service-card {
-        width: 200px;
-        padding: 12px 14px;
+        top: 10px;
+        right: 10px;
+
+        width: min(230px, calc(100% - 20px));
+        padding: 12px;
     }
 
     .globe-service-card__title {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .globe-service-card__metrics {
-        gap: 4px 8px;
+        gap: 6px;
+    }
+}
+
+/* ========================================
+   ACESSIBILIDADE
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .globe-service-card {
+        animation: none;
     }
 
-    .globe-service-card__metric {
-        font-size: 9px;
+    .globe-service-card__close,
+    .globe-service-card__details-button {
+        transition: none;
     }
 }

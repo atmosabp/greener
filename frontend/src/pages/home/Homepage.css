@@ -88,11 +88,10 @@
 }
 
 .last-update {
-    display: grid;
-    grid-template-columns: 8px auto;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    column-gap: 8px;
-    row-gap: 5px;
+    gap: 4px;
     min-width: 190px;
     padding-bottom: 4px;
     font-size: 10px;
@@ -534,7 +533,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     max-width: 660px;
-    margin: 1% 5% 0 auto;
+    margin: 1% auto 0 auto;
 }
 
 .analysis-link {
