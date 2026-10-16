@@ -25,7 +25,7 @@ async function reqServices() {
   }
 }
 
-async function checkAvaliabity(service: ServiceTypes): Promise<ServiceTypes> {
+async function checkServiceAvailiability(service: ServiceTypes): Promise<ServiceTypes> {
   try {
     
     const response = await fetch(metricsURL + `/${service.id}`);
