@@ -20,9 +20,8 @@ async function reqServices() {
 
       return avaliableList;
     }
-  } catch (erro) {
-    //const error = await response.json();
-    throw new Error("API não disponível");
+  } catch (error: any) {
+    throw new Error(error.message | "API não disponível");
   }
 }
 
