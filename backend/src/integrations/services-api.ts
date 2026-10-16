@@ -45,7 +45,7 @@ async function checkServiceAvailiability(service: ServiceTypes): Promise<Service
       service.status = "incompleto";
     }
 
-    if (response.status == 404 || response.status == 500) {
+    if (!response.ok) {
       service.status = "indisponivel";
     }
   } catch (erro) {
