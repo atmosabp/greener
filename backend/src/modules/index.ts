@@ -1,13 +1,12 @@
-import {Router} from 'express';
+import { Router } from 'express';
+import { router as usersRouter } from "./users/users.routes"
+// import { router as collectionsRouter } from "./collections/collections.routes";
 
-const router = Router();
+export const router = Router();
 
-const users = require('./users/users.routes')
-const collections = require('./collections/collections.routes');
+router.use("/users", usersRouter);
+// router.use("/collections", collections);
 
-router.use("/usuarios", users);
-router.use("/collections", collections);
-
-router.use(function(_req, res){
+router.use((_req, res) => {
     res.status(404).json({message: "Rota inexistente"});
 });

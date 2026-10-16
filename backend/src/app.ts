@@ -1,16 +1,17 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import {connection} from "./config/env";
 
 const path = require("path");
 
-const router = require("./modules")
+import { router } from "./modules";
 
-const app = express();
+export const app = express();
 app.use(express.json());
 
 dotenv.config({
   quiet: true,
-  path: path.resolve(__dirname, "..", ".env")
+  path: path.resolve(__dirname, "..", "..", ".env")
 });
 
 app.use("/", router);
