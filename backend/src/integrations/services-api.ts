@@ -11,7 +11,7 @@ async function reqServices() {
   try {
     const response = await fetch(serviceURL);
 
-    if (response.status == 200) {
+    if (response.ok) {
       const serviceList: ServiceTypes[] = await response.json();
       var avaliableList = [];
       for (let i of serviceList) {
