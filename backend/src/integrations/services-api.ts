@@ -30,7 +30,7 @@ async function checkServiceAvailiability(service: ServiceTypes): Promise<Service
     
     const response = await fetch(metricsURL + `/${service.id}`);
     const metrics: MetricsType = await response.json();
-    if (response.status == 200) {
+    if (response.ok) {
       service.status = "disponivel";
     }
 
