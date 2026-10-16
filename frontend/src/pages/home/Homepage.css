@@ -19,7 +19,8 @@
 }
 
 .homepage-main {
-    width: min(100% - 64px, 1920px);
+    width: calc(100% - 48px);
+    max-width: 1700px;
     flex: 1;
     margin: 0 auto;
     padding: 112px 0 30px;
@@ -117,7 +118,8 @@
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
     align-items: stretch;
-    gap: 24px;
+    gap: 40px;
+    width: 80%;
 }
 
 /* Painel de serviços */
@@ -532,7 +534,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     max-width: 660px;
-    margin: 26px 0 0 auto;
+    margin: 1% 5% 0 auto;
 }
 
 .analysis-link {
