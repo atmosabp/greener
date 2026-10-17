@@ -1,4 +1,4 @@
-import LandingHeader from "./components/header/landingHeader";
+import LandingHeader from "./components/header/LandingHeader";
 import Footer from "./components/footer/Footer";
 import Logo from "./assets/logo-greener-n-text.svg";
 import aboutPic from "./assets/about-picture.png";

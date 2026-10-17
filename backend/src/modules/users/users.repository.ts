@@ -38,3 +38,19 @@ export async function createUser(name: string, email: string, password: string, 
         if (client) client.release();
     }
 }
+
+//função necessária para os testes Jest
+export async function deleteUserByEmail(email: string): Promise<boolean>{
+    const user = await pool.query(
+        `SELECT id FROM users WHERE email=$1`,
+        [email]
+    );
+
+    if(await user.rows.length == 0) return false;
+
+    const userId = user.rows[0].id;
+
+    await pool.query(`DELETE FROM users WHERE id=$1`, [userId]);
+
+    return true;
+}
