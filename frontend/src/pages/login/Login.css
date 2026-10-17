@@ -11,7 +11,7 @@ header {
   justify-content: space-between;
   position: fixed;
   width: 100%;
-  background-color: var(--background-transparent);
+  background-color: var(--background);
   backdrop-filter: blur(5px);
 }
 
@@ -101,7 +101,11 @@ main {
   margin-top: 40px;
 }
 
-span {
+.login{
+  padding: 30px;
+}
+
+.login span {
   color: var(--text);
 }
 

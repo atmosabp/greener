@@ -4,10 +4,10 @@ import type { HeaderLink } from "../../types/header";
 
 // Navegação entre seções
 const landingLinks: HeaderLink[] = [
-  { href: "#general", label: "O que é" },
+  { href: "#about", label: "O que é" },
   { href: "#mission", label: "Missão" },
   { href: "#functions", label: "Funcionalidades" },
-  { href: "#result", label: "Resultado" },
+  { href: "#results", label: "Resultado" },
 ];
 
 export default function LandingHeader() {

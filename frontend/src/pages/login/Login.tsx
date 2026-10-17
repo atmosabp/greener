@@ -43,7 +43,7 @@ export default function Login() {
           </span>
         </a>
       </header>
-      <main>
+      <main className="login">
         <img src={logoFull} alt="Logo Greener" className="logo" />
         <span>Faça login com seu e-mail corporativo.</span>
         <LoginForm />

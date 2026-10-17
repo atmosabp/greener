@@ -10,6 +10,7 @@ export default function Dashboard() {
         <h1> Tela Dashboard</h1>
         <Link to="/comparison">Comparação</Link>
         <Link to="/ranking">Ranking</Link>
+        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
       </main>
     </>
   );
