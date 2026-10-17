@@ -23,11 +23,10 @@ export async function addHistoryController(req: any, res: any) {
     periodType,
     datePull,
     serviceId,
-    metrics
   } = req.body;
 
   try {
-    const result = await addHistory(periodType, serviceId, datePull, metrics);
+    const result = await addHistory(periodType, serviceId, datePull);
     return res.status(200).json(result);
   } catch (error: any) {
     return res.status(400).json({

@@ -1,5 +1,4 @@
 import express from 'express';
-const path = require("path");
 
 import { router } from "./modules";
 

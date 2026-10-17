@@ -23,7 +23,7 @@ Teste de endpoints
 Cadastro de histórico de um serviço:
 curl -X POST http://localhost:3000/collections/add-history \
   -H "Content-Type: application/json" \
-  -d '{"periodType": "minute", "datePull": "2026-10-17", "serviceId": "billing-api", "metrics": {"cpu_percent": "86", "disk_gb": "2.3", "memory_gb": "9.2", "network_gb": "1.7"}}'
+  -d '{"periodType": "minute", "datePull": "2026-10-17", "serviceId": "inventory-sync"}'
 
 Ver histórico de um serviço em específico:
 curl -X POST http://localhost:3000/collections/service-data \

@@ -14,7 +14,6 @@ export async function createUserController(req: any, res: any){
 export async function listUsersController(_req: any, res: any){
     try{
         const result = await searchUsers();
-        console.log(result)
         return res.status(200).json(result);
     } catch(error: any){
         return res.status(400).json({message: error.message || "Ocorreu um erro ao listar os usuários."});

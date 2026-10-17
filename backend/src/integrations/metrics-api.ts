@@ -1,10 +1,11 @@
 import type { MetricsTypes } from "../types/metrics-types";
 
-const metricsURL = "https://metrics.unilaunch.org/metrics/billing-api";
+const metricsURL = "https://metrics.unilaunch.org/metrics/";
 
-async function reqInterval() {
+export async function reqInterval(serviceId: string) {
   try {
-    const intResp = await fetch(metricsURL);
+    const intResp = await fetch(metricsURL+serviceId);
+
     if (intResp.ok) {
       const objInterval: MetricsTypes = await intResp.json();
 
@@ -18,9 +19,9 @@ async function reqInterval() {
   }
 }
 
-async function reqMetrics() {
+export async function reqMetrics(serviceId: string) {
   try {
-    const resp = await fetch(metricsURL);
+    const resp = await fetch(metricsURL+serviceId);
     if (resp.ok) {
       const objMetrics: MetricsTypes = await resp.json();
 
@@ -28,12 +29,12 @@ async function reqMetrics() {
       return metricas;
     }
   } catch (error: any) {
-    throw new Error(error.message || "Não foi possivel buscar a métricas");
+    throw new Error(error.message || "Não foi possivel buscar as métricas da API.");
   }
 }
 
-async function reqMetricsCPU() {
-  const respMetrics = await reqMetrics();
+export async function reqMetricsCPU(serviceId: string) {
+  const respMetrics = await reqMetrics(serviceId);
 
   if (!respMetrics) return;
 
@@ -48,8 +49,8 @@ async function reqMetricsCPU() {
   return valueCPU;
 }
 
-async function reqMetricsMemory() {
-  const respMetrics = await reqMetrics();
+export async function reqMetricsMemory(serviceId: string) {
+  const respMetrics = await reqMetrics(serviceId);
 
   if (!respMetrics) return;
 
@@ -61,8 +62,8 @@ async function reqMetricsMemory() {
   return valueMemory;
 }
 
-async function reqMetricsDisk() {
-  const respMetrics = await reqMetrics();
+export async function reqMetricsDisk(serviceId: string) {
+  const respMetrics = await reqMetrics(serviceId);
 
   if (!respMetrics) return;
 
@@ -74,8 +75,8 @@ async function reqMetricsDisk() {
   return valueDisk;
 }
 
-async function reqMetricsNetwork() {
-  const respMetrics = await reqMetrics();
+export async function reqMetricsNetwork(serviceId: string) {
+  const respMetrics = await reqMetrics(serviceId);
 
   if (!respMetrics) return;
 
@@ -89,8 +90,8 @@ async function reqMetricsNetwork() {
 
 // pra testar
 async function iniciar() {
-  const valor = await reqInterval();
+  const valor = await reqMetricsCPU("email-dispatcher");
   console.log(valor);
 }
 
-iniciar();
+// iniciar();

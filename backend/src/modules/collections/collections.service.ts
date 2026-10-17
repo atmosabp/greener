@@ -11,12 +11,12 @@ import {
   findHistory,
 } from "./collections.respository";
 
-export async function addHistory(periodType: string, serviceId: string, datePull: any, metrics: object) {
+export async function addHistory(periodType: string, serviceId: string, datePull: any) {
   let result;
 
   switch (periodType) {
     case "minute":
-      result = await addMinuteHistory(datePull, serviceId, metrics);
+      result = await addMinuteHistory(datePull, serviceId);
       break;
     case "hour":
       result = await addHourHistory(datePull);

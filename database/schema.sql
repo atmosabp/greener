@@ -63,4 +63,11 @@ create index idx_month_data_services_dt on month_data (service_id, date_pull);
 
 insert into services (id, name, max_emitted, min_emitted)
 values
-('billing-api', 'Billing API', 34.2, 2.8);
+('billing-api', 'Billing API', 34.2, 2.8),
+('checkout-worker', 'Checkout Worker', 4.1, 0.3),
+('recommendation-ai', 'Recommendation AI', 34.2, 2.8),
+('inventory-sync', 'Inventory Sync', 34.2, 2.8),
+('audit-stream', 'Audit Stream', 105.6, 2.8),
+('email-dispatcher', 'Email Dispatcher', 34.2, 2.8),
+('fraud-detector', 'Fraud Detector', 34.2, 2.8),
+('reporting-batch', 'Reporting Batch', 34.2, 2.8);

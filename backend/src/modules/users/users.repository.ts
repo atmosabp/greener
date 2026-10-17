@@ -3,8 +3,6 @@ import { pool } from "../../db/connections";
 export async function findUsers(){
     const result = await pool.query(`SELECT * FROM users`);
 
-    console.log(result)
-
     return result.rows || null;
 }
 
