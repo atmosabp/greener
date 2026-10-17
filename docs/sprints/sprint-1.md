@@ -1,4 +1,48 @@
-## Sprint Backlog 01
+## Sprint 1 - GreenER
+
+### Objetivo da sprint
+O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas UML, implementação das primeiras telas, base do servidor backend e banco de dados.
+
+- Design e prototipação -> com a ideia de uma interface simples e intuitiva para o cliente.  
+
+- Diagramas UML -> Também desenvolver os diagramas UML, como o de caso de uso, diagrama de classe e diagramas de sequência, contribuindo no entendimento da proposta do projeto e em como integrar cada parte da aplicação com POO (Programação Orientada a Objetos).  
+
+- Implementação telas -> Implementar 3 telas no site: landing page, login e tela principal. Como essas são as primeiras telas que o usuário acessa, demos prioridade a elas nessa sprint.  
+
+- Servidor backend -> Desenvolver um servidor backend simples, que tenha como funcionalidades: cadastrar e listar usuários e históricos. Tudo isso por meio dos endpoints, que serão acessados pelas telas da aplicação.
+
+- Banco de dados -> Modelo do banco de dados e código SQL para usar no desenvolvimento e iniciar com o Docker Compose.
+
+- Testes -> Instalar dependências e desenvolver ao menos 2 testes de implantação, para testar a integridade das rotas de cadastro de usuário e de histórico. 
+
+<br>
+
+### O que foi entregue
+[Imagem do burndown aqui]
+
+<br>
+
+Lista do que foi entregue:
+- [ x ] Design e prototipação
+- [ x ] Diagramas UML
+- [ x ] Implementação telas
+- [ x ] Servidor backend básico
+- [ x ] Banco de dados
+- [ x ] Testes de implementação
+
+<br>
+
+### Itens concluídos e pendentes
+Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portanto, todas as tarefas foram *concluídas*.
+
+É possível acessar o link do Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1/views/1).
+
+<details>
+
+<summary>
+
+### Sprint Backlog
+</summary>
 
 | ID       | Descrição                                                        | Autor          | Disciplina | Esforço |
 | :------- | :--------------------------------------------------------------- | :------------- | :--------- | :------ |
@@ -52,3 +96,29 @@
 | **TP09** | Calcular serviços ativos e indisponíveis                         | Darcy          | TP I       | 5       |
 | **TP10** | Criar endpoints                                                  | Mariana        | TP I       | 2       |
 | **TP11** | Implementar testes                                               | Júlia, Mariana | TP I       | 8       |
+
+</details>
+
+<br>
+
+### Verificações realizadas
+Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-1.md)
+
+[dailies?]
+
+<br>
+
+### Decisões da Sprint Review
+[decidir o que é para colocar aqui]
+
+<br>
+
+---
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>
+
+
