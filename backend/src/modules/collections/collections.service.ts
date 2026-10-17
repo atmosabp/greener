@@ -1,61 +1,81 @@
 import {
+  addMinuteHistory,
+  addHourHistory,
+  addMonthHistory,
   findMinuteHistory,
   findHourHistory,
   findMonthHistory,
   findServiceMinuteHistory,
   findServiceHourHistory,
   findServiceMonthHistory,
+  findHistory,
 } from "./collections.respository";
 
-import  {MetricsCalculator,type MetricsProps} from "../metrics-calculator"
+export async function addHistory(periodType: string, serviceId: string, datePull: any) {
+  let result;
+
+  switch (periodType) {
+    case "minute":
+      result = await addMinuteHistory(datePull, serviceId);
+      break;
+    case "hour":
+      result = await addHourHistory(datePull);
+      break;
+    case "month":
+      result = await addMonthHistory(datePull);
+      break;
+  }
+
+  if (!result) return null;
+
+  return result;
+}
+
+export async function searchAllHistory() {
+  const result = await findHistory();
+
+  if (!result || result.length == 0) return null;
+
+  return result;
+}
 
 export async function searchHistory(periodType: string, datePull: any) {
   let result;
 
-  switch (periodType){
+  switch (periodType) {
     case "minute":
-        result = await findMinuteHistory(datePull);
-        break;
+      result = await findMinuteHistory(datePull);
+      break;
     case "hour":
-        result = await findHourHistory(datePull);
-        break;
+      result = await findHourHistory(datePull);
+      break;
     case "month":
-        result = await findMonthHistory(datePull);
-        break;
+      result = await findMonthHistory(datePull);
+      break;
   }
 
   if (!result) return null;
-  const metricsCalculator = new MetricsCalculator(
-    {
-      metrics: {
-        cpu_percent: result.cpu_percentage,
-        memory_gb: result.memory_gb,
-        disk_gb: result.disk_gb,
-        network_gb: result.network_gb,
-      },
-      renewable_share_percent: result.renewable_percent,
-    },
-    result.kwh,
-    result.co2e,
-  );
-  
-  return metricsCalculator.getMetrics() || null;
+
+  return result;
 }
 
-
-export async function searchServiceHistory(periodType: string, datePull: any, serviceId: string) {
+export async function searchServiceHistory(
+  periodType: string,
+  datePull: any,
+  serviceId: string,
+) {
   let result;
 
-  switch (periodType){
+  switch (periodType) {
     case "minute":
-        result = await findServiceMinuteHistory(datePull, serviceId);
-        break;
+      result = await findServiceMinuteHistory(datePull, serviceId);
+      break;
     case "hour":
-        result = await findServiceHourHistory(datePull, serviceId);
-        break;
+      result = await findServiceHourHistory(datePull, serviceId);
+      break;
     case "month":
-        result = await findServiceMonthHistory(datePull, serviceId);
-        break;
+      result = await findServiceMonthHistory(datePull, serviceId);
+      break;
   }
 
   if (!result) return null;

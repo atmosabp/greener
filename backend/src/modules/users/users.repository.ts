@@ -1,11 +1,17 @@
 import { pool } from "../../db/connections";
 
-async function insertUser(client: any, name: string, email: string, password: string){
+export async function findUsers(){
+    const result = await pool.query(`SELECT * FROM users`);
+
+    return result.rows || null;
+}
+
+async function insertUser(client: any, name: string, email: string, password: string, isAdm: boolean){
     const result = await client.query(
-        `INSERT INTO users (name, email, password)
-        VALUES ($1, $2, $3)
-        RETURNING id, name, email, password`,
-        [name, email, password]
+        `INSERT INTO users (name, email, password, is_adm)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, name, email, password, is_adm`,
+        [name, email, password, isAdm]
     );
 
     if(result && result.rowCount == 1){
@@ -14,12 +20,12 @@ async function insertUser(client: any, name: string, email: string, password: st
     return result.rows[0] || null;
 }
 
-export async function createUser(name: string, email: string, password: string){
+export async function createUser(name: string, email: string, password: string, isAdm: boolean){
     const client = await pool.connect();
 
     try{
         await client.query("BEGIN");
-        const user = await insertUser(client, name, email, password);
+        const user = await insertUser(client, name, email, password, isAdm);
 
         await client.query("COMMIT");
         return user;

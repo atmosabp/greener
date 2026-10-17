@@ -1,4 +1,5 @@
- database:
+services:
+  database:
     build: ./database
     container_name: greener-database
     ports:
