@@ -1,8 +1,4 @@
-import type {
-  ServiceTypes,
-  ServiceStatus,
-  MetricsType,
-} from "../types/services-types";
+import type { ServiceTypes, MetricsType } from "../types/services-types";
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 const metricsURL = "https://metrics.unilaunch.org/metrics";
@@ -15,19 +11,20 @@ async function reqServices() {
       const serviceList: ServiceTypes[] = await response.json();
       var avaliableList = [];
       for (let i of serviceList) {
-        avaliableList.push(await checkAvaliabity(i));
+        avaliableList.push(await checkServiceAvailiability(i));
       }
 
       return avaliableList;
     }
   } catch (error: any) {
-    throw new Error(error.message | "API não disponível");
+    throw new Error(error.message || "API não disponível");
   }
 }
 
-async function checkServiceAvailiability(service: ServiceTypes): Promise<ServiceTypes> {
+async function checkServiceAvailiability(
+  service: ServiceTypes,
+): Promise<ServiceTypes> {
   try {
-    
     const response = await fetch(metricsURL + `/${service.id}`);
     const metrics: MetricsType = await response.json();
     if (response.ok) {
@@ -55,8 +52,8 @@ async function checkServiceAvailiability(service: ServiceTypes): Promise<Service
   }
 }
 
-async function teste(){
-  console.log(await reqServices())
+async function teste() {
+  console.log(await reqServices());
 }
 
-teste()
+teste();

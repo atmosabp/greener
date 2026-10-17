@@ -1,14 +1,13 @@
-
 const { Pool } = require("pg");
-
+import { connection } from "../config/env";
 
 let config;
 config = {
-  host: process.env.POSTGRES_HOST,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB,
-  port: process.env.POSTGRES_PORT,
+  host: connection.database.host,
+  user: connection.database.user,
+  password: connection.database.password,
+  database: connection.database.database,
+  port: connection.database.port
 };
 
 export const pool = new Pool(config);
