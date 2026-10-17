@@ -1,4 +1,7 @@
 import {
+  addMinuteHistory,
+  addHourHistory,
+  addMonthHistory,
   findMinuteHistory,
   findHourHistory,
   findMonthHistory,
@@ -7,19 +10,19 @@ import {
   findServiceMonthHistory,
 } from "./collections.respository";
 
-export async function searchHistory(periodType: string, datePull: any) {
+export async function addHistory(periodType: string, serviceId: string, datePull: any, metrics: object) {
   let result;
 
-  switch (periodType){
+  switch (periodType) {
     case "minute":
-        result = await findMinuteHistory(datePull);
-        break;
+      result = await addMinuteHistory(datePull, serviceId, metrics);
+      break;
     case "hour":
-        result = await findHourHistory(datePull);
-        break;
+      result = await addHourHistory(datePull);
+      break;
     case "month":
-        result = await findMonthHistory(datePull);
-        break;
+      result = await addMonthHistory(datePull);
+      break;
   }
 
   if (!result) return null;
@@ -27,19 +30,43 @@ export async function searchHistory(periodType: string, datePull: any) {
   return result;
 }
 
-export async function searchServiceHistory(periodType: string, datePull: any, serviceId: string) {
+export async function searchHistory(periodType: string, datePull: any) {
   let result;
 
-  switch (periodType){
+  switch (periodType) {
     case "minute":
-        result = await findServiceMinuteHistory(datePull, serviceId);
-        break;
+      result = await findMinuteHistory(datePull);
+      break;
     case "hour":
-        result = await findServiceHourHistory(datePull, serviceId);
-        break;
+      result = await findHourHistory(datePull);
+      break;
     case "month":
-        result = await findServiceMonthHistory(datePull, serviceId);
-        break;
+      result = await findMonthHistory(datePull);
+      break;
+  }
+
+  if (!result) return null;
+
+  return result;
+}
+
+export async function searchServiceHistory(
+  periodType: string,
+  datePull: any,
+  serviceId: string,
+) {
+  let result;
+
+  switch (periodType) {
+    case "minute":
+      result = await findServiceMinuteHistory(datePull, serviceId);
+      break;
+    case "hour":
+      result = await findServiceHourHistory(datePull, serviceId);
+      break;
+    case "month":
+      result = await findServiceMonthHistory(datePull, serviceId);
+      break;
   }
 
   if (!result) return null;
