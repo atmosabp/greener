@@ -2,7 +2,21 @@ import {
   addHistory,
   searchHistory,
   searchServiceHistory,
+  searchAllHistory
 } from "./collections.service";
+
+export async function getHistoryController(_req: any, res: any) {
+  try {
+    const result = await searchAllHistory();
+    return res.status(200).json(result);
+  } catch (error: any) {
+    return res.status(400).json({
+      message:
+        error.message ||
+        "Ocorreu um erro ao buscar o histórico. Tente novamente mais tarde.",
+    });
+  }
+}
 
 export async function addHistoryController(req: any, res: any) {
   const {

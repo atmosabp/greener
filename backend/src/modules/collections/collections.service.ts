@@ -8,6 +8,7 @@ import {
   findServiceMinuteHistory,
   findServiceHourHistory,
   findServiceMonthHistory,
+  findHistory,
 } from "./collections.respository";
 
 export async function addHistory(periodType: string, serviceId: string, datePull: any, metrics: object) {
@@ -26,6 +27,14 @@ export async function addHistory(periodType: string, serviceId: string, datePull
   }
 
   if (!result) return null;
+
+  return result;
+}
+
+export async function searchAllHistory() {
+  const result = await findHistory();
+
+  if (!result || result.length == 0) return null;
 
   return result;
 }
