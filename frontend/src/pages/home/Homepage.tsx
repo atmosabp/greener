@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/header/Header";
@@ -74,7 +73,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "7",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -82,7 +81,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "8",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -90,7 +89,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "9",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -98,7 +97,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "10",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -106,7 +105,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "11",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -114,7 +113,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "12",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -122,7 +121,7 @@ const mockServices: Service[] = [
     co2e: 85,
   },
   {
-    id: "6",
+    id: "13",
     name: "Hub Tóquio",
     status: "active",
     latitude: 35.6895,
@@ -161,11 +160,16 @@ export default function Homepage({
       <Header />
 
       <main className="homepage-main">
-        <section className="explorer-layout" aria-label="Explorador de serviços">
+        <section
+          className="explorer-layout"
+          aria-label="Explorador de serviços"
+        >
           <aside className="services-panel">
             <div className="panel-heading">
               <div>
-                <span className="section-kicker">EXPLORADOR</span>
+                <span className="section-kicker">
+                  EXPLORADOR
+                </span>
                 <h2>Seus serviços</h2>
               </div>
 
@@ -175,7 +179,8 @@ export default function Homepage({
             </div>
 
             <p className="panel-description">
-              Selecione um ponto para explorar sua localização e seus dados.
+              Selecione um ponto para explorar sua localização e
+              seus dados.
             </p>
 
             <div className="services-list">
@@ -185,35 +190,55 @@ export default function Homepage({
                 </p>
               ) : (
                 services.map((service, index) => {
-                  const isSelected = selectedService === service.id;
+                  const isSelected =
+                    selectedService === service.id;
 
                   return (
                     <button
-                      key={service.id}
+                      key={`${service.id}-${index}`}
                       type="button"
-                      className={`service-item ${isSelected ? "service-item-selected" : ""
+                      className={`service-item ${isSelected
+                          ? "service-item-selected"
+                          : ""
                         }`}
                       onClick={() =>
                         setSelectedService((current) =>
-                          current === service.id ? null : service.id,
+                          current === service.id
+                            ? null
+                            : service.id,
                         )
                       }
                       aria-pressed={isSelected}
                     >
                       <span className="service-index">
-                        {String(index + 1).padStart(2, "0")}
+                        {String(index + 1).padStart(
+                          2,
+                          "0",
+                        )}
                       </span>
 
-                      <span className={`status-dot ${service.status}`} />
+                      <span
+                        className={`status-dot ${service.status}`}
+                      />
 
                       <span className="service-content">
-                        <span className="service-name">{service.name}</span>
+                        <span className="service-name">
+                          {service.name}
+                        </span>
+
                         <span className="service-status">
-                          {statusLabels[service.status]}
+                          {
+                            statusLabels[
+                            service.status
+                            ]
+                          }
                         </span>
                       </span>
 
-                      <span className="service-arrow" aria-hidden="true">
+                      <span
+                        className="service-arrow"
+                        aria-hidden="true"
+                      >
                         {isSelected ? "−" : "↗"}
                       </span>
                     </button>
@@ -223,31 +248,89 @@ export default function Homepage({
             </div>
 
             <div className="services-legend">
-              <span className="legend-title">STATUS DOS SERVIÇOS</span>
+              <span className="legend-title">
+                STATUS DOS SERVIÇOS
+              </span>
 
               <div className="legend-items">
                 <span>
                   <i className="status-dot active" />
-                  Ativos <strong>{activeCount}</strong>
+                  Ativos
+                  <strong>{activeCount}</strong>
                 </span>
 
                 <span>
                   <i className="status-dot incomplete" />
-                  Incompletos <strong>{incompleteCount}</strong>
+                  Incompletos
+                  <strong>{incompleteCount}</strong>
                 </span>
 
                 <span>
                   <i className="status-dot inactive" />
-                  Inativos <strong>{inactiveCount}</strong>
+                  Inativos
+                  <strong>{inactiveCount}</strong>
                 </span>
               </div>
             </div>
           </aside>
 
+          <nav
+            className="homepage-actions"
+            aria-label="Outras análises"
+          >
+            <Link to="/ranking" className="analysis-link">
+              <span
+                className="analysis-link-icon"
+                aria-hidden="true"
+              >
+                ↗
+              </span>
+
+              <span className="analysis-link-content">
+                <strong>Ranking de emissões</strong>
+                <small>
+                  Compare os serviços por impacto
+                </small>
+              </span>
+
+              <span
+                className="analysis-link-arrow"
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </Link>
+
+            <Link to="/comparison" className="analysis-link">
+              <span
+                className="analysis-link-icon"
+                aria-hidden="true"
+              >
+                ⇄
+              </span>
+
+              <span className="analysis-link-content">
+                <strong>Comparação</strong>
+                <small>
+                  Analise diferenças entre operações
+                </small>
+              </span>
+
+              <span
+                className="analysis-link-arrow"
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </Link>
+          </nav>
+
           <section className="visualization-column">
             <div className="visualization-topline">
               <div className="visualization-heading">
-                <span className="section-kicker">VISÃO GLOBAL</span>
+                <span className="section-kicker">
+                  VISÃO GLOBAL
+                </span>
                 <h2>Explore o planeta</h2>
               </div>
 
@@ -263,7 +346,9 @@ export default function Homepage({
               >
                 <button
                   type="button"
-                  className={mode === "globe" ? "active" : ""}
+                  className={
+                    mode === "globe" ? "active" : ""
+                  }
                   onClick={() => setMode("globe")}
                   aria-pressed={mode === "globe"}
                 >
@@ -273,7 +358,9 @@ export default function Homepage({
 
                 <button
                   type="button"
-                  className={mode === "map" ? "active" : ""}
+                  className={
+                    mode === "map" ? "active" : ""
+                  }
                   onClick={() => setMode("map")}
                   aria-pressed={mode === "map"}
                 >
@@ -283,7 +370,9 @@ export default function Homepage({
               </div>
             </div>
 
-            <div className={`visualization-stage mode-${mode}`}>
+            <div
+              className={`visualization-stage mode-${mode}`}
+            >
               {mode === "globe" ? (
                 <InteractiveGlobe
                   services={services}
@@ -300,7 +389,10 @@ export default function Homepage({
             </div>
 
             <div className="visualization-caption">
-              <span className="caption-symbol" aria-hidden="true">
+              <span
+                className="caption-symbol"
+                aria-hidden="true"
+              >
                 ✳
               </span>
 
@@ -310,42 +402,16 @@ export default function Homepage({
                   : "Explore o mapa, aproxime as regiões e selecione um ponto para ver seus dados."}
               </p>
 
-              <span className="coordinate-note">ATMOS ° / CO₂e</span>
+              <span className="coordinate-note">
+                ATMOS ° / CO₂e
+              </span>
             </div>
           </section>
         </section>
-
-        <nav className="homepage-actions" aria-label="Outras análises">
-          <Link to="/ranking" className="analysis-link">
-            <span className="analysis-link-icon" aria-hidden="true">
-              ↗
-            </span>
-            <span>
-              <strong>Ranking de emissões</strong>
-              <small>Compare os serviços por impacto</small>
-            </span>
-            <span className="analysis-link-arrow" aria-hidden="true">
-              →
-            </span>
-          </Link>
-
-          <Link to="/comparison" className="analysis-link">
-            <span className="analysis-link-icon" aria-hidden="true">
-              ⇄
-            </span>
-            <span>
-              <strong>Comparação</strong>
-              <small>Analise diferenças entre operações</small>
-            </span>
-            <span className="analysis-link-arrow" aria-hidden="true">
-              →
-            </span>
-          </Link>
-        </nav>
       </main>
 
       <footer className="homepage-footer">
-        Desenvolvido por Atmos ° © {new Date().getFullYear()}
+        Desenvolvido por Atmos © {new Date().getFullYear()}
       </footer>
     </div>
   );

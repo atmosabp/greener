@@ -140,15 +140,9 @@ export default function MapVisualization({
                             radius={isMapServiceSelected ? 11 : 8}
                             bubblingMouseEvents={false}
                             pathOptions={{
-                                color:
-                                    getComputedStyle(
-                                        document.documentElement
-                                    )
-                                        .getPropertyValue("--text")
-                                        .trim() || "#38322E",
-                                weight: isMapServiceSelected ? 3 : 1.5,
-                                fillColor:
-                                    mapStatusColors[service.status],
+                                color: "#111111",
+                                weight: isMapServiceSelected ? 2.3 : 1.5,
+                                fillColor: mapStatusColors[service.status],
                                 fillOpacity: 1,
                             }}
                             eventHandlers={{

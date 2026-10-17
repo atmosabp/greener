@@ -9,6 +9,7 @@ import Globe from "react-globe.gl";
 import type { Service } from "./Homepage";
 import "./InteractiveGlobe.css";
 import useTheme from "../../hooks/useTheme";
+import { bool } from "three/tsl";
 
 interface InteractiveGlobeProps {
     services: Service[];
@@ -198,7 +199,16 @@ export default function InteractiveGlobe({
                         ? "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
                         : "//unpkg.com/three-globe/example/img/earth-day.jpg"
                 }
-                pointsData={globeData}
+                pointsData={[
+                    ...globeData.map((point) => ({
+                        ...point,
+                        isOutline: true,
+                    })),
+                    ...globeData.map((point) => ({
+                        ...point,
+                        isOutline: false,
+                    })),
+                ]}
                 pointLat="lat"
                 pointLng="lng"
                 onPointHover={(point) => {
@@ -209,21 +219,35 @@ export default function InteractiveGlobe({
                         canvas.style.cursor = point ? "pointer" : "";
                     }
                 }}
-                pointAltitude={0.001}
+                pointAltitude={(point: object) => {
+                    const service = point as GlobePoint & { isOutline?: boolean };
+
+                    if (service.isOutline) {
+                        return service.id === selectedServiceId ? 0.001 : 0.001;
+                    }
+
+                    return service.id === selectedServiceId ? 0.005 : 0.003;
+                }}
                 pointsMerge={false}
                 pointColor={(point: object) => {
-                    const service = point as GlobePoint;
+                    const service = point as GlobePoint & { isOutline?: boolean };
+
+                    if (service.isOutline) {
+                        return "#111111";
+                    }
 
                     return service.id === selectedServiceId
                         ? "#ffffff"
                         : service.color;
                 }}
                 pointRadius={(point: object) => {
-                    const service = point as GlobePoint;
+                    const service = point as GlobePoint & { isOutline?: boolean };
 
-                    return service.id === selectedServiceId
-                        ? 2
-                        : 1.5;
+                    if (service.isOutline) {
+                        return service.id === selectedServiceId ? 2.2 : 1.6;
+                    }
+
+                    return service.id === selectedServiceId ? 1.8 : 1.2;
                 }}
                 onPointClick={(point: object) => {
                     const service = point as GlobePoint;
