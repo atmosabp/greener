@@ -1,0 +1,48 @@
+import {
+  findMinuteHistory,
+  findHourHistory,
+  findMonthHistory,
+  findServiceMinuteHistory,
+  findServiceHourHistory,
+  findServiceMonthHistory,
+} from "./collections.respository";
+
+export async function searchHistory(periodType: string, datePull: any) {
+  let result;
+
+  switch (periodType){
+    case "minute":
+        result = await findMinuteHistory(datePull);
+        break;
+    case "hour":
+        result = await findHourHistory(datePull);
+        break;
+    case "month":
+        result = await findMonthHistory(datePull);
+        break;
+  }
+
+  if (!result) return null;
+
+  return result;
+}
+
+export async function searchServiceHistory(periodType: string, datePull: any, serviceId: string) {
+  let result;
+
+  switch (periodType){
+    case "minute":
+        result = await findServiceMinuteHistory(datePull, serviceId);
+        break;
+    case "hour":
+        result = await findServiceHourHistory(datePull, serviceId);
+        break;
+    case "month":
+        result = await findServiceMonthHistory(datePull, serviceId);
+        break;
+  }
+
+  if (!result) return null;
+
+  return result;
+}

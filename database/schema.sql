@@ -1,9 +1,19 @@
+-- create database greener_db;
 create table if not exists services(
-	id serial primary key,
-	name varchar(255),
+	id varchar(100) primary key,
+	name varchar(100),
 	max_emitted float,
 	min_emitted float
 );
+
+create table if not exists users(
+	id serial primary key,
+	name varchar(100),
+	email varchar(150),
+	password varchar(255),
+	is_adm bool
+);
+
 
 create table if not exists hour_data(
 -- pensar sobre o id ser guid
@@ -16,8 +26,8 @@ create table if not exists hour_data(
 	disk_gb float,
 	network_gb float,
 	renewable_percent integer,
-	service_id integer,
-	foreign key(services_id) references services(id)
+	service_id varchar(100),
+	foreign key(service_id) references services(id)
 );
 
 create table if not exists minute_data(
@@ -30,8 +40,8 @@ create table if not exists minute_data(
 	disk_gb float,
 	network_gb float,
 	renewable_percent integer,
-	service_id integer,
-	foreign key(services_id) references services(id)
+	service_id varchar(100),
+	foreign key(service_id) references services(id)
 );
 
 create table if not exists month_data(
@@ -44,10 +54,10 @@ create table if not exists month_data(
 	disk_gb float,
 	network_gb float,
 	renewable_percent integer,
-	service_id integer,
-	foreign key(services_id) references services(id)
+	service_id varchar(100),
+	foreign key(service_id) references services(id)
 );
 
-create index idx_hour_data_services_dt on hour_data (services_id, dt_pull);
-create index idx_minute_data_services_dt on minute_data (services_id, dt_pull);
-create index idx_month_data_services_dt on month_data (services_id, dt_pull);
+create index idx_hour_data_services_dt on hour_data (service_id, date_pull);
+create index idx_minute_data_services_dt on minute_data (service_id, date_pull);
+create index idx_month_data_services_dt on month_data (service_id, date_pull);
