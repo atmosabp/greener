@@ -4,8 +4,19 @@
     padding: 15px 30px;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--background-transparent);
-    backdrop-filter: blur(5px);
+    background-color: var(--background);
+    transition: transform 0.5s ease-in-out,
+        padding 0.5s ease-in-out,
+        box-shadow 0.5s ease-in-out,
+         background-color 0.5s ease-in-out,
+        color 0.5s ease-in-out;
+    z-index: 9999;
+}
+
+/* Implementar animações no menu DEPOIS */
+.menu.is-scrolled {
+    /* transform: translateY(-80%); */
+    box-shadow: -4px 0px 5px 5px var(--background-transparent);
 }
 
 .menu-links {
@@ -18,13 +29,14 @@
     transform: translateX(-50%);
 }
 
-
 .menu .logo {
     height: 40px;
     width: auto;
 }
 
-.menu-trigger {
+.menu-trigger,
+.tablet-bar,
+.scrim {
     display: none;
 }
 
@@ -80,9 +92,9 @@
     border: none;
     background-color: var(--text);
     color: var(--background);
-    font-weight: 500;
-    font-size: 16px;
+    font-size: 14px;
     justify-content: center;
+    text-decoration: none;
 }
 
 /* 
@@ -93,6 +105,27 @@ RESPONSIVIDADE
 
 /* 1. Celulares */
 @media screen and (max-width:480px) {
+    .tablet-bar {
+        display: contents;
+    }
+
+    .scrim {
+        display: block;
+        position: fixed;
+        inset: 0 0 0 0;
+        background: rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease-out, visibility 0s linear 0.2s;
+        z-index: 998;
+    }
+
+    .scrim.show {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.2s ease-out, visibility 0s;
+    }
+
     .menu-trigger {
         display: flex;
         position: fixed;
@@ -118,23 +151,22 @@ RESPONSIVIDADE
         display: block;
         background-color: var(--background);
         border-radius: 5px;
-        transition: transform 0.5s ease-in-out;
+        transition: transform 0.5s ease-in-out, opacity 0.25s ease-in-out;
     }
 
     .menu {
-        height: 100dvh;
         /* Coloquei para respeitar os navegadores */
+        height: 100dvh;
         width: 40%;
         background-color: var(--background);
-        /* box-shadow: -4px 0px 4px 0px var(--shadow); */
-        border-left: 2px solid var(--text);
         right: 0;
-        transform: translateX(100%);
+        transform: translateX(calc(100% + 10px));
         flex-direction: column;
         transition: transform 0.5s ease-in-out,
             margin-top 0.5s ease-in-out,
             background-color 0.5s ease-in-out;
         position: fixed;
+        box-shadow: -4px 0px 5px 5px var(--background-transparent);
         z-index: 998;
         text-align: center;
         align-items: center;
@@ -154,12 +186,12 @@ RESPONSIVIDADE
     }
 
     body:has(.menu.active) .menu-trigger span:nth-child(2) {
-        margin-top: -7px;
-        transform: rotate(-45deg);
+        display: none;
     }
 
     body:has(.menu.active) .menu-trigger span:nth-child(3) {
-        display: none;
+        margin-top: -7.25px;
+        transform: rotate(-45deg);
     }
 
     .menu-links {
@@ -176,17 +208,155 @@ RESPONSIVIDADE
     .btn-logout {
         height: 35px;
     }
+
+    .trigger-logo {
+        display: none;
+    }
+
+    .trigger-btns {
+        display: none;
+    }
 }
 
-/* Tablets */
+/* Tablets: barra fixa + painel que cai por cima do conteúdo */
 @media screen and (min-width:481px) and (max-width: 1024px) {
-    .menu-links {
+    .tablet-bar {
         display: flex;
-        flex-direction: row;
+        justify-content: space-between;
         align-items: center;
-        gap: 30px;
-        position: relative;
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 64px;
+        padding: 0 24px;
+        background-color: var(--background);
+        border-bottom: 2px solid var(--text);
+        z-index: 1000;
+    }
+
+    .trigger-logo {
+        height: 35px;
+        width: auto;
+    }
+
+    .trigger-btns {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .menu-trigger {
+        display: grid;
+        place-content: center;
+        gap: 6px;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        background: none;
+        background-color: var(--text);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .menu-trigger span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background-color: var(--background);
+        border-radius: 2px;
+        transition: transform 0.22s ease-out, opacity 0.15s;
+    }
+
+    .menu-trigger[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu-trigger[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-trigger[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .scrim {
+        display: block;
+        position: fixed;
+        inset: 64px 0 0 0;
+        background: rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease-out, visibility 0s linear 0.2s;
+        z-index: 998;
+    }
+
+    .scrim.show {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.2s ease-out, visibility 0s;
+    }
+
+    .menu {
+        top: 64px;
         left: 0;
-        transform: translateX(0);
+        right: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 8px 24px 28px;
+        flex-direction: column;
+        align-items: stretch;
+        background-color: var(--background);
+        border-bottom: 2px solid var(--text);
+        box-shadow: none;
+        transform-origin: top center;
+        transform: translateY(-100%);
+        transition: transform 0.5s ease-in-out;
+        z-index: 999;
+    }
+
+    .menu.active {
+        transform: translateY(0%);
+
+    }
+
+    .menu .logo,
+    .menu-btns {
+        display: none;
+    }
+
+    .menu-links {
+        position: static;
+        transform: none;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0 32px;
+        width: 100%;
+    }
+
+    .menu-links a {
+        display: flex;
+        align-items: center;
+        min-height: 56px;
+        font-size: 1.25rem;
+        border-bottom: 1px solid color-mix(in srgb, var(--text) 20%, transparent);
+    }
+
+    .menu-links a::after,
+    .menu-links a.active::after {
+        display: none;
+    }
+
+    .menu-links a.active {
+        font-weight: 700;
+    }
+
+    .menu-links a.active::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        margin-right: 12px;
+        border-radius: 50%;
+        background-color: var(--text);
     }
 }

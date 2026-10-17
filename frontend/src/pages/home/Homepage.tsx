@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import Header from "../../components/header/Header";
+import AppHeader from "../../components/header/appHeader";
 
 export default function Homepage() {
   return (
     <>
-      <Header />
+      <AppHeader />
       <main>
         <h1>Homepage/Tela Principal</h1>
         <Link to="/dashboard">Dashboard</Link>
