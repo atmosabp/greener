@@ -71,7 +71,6 @@
 [data-theme="dark"][data-palette="blue"] {
   --background: #262E30;
   --background-transparent: rgb(38, 46, 48, 0.5);
-
   --shadow: rgba(43, 43, 43, 0.5);
   --text: #F9EEDC;
 
@@ -116,7 +115,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
 
 
 [data-theme="light"] ::selection {
