@@ -9,7 +9,7 @@ import Globe from "react-globe.gl";
 import type { Service } from "./Homepage";
 import "./InteractiveGlobe.css";
 import useTheme from "../../hooks/useTheme";
-import { bool } from "three/tsl";
+// import { bool } from "three/tsl";
 
 interface InteractiveGlobeProps {
     services: Service[];
@@ -313,7 +313,7 @@ export default function InteractiveGlobe({
                         <div className="globe-service-card__metric-col">
                             <div className="globe-service-card__metric">
                                 <span>CPU</span>
-                                <strong>—</strong>
+                                <strong>0%</strong>
                             </div>
 
                             <div className="globe-service-card__metric">
@@ -330,12 +330,12 @@ export default function InteractiveGlobe({
                         <div className="globe-service-card__metric-col">
                             <div className="globe-service-card__metric">
                                 <span>RAM</span>
-                                <strong>—</strong>
+                                <strong>0%</strong>
                             </div>
 
                             <div className="globe-service-card__metric">
                                 <span>Energia (kWh)</span>
-                                <strong>—</strong>
+                                <strong>0 kWh</strong>
                             </div>
                         </div>
                     </div>

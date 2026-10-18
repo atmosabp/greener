@@ -70,11 +70,12 @@
 }
 
 .globe-service-card__status-dot {
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
 
-    flex: 0 0 10px;
+    flex: 0 0 15px;
 
+    border: #000000 solid 1px;
     border-radius: 50%;
 }
 

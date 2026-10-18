@@ -265,9 +265,9 @@
 
 .status-dot {
     display: inline-block;
-    width: 9px;
-    height: 9px;
-    flex: 0 0 9px;
+    width: 12px;
+    height: 12px;
+    flex: 0 0 12px;
 
     border: #000000 solid 1px;
     border-radius: 50%;
@@ -392,7 +392,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .legend-items strong {
@@ -625,7 +625,7 @@
     margin: 0 auto;
     padding: 17px 0 20px;
     color: var(--text);
-    font-size: 9px;
+    font-size: 12px;
     opacity: 0.75;
 }
 
@@ -692,7 +692,7 @@
 @media (max-width: 700px) {
     .homepage-main {
         width: min(100% - 32px, 540px);
-        padding-top: 94px;
+        padding-top: 75px;
         padding-bottom: 25px;
     }
 
@@ -764,7 +764,7 @@
     }
 
     .visualization-caption p {
-        font-size: 9px;
+        font-size: 12px;
     }
 
     .services-legend {
@@ -779,8 +779,9 @@
 
     .legend-items>span {
         flex-wrap: wrap;
-        gap: 5px;
-        font-size: 9px;
+        gap: 8px;
+        font-size: 12px;
+        justify-content: center;
     }
 
     .legend-items strong {
@@ -790,7 +791,7 @@
     .homepage-footer {
         width: calc(100% - 32px);
         flex-wrap: wrap;
-        justify-content: space-between;
+        justify-content: center;
         gap: 10px;
     }
 
@@ -799,25 +800,46 @@
     }
 }
 
+@media (max-width: 480px) {
+    .homepage-main {
+        padding: 10px;
+    }
+
+    .legend-items span {
+        gap: 6px;
+    }
+}
+
 /* Celulares estreitos */
 
 @media (max-width: 380px) {
     .homepage-main {
         width: calc(100% - 24px);
+        padding: 10px;
     }
 
     .visualization-topline {
-        align-items: flex-start;
+        align-items: center;
         flex-direction: column;
-        gap: 12px;
-    }
-
-    .view-switch {
-        align-self: flex-start;
+        gap: 8px;
     }
 
     .visualization-stage {
         min-height: 255px;
+    }
+
+    .visualization-caption p {
+        font-size: 12px;
+    }
+
+    .caption-symbol {
+        display: none;
+    }
+
+    .last-update {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .service-item {
@@ -831,6 +853,7 @@
 
     .homepage-footer {
         width: calc(100% - 24px);
+        justify-content: center;
     }
 }
 
