@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../../components/header/Header";
+import AppHeader from "../../components/header/AppHeader";
 import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
@@ -109,7 +109,7 @@ export default function Homepage({
 
   return (
     <div className="homepage">
-      <Header />
+      <AppHeader />
 
       <main className="homepage-main">
         <section

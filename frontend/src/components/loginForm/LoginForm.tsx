@@ -1,6 +1,6 @@
 // Importações
 import { Eye, EyeClosed } from "lucide-react";
-import "./loginForm.css";
+import "./LoginForm.css";
 import { useState } from "react";
 import { type ErrorsLogin } from "../../types/login";
 import { useNavigate } from "react-router-dom";
