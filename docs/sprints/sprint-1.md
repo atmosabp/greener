@@ -18,24 +18,28 @@ O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas 
 <br>
 
 ### O que foi entregue
-[Imagem do burndown aqui]
+A seguir está o burndown da sprint 1.  
+Ele demonstra a evolução das tarefas ao longo dos dias. Assim como a relação entre o esforço real de cada dia e o planejado.  
+No início da sprint, foi definido um esforço total de 194. E para cada dia, uma média de 16 pontos esperados.
+
+![Burndown da sprint 1](burndown-sprint-1.png)
 
 <br>
 
 Lista do que foi entregue:
-- [ x ] Design e prototipação
-- [ x ] Diagramas UML
-- [ x ] Implementação telas
-- [ x ] Servidor backend básico
-- [ x ] Banco de dados
-- [ x ] Testes de implementação
+- [ ✔ ] Design e prototipação de todas as telas
+- [ ✔ ] Diagramas UML (caso de uso, classes e sequência)
+- [ ✔ ] Implementação das telas definidas
+- [ ✔ ] Servidor backend básico
+- [ ✔ ] Banco de dados
+- [ ✔ ] 2 testes de implementação
 
 <br>
 
 ### Itens concluídos e pendentes
 Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portanto, todas as tarefas foram *concluídas*.
 
-É possível acessar o link do Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1/views/1).
+É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1/views/1).
 
 <details>
 
@@ -95,21 +99,16 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | **TP08** | Calcular emissão total                                           | Darcy          | TP I       | 5       |
 | **TP09** | Calcular serviços ativos e indisponíveis                         | Darcy          | TP I       | 5       |
 | **TP10** | Criar endpoints                                                  | Mariana        | TP I       | 2       |
-| **TP11** | Implementar testes                                               | Júlia, Mariana | TP I       | 8       |
+| **TP11** | Implementar testes                                               | Júlia, Mariana | TP I       | 5       |
 
 </details>
 
 <br>
 
 ### Verificações realizadas
+Durante a sprint, foi desenvolvido um relatório descrevendo o que foi feito em cada dia de trabalho para cada integrante, e outras informações adicionais.
+
 Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-1.md)
-
-[dailies?]
-
-<br>
-
-### Decisões da Sprint Review
-[decidir o que é para colocar aqui]
 
 <br>
 

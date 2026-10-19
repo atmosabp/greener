@@ -1,52 +1,108 @@
-Calcular emissão total - Realizar o calculo da emissão total de acordo com as métricas fornecidas pela API.
-Criar endpoints - Definir os endpoints, usando todos os metodos disponiveis, POST, GET, DELETE etc... E verificando se estão funcionais.
-Implementar cálculo de CO₂e - Implementar os calculos de CO₂e de acordo com as métricas fornecidas pela API.
-Implementar tela principal - Desenvolver a pagina principal usando react para ja dar uploado no github, faze-la uma pagina acessível.
-Tela 404 - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Tela 404 - Mobile - Desenvolver a tela completa no figma pronta para a implementação.
-Tela de ranking - Mobile - Desenvolver a tela completa no figma pronta para a implementação.
-Tela Landing Page - Mobile - Desenvolver a tela completa no figma pronta para a implementação.
-Tela Landing Page - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Tela de ranking - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Conteinizar o projeto - Criar os arquivos necessarios para Conteinizar o projeto facilitando em testes simultaneos sem variações.
-Criar Sprint Backlog referente a 1° sprint - Criar Sprint Backlog para o monitoramento das tasks refente a primeira sprint.
-Desenvolver a logo para o projeto - Definir e desenhar a logo definitiva para o projeto.
-Configurar servidor HTTP e variáveis de ambiente - Configurar o servidor HTTP para que o site suba em local para testes iniciais.
-Criar e manter o Product Backlog - Criar o Product Backlog para o gerenciamento dos afazeres do projeto com base nos requisitos.
-Criar DoD - Colocar descrição de DoD em todas as issues do kanban referente a sprint 1.
-Definir a identidade visual do projeto - Definir a identidade visual do projeto: cores, fontes, logo, nome
-Tela dashboard - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Tela dashboard - Mobile - Desenvolver a tela completa no figma pronta para a implementação.
-Tela principal - Mobile  - Realizar a responsividade da tela principal para mobile e tablet, melhorando a navegabilidade.
-Tela de cadastro - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Tela de cadastro - Mobile - Desenvolver a tela completa no figma pronta para a implementação.
-Criar estrutura do backend em módulos - Estruturar as pastas do projeto do backend de acordo com o arquivo que foi fornecido pelo Arley.
-Desenvolver User Story + critérios de aceitação - Desenvolver as user story dos requisitos informados para ciencia e auxilio no desenvolvimento do projeto de acordo com o que o usuario deseja (para entender melhor o que é solicitado)
-Tela de login - Desktop - Realizar a responsividade da tela principal para mobile e tablet, melhorando a navegabilidade.
-Tela de login - Mobile - Realizar a responsividade da tela principal para mobile e tablet, melhorando a navegabilidade.
-Criar banco de dados - Desenvolver o código para criação do banco de dados de acordo com a modelagem, permitindo todas as funcionalidades requisitadas pelo cliente.
-Definir avisos - Definir identidade visual de avisos de loading e erros.
-Tela de comparação - Mobile - Desenvolver a tela completa no figma pronta para a implementação.
-Tela de comparação - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Tela principal - Desktop - Desenvolver a tela completa no figma pronta para a implementação.
-Calcular consumo total - Com as informações fornecidas pela API, calcular o consumo total de acordo com as métricas fornecidas.
-Consultar Carbon Intensity API - Fazer a consutla da itensidade de carbono fornecidos pela API.
-Implementar landing page - Desenvolver a landing page como se fosse um portifolio, contando um pouco sobre o projeto, sobre o que faz, sobre o grupo e de acordo com o que consta no figma.
-Consultar /services - Realizar a consulta dos serviços fornecidos pela API.
-Consultar /metrics/{id_servico} - Realizar a consulta da métricas de acordo com o id do servico fornecido pela API.
-Calcular serviços ativos e indisponíveis - Pegar a respsota da API dos serviços ativos e fazer o calculo de quantos serviços estão disponiveis e quantos estão indisponiveis.
-Implementar tela de Login - Desenvolvimento da pagina de login usando react, pronta para fazer upload no github fazendo ela uma pagina acessivel.
-Modelar banco de dados - Modelar o banco de dados para armazenamento:
-•	Do histórico de coletas e métricas recebidas das APIs;
-•	Dos usuários da aplicação.
-Criar estrutura do projeto frontend - Estruturar as pastas do projeto do frontend de acordo com o arquivo que foi fornecido pelo Arley.
-Criar diagrama de Sequência - Desenvovler o diagrama de sequencia para facilitar na visualização do fluxo do projeto.
-Criar conexão do banco ao backend - Realizar a conexão do backend com o banco de dados nas pastas certas referentes a esta atividade no projeto.
-Criar diagrama de classes - Desenvolver o diagrama das classes do projeto.
-Criar diagrama de Caso de Uso - Desenvolver o diagrama de caso de uso do projeto, seguindo as normas em uml.
-Desenvolver a logo para equipe - Definir e desenhar a logo definitiva para a equipe.
-Criar vídeo referente a 1° sprint - Desenvolver e editar o video final da sprint 1 completo para apresentação ao cliente, de maneira profissional e com auxilio minimo de cada participante do grupo.
-Criar e manter Burn down da 1° sprint - Criar gráfico Burn Down para facilitar a visualização das tarefas e fazer a manutenção recorrente dele.
-Criar e manter README.md - Desenvolver e manter constantemente atualizado o readme.md até o fim da sprint 1.
-Criar relatório da 1º Sprint - Criar o relatório do projeto da primeira sprint.
-Implementar testes - Implementar os testes automaticos de requisições, testando assim o funcionamento das requisições, get, fetch etc...
+## DoD - Definition of Done
+Este arquivo demonstra todas as tarefas definidas até a sprint atual, e o que elas precisam ter para serem consideradas "concluídas".
+
+### 1. Frontend e Interfaces
+#### Tela principal
+- Tela principal — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela principal — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+- Implementar tela principal: Desenvolver a página principal utilizando React, deixando-a acessível e pronta para envio ao GitHub.
+- Tela principal — Responsividade: Adaptar a página principal para dispositivos móveis e tablets, melhorando a navegabilidade.
+### Tela de login
+- Tela de login — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela de login — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+- Implementar tela de login: Desenvolver a página de login utilizando React, deixando-a acessível e pronta para envio ao GitHub.
+### Tela de cadastro
+- Tela de cadastro — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela de cadastro — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+### Tela de dashboard
+- Tela de dashboard — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela de dashboard — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+### Tela de ranking
+- Tela de ranking — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela de ranking — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+### Tela de comparação
+- Tela de comparação — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela de comparação — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+### Landing Page
+- Tela Landing Page — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela Landing Page — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+- Implementar Landing Page: Desenvolver uma página que apresente o projeto, suas funcionalidades e os integrantes do grupo, seguindo o protótipo definido no Figma.
+### Tela 404
+- Tela 404 — Desktop: Desenvolver a tela completa no Figma, pronta para implementação.
+- Tela 404 — Mobile: Desenvolver a tela completa no Figma, pronta para implementação.
+Avisos e estados da interface
+- Definir avisos: Definir a identidade visual dos avisos de carregamento (loading) e de erros.
+
+### 2. Backend e Integração com APIs
+
+#### Endpoints e requisições
+- Criar endpoints: Definir e implementar os endpoints necessários, utilizando os métodos HTTP pertinentes, como GET, POST, PUT, PATCH e DELETE, e verificar seu funcionamento.
+- Consultar /services: Realizar a consulta dos serviços fornecidos pela API.
+- Consultar /metrics/{id_servico}: Consultar as métricas de acordo com o identificador do serviço fornecido pela API.
+- Consultar Carbon Intensity API: Consultar os dados de intensidade de carbono disponibilizados pela API.
+- Implementar testes: Implementar testes automatizados para verificar o funcionamento das requisições e dos endpoints, incluindo operações GET, POST, PUT, PATCH e DELETE, conforme aplicável.
+
+#### Cálculos e métricas
+- Calcular emissão total: Calcular a emissão total de CO₂e com base nas métricas fornecidas pela API.
+- Implementar cálculo de CO₂e: Implementar os cálculos de emissão de CO₂e de acordo com as métricas fornecidas pela API.
+- Calcular consumo total: Calcular o consumo total de energia com base nas métricas fornecidas pela API.
+- Calcular serviços ativos e indisponíveis: Utilizar os dados retornados pela API para contabilizar quantos serviços estão ativos e quantos estão indisponíveis.
+
+### 3. Banco de Dados
+- Modelar banco de dados: Modelar o banco de dados para armazenar o histórico de coletas e métricas recebidas das APIs e os dados dos usuários da aplicação.
+- Criar banco de dados: Desenvolver o código necessário para criar o banco de dados de acordo com a modelagem, permitindo as funcionalidades requisitadas pelo cliente.
+- Criar conexão do banco ao backend: Implementar a conexão entre o banco de dados e o backend, organizando os arquivos nas pastas correspondentes do projeto.
+
+### 4. Estrutura e Configuração do Projeto
+- Criar estrutura do projeto frontend: Organizar as pastas e os arquivos do frontend de acordo com a estrutura fornecida pelo Arley.
+Backend
+- Criar estrutura do backend em módulos: Organizar as pastas e os arquivos do backend em módulos, seguindo a estrutura fornecida pelo Arley.
+Ambiente de desenvolvimento
+- Configurar servidor HTTP e variáveis de ambiente: Configurar o servidor HTTP e as variáveis de ambiente necessárias para executar o site localmente e realizar os testes iniciais.
+- Conteinerizar o projeto: Criar os arquivos necessários para conteinerizar o projeto, padronizando o ambiente de execução e facilitando a realização de testes simultâneos sem divergências de configuração.
+
+### 5. Identidade Visual e Branding
+- Definir a identidade visual do projeto: Definir os elementos visuais do projeto, incluindo cores, fontes, logotipo e nome.
+- Desenvolver a logo para o projeto: Definir e desenvolver o logotipo definitivo do projeto.
+- Desenvolver a logo para a equipe: Definir e desenvolver o logotipo definitivo da equipe.
+
+### 6. Planejamento e Gerenciamento Ágil
+- Criar Product Backlog: Criar e manter o Product Backlog para gerenciar as atividades do projeto com base nos requisitos levantados.
+- Criar Sprint Backlog referente à 1ª Sprint: Criar o Sprint Backlog para acompanhar e gerenciar as tarefas previstas para a primeira Sprint.
+- Criar DoD: Definir e adicionar a descrição da Definition of Done às issues do Kanban referentes à primeira Sprint.
+- Desenvolver User Stories e critérios de aceitação: Elaborar as histórias de usuário (User Stories) e seus critérios de aceitação com base nos requisitos informados, facilitando a compreensão das necessidades do cliente e orientando o desenvolvimento.
+- Criar e manter o Burndown da 1ª Sprint: Criar e atualizar o gráfico Burndown para acompanhar o progresso das tarefas e visualizar o trabalho restante ao longo da Sprint.
+
+### 7. Diagramas e Documentação Técnica
+- Criar diagrama de sequência: Desenvolver o diagrama de sequência para facilitar a visualização do fluxo de execução do sistema.
+- Criar diagrama de classes: Desenvolver o diagrama de classes do projeto.
+- Criar diagrama de caso de uso: Desenvolver o diagrama de caso de uso seguindo as normas da UML.
+- Criar e manter README.md: Desenvolver e manter o arquivo README.md atualizado durante toda a primeira Sprint, documentando as informações relevantes do projeto.
+- Criar relatório da 1ª Sprint: Elaborar o relatório referente à primeira Sprint, registrando as atividades realizadas e os resultados alcançados.
+
+### 8. Entregas e Apresentação
+- Criar vídeo referente à 1ª Sprint: Desenvolver e editar o vídeo final da primeira Sprint para apresentação ao cliente, garantindo uma apresentação profissional e a participação de todos os integrantes do grupo.
+
+<br>
+
+---
+<br>
+
+### Observação sobre a Definition of Done
+A lista acima organiza as atividades e padroniza suas descrições, mas uma lista de tarefas não constitui, por si só, uma Definition of Done completa. A Definition of Done define os critérios de qualidade que precisam ser atendidos para considerar um item concluído. As atividades individuais listadas neste documento funcionam melhor como tarefas ou issues do Sprint Backlog.<br>
+Exemplo de critérios de conclusão para uma tela:
+- Implementação concluída conforme o protótipo aprovado.
+- Layout responsivo nos dispositivos previstos.
+- Funcionalidades implementadas e testadas.
+- Código revisado e integrado ao repositório.
+- Ausência de erros críticos conhecidos.
+
+<br>
+
+---
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>

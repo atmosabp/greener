@@ -17,7 +17,7 @@ Para verificar os requisitos dessa sprint, que estão relacionados à cada crit�
 | ES07 | ES08 | Criar DoD para cada task no sprint backlog | Ver arquivo `dod.md` com o DoD de cada tarefa | Lorenzo | Arquivo [dod.md](https://github.com/atmosabp/greener/blob/develop/docs/dod.md) | Concluído |
 | ES08 | - | Fazer e manter documentações e README.md | Ver arquivo [README](https://github.com/atmosabp/greener/blob/develop/README.md) e pasta `docs/` | Júlia | Arquivo [README](https://github.com/atmosabp/greener/blob/develop/README.md) e pasta `docs/` | Concluído |
 | ES09 | BD02 | Desenvolver Kanban, código, banco de dados, design e documentação | Ver Kanban, commits, arquivos e pull requests | Todos | [Kanban](https://github.com/users/atmosabp/projects/1), [arquivos](https://github.com/atmosabp/greener) e [pull requests](https://github.com/atmosabp/greener/pulls) | Concluído |
-| DW01 | - | - | - | Todos | - | - |
+| DW01 | - | - | - | Todos | - | Em andamento |
 | DW02 | - | - | - | Todos | - | - |
 | DW03 | - | - | - | Todos | - | - |
 | DW04 | DW01 | - | - | Todos | - | - |

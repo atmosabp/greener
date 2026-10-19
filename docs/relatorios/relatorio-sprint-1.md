@@ -1,13 +1,7 @@
 ## Relatório da Sprint 1
 Este é o relatório da primeira sprint do projeto, onde é detalhado tudo o que foi feito em cada dia de desenvolvimento e o burndown mostrando o progresso de tarefas.  
 
-Caso seja preciso ver outras informações sobre a sprint, ver o arquivo `sprints/sprint-1.md`, clicando [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md).
-
-
-### Burndown
-[imagem do burndown concluído aqui]
-
-O backlog da sprint pode ser encontrado [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md).
+Caso seja preciso ver outras informações sobre a sprint, veja o arquivo `sprints/sprint-1.md`, clicando [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md).
 
 <details>
 <summary>
@@ -130,15 +124,45 @@ Após ter finalizado os designs, estamos focando em finalizar a implementação 
 ---
 
 #### 16/out
+Planejamento do vídeo para a sprint foi iniciado, definindo como seria o formato e como as funcionalidades seriam apresentadas.  
+Também houve desenvolvimento de testes e continuação dos códigos do backend, assim como a finalização da implementação da landing page.
 
+**Beatriz:** Finaliza implementação landing page e planeja vídeo   
+**Darcy:** Colabora no backend  
+**Júlia:** Faz relatório, documentos, colabora no backend e faz testes   
+**Kauã:** Finaliza conexão do banco de dados com backend  
+**Lorenzo:** Continua implementação tela principal  
+**Mariana:** Continua criação de endpoints 
+
+---
 
 #### 17/out
+Todas as 3 telas planejadas foram implementadas até esse dia, a última sendo a tela principal.
 
+**Beatriz:** Continua edição do vídeo    
+**Darcy:** Colabora na edição do vídeo e backend  
+**Júlia:** Faz relatório, e testes  
+**Kauã:** Colabora na edição do vídeo    
+**Lorenzo:** Finaliza implementação da tela principal  
+**Mariana:** Colabora nos testes   
+
+---
 
 #### 18/out
+Último dia de desenvolvimento da sprint.  
+Foram apenas feitos ajustes em algumas das funcionalidades e documentações, e finalizado o vídeo da sprint.
 
+**Beatriz:** Finaliza edição do vídeo    
+**Darcy:** Colabora no vídeo  
+**Júlia:** Faz relatório, finaliza README e outros documentos  
+**Kauã:** Colabora no vídeo  
+**Lorenzo:** Colabora no vídeo    
+**Mariana:** Faz ajustes nos testes 
+
+---
 
 #### 19/out
+Este é o dia da Sprint Review. Não houve daily pois o desenvolvimento já foi concluído.
 
 </details>
 
