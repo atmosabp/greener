@@ -9,7 +9,7 @@ import {
   findServiceHourHistory,
   findServiceMonthHistory,
   findHistory,
-} from "./collections.respository";
+} from "./collections.repository";
 
 export async function addHistory(periodType: string, serviceId: string, datePull: any) {
   let result;
