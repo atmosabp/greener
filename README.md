@@ -39,11 +39,12 @@ Greener é feito para funcionários credenciados de empresas terem controle da e
 │ ├ src/
 | ├ README.md
 ├ database/
-├ backend/        # Arquivos para banco de dados/histórico
-| ├ controllers/
+├ database/        # Arquivos para banco de dados/histórico
+| ├ schema.sql
 | ├ README.md
 ├ backend/        # Servidor que conversa com frontend e API
 | ├ src/
+| ├ ├ __tests__/  # Testes de integração
 | ├ ├ db/
 | ├ ├ integrations/
 | ├ ├ modules/
@@ -66,10 +67,10 @@ Greener é feito para funcionários credenciados de empresas terem controle da e
 
 Toda a documentação do projeto pode ser encontrada em sua maioria na pasta `docs/`. Estas são as documentações principais do projeto, com os links para seus respectivos locais:
 
-- <a href="https://github.com/atmosabp/greener/blob/main/docs/product-backlog.md">Product Backlog</a>
-- <a href="https://github.com/atmosabp/greener/tree/main/docs/sprints">Sprint Backlogs</a>
-- <a href="#">DoD (Definition of Done)</a>
-- <a href="https://github.com/atmosabp/greener/tree/main/docs/relatorios">Relatórios</a>
+- <a href="https://github.com/atmosabp/greener/blob/develop/docs/product-backlog.md">Product Backlog</a>
+- <a href="https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md">Sprint Backlogs</a>
+- <a href="https://github.com/atmosabp/greener/blob/develop/docs/dod.md">DoD (Definition of Done)</a>
+- <a href="https://github.com/atmosabp/greener/blob/develop/docs/relatorios">Relatórios</a>
 
 Para cada diretório como `frontend/`, `backend/` e `database/`, também há arquivos README, que juntos compõem uma documentação técnica explicando as funcionalidades de cada parte lógica da aplicação.
 

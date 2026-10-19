@@ -25,13 +25,8 @@ describe("cadastro de usuário", () => {
 });
 
 describe("consulta todos os usuários", () => {
-    // beforeEach(async () => {
-    //     await deleteUserByEmail("jesttest@test.com");
-    // });
     it("retorna status 200 caso a consulta seja feita", async () => {
-        const response = await request(app).get("/get-users").send();
-        //para o teste dar certo, é preciso que a resposta tenha status 200
-        //caso contrário, o teste falha
+        const response = await request(app).get("/users/get-users").send();
         expect(response.statusCode).toEqual(200);
     });
 });
