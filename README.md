@@ -89,7 +89,18 @@ Para cada diretório como `frontend/`, `backend/` e `database/`, também há arq
 
 ## Instruções para execução
 
-[desenvolver quando servidor e frontend já estiverem executáveis com o Docker]
+A aplicação usa principalmente Docker Compose para inicializar, portanto, é necessário ter o WSL instalado, caso esteja sendo usado um sistema Windows.  
+Com isso garantido, siga os seguintes passos:
+
+1. Execute o comando `git clone https://github.com/atmosabp/greener` no terminal bash ou Powershell para copiar os arquivos do projeto no local de escolha do seu computador.
+2. Abra o terminal na raiz do projeto. Primeiro, entre na pasta frontend executando `cd frontend`, e depois instalando as dependências necessárias com `npm i`. Faça o mesmo entrando na pasta backend com o comando `cd backend` e instale as dependências, para garantir que o Docker identifique o arquivo `package-lock.json`, caso eles ainda não existam.
+3. Com as dependências instaladas, abra o arquivo `.env.example` na raiz do projeto e preencha todos os campos com as informações sugeridas.
+3. Com as dependências instaladas, abra o terminal WSL na raiz do projeto e digite o comando `docker compose up --build`. Isso iniciará o serviço do Docker Compose, iniciando os serviços de frontend, backend e banco de dados.
+
+Caso não seja necessário rodar a aplicação completa, apenas uma única parte, como o frontend ou o backend, siga os seguintes passos:
+
+1. 
+
 
 <br>
 
