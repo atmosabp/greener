@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AppHeader from "../../components/header/appHeader";
+import AppHeader from "../../components/header/AppHeader";
 import './Dashboard.css'
 
 export default function Dashboard() {
