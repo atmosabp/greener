@@ -22,9 +22,7 @@
 
 *GreenER* é uma plataforma web desenvolvida como projeto do 2º semestre da Fatec Jacareí, capaz de monitorar continuamente aplicações de software, estimar seu consumo energético e calcular suas emissões aproximadas de CO₂ equivalente (CO₂e).
 
-[Objetivo]  
-[Diferencial?]  
-[Equipe]
+Greener é feito para funcionários credenciados de empresas terem controle da emissão e consumo dos próprios serviços, comparando-os entre si, rankeando, e podendo tomar decisões para tornar o consumo menos prejudicial para o meio ambiente.
 
 <br>
 
@@ -60,7 +58,7 @@
 | [![My Skills](https://skillicons.dev/icons?i=react)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=ts)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=figma)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=git)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=github)](https://skillicons.dev) |
 | ------ | ---- | ------- | ---- | ---- | ---- | ---- | ---- |
 | React | TypeScript | NodeJS | Docker | PostgreSQL | Figma | Git | GitHub |
-| v0.0 | v0.0 | v0.0 | v0.0 | v0.0 | Web | v0.0 | Web |
+| v19.3 | v7.0 | v22.16.0 | v29 | v18.3 | Web | v2.53 | Web |
 
 <br>
 
@@ -81,7 +79,7 @@ Para cada diretório como `frontend/`, `backend/` e `database/`, também há arq
 
 | N° Sprint | Data início | Status       | Relatório | Vídeo  |
 | --------- | ----------- | ------------ | --------- | ------ |
-| 1         | 28/09/2026  | Em andamento | [Link](https://github.com/atmosabp/greener/tree/main/docs/sprints)    | - |
+| 1         | 28/09/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md) | [Link](https://www.youtube.com/watch?v=EIQv3zTnguM) |
 | 2         | 19/10/2026  | Não iniciada | -         | -      |
 | 3         | 09/11/2026  | Não iniciada | -         | -      |
 
@@ -90,16 +88,24 @@ Para cada diretório como `frontend/`, `backend/` e `database/`, também há arq
 ## Instruções para execução
 
 A aplicação usa principalmente Docker Compose para inicializar, portanto, é necessário ter o WSL instalado, caso esteja sendo usado um sistema Windows.  
-Com isso garantido, siga os seguintes passos:
+Com isso garantido, siga os seguintes passos para utilizar a aplicação ***com Docker***:
 
 1. Execute o comando `git clone https://github.com/atmosabp/greener` no terminal bash ou Powershell para copiar os arquivos do projeto no local de escolha do seu computador.
 2. Abra o terminal na raiz do projeto. Primeiro, entre na pasta frontend executando `cd frontend`, e depois instalando as dependências necessárias com `npm i`. Faça o mesmo entrando na pasta backend com o comando `cd backend` e instale as dependências, para garantir que o Docker identifique o arquivo `package-lock.json`, caso eles ainda não existam.
-3. Com as dependências instaladas, abra o arquivo `.env.example` na raiz do projeto e preencha todos os campos com as informações sugeridas.
-3. Com as dependências instaladas, abra o terminal WSL na raiz do projeto e digite o comando `docker compose up --build`. Isso iniciará o serviço do Docker Compose, iniciando os serviços de frontend, backend e banco de dados.
+3. Com as dependências instaladas, abra o arquivo `.env.example` na raiz do projeto, duplique o arquivo, renomeando-o para `.env` e preencha todos os campos com as informações sugeridas, ou decididas pela equipe.
+    - **Nota**: A partir da linha 9, estão as informações para rodar o banco de dados. Os valores de usuário, senha e nome do banco de dados, uma vez que o Docker é executado, precisam sempre ser os mesmos, para a autenticação dar certo.
+3. Após o .env ser criado, abra o terminal WSL na raiz do projeto e digite o comando `docker compose up --build`. Isso iniciará o serviço do Docker Compose, iniciando os serviços de frontend, backend e banco de dados.
+4. Após isso, o projeto estará funcionando, e você pode acessar cada serviço com as portas definidas no `.env`. Exemplo: `localhost:8080` para o frontend e `localhost:3000` para o backend.
 
-Caso não seja necessário rodar a aplicação completa, apenas uma única parte, como o frontend ou o backend, siga os seguintes passos:
+<br>
 
-1. 
+Caso não seja necessário rodar a aplicação completa, apenas uma única parte, como o frontend ou o backend, siga os seguintes passos para utilizar a aplicação ***sem Docker***:
+
+1. Execute o comando `git clone https://github.com/atmosabp/greener` no terminal bash ou Powershell para copiar os arquivos do projeto no local de escolha do seu computador.
+2. Para rodar o frontend do projeto, abra o terminal na raiz do projeto, execute `cd frontend`, e depois instale as dependências necessárias com `npm i`. Por fim, digite `npm run dev` no terminal.
+3. Antes de executar o backend, é necessário criar o banco de dados. Sem Docker, é preciso configurá-lo na sua própria máquina com o PgAdmin, criando o banco de dados com o nome desejado e executando as queries do arquivo `database/schema.sql`.
+3. Para rodar o backend do projeto, primeiro, crie um arquivo `.env` com base no `.env.example`, abra o terminal na raiz do projeto, execute `cd frontend` e depois instale as dependências necessárias com `npm i`. Para executar, digite `npm run dev` no terminal.
+4. Após isso, ambas as partes do projeto estarão funcionando. Você pode utilizar o projeto frontend com `localhost:5173` e `localhost:3000` para o backend (ou outra porta que foi definida).
 
 
 <br>
@@ -110,6 +116,7 @@ Caso não seja necessário rodar a aplicação completa, apenas uma única parte
 | ------ | ---- | ------- | ---- | ---- | ---- |
 | Beatriz Oliveira | Júlia Rodrigues | Darcy Salmazzo | Kauã Cristian   | Lorenzo Milanelo | Mariana Tavares |
 | Product Owner | Scrum Master | Dev | Dev | Dev | Dev |
+| [Github](https://github.com/abeatrizoliveira) | [Github](https://github.com/HeyLavenderBee) | [Github](https://github.com/Darcyasn08) | [Github](https://github.com/KauaCristian-Dev) | [Github](https://github.com/LorenzoOMN) | [Github](https://github.com/Mari432hz) |
 
 <br>
 
