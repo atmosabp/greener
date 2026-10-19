@@ -1,14 +1,12 @@
 ## Relatório da Sprint 1
-O foco dessa sprint foi a prototipação das telas, desenvolvimento do HTML das telas principais e iniciar a conexão do backend com a API do GreenER.
+Este é o relatório da primeira sprint do projeto, onde é detalhado tudo o que foi feito em cada dia de desenvolvimento e o burndown mostrando o progresso de tarefas.  
 
----
+Caso seja preciso ver outras informações sobre a sprint, ver o arquivo `sprints/sprint-1.md`, clicando [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md).
+
 
 ### Burndown
 [imagem do burndown concluído aqui]
 
----
-
-### Sprint Backlog
 O backlog da sprint pode ser encontrado [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md).
 
 <details>
@@ -143,3 +141,13 @@ Após ter finalizado os designs, estamos focando em finalizar a implementação 
 #### 19/out
 
 </details>
+
+<br>
+
+---
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>
