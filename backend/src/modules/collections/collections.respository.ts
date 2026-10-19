@@ -53,6 +53,8 @@ export async function addMinuteHistory(datePull: any, serviceId: string) {
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
     throw new Error(error.message || "Não foi possível registrar o histórico.");
+  } finally{
+    client.release();
   }
 }
 
