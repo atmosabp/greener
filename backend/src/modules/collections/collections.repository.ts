@@ -12,13 +12,13 @@ import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-a
 export async function addMinuteHistory(datePull: any, serviceId: string) {
   const client = await pool.connect();
 
-  const collectionIntervalSeconds = (await reqInterval(serviceId)) || 2;
-  const carbonIntensity = (await reqCarbonValue(serviceId)) || 5;
-  const renewablePercent = (await reqRenewablePercent(serviceId)) || 5;
-  const cpu = (await reqMetricsCPU(serviceId)) || 91.1;
-  const memory = (await reqMetricsMemory(serviceId)) || 9;
-  const disk = (await reqMetricsDisk(serviceId)) || 2.3;
-  const network = (await reqMetricsNetwork(serviceId)) || 5;
+  const collectionIntervalSeconds = (await reqInterval(serviceId));
+  const carbonIntensity = (await reqCarbonValue(serviceId));
+  const renewablePercent = (await reqRenewablePercent(serviceId));
+  const cpu = (await reqMetricsCPU(serviceId));
+  const memory = (await reqMetricsMemory(serviceId));
+  const disk = (await reqMetricsDisk(serviceId));
+  const network = (await reqMetricsNetwork(serviceId));
 
   const metricsCalculator = new MetricsCalculator({
     collection_interval_seconds: collectionIntervalSeconds,
@@ -53,6 +53,8 @@ export async function addMinuteHistory(datePull: any, serviceId: string) {
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
     throw new Error(error.message || "Não foi possível registrar o histórico.");
+  } finally{
+    await client.release();
   }
 }
 
@@ -85,15 +87,17 @@ async function insertMinuteHistory(
   return result.rows[0] || null;
 }
 
+// Funções que ainda serão feitas ==========
+
 export async function addHourHistory(datePull: any) {
-  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = ?`, [
+  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = $1`, [
     datePull,
   ]);
   return result.rows[0] || null;
 }
 
 async function insertHourHistory(datePull: any) {
-  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = ?`, [
+  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = $1`, [
     datePull,
   ]);
   return result.rows[0] || null;
@@ -101,7 +105,7 @@ async function insertHourHistory(datePull: any) {
 
 export async function addMonthHistory(datePull: any) {
   const result = await pool.query(
-    `SELECT FROM month_data WHERE date_pull = ?`,
+    `SELECT FROM month_data WHERE date_pull = $1`,
     [datePull],
   );
   return result.rows[0] || null;
@@ -109,11 +113,13 @@ export async function addMonthHistory(datePull: any) {
 
 async function insertMonthHistory(datePull: any) {
   const result = await pool.query(
-    `SELECT FROM month_data WHERE date_pull = ?`,
+    `SELECT FROM month_data WHERE date_pull = $1`,
     [datePull],
   );
   return result.rows[0] || null;
 }
+
+// ==========================================
 
 export async function findHistory() {
   const result = await pool.query(
@@ -125,7 +131,7 @@ export async function findHistory() {
 
 export async function findMonthHistory(datePull: any) {
   const result = await pool.query(
-    `SELECT * FROM month_data WHERE date_pull = ?`,
+    `SELECT * FROM month_data WHERE date_pull = $1`,
     [datePull],
   );
   return result.rows[0] || null;
@@ -136,7 +142,7 @@ export async function findServiceMonthHistory(
   serviceId: string,
 ) {
   const result = await pool.query(
-    `SELECT * FROM services WHERE service_id = ? and date_pull = ?`,
+    `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
     [serviceId, datePull],
   );
   return result.rows[0] || null;
@@ -144,7 +150,7 @@ export async function findServiceMonthHistory(
 
 export async function findHourHistory(datePull: any) {
   const result = await pool.query(
-    `SELECT * FROM hour_data WHERE date_pull = ?`,
+    `SELECT * FROM hour_data WHERE date_pull = $1`,
     [datePull],
   );
   return result.rows[0] || null;
@@ -152,7 +158,7 @@ export async function findHourHistory(datePull: any) {
 
 export async function findServiceHourHistory(datePull: any, serviceId: string) {
   const result = await pool.query(
-    `SELECT * FROM services WHERE service_id = ? and date_pull = ?`,
+    `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
     [serviceId, datePull],
   );
   return result.rows[0] || null;
@@ -160,7 +166,7 @@ export async function findServiceHourHistory(datePull: any, serviceId: string) {
 
 export async function findMinuteHistory(datePull: number) {
   const result = await pool.query(
-    `SELECT * FROM minute_data WHERE date_pull = ?`,
+    `SELECT * FROM minute_data WHERE date_pull = $1`,
     [datePull],
   );
   return result.rows[0] || null;
@@ -171,7 +177,7 @@ export async function findServiceMinuteHistory(
   serviceId: string,
 ) {
   const result = await pool.query(
-    `SELECT * FROM services WHERE service_id = ? and date_pull = ?`,
+    `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
     [serviceId, datePull],
   );
   return result.rows[0] || null;
