@@ -3,7 +3,8 @@ import { app } from "../app";
 import { pool } from "../db/connections";
 
 
-//=======================================================Testes para Users=============================================================
+// ============= Testes para Users ================
+
 import { deleteUserByEmail } from "../modules/users/users.repository"; 
 
 afterAll(async () => {
