@@ -9,6 +9,12 @@ router.post("/", createUserController);
 // GET localhost:3000/users/get-users
 router.get("/get-users", listUsersController);
 
+//TODO: rota para pegar dados apenas de um cliente com base no id ou email
+
+//TODO: rota para editar usuário
+
+//TODO: rota para deletar usuário
+
 router.get('/teste', (_req, res) => {
     res.send("Essa é a rota teste.");
 });
