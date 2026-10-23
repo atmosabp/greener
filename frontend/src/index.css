@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Tema padrão */
+
+/* Modo claro + paleta verde */
+:root,
+[data-theme="light"][data-palette="green"] {
+  --background: #F9EEDC;
+  --background-transparent: rgba(56, 50, 46, 0.25);
+  --banner-shadow: rgb(56, 50, 46, 0.15);
+  --shadow: rgba(145, 124, 110, 0.5);
+  --text: #38322E;
+
+  --primary: #99C47C;
+  --primary-light: #BFC47C;
+  --primary-dark: #73915F;
+  --primary-darker: #547757;
+  --secondary: #AB876E;
+  --complementary: #ECDEC7;
+
+  --error: #AA4F3E;
+
+  --theme-primary: #99C47C;
+  --theme-secondary: #7CA2C4;
+}
+
+/* Modo escuro + paleta verde */
+[data-theme="dark"][data-palette="green"] {
+  --background: #29342D;
+  --background-transparent: rgba(26, 31, 28, 0.5);
+  --shadow: rgba(43, 43, 43, 0.5);
+  --text: #F9EEDC;
+
+  --primary: #6f8e5a;
+  --primary-light: #5f7252;
+  --primary-dark: #a4a866;
+  --primary-darker: #425535;
+  --secondary: #978072;
+  --complementary: #1f2521;
+
+
+  --error: #A83232;
+
+
+  --theme-primary: #669546;
+  --theme-secondary: #4A7092;
+}
+
+/* Modo claro + paleta azul */
+[data-theme="light"][data-palette="blue"] {
+  --background: #F9EEDC;
+  --background-transparent: rgba(56, 50, 46, 0.25);
+  --shadow: rgba(145, 124, 110, 0.5);
+  --text: #38322E;
+
+  --primary: #7CA2C4;
+  --primary-light: #93badd;
+  --primary-dark: #4F7291;
+  --primary-darker: #355068;
+  --secondary: #AB876E;
+  --complementary: #ECDEC7;
+
+
+  --error: #B23A48;
+
+  --theme-primary: #99C47C;
+  --theme-secondary: #7CA2C4;
+}
+
+/* Modo escuro + paleta azul */
+[data-theme="dark"][data-palette="blue"] {
+  --background: #262E30;
+  --background-transparent: rgb(38, 46, 48, 0.5);
+  --shadow: rgba(43, 43, 43, 0.5);
+  --text: #F9EEDC;
+
+  --primary: #506f8a;
+  --primary-light: #304D67;
+  --primary-dark: #6DA8AE;
+  --primary-darker: #2e4152;
+  --secondary: #978072;
+  --complementary: #1d2223;
+
+
+  --error: #E05252;
+
+  --theme-primary: #669546;
+  --theme-secondary: #4A7092;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background);
+  scroll-behavior: smooth;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+[data-theme="light"] ::selection {
+  background-color: var(--primary-dark);
+  color: var(--background);
+}
+
+[data-theme="dark"] ::selection {
+  background-color: var(--primary-dark);
+  color: var(--text);
+}
