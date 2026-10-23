@@ -18,6 +18,9 @@ O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas 
 <br>
 
 ### O que foi entregue
+O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui](https://youtu.be/no3dPzF96Jo).  
+Ele mostra visualmente o que foi feito das documentações, telas, design e backend, e o que está planejado para o próximo ciclo de entrega.
+
 A seguir está o burndown da sprint 1.  
 Ele demonstra a evolução das tarefas ao longo dos dias. Assim como a relação entre o esforço real de cada dia e o planejado.  
 No início da sprint, foi definido um esforço total de 194. E para cada dia, uma média de 16 pontos esperados.
@@ -109,6 +112,31 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 Durante a sprint, foi desenvolvido um relatório descrevendo o que foi feito em cada dia de trabalho para cada integrante, e outras informações adicionais.
 
 Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-1.md)
+
+<br>
+
+### Sprint Retrospective
+Este é um evento da metodologia Scrum que permite que a equipe se junte e dialogue sobre o processo, sem focar no produto. Seguimos um formato para falar o que não deu certo, o que deu certo, e o que podemos fazer para melhorar. Garantindo que levamos tudo o que foi discutido em consideração para ter um processo (e consequentemente, um produto) muito melhor.  
+Essa reunião aconteceu dia **20 de outubro**. Esses foram os pontos levantados:
+
+#### 1 - O que não deu certo 
+- Vários pull requests levavam tempo demais para ser fechados, o que levava em atrasos nas outras tarefas, pois dependiam de tarefas que já eram para estar concluídas, e virava uma bola de neve, atrasando o design, implementação de telas e backend.
+- Falta de comunicação dos pull requests. Quando alguém criava um pull request ou aprovava um, até a pessoa esperada notar isso, demorava muito, e também atrasava a completar outras tarefas.
+- Houve muito perfeccionismo nas tarefas, especificamente de design. Em teoria é algo bom ter tarefas muito bem desenvolvidas, mas para o design não é necessário deixar tudo perfeito logo na primeira sprint, pois com certeza ainda haverá muitas mudanças até o final do projeto.
+
+#### 2 - O que deu certo
+- Todos foram muito dedicados, mesmo em tarefas que eram difíceis de ser feitas, todos tentavam se empenhar o máximo possível.
+- O design ficou mais harmonioso do que planejado inicialmente.
+- O time foi muito unido, então sempre alguém podia ajudar o outro em alguma tarefa que tinha dificuldade, ajudando a acelerar na entrega e no aprendizado.
+- Produto no final da sprint ficou como planejávamos, e conseguimos concluir todas as tarefas a tempo por conta da organização.
+
+#### 3 - Como podemos melhorar
+- Se comunicar por outros meios (como WhatsApp, Discord ou pessoalmente) no momento que for feito um Pull Request ou ter sido avaliado um. Isso fará com quem tiver feito o pull request ou as pessoas que revisam ele notarem mais rápido, e agilizar no processo de aprová-lo.
+- Mudar formato da daily, para todos compartilharem o que foi feito no dia anterior, o que estão fazendo e o que irão fazer, proporcionando mais comunicação entre a equipe, e noção do andamento do projeto.
+- Utilizar mais o Kanban, pois é uma ferramenta que ainda pode ser muito explorada.
+- Canal de bug reports no Discord para reportar bugs e erros encontrados durante testes, para facilitar todos a corrigirem os erros, e planejar quando irão arrumá-los.
+- Estimar prazo de finalização das tarefas sempre que alguma for iniciada, para ter uma noção de quando as tarefas dependentes dela serão feitas, e agilizar mais o processo.
+- Testar a aplicação no tempo ocioso de trabalho. Isso ajuda a encontrar bugs mais efetivamente e sempre garantir que a aplicação sempre está funcionando como deveria (sem contar os testes automatizados que serão criados, pois eles só cobrem parte).
 
 <br>
 
