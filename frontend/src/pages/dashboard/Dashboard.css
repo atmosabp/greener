@@ -1,1 +1,141 @@
 /* Estilo da página dashboard */
+
+.dashboard {
+    margin-top: 70px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 30px;
+}
+
+.start-section {
+    width: 100%;
+    align-self: flex-start;
+    text-align: left;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.btns {
+    display: flex;
+    gap: 30px;
+}
+
+.main-section {
+    width: 100%;
+}
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.service-info {
+    background-color: var(--complementary);
+    height: 5rem;
+    border-radius: 1.25rem;
+    display: flex;
+    justify-content: center;
+    text-align: left;
+    flex-direction: column;
+    padding: 15px;
+    gap: 5px;
+}
+
+.service-info:nth-child(1) {
+    border: 2px solid var(--text);
+}
+
+.service-info h4 {
+    font-weight: 500;
+    font-size: 1.25rem;
+}
+
+.service-info .service-info-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-info .status {
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary);
+    border-radius: 50%;
+}
+
+.metrics {
+    background-color: var(--primary-light);
+    height: 7.5rem;
+    border-radius: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    padding: 20px 15px;
+}
+
+.service-data h4, .metrics h4{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.service-data {
+    background-color: var(--primary-dark);
+    color: var(--background);
+    height: 7.5rem;
+    border-radius: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    padding: 20px 15px;
+}
+
+.div4 {
+    grid-row: span 4 / span 4;
+}
+
+.div5 {
+    grid-row-start: 2;
+}
+
+.div6 {
+    grid-column-start: 1;
+    grid-row-start: 3;
+}
+
+.div7 {
+    grid-column-start: 1;
+    grid-row-start: 4;
+}
+
+.div8 {
+    grid-column-start: 2;
+    grid-row-start: 2;
+}
+
+.div9 {
+    grid-column-start: 2;
+    grid-row-start: 3;
+}
+
+.div10 {
+    grid-column-start: 2;
+    grid-row-start: 4;
+}
+
+.div11 {
+    grid-row: span 2 / span 2;
+    grid-column-start: 3;
+    grid-row-start: 2;
+}
+
+.div12 {
+    grid-row: span 2 / span 2;
+    grid-row-start: 4;
+}
