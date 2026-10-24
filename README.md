@@ -105,7 +105,7 @@ Caso não seja necessário rodar a aplicação completa, apenas uma única parte
 1. Execute o comando `git clone https://github.com/atmosabp/greener` no terminal bash ou Powershell para copiar os arquivos do projeto no local de escolha do seu computador.
 2. Para rodar o frontend do projeto, abra o terminal na raiz do projeto, execute `cd frontend`, e depois instale as dependências necessárias com `npm i`. Por fim, digite `npm run dev` no terminal.
 3. Antes de executar o backend, é necessário criar o banco de dados. Sem Docker, é preciso configurá-lo na sua própria máquina com o PgAdmin, criando o banco de dados com o nome desejado e executando as queries do arquivo `database/schema.sql`.
-3. Para rodar o backend do projeto, primeiro, crie um arquivo `.env` com base no `.env.example`, abra o terminal na raiz do projeto, execute `cd frontend` e depois instale as dependências necessárias com `npm i`. Para executar, digite `npm run dev` no terminal.
+3. Para rodar o backend do projeto, primeiro, crie um arquivo `.env` com base no `.env.example`, abra o terminal na raiz do projeto, execute `cd backend` e depois instale as dependências necessárias com `npm i`. Para executar, digite `npm run dev` no terminal.
 4. Após isso, ambas as partes do projeto estarão funcionando. Você pode utilizar o projeto frontend com `localhost:5173` e `localhost:3000` para o backend (ou outra porta que foi definida).
 
 

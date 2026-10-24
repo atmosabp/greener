@@ -1,0 +1,88 @@
+## Relatório da Sprint 2
+Este é o relatório da segunda sprint do projeto, que aconteceu entre os dias 20/10/2026 e 09/11/2026. <br>
+Neste documento é detalhado tudo o que foi feito em cada dia de desenvolvimento.  
+
+Caso seja preciso ver outras informações sobre a sprint, veja o arquivo `sprints/sprint-2.md`, clicando [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-2.md).
+
+<details>
+<summary>
+
+### Dailies
+</summary>
+
+#### 20/out 
+Dia separado apenas para o Sprint Planning, um evento da metodologia Scrum para planejar as tarefas para essa sprint, os esforços e quem irá fazer cada.  
+Foi feito apenas essa tarefa neste dia, no entanto, ela foi complemtamente concluída, e permitiu ter um bom planejamento para o resto da sprint.
+
+---
+
+#### 23/out
+Hoje foi realmente iniciado o desenvolvimento da sprint.  
+Iniciamos a implementação de duas telas: dashboard e comparação. Elas são telas cruciais e mais demoradas para fazer, então colocamos mais prioridade nelas nessa sprint. A implementação delas é baseado no design desenvolvido no Figma.  
+
+Também continuamos a criar mais endpoints para as coletas de métricas e CRUD de usuários, que serão utilizados pelo frontend, iniciamos a estrutura para armazenar o histórico de métricas no banco de dados e começamos o tratamento de coordenadas ausentes.  
+
+**Beatriz** -> Inicia implementação tela dashboard (DW07)   
+**Darcy** -> Inicia estrutura para armazenar histórico das coletas (BD04)  
+**Júlia** -> Auxilia na criação de endpoints e faz relatório do dia   
+**Kauã** -> Inicia tratamento de coordenadas ausentes (TP17)  
+**Lorenzo** -> Inicia implementação da tela de comparação (DW11)  
+**Mariana** -> Inicia ciação de mais endpoints (TP18)
+
+---
+
+#### 24/out
+
+---
+
+#### 25/out
+
+---
+
+#### 26/out
+
+---
+
+#### 27/out
+
+---
+
+#### 31/out
+
+---
+
+#### 01/nov
+
+---
+
+#### 03/nov
+
+---
+
+#### 06/nov
+
+---
+
+
+#### 07/nov
+
+---
+
+#### 08/nov
+
+---
+
+#### 09/nov  
+Este é o dia da Sprint Review. Não houve daily pois o desenvolvimento já foi concluído.
+
+</details>
+
+<br>
+
+---
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>

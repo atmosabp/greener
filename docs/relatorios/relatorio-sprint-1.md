@@ -1,5 +1,6 @@
 ## Relatório da Sprint 1
-Este é o relatório da primeira sprint do projeto, onde é detalhado tudo o que foi feito em cada dia de desenvolvimento e o burndown mostrando o progresso de tarefas.  
+Este é o relatório da primeira sprint do projeto, que ocorreu entre os dias 28/09/2026 e 19/10/2026.  
+Aqui é detalhado tudo o que foi feito em cada dia de desenvolvimento.  
 
 Caso seja preciso ver outras informações sobre a sprint, veja o arquivo `sprints/sprint-1.md`, clicando [aqui](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md).
 
