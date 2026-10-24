@@ -1,4 +1,4 @@
-drop table minute_data; 
+drop table services; 
 -- create database greener_db;
 create table if not exists users(
 	id serial primary key,
@@ -79,28 +79,18 @@ create index idx_month_data_services_dt on month_data (service_id, date_pull);
 
 insert into services (id, name, max_emitted, min_emitted)
 values
-('billing-api', 'Billing API', 34.2, 2.8),
-('checkout-worker', 'Checkout Worker', 4.1, 0.3),
-('recommendation-ai', 'Recommendation AI', 34.2, 2.8),
-('inventory-sync', 'Inventory Sync', 34.2, 2.8),
-('audit-stream', 'Audit Stream', 105.6, 2.8),
-('email-dispatcher', 'Email Dispatcher', 34.2, 2.8),
-('fraud-detector', 'Fraud Detector', 34.2, 2.8),
-('reporting-batch', 'Reporting Batch', 34.2, 2.8);
-
-
-insert into hour_data (co2e,kwh,cpu_percentage,memory_gb,disk_gb,network_gb,renewable_percent,service_id, date_pull)
-values 
-(0.0059,0.0023,45.368, 2.971539999999999,18.89856,0.70974,84,'billing-api','2026-10-23 17:00:00');
-
-select * from hour_data;
-
-select date_pull :: timestamp - interval '120 minutes' from minute_data;
+('billing-api', 'Billing API', 0, 99999),
+('checkout-worker', 'Checkout Worker', 0, 99999),
+('recommendation-ai', 'Recommendation AI', 0, 99999),
+('inventory-sync', 'Inventory Sync', 0, 99999),
+('audit-stream', 'Audit Stream', 0, 99999),
+('email-dispatcher', 'Email Dispatcher', 0, 99999),
+('fraud-detector', 'Fraud Detector', 0, 99999),
+('reporting-batch', 'Reporting Batch', 0, 99999);
 
 CREATE OR REPLACE FUNCTION minutes_to_hours_func()
 	RETURNS trigger
 	LANGUAGE 'plpgsql'
-	COST 100
 	VOLATILE NOT LEAKPROOF
 AS $BODY$
 begin
@@ -125,6 +115,8 @@ begin
 			new.service_id,
 			new.date_pull :: timestamp - interval '120 minutes'
 		);
+		select AVG(renewable_percent) from minute_data 
+			where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';
 		delete from minute_data 
 		where service_id = new.service_id
 		and date_pull <= new.date_pull :: timestamp - interval '60 minutes';
@@ -136,12 +128,11 @@ $BODY$;
 CREATE OR REPLACE FUNCTION hours_to_days_func()
 	RETURNS trigger
 	LANGUAGE 'plpgsql'
-	COST 100
 	VOLATILE NOT LEAKPROOF
 AS $BODY$
 begin
 	IF EXISTS (select * from hour_data where service_id = new.service_id and date_pull = new.date_pull :: timestamp - interval '2 days') THEN
-		insert into hour_data (co2e,kwh,cpu_percentage,memory_gb,disk_gb,network_gb,renewable_percent,service_id,date_pull) 
+		insert into day_data (co2e,kwh,cpu_percentage,memory_gb,disk_gb,network_gb,renewable_percent,service_id,date_pull) 
 		values
 		(	
 			(select AVG(co2e) from hour_data 
@@ -172,12 +163,11 @@ $BODY$;
 CREATE OR REPLACE FUNCTION days_to_months_func()
 	RETURNS trigger
 	LANGUAGE 'plpgsql'
-	COST 100
 	VOLATILE NOT LEAKPROOF
 AS $BODY$
 begin
 	IF EXISTS (select * from day_data where service_id = new.service_id and date_pull = new.date_pull :: timestamp - interval '2 months') THEN
-		insert into hour_data (co2e,kwh,cpu_percentage,memory_gb,disk_gb,network_gb,renewable_percent,service_id,date_pull) 
+		insert into month_data (co2e,kwh,cpu_percentage,memory_gb,disk_gb,network_gb,renewable_percent,service_id,date_pull) 
 		values
 		(	
 			(select AVG(co2e) from day_data 
@@ -205,65 +195,21 @@ return new;
 end;
 $BODY$;
 
-CREATE TRIGGER minutes_to_hours
+CREATE or replace TRIGGER minutes_to_hours
 	AFTER INSERT 
 	ON minute_data
 	FOR EACH ROW
 	EXECUTE FUNCTION minutes_to_hours_func();
 
-CREATE TRIGGER hours_to_days
+CREATE or replace TRIGGER hours_to_days
 	AFTER INSERT 
 	ON hour_data
 	FOR EACH ROW
 	EXECUTE FUNCTION hours_to_days_func();
 
-CREATE TRIGGER days_to_months
+CREATE or replace TRIGGER days_to_months
 	AFTER INSERT 
 	ON day_data
 	FOR EACH ROW
 	EXECUTE FUNCTION days_to_months_func();
 
-insert into hour_data (co2e,kwh,cpu_percentage,memory_gb,disk_gb,network_gb,renewable_percent,service_id) 
-values
-(
-	(select AVG(co2e) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	(select AVG(kwh) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	(select AVG(cpu_percentage) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	(select AVG(memory_gb) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	(select AVG(disk_gb) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	(select AVG(network_gb) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	(select AVG(renewable_percent) from minute_data 
-	where service_id = 'billing-api' and date_pull between current_timestamp :: timestamp - interval '120 minutes' and current_timestamp :: timestamp - interval '60 minutes'),
-	'billing-api'
-);
-
-select * from minute_data;
-
-select * from minute_data 
-where service_id = new.service_id
-and date_pull = new.date_pull :: timestamp - interval '120 minutes';
-
-
-(select AVG(co2e) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-(select AVG(kwh) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-(select AVG(cpu_percentage) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-(select AVG(memory_gb) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-(select AVG(disk_gb) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-(select AVG(network_gb) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-(select AVG(renewable_percent) from minute_data 
-where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';),
-new.service_id,
-new.date_pull :: timestamp - interval '120 minutes'
-);
