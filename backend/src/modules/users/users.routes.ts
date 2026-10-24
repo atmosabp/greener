@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUserController, listUsersController } from './users.controller';
+import { createUserController, editUserController, listUserByIdController, listUsersController } from './users.controller';
 
 export const router = Router();
 
@@ -9,20 +9,18 @@ router.post("/", createUserController);
 // GET localhost:3000/users/get-users
 router.get("/get-users", listUsersController);
 
-//TODO: rota para pegar dados apenas de um cliente com base no id ou email
+// GET localhost:3000/users/:id
+router.get("/:id", listUserByIdController);
 
 //TODO: rota para editar usuário
-
-//TODO: rota para deletar usuário
+router.patch("/:id", editUserController);
+//TODO: rota para deletar usuário com base na seleção feita pelo admin no front
 
 router.get('/teste', (_req, res) => {
     res.send("Essa é a rota teste.");
 });
 
 // GET localhost:3000/users/1
-router.get("/user/:id", (req, res) => {
-    res.send("Retorna usuário específico")
-});
 
 /*
 Teste de endpoints

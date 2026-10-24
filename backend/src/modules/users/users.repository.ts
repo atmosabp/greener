@@ -1,10 +1,48 @@
+import { error } from "node:console";
 import { pool } from "../../db/connections";
+import { Client } from "pg";
 
+//=====================Operações de consultas na table users=====================
 export async function findUsers(){
     const result = await pool.query(`SELECT * FROM users`);
 
     return result.rows || null;
 }
+
+export async function findUserById(id: number){
+    const result = await pool.query(
+        `SELECT 
+        id,
+        name, 
+        email, 
+        password, 
+        is_adm 
+        FROM users 
+        WHERE id=$1`,
+        [id]
+    );
+
+    if(result && result.rowCount == 1){
+        return result.rows;
+    }else{
+        return null;
+    }
+}
+
+//=====================Fim das operações de consultas na table users=====================
+//=====================Operações de edição na table users=====================
+
+export async function updateUser(client: any, id: number){
+    const {name, email, password, is_adm} = client.params
+    const result = await client.query(
+        `UPDATE users
+        SET name = 'ativo'
+        WHERE id = 10
+        RETURNING id, status;`
+    )
+}
+
+//=====================Fim das operações de edição na table users=====================
 
 async function insertUser(client: any, name: string, email: string, password: string, isAdm: boolean){
     const result = await client.query(

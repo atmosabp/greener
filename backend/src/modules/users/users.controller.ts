@@ -1,4 +1,4 @@
-import { searchUsers, createNewUser } from "./users.service";
+import { searchUsers, searchUserById, createNewUser, editUser } from "./users.service";
 
 export async function createUserController(req: any, res: any){
     const {name, email, password, isAdm} = req.body;
@@ -17,5 +17,28 @@ export async function listUsersController(_req: any, res: any){
         return res.status(200).json(result);
     } catch(error: any){
         return res.status(400).json({message: error.message || "Ocorreu um erro ao listar os usuários."});
+    }
+}
+
+export async function listUserByIdController(req: any, res: any){
+    const id = req.params.id;
+
+    try{
+        const result = await searchUserById(id);
+        return res.status(200).json(result);
+    }catch(error: any){
+        return res.status(400).json({message: error.message || "Ocorreu um erro ao listar o usuário."})
+    }
+}
+
+export async function editUserController(req: any, res: any){
+    const id = req.params.id
+    
+
+    try{
+        const result = await editUser(id);
+
+    }catch(error: any){
+
     }
 }
