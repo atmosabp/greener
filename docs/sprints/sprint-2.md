@@ -38,11 +38,11 @@ Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os 
 | **DW05** | Implementar tratamento de erros no cadastro (conexão front com back) | Lorenzo | DWII        | 3       |
 | **DW05** | Implementar tratamento de erros no login (conexão front com back)    | Beatriz | DWII        | 3       |
 | **DW06** | Implementar logout         | Lorenzo | DWII        | 2       |
-| **DW07** | Implementar dashboard       | Beatriz    | DW II        | 3       |
-| **DW07** | Conectar backend das APIs na dashboard       | Júlia | DW II        | 5       |
+| **DW07** | Implementar dashboard       | Beatriz    | DWII        | 5       |
+| **DW07** | Conectar backend das APIs na dashboard       | Júlia | DWII        | 3       |
 | **DW08** | Implementar atualização dos dados na tela principal (conexão front com back)            | Júlia    | DWII        | 5       |
 | **DW09** | Implementar estados de loading e erro (geral - conexão front com back)        | Júlia    | DWII        | 3       |
-| **DW09** | Implementar estados de loading e erro (geral - frontend)                  | Beatriz    | DWIII        | 3      |
+| **DW09** | Implementar estados de loading e erro (geral - frontend)                  | Beatriz    | DWII        | 3      |
 | **DW10** | Implementar tela de ranking         | Lorenzo    | DWII        | 5       |
 | **DW10** | Conectar backend na tela de ranking      | Darcy    | DWII        | 5       |
 | **DW11** | Implementar tela de comparação     | Lorenzo    | DWII        | 8       |
@@ -62,7 +62,7 @@ Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os 
 | **TP13** | Detectar alterações na lista de serviços   | Mariana    | TP I    | 5     |
 | **TP14** | Detectar serviços sem métricas    | Mariana    | TP I        | 3       |
 | **TP15** | Persistir métricas coletadas no banco de dados     | Darcy    | TP I  | 2  |
-| **TP16** | Criar mecanismo de coleta periódica   | Darcy    | TP I        | 2       |
+| **TP16** | Criar mecanismo de coleta periódica   | Darcy    | TP I        | 5       |
 | **TP17** | Tratar coordenadas ausentes  | Kauã    | TP I        | 5       |
 | **TP18** | Criar mais endpoints   | Mariana    | TP I        | 3    |
 | **TP19** | Continuar testes de implementação (endpoints)     | Júlia e Mariana    | TP I        | 8  |
