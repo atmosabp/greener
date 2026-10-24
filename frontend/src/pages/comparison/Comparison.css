@@ -1,130 +1,918 @@
-/* =========================================================
-   COMPARAÇÃO — ATMOS °
-   Adaptável ao sistema global de temas
-========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-.comparison-page {
+.cmp-comparison {
+    --u: clamp(0.7px, calc(100vw / 1600), 1.1px);
+
+    /* Cores vinculadas ao tema global, com valores de fallback */
+    --bg: var(--background, #f9eedc);
+    --ink: var(--text, #3a322c);
+    --sand: var(--background-transparent, #ede0cc);
+    --panel: var(--primary-light, #dacfba);
+    --lime: var(--primary, #bec47d);
+    --moss: var(--primary-dark, #6f8f5f);
+    --moss-dark: var(--primary-dark, #4f7a5a);
+    --brown: var(--primary-dark, #b38a6e);
+    --muted: var(--text, #a89880);
+
+    width: 100%;
     min-height: 100vh;
-    background: var(--background);
-    color: var(--text);
-    font-family: "Roboto", Arial, sans-serif;
-    transition:
-        background-color 0.5s ease-in-out,
-        color 0.5s ease-in-out;
+    text-align: left;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
-.comparison-page *,
-.comparison-page *::before,
-.comparison-page *::after {
+.cmp-comparison *,
+.cmp-comparison *::before,
+.cmp-comparison *::after {
     box-sizing: border-box;
 }
 
-.comparison-main {
-    width: calc(100% - 48px);
-    flex: 1;
-    margin: 0 auto;
-    padding: 112px 0 30px;
+:where(.cmp-comparison) :where(h1, h2, h3, p, ul) {
+    margin: 0;
+    padding: 0;
 }
 
-/* Título e período */
+:where(.cmp-comparison) :where(button) {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
 
-.comparison-heading {
-    width: 90%;
+:where(.cmp-comparison) :where(a) {
+    color: inherit;
+    text-decoration: none;
+}
+
+.cmp-comparison *:focus-visible {
+    outline: calc(2 * var(--u)) solid var(--ink);
+    outline-offset: calc(2 * var(--u));
+}
+
+/* ---------- Topbar ---------- */
+
+.cmp-topbar {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: calc(68 * var(--u));
+    padding: 0 calc(52 * var(--u)) 0 calc(38 * var(--u));
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.cmp-topbar__logo {
+    display: inline-flex;
+    width: fit-content;
+}
+
+.cmp-topbar__nav {
+    display: flex;
+    gap: calc(78 * var(--u));
+    font-size: calc(15 * var(--u));
+}
+
+.cmp-topbar__nav a[aria-current='page'] {
+    font-weight: 600;
+}
+
+.cmp-topbar__user {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: calc(24 * var(--u));
+    font-size: calc(15 * var(--u));
+}
+
+.cmp-btn-dark {
+    height: calc(39 * var(--u));
+    padding: 0 calc(21 * var(--u));
+    border: 0;
+    border-radius: calc(20 * var(--u));
+    background: var(--ink);
+    color: var(--bg);
+    font-size: calc(15 * var(--u));
+}
+
+/* ---------- Página ---------- */
+
+.cmp-page {
+    position: relative;
+    display: block;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    margin-top: 5rem;
+    padding: 0 calc(29 * var(--u)) calc(24 * var(--u));
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.cmp-intro {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: calc(10 * var(--u)) calc(17 * var(--u)) 0 calc(9 * var(--u));
+}
+
+.cmp-intro h1 {
+    font-size: calc(48 * var(--u));
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+
+.cmp-intro__sub {
+    margin-top: calc(4 * var(--u));
+    font-size: calc(20 * var(--u));
+    color: var(--ink);
+}
+
+/* ---------- Selects em pílula ---------- */
+
+.cmp-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cmp-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cmp-select option {
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.cmp-select svg {
+    position: absolute;
+    right: calc(14 * var(--u));
+    pointer-events: none;
+    color: var(--ink);
+}
+
+.cmp-select--dark select {
+    height: calc(50 * var(--u));
+    min-width: calc(168 * var(--u));
+    padding: 0 calc(46 * var(--u)) 0 calc(20 * var(--u));
+    border-radius: calc(25 * var(--u));
+    background: var(--ink);
+    color: var(--bg);
+    font-size: calc(20 * var(--u));
+}
+
+.cmp-select--dark svg {
+    color: var(--bg);
+    right: calc(18 * var(--u));
+}
+
+.cmp-select--green select {
+    height: calc(34 * var(--u));
+    min-width: calc(164 * var(--u));
+    padding: 0 calc(40 * var(--u)) 0 calc(18 * var(--u));
+    border-radius: calc(17 * var(--u));
+    background: var(--lime);
+    color: var(--ink);
+    font-size: calc(20 * var(--u));
+}
+
+.cmp-pill-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(8 * var(--u));
+    height: calc(53 * var(--u));
+    margin: calc(18 * var(--u)) 0 0 calc(3 * var(--u));
+    padding: 0 calc(12 * var(--u));
+    border: calc(2 * var(--u)) solid var(--ink);
+    border-radius: calc(27 * var(--u));
+    background: var(--sand);
+    color: var(--ink);
+    font-size: calc(24 * var(--u));
+}
+
+/* ---------- Popover / menus ---------- */
+
+.cmp-popover {
+    position: relative;
+    display: inline-block;
+}
+
+.cmp-popover__menu {
+    position: absolute;
+    top: calc(100% + calc(8 * var(--u)));
+    z-index: 20;
+    min-width: calc(240 * var(--u));
+    padding: calc(8 * var(--u));
+    border-radius: calc(16 * var(--u));
+    background: var(--sand);
+    color: var(--ink);
+    box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(58, 50, 44, 0.18);
+}
+
+.cmp-popover__menu--left {
+    left: calc(3 * var(--u));
+}
+
+.cmp-popover__menu--right {
+    right: 0;
+}
+
+.cmp-menu {
+    list-style: none;
+}
+
+.cmp-menu label,
+.cmp-menu button {
+    display: flex;
+    align-items: center;
+    gap: calc(10 * var(--u));
+    width: 100%;
+    padding: calc(10 * var(--u)) calc(12 * var(--u));
+    border: 0;
+    border-radius: calc(10 * var(--u));
+    background: transparent;
+    color: var(--ink);
+    font-size: calc(17 * var(--u));
+    text-align: left;
+    cursor: pointer;
+}
+
+.cmp-menu label:hover,
+.cmp-menu button:hover,
+.cmp-menu button.cmp-is-active {
+    background: var(--lime);
+}
+
+.cmp-menu input {
+    width: calc(18 * var(--u));
+    height: calc(18 * var(--u));
+    accent-color: var(--moss);
+}
+
+/* ---------- Média indicadores ---------- */
+
+.cmp-averages {
+    position: relative;
+    margin-top: calc(30 * var(--u));
+    padding: calc(76 * var(--u)) calc(38 * var(--u)) calc(17 * var(--u)) calc(35 * var(--u));
+    border-radius: calc(30 * var(--u));
+    background: var(--lime);
+    color: var(--ink);
+}
+
+.cmp-averages__title {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(418 * var(--u));
+    max-width: 90%;
+    height: calc(54 * var(--u));
+    border-radius: 0 0 calc(28 * var(--u)) calc(28 * var(--u));
+    background: var(--moss);
+    color: var(--bg);
+    font-size: calc(36 * var(--u));
+    font-weight: 400;
+}
+
+.cmp-averages__help {
+    position: absolute;
+    top: calc(16 * var(--u));
+    right: calc(14 * var(--u));
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+}
+
+.cmp-averages__content {
+    display: grid;
+    grid-template-columns: minmax(0, 601fr) minmax(0, 333fr) minmax(0, 333fr);
+    gap: calc(26 * var(--u));
+}
+
+.cmp-averages__tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: calc(122 * var(--u));
+    gap: calc(21 * var(--u)) calc(25 * var(--u));
+    align-content: start;
+    margin-right: calc(74 * var(--u));
+}
+
+.cmp-avg-tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: calc(14 * var(--u)) calc(14 * var(--u)) calc(12 * var(--u)) calc(16 * var(--u));
+    border-radius: calc(20 * var(--u));
+    background: var(--sand);
+    color: var(--ink);
+}
+
+.cmp-avg-tile span {
+    font-size: calc(28 * var(--u));
+    font-weight: 600;
+}
+
+.cmp-avg-tile strong {
+    align-self: flex-end;
+    font-size: calc(32 * var(--u));
+    font-weight: 500;
+}
+
+.cmp-gauge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: calc(264 * var(--u));
+    padding: calc(14 * var(--u)) 0 0;
+    border-radius: calc(24 * var(--u));
+    background: var(--sand);
+    color: var(--ink);
+}
+
+.cmp-gauge-card__title {
+    font-size: calc(24 * var(--u));
+    font-weight: 400;
+}
+
+.cmp-gauge {
+    width: calc(156 * var(--u));
+    margin-top: calc(22 * var(--u));
+    overflow: visible;
+}
+
+.cmp-gauge path {
+    fill: none;
+    stroke-width: 22;
+}
+
+.cmp-gauge__track {
+    stroke: var(--ink);
+}
+
+.cmp-gauge__fill {
+    stroke: var(--moss);
+}
+
+.cmp-gauge__scale {
+    display: flex;
+    justify-content: space-between;
+    width: calc(160 * var(--u));
+    margin-top: calc(14 * var(--u));
+    padding: 0 calc(6 * var(--u));
+    font-size: calc(15 * var(--u));
+    font-weight: 500;
+}
+
+.cmp-gauge-card__value {
+    margin-top: calc(22 * var(--u));
+    font-size: calc(32 * var(--u));
+    font-weight: 500;
+}
+
+/* ---------- Serviços ---------- */
+
+.cmp-services {
+    margin-top: calc(30 * var(--u));
+}
+
+.cmp-services__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    margin: 0 8px 24px;
+    padding: 0 calc(38 * var(--u)) 0 calc(18 * var(--u));
+    color: var(--ink);
 }
 
-.comparison-heading h1 {
-    margin: 0;
-    color: var(--text);
-    font-size: 43px;
-    line-height: 1.15;
-    font-weight: 700;
-    letter-spacing: -1px;
+.cmp-services__head h2 {
+    font-size: calc(36 * var(--u));
+    font-weight: 600;
 }
 
-.comparison-heading p {
-    margin: 2px 0 0;
-    color: var(--text);
-    font-size: 19px;
+.cmp-services__tools {
+    display: flex;
+    align-items: center;
+    gap: calc(26 * var(--u));
 }
 
-.comparison-period {
-    min-width: 150px;
-    padding: 12px 18px;
-    border: 1px solid var(--text);
-    border-radius: 30px;
-    background: var(--primary);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 17px;
-    cursor: pointer;
-    transition:
-        background-color 0.5s ease-in-out,
-        color 0.5s ease-in-out;
+.cmp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(14 * var(--u));
+    height: calc(36 * var(--u));
+    padding: 0 calc(14 * var(--u));
+    border: 0;
+    border-radius: calc(18 * var(--u));
+    background: var(--lime);
+    color: var(--ink);
+    font-size: calc(20 * var(--u));
+    white-space: nowrap;
 }
 
-/* Área de conteúdo */
-
-.comparison-select-services {
-    min-height: 300px;
+.cmp-chip svg {
+    color: var(--ink);
 }
 
-/* Rodapé */
+.cmp-chip--wide {
+    gap: calc(24 * var(--u));
+}
 
-.comparison-footer {
-    padding: 24px 10px 12px;
-    color: var(--text);
-    opacity: 0.7;
-    font-size: 14px;
+.cmp-threshold {
+    display: inline-flex;
+    align-items: center;
+    width: calc(76 * var(--u));
+    height: calc(36 * var(--u));
+    border-radius: calc(18 * var(--u));
+    background: var(--ink);
+    color: var(--bg);
+    font-size: calc(14 * var(--u));
+    font-weight: 600;
+}
+
+.cmp-threshold input {
+    width: calc(46 * var(--u));
+    height: calc(36 * var(--u));
+    padding: 0;
+    border: 0;
+    border-radius: calc(18 * var(--u));
+    background: var(--moss);
+    color: var(--bg);
+    font: inherit;
     text-align: center;
 }
 
-/* Acessibilidade */
-
-.comparison-page button:focus-visible,
-.comparison-page select:focus-visible {
-    outline: 2px solid var(--primary-dark);
-    outline-offset: 3px;
+.cmp-threshold span {
+    flex: 1;
+    text-align: center;
 }
 
-/* Responsividade */
+.cmp-services__scroll {
+    display: flex;
+    flex-direction: column;
+    gap: calc(28 * var(--u));
+    height: calc(525 * var(--u));
+    margin-top: calc(18 * var(--u));
+    padding: 0 calc(18 * var(--u)) calc(4 * var(--u)) 0;
+    overflow-y: auto;
+}
 
-@media (max-width: 650px) {
-    .comparison-main {
-        width: calc(100% - 24px);
-        padding-top: 20px;
+/* Firefox */
+@supports not selector(*::-webkit-scrollbar) {
+    .cmp-services__scroll {
+        scrollbar-width: auto;
+        scrollbar-color: var(--moss-dark) var(--lime);
+    }
+}
+
+.cmp-services__scroll::-webkit-scrollbar {
+    width: calc(14 * var(--u));
+}
+
+.cmp-services__scroll::-webkit-scrollbar-track {
+    border-radius: calc(7 * var(--u));
+    background: var(--lime);
+}
+
+.cmp-services__scroll::-webkit-scrollbar-thumb {
+    border-radius: calc(7 * var(--u));
+    background: var(--moss-dark);
+}
+
+.cmp-empty {
+    padding: calc(40 * var(--u)) 0;
+    text-align: center;
+    font-size: calc(18 * var(--u));
+}
+
+/* ---------- Card de serviço ---------- */
+
+.cmp-service {
+    position: relative;
+    flex: 0 0 auto;
+    min-height: calc(249 * var(--u));
+    padding: calc(75 * var(--u)) calc(22 * var(--u)) calc(21 * var(--u)) calc(69 * var(--u));
+    border: calc(2 * var(--u)) solid transparent;
+    border-radius: calc(30 * var(--u));
+    background: var(--panel);
+    color: var(--ink);
+}
+
+.cmp-service--reference {
+    border-color: var(--brown);
+}
+
+.cmp-service__name {
+    position: absolute;
+    top: calc(-2 * var(--u));
+    left: calc(67 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(202 * var(--u));
+    height: calc(40 * var(--u));
+    border-radius: 0 0 calc(20 * var(--u)) calc(20 * var(--u));
+    background: var(--panel);
+    color: var(--ink);
+    font-size: calc(22 * var(--u));
+    font-weight: 400;
+}
+
+.cmp-service--reference .cmp-service__name {
+    background: var(--lime);
+}
+
+.cmp-service__star {
+    position: absolute;
+    top: calc(14 * var(--u));
+    left: calc(18 * var(--u));
+    display: grid;
+}
+
+.cmp-service__actions {
+    position: absolute;
+    top: calc(14 * var(--u));
+    right: calc(20 * var(--u));
+    display: flex;
+    align-items: center;
+    gap: calc(14 * var(--u));
+}
+
+.cmp-service__compare-label {
+    margin-left: calc(36 * var(--u));
+    font-size: calc(20 * var(--u));
+}
+
+.cmp-rank {
+    position: absolute;
+    top: 50%;
+    left: calc(14 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: calc(28 * var(--u));
+    transform: translateY(-38%);
+}
+
+.cmp-rank button {
+    display: grid;
+    place-items: center;
+    width: calc(28 * var(--u));
+    height: calc(22 * var(--u));
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.cmp-rank__spacer {
+    height: calc(22 * var(--u));
+}
+
+.cmp-rank__number {
+    font-size: calc(20 * var(--u));
+    line-height: 1.1;
+}
+
+.cmp-service__body {
+    display: grid;
+    grid-template-columns: calc(202 * var(--u)) calc(208 * var(--u)) minmax(0, 1fr) calc(280 * var(--u));
+    gap: calc(17 * var(--u));
+    height: calc(152 * var(--u));
+}
+
+.cmp-energy {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: calc(8 * var(--u)) calc(12 * var(--u)) calc(14 * var(--u));
+    border-radius: calc(20 * var(--u));
+    background: var(--moss);
+    color: var(--bg);
+}
+
+.cmp-energy__label {
+    font-size: calc(24 * var(--u));
+    line-height: 1.15;
+}
+
+.cmp-energy__label .cmp-arrow {
+    display: inline-block;
+    margin-left: calc(4 * var(--u));
+    vertical-align: calc(-3 * var(--u));
+}
+
+.cmp-energy__value {
+    align-self: center;
+    font-size: calc(32 * var(--u));
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.cmp-tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: calc(10 * var(--u)) calc(4 * var(--u));
+}
+
+.cmp-tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: calc(6 * var(--u)) calc(12 * var(--u)) calc(4 * var(--u)) calc(6 * var(--u));
+    border-radius: calc(20 * var(--u));
+    background: var(--lime);
+    color: var(--ink);
+    min-width: 0;
+}
+
+.cmp-tile__label {
+    font-size: calc(24 * var(--u));
+    line-height: 1.1;
+}
+
+.cmp-tile__value {
+    align-self: flex-end;
+    font-size: calc(32 * var(--u));
+    font-weight: 500;
+    line-height: 1;
+}
+
+.cmp-tile--unavailable {
+    align-items: center;
+    justify-content: center;
+    gap: calc(2 * var(--u));
+    background: var(--panel);
+    color: var(--ink);
+    text-align: center;
+}
+
+.cmp-tile--unavailable .cmp-tile__label {
+    font-size: calc(24 * var(--u));
+    font-weight: 500;
+}
+
+.cmp-delta {
+    display: inline-flex;
+    align-items: center;
+}
+
+.cmp-delta .cmp-arrow {
+    width: calc(20 * var(--u));
+    height: calc(20 * var(--u));
+}
+
+.cmp-delta__eq {
+    margin-right: calc(4 * var(--u));
+}
+
+/* ---------- Intensidade de carbono ---------- */
+
+.cmp-carbon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(12 * var(--u)) calc(10 * var(--u)) 0;
+    border-radius: calc(20 * var(--u));
+    background: var(--sand);
+    color: var(--ink);
+}
+
+.cmp-carbon__title {
+    font-size: calc(20 * var(--u));
+}
+
+.cmp-carbon__level {
+    margin-top: calc(6 * var(--u));
+    font-size: calc(32 * var(--u));
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.cmp-carbon__bar {
+    position: relative;
+    width: calc(191 * var(--u));
+    height: calc(4 * var(--u));
+    margin-top: calc(12 * var(--u));
+    border-radius: calc(2 * var(--u));
+    background: var(--panel);
+}
+
+.cmp-carbon__fill {
+    position: absolute;
+    top: calc(-3 * var(--u));
+    left: 0;
+    height: calc(10 * var(--u));
+    border-radius: calc(5 * var(--u));
+    background: linear-gradient(90deg, var(--moss), var(--lime));
+}
+
+.cmp-carbon__dot {
+    position: absolute;
+    top: calc(-7 * var(--u));
+    width: calc(18 * var(--u));
+    height: calc(18 * var(--u));
+    border-radius: calc(9 * var(--u));
+    transform: translateX(-50%);
+}
+
+.cmp-carbon__dot--mid {
+    left: 51%;
+    background: var(--lime);
+}
+
+.cmp-carbon__dot--high {
+    left: 100%;
+    background: var(--brown);
+}
+
+.cmp-carbon__value {
+    margin-top: calc(14 * var(--u));
+    font-size: calc(24 * var(--u));
+    font-weight: 500;
+}
+
+.cmp-carbon__value small {
+    font-size: calc(20 * var(--u));
+    font-weight: 400;
+}
+
+/* ---------- Rodapé ---------- */
+
+.cmp-footer {
+    padding: calc(22 * var(--u)) 0 calc(28 * var(--u));
+    color: var(--muted);
+    font-size: calc(16 * var(--u));
+    text-align: center;
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 1120px) {
+    .cmp-comparison {
+        --u: 0.85px;
     }
 
-    .comparison-heading {
+    .cmp-topbar {
+        padding: 0 calc(20 * var(--u));
+    }
+
+    .cmp-topbar__nav {
+        gap: calc(32 * var(--u));
+    }
+
+    .cmp-averages__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cmp-averages__tiles {
+        width: 100%;
+        max-width: calc(527 * var(--u));
+        margin-right: 0;
+    }
+
+    .cmp-gauge-card {
+        width: calc(333 * var(--u));
+        max-width: 100%;
+    }
+
+    .cmp-services__scroll {
+        height: calc(640 * var(--u));
+    }
+
+    .cmp-service {
+        padding-top: calc(60 * var(--u));
+    }
+
+    .cmp-service__body {
+        grid-template-columns: 1fr 1fr;
+        height: auto;
+    }
+
+    .cmp-energy {
+        min-height: calc(152 * var(--u));
+    }
+
+    .cmp-tiles,
+    .cmp-carbon {
+        grid-column: 1 / -1;
+    }
+
+    .cmp-tiles {
+        min-height: calc(152 * var(--u));
+    }
+
+    .cmp-carbon {
+        padding-bottom: calc(14 * var(--u));
+    }
+
+    .cmp-service__actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        left: calc(120 * var(--u));
+    }
+
+    .cmp-service__compare-label {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 720px) {
+    .cmp-comparison {
+        --u: 0.8px;
+    }
+
+    .cmp-topbar {
+        grid-template-columns: 1fr auto;
+        height: auto;
+        padding: calc(12 * var(--u)) calc(16 * var(--u));
+        row-gap: calc(8 * var(--u));
+    }
+
+    .cmp-topbar__nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-content: space-between;
+        gap: calc(12 * var(--u));
+    }
+
+    .cmp-intro {
+        flex-direction: column;
+        gap: calc(16 * var(--u));
+    }
+
+    .cmp-intro h1 {
+        font-size: calc(34 * var(--u));
+    }
+
+    .cmp-averages__tiles {
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        gap: calc(12 * var(--u));
+    }
+
+    .cmp-avg-tile span {
+        font-size: calc(20 * var(--u));
+    }
+
+    .cmp-avg-tile strong {
+        font-size: calc(24 * var(--u));
+    }
+
+    .cmp-gauge-card {
+        width: 100%;
+    }
+
+    .cmp-services__head {
+        flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
-        margin-right: 2px;
-        margin-left: 2px;
+        gap: calc(12 * var(--u));
+        padding-right: 0;
     }
 
-    .comparison-heading h1 {
-        font-size: 28px;
+    .cmp-service {
+        padding: calc(100 * var(--u)) calc(12 * var(--u)) calc(16 * var(--u)) calc(48 * var(--u));
     }
 
-    .comparison-heading p {
-        font-size: 14px;
+    .cmp-service__body {
+        grid-template-columns: 1fr;
     }
 
-    .comparison-period {
-        min-width: 100px;
-        max-width: 145px;
-        padding: 10px 12px;
-        font-size: 14px;
+    .cmp-service__name {
+        left: calc(46 * var(--u));
+    }
+
+    .cmp-service__actions {
+        left: calc(12 * var(--u));
+    }
+
+    .cmp-rank {
+        left: calc(8 * var(--u));
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .comparison-page,
-    .comparison-page * {
+    .cmp-comparison * {
         transition: none !important;
+        animation: none !important;
     }
 }
