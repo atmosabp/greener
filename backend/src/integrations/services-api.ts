@@ -1,9 +1,9 @@
-import type { ServiceTypes, MetricsType } from "../types/services-types";
+import type { ServiceTypes, MetricsType, CoordinatesTypes } from "../types/services-types";
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 const metricsURL = "https://metrics.unilaunch.org/metrics";
 
-export async function reqServices() {
+async function reqServices() {
   try {
     const response = await fetch(serviceURL);
 
@@ -21,7 +21,7 @@ export async function reqServices() {
   }
 }
 
-export async function checkServiceAvailiability(
+async function checkServiceAvailiability(
   service: ServiceTypes,
 ): Promise<ServiceTypes> {
   try {
@@ -51,6 +51,25 @@ export async function checkServiceAvailiability(
     return service;
   }
 }
+
+async function reqCoordinates(){
+  try {
+    const response = await fetch(serviceURL);
+
+    if(response.ok){
+      const serviceList: ServiceTypes[] = await response.json();
+      console.log(serviceList)
+      // const serviceCoordinate: CoordinatesTypes = serviceList
+    }
+    
+  } catch (error) {
+    
+  }
+
+}
+reqCoordinates();
+
+
 
 async function teste() {
   console.log(await reqServices());
