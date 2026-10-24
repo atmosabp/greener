@@ -3,16 +3,19 @@
 .cmp-comparison {
     --u: clamp(0.7px, calc(100vw / 1600), 1.1px);
 
-    /* Cores vinculadas ao tema global, com valores de fallback */
+    /* Identidade visual Atmos: cores sólidas e consistentes */
     --bg: var(--background, #f9eedc);
     --ink: var(--text, #3a322c);
-    --sand: var(--background-transparent, #ede0cc);
+    --sand: var(--background, #f9eedc);
     --panel: var(--primary-light, #dacfba);
     --lime: var(--primary, #bec47d);
     --moss: var(--primary-dark, #6f8f5f);
     --moss-dark: var(--primary-dark, #4f7a5a);
-    --brown: var(--primary-dark, #b38a6e);
-    --muted: var(--text, #a89880);
+    --brown: #b38a6e;
+    --muted: #81766b;
+
+    /* Transição de cores dos temas */
+    --theme-transition: 0.5s ease-in-out;
 
     width: 100%;
     min-height: 100vh;
@@ -21,12 +24,28 @@
     color: var(--ink);
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
+
+    transition:
+        background-color var(--theme-transition),
+        color var(--theme-transition);
 }
 
 .cmp-comparison *,
 .cmp-comparison *::before,
 .cmp-comparison *::after {
     box-sizing: border-box;
+}
+
+.cmp-comparison * {
+    transition:
+        background-color var(--theme-transition),
+        color var(--theme-transition),
+        border-color var(--theme-transition),
+        box-shadow var(--theme-transition);
+}
+
+.cmp-comparison svg {
+    transition: transform 0.2s ease;
 }
 
 :where(.cmp-comparison) :where(h1, h2, h3, p, ul) {
@@ -46,7 +65,7 @@
 }
 
 .cmp-comparison *:focus-visible {
-    outline: calc(2 * var(--u)) solid var(--ink);
+    outline: calc(2 * var(--u)) solid var(--moss);
     outline-offset: calc(2 * var(--u));
 }
 
@@ -144,7 +163,7 @@
 .cmp-select select {
     appearance: none;
     -webkit-appearance: none;
-    border: 0;
+    border: 1px solid var(--moss);
     cursor: pointer;
     font: inherit;
 }
@@ -186,21 +205,47 @@
     font-size: calc(20 * var(--u));
 }
 
+/* ---------- Dropdown de serviços selecionados ---------- */
+
 .cmp-pill-outline {
     display: inline-flex;
     align-items: center;
-    gap: calc(8 * var(--u));
-    height: calc(53 * var(--u));
+    justify-content: space-between;
+    gap: calc(12 * var(--u));
+    min-height: calc(53 * var(--u));
     margin: calc(18 * var(--u)) 0 0 calc(3 * var(--u));
-    padding: 0 calc(12 * var(--u));
-    border: calc(2 * var(--u)) solid var(--ink);
-    border-radius: calc(27 * var(--u));
-    background: var(--sand);
+    padding: 0 calc(18 * var(--u));
+    border: 1.5px solid var(--moss);
+    border-radius: calc(18 * var(--u));
+    background: var(--bg);
     color: var(--ink);
-    font-size: calc(24 * var(--u));
+    font-size: calc(20 * var(--u));
+    font-weight: 500;
+    box-shadow: 0 calc(2 * var(--u)) calc(5 * var(--u)) rgba(58, 50, 44, 0.06);
+    transition:
+        background-color var(--theme-transition),
+        color var(--theme-transition),
+        border-color var(--theme-transition),
+        box-shadow var(--theme-transition);
 }
 
-/* ---------- Popover / menus ---------- */
+.cmp-pill-outline:hover,
+.cmp-pill-outline[aria-expanded='true'] {
+    background: var(--panel);
+    border-color: var(--moss-dark);
+    box-shadow: 0 calc(3 * var(--u)) calc(9 * var(--u)) rgba(58, 50, 44, 0.12);
+}
+
+.cmp-pill-outline svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.cmp-pill-outline[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+}
+
+/* ---------- Popovers e menus ---------- */
 
 .cmp-popover {
     position: relative;
@@ -210,13 +255,22 @@
 .cmp-popover__menu {
     position: absolute;
     top: calc(100% + calc(8 * var(--u)));
-    z-index: 20;
-    min-width: calc(240 * var(--u));
+    z-index: 100;
+    min-width: max(100%, calc(260 * var(--u)));
+    max-width: min(calc(360 * var(--u)), calc(100vw - 32px));
     padding: calc(8 * var(--u));
+    border: 1px solid var(--panel);
     border-radius: calc(16 * var(--u));
-    background: var(--sand);
+
+    /* Fundo completamente sólido, sem transparência */
+    background-color: var(--bg);
     color: var(--ink);
-    box-shadow: 0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(58, 50, 44, 0.18);
+
+    box-shadow:
+        0 calc(8 * var(--u)) calc(24 * var(--u)) rgba(58, 50, 44, 0.14),
+        0 calc(2 * var(--u)) calc(5 * var(--u)) rgba(58, 50, 44, 0.06);
+
+    overflow: hidden;
 }
 
 .cmp-popover__menu--left {
@@ -229,6 +283,14 @@
 
 .cmp-menu {
     list-style: none;
+    max-height: min(320px, 55vh);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--moss) var(--bg);
+}
+
+.cmp-menu li + li {
+    margin-top: calc(3 * var(--u));
 }
 
 .cmp-menu label,
@@ -237,29 +299,48 @@
     align-items: center;
     gap: calc(10 * var(--u));
     width: 100%;
+    min-height: calc(42 * var(--u));
     padding: calc(10 * var(--u)) calc(12 * var(--u));
-    border: 0;
+    border: 1px solid transparent;
     border-radius: calc(10 * var(--u));
-    background: transparent;
+    background: var(--bg);
     color: var(--ink);
-    font-size: calc(17 * var(--u));
+    font-size: calc(16 * var(--u));
+    font-weight: 400;
+    line-height: 1.4;
     text-align: left;
+    cursor: pointer;
+    transition:
+        background-color var(--theme-transition),
+        color var(--theme-transition),
+        border-color var(--theme-transition);
+}
+
+.cmp-menu label {
     cursor: pointer;
 }
 
 .cmp-menu label:hover,
 .cmp-menu button:hover,
 .cmp-menu button.cmp-is-active {
-    background: var(--lime);
+    background: var(--panel);
+    border-color: var(--lime);
 }
 
-.cmp-menu input {
+.cmp-menu button.cmp-is-active {
+    font-weight: 600;
+}
+
+.cmp-menu input[type='checkbox'] {
+    flex: 0 0 auto;
     width: calc(18 * var(--u));
     height: calc(18 * var(--u));
+    margin: 0;
     accent-color: var(--moss);
+    cursor: pointer;
 }
 
-/* ---------- Média indicadores ---------- */
+/* ---------- Média dos indicadores ---------- */
 
 .cmp-averages {
     position: relative;
@@ -425,6 +506,13 @@
     color: var(--ink);
     font-size: calc(20 * var(--u));
     white-space: nowrap;
+    transition:
+        background-color var(--theme-transition),
+        color var(--theme-transition);
+}
+
+.cmp-chip:hover {
+    background: var(--panel);
 }
 
 .cmp-chip svg {
@@ -474,7 +562,6 @@
     overflow-y: auto;
 }
 
-/* Firefox */
 @supports not selector(*::-webkit-scrollbar) {
     .cmp-services__scroll {
         scrollbar-width: auto;
@@ -855,6 +942,12 @@
         gap: calc(12 * var(--u));
     }
 
+    .cmp-page {
+        margin-top: 2rem;
+        padding-right: calc(16 * var(--u));
+        padding-left: calc(16 * var(--u));
+    }
+
     .cmp-intro {
         flex-direction: column;
         gap: calc(16 * var(--u));
@@ -864,10 +957,32 @@
         font-size: calc(34 * var(--u));
     }
 
+    .cmp-pill-outline {
+        max-width: 100%;
+        font-size: calc(18 * var(--u));
+    }
+
+    .cmp-popover__menu {
+        max-width: calc(100vw - 32px);
+    }
+
+    .cmp-averages {
+        padding-right: calc(16 * var(--u));
+        padding-left: calc(16 * var(--u));
+    }
+
+    .cmp-averages__title {
+        font-size: calc(25 * var(--u));
+    }
+
     .cmp-averages__tiles {
         grid-template-columns: 1fr 1fr;
         width: 100%;
         gap: calc(12 * var(--u));
+    }
+
+    .cmp-avg-tile {
+        min-height: calc(100 * var(--u));
     }
 
     .cmp-avg-tile span {
@@ -889,6 +1004,12 @@
         padding-right: 0;
     }
 
+    .cmp-services__tools {
+        flex-wrap: wrap;
+        gap: calc(10 * var(--u));
+        max-width: 100%;
+    }
+
     .cmp-service {
         padding: calc(100 * var(--u)) calc(12 * var(--u)) calc(16 * var(--u)) calc(48 * var(--u));
     }
@@ -903,6 +1024,7 @@
 
     .cmp-service__actions {
         left: calc(12 * var(--u));
+        right: calc(12 * var(--u));
     }
 
     .cmp-rank {
@@ -911,7 +1033,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .cmp-comparison * {
+    .cmp-comparison *,
+    .cmp-comparison *::before,
+    .cmp-comparison *::after {
         transition: none !important;
         animation: none !important;
     }
