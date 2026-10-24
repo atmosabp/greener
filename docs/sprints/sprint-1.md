@@ -1,4 +1,5 @@
 ## Sprint 1 - GreenER
+Esta sprint ocorreu entre os dias 28/09/2026 e 19/10/2026. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 15 dias.
 
 ### Objetivo da sprint
 O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas UML, implementação das primeiras telas, base do servidor backend e banco de dados.
@@ -42,7 +43,7 @@ Lista do que foi entregue:
 ### Itens concluídos e pendentes
 Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portanto, todas as tarefas foram *concluídas*.
 
-É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1/views/1).
+É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1).
 
 <details>
 
