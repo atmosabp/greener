@@ -133,9 +133,16 @@
 
 .cmp-intro {
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
     padding: calc(10 * var(--u)) calc(17 * var(--u)) 0 calc(9 * var(--u));
+}
+
+.cmp-intro > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .cmp-intro h1 {
@@ -631,6 +638,11 @@
     top: calc(14 * var(--u));
     left: calc(18 * var(--u));
     display: grid;
+    color: var(--moss-dark);
+}
+
+.cmp-service__star--active {
+    color: var(--primary-dark);
 }
 
 .cmp-service__actions {
