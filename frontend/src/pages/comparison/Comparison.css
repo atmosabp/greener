@@ -1,1 +1,130 @@
-/* Estilo da página comparação */
+/* =========================================================
+   COMPARAÇÃO — ATMOS °
+   Adaptável ao sistema global de temas
+========================================================= */
+
+.comparison-page {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--text);
+    font-family: "Roboto", Arial, sans-serif;
+    transition:
+        background-color 0.5s ease-in-out,
+        color 0.5s ease-in-out;
+}
+
+.comparison-page *,
+.comparison-page *::before,
+.comparison-page *::after {
+    box-sizing: border-box;
+}
+
+.comparison-main {
+    width: calc(100% - 48px);
+    flex: 1;
+    margin: 0 auto;
+    padding: 112px 0 30px;
+}
+
+/* Título e período */
+
+.comparison-heading {
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 0 8px 24px;
+}
+
+.comparison-heading h1 {
+    margin: 0;
+    color: var(--text);
+    font-size: 43px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.comparison-heading p {
+    margin: 2px 0 0;
+    color: var(--text);
+    font-size: 19px;
+}
+
+.comparison-period {
+    min-width: 150px;
+    padding: 12px 18px;
+    border: 1px solid var(--text);
+    border-radius: 30px;
+    background: var(--primary);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 17px;
+    cursor: pointer;
+    transition:
+        background-color 0.5s ease-in-out,
+        color 0.5s ease-in-out;
+}
+
+/* Área de conteúdo */
+
+.comparison-select-services {
+    min-height: 300px;
+}
+
+/* Rodapé */
+
+.comparison-footer {
+    padding: 24px 10px 12px;
+    color: var(--text);
+    opacity: 0.7;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Acessibilidade */
+
+.comparison-page button:focus-visible,
+.comparison-page select:focus-visible {
+    outline: 2px solid var(--primary-dark);
+    outline-offset: 3px;
+}
+
+/* Responsividade */
+
+@media (max-width: 650px) {
+    .comparison-main {
+        width: calc(100% - 24px);
+        padding-top: 20px;
+    }
+
+    .comparison-heading {
+        align-items: flex-start;
+        gap: 12px;
+        margin-right: 2px;
+        margin-left: 2px;
+    }
+
+    .comparison-heading h1 {
+        font-size: 28px;
+    }
+
+    .comparison-heading p {
+        font-size: 14px;
+    }
+
+    .comparison-period {
+        min-width: 100px;
+        max-width: 145px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .comparison-page,
+    .comparison-page * {
+        transition: none !important;
+    }
+}
