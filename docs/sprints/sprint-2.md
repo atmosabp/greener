@@ -34,21 +34,21 @@ Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os 
 | ID       | Descrição                                                            | Autor   | Disciplina | Esforço |
 | :------- | :------------------------------------------------------------------- | :------ | :--------- | :------ |
 | **BD04** | Criar estrutura para armazenar histórico das coletas         | Darcy   | BDR        | 8       |
-| **DW05** | Implementar validação de login (conexão front com back)     | Lorenzo | DWII        | 3       |
-| **DW05** | Implementar tratamento de erros no cadastro (conexão front com back) | Lorenzo | DWII        | 3       |
-| **DW05** | Implementar tratamento de erros no login (conexão front com back)    | Beatriz | DWII        | 3       |
-| **DW06** | Implementar logout         | Lorenzo | DWII        | 2       |
-| **DW07** | Implementar dashboard       | Beatriz    | DWII        | 5       |
-| **DW07** | Conectar backend das APIs na dashboard       | Júlia | DWII        | 3       |
-| **DW08** | Implementar atualização dos dados na tela principal (conexão front com back)            | Júlia    | DWII        | 5       |
-| **DW09** | Implementar estados de loading e erro (geral - conexão front com back)        | Júlia    | DWII        | 3       |
-| **DW09** | Implementar estados de loading e erro (geral - frontend)                  | Beatriz    | DWII        | 3      |
-| **DW10** | Implementar tela de ranking         | Lorenzo    | DWII        | 5       |
-| **DW10** | Conectar backend na tela de ranking      | Darcy    | DWII        | 5       |
-| **DW11** | Implementar tela de comparação     | Lorenzo    | DWII        | 8       |
-| **DW11** | Conectar backend na tela de comparação        | Kauã    | DWII        | 8       |
-| **DW12** | Implementar tela de cadastro/admin  | Beatriz    | DWII        | 5       |
-| **DW12** | Conectar backend na tela de cadastro/admin   | Lorenzo  | DWII   | 5       |
+| **DW05** | Implementar validação de login (conexão front com back)     | Lorenzo | DW II        | 3       |
+| **DW05** | Implementar tratamento de erros no cadastro (conexão front com back) | Lorenzo | DW II        | 3       |
+| **DW05** | Implementar tratamento de erros no login (conexão front com back)    | Beatriz | DW II        | 3       |
+| **DW06** | Implementar logout         | Lorenzo | DW II        | 2       |
+| **DW07** | Implementar dashboard       | Beatriz    | DW II        | 5       |
+| **DW07** | Conectar backend das APIs na dashboard       | Júlia | DW II        | 3       |
+| **DW08** | Implementar atualização dos dados na tela principal (conexão front com back)            | Júlia    | DW II        | 5       |
+| **DW09** | Implementar estados de loading e erro (geral - conexão front com back)        | Júlia    | DW II        | 3       |
+| **DW09** | Implementar estados de loading e erro (geral - frontend)                  | Beatriz    | DW II        | 3      |
+| **DW10** | Implementar tela de ranking         | Lorenzo    | DW II        | 5       |
+| **DW10** | Conectar backend na tela de ranking      | Darcy    | DW II        | 5       |
+| **DW11** | Implementar tela de comparação     | Lorenzo    | DW II        | 8       |
+| **DW11** | Conectar backend na tela de comparação        | Kauã    | DW II        | 8       |
+| **DW12** | Implementar tela de cadastro/admin  | Beatriz    | DW II        | 5       |
+| **DW12** | Conectar backend na tela de cadastro/admin   | Lorenzo  | DW II   | 5       |
 | **ES06** | Manter README.md    | Júlia    | ESW II      | 1       |
 | **ES13** | Criar Sprint Backlog referente a 2° sprint  | Todos    | ESW II   | 5       |
 | **ES14** | Criar vídeo referente a 2° sprint   | Todos    | ESW II        | 8       |
