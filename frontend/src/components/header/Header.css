@@ -10,15 +10,9 @@
     align-items: center;
     justify-content: space-between;
     background-color: var(--background);
-    transition:box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    z-index: 9999;
+    transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-/* Implementar animações no menu DEPOIS */
-.menu.is-scrolled {
-    /* transform: translateY(-80%); */
-    box-shadow: -4px 0px 5px 5px var(--background-transparent);
-}
 
 .menu-links {
     position: absolute;
@@ -34,6 +28,11 @@
     width: auto;
 }
 
+
+.menu-btns span {
+    color: var(--text);
+}
+
 .menu-trigger,
 .tablet-bar,
 .scrim {
@@ -44,18 +43,6 @@
     text-decoration: none;
     color: var(--text);
     position: relative;
-}
-
-.menu-links a.active::after {
-    content: "";
-    width: 100%;
-    height: 1.5px;
-    position: absolute;
-    background-color: var(--text);
-    left: 0;
-    bottom: -2px;
-    transition: width 0.5s ease-in-out;
-    border-radius: 5px;
 }
 
 .menu-links a::after {
@@ -70,6 +57,7 @@
     border-radius: 5px;
 }
 
+.menu-links a.active::after,
 .menu-links a:hover::after {
     width: 100%;
 }
@@ -80,7 +68,6 @@
     align-items: center;
     gap: 15px;
 }
-
 
 .btn-logout {
     height: 40px;
@@ -101,18 +88,24 @@
 -=-=-=-=-=-=-=-
 RESPONSIVIDADE
 -=-=-=-=-=-=-=-
+
 */
 
-/* 1. Celulares */
-@media screen and (max-width:480px) {
+@media (max-width: 480px) {
+
     .tablet-bar {
         display: contents;
+    }
+
+    .trigger-logo,
+    .trigger-btns {
+        display: none;
     }
 
     .scrim {
         display: block;
         position: fixed;
-        inset: 0 0 0 0;
+        inset: 0;
         background: rgba(0, 0, 0, 0.45);
         opacity: 0;
         visibility: hidden;
@@ -129,152 +122,71 @@ RESPONSIVIDADE
     .menu-trigger {
         display: flex;
         position: fixed;
-        right: 15px;
-        top: 15px;
-        height: 50px;
-        width: 50px;
-        border-radius: 24px;
+        top: 12px;
+        right: 16px;
+        z-index: 1001;
+        width: 40px;
+        height: 40px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 0;
         border: none;
-        background-color: var(--text);
-        z-index: 999;
-        cursor: pointer;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 5px;
-        padding: 15px;
-    }
-
-    .menu-trigger span {
-        height: 2px;
-        width: 100%;
-        display: block;
-        background-color: var(--background);
-        border-radius: 5px;
-        transition: transform 0.5s ease-in-out, opacity 0.25s ease-in-out;
-    }
-
-    .menu {
-        /* Coloquei para respeitar os navegadores */
-        height: 100dvh;
-        width: 40%;
-        background-color: var(--background);
-        right: 0;
-        transform: translateX(calc(100% + 10px));
-        flex-direction: column;
-        transition: transform 0.5s ease-in-out,
-            margin-top 0.5s ease-in-out,
-            background-color 0.5s ease-in-out;
-        position: fixed;
-        box-shadow: -4px 0px 5px 5px var(--background-transparent);
-        z-index: 998;
-        text-align: center;
-        align-items: center;
-    }
-
-    .menu .logo {
-        height: 60px;
-        margin-top: 100px;
-    }
-
-    .menu.active {
-        transform: translateX(0%);
-    }
-
-    body:has(.menu.active) .menu-trigger span:nth-child(1) {
-        transform: rotate(45deg);
-    }
-
-    body:has(.menu.active) .menu-trigger span:nth-child(2) {
-        display: none;
-    }
-
-    body:has(.menu.active) .menu-trigger span:nth-child(3) {
-        margin-top: -7.25px;
-        transform: rotate(-45deg);
-    }
-
-    .menu-links {
-        gap: 15px;
-    }
-
-    .menu-links a {
-        font-size: 10px;
-    }
-
-    .menu-btns {
-        gap: 8px;
-    }
-
-    .btn-logout {
-        min-width: 60px;
-        height: 31px;
-        padding: 0 10px;
-        font-size: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .menu {
-        min-height: 62px;
-        padding: 10px 16px;
-    }
-
-    .menu .logo {
-        height: 29px;
-    }
-
-    .menu-trigger {
-        position: relative;
-        z-index: 1002;
-        display: flex;
-        width: 38px;
-        height: 38px;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        padding: 9px;
-        border: 1px solid color-mix(in srgb, var(--text) 20%, transparent);
         border-radius: 50%;
-        background: var(--background);
+        background: var(--text);
         cursor: pointer;
     }
 
     .menu-trigger span {
         display: block;
-        width: 100%;
-        height: 1.5px;
+        width: 18px;
+        height: 2px;
         border-radius: 2px;
-        background: var(--text);
+        background: var(--background);
+        transition: transform 0.25s ease, opacity 0.15s ease;
+    }
+
+    .menu-trigger[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .menu-trigger[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-trigger[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
     }
 
     .menu {
-        width: min(82%, 300px);
-        height: 100dvh;
-        min-height: 100dvh;
         top: 0;
         right: 0;
         left: auto;
+        width: 50%;
+        height: 100dvh;
+        min-height: 100dvh;
         flex-direction: column;
-        justify-content: flex-start;
+        align-items: center;
         gap: 30px;
         padding: 75px 24px 30px;
-        border-left: 1px solid color-mix(in srgb, var(--text) 15%, transparent);
-        border-bottom: 0;
+        text-align: center;
         background: var(--background);
-        box-shadow: -10px 0 35px color-mix(in srgb, var(--shadow) 35%, transparent);
-        transform: translateX(110%);
-        transition: transform 250ms ease;
+        justify-content: space-between;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        z-index: 999;
+        box-shadow: none;
     }
+
 
     .menu.active {
         transform: translateX(0);
+
     }
 
     .menu .logo {
-        height: 40px;
-        margin: 8px auto;
+        height: 50px;
     }
 
     .menu-links {
@@ -282,14 +194,12 @@ RESPONSIVIDADE
         width: 100%;
         flex-direction: column;
         align-items: stretch;
-        gap: 0;
+        gap: 30px;
         transform: none;
     }
 
     .menu-links a {
-        padding: 15px 4px;
-        border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-        font-size: 13px;
+        font-size: 16px;
     }
 
     .menu-links a::after {
@@ -298,34 +208,22 @@ RESPONSIVIDADE
 
     .menu-btns {
         flex-direction: column;
-        align-items: stretch;
+        gap: 10px;
         width: 100%;
+    }
+
+    .menu-btns span {
+        color: var(--text);
     }
 
     .btn-logout {
         width: 100%;
-        height: 38px;
+        height: 35px;
+        font-size: 12px;
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-
-    .menu,
-    .menu * {
-        transition-duration: 0.01ms !important;
-    }
-
-    .trigger-logo {
-        display: none;
-    }
-
-    .trigger-btns {
-        display: none;
-    }
-}
-
-/* Tablets: barra fixa + painel que cai por cima do conteúdo */
-@media screen and (min-width:481px) and (max-width: 1024px) {
+@media (min-width: 481px) and (max-width: 1024px) {
     .tablet-bar {
         display: flex;
         justify-content: space-between;
@@ -350,6 +248,10 @@ RESPONSIVIDADE
         gap: 20px;
     }
 
+    .trigger-btns span{
+        color: var(--text);
+    }
+
     .menu-trigger {
         display: grid;
         place-content: center;
@@ -357,8 +259,7 @@ RESPONSIVIDADE
         width: 48px;
         height: 48px;
         padding: 0;
-        background: none;
-        background-color: var(--text);
+        background: var(--text);
         border: none;
         border-radius: 50%;
         cursor: pointer;
@@ -384,6 +285,7 @@ RESPONSIVIDADE
     .menu-trigger[aria-expanded="true"] span:nth-child(3) {
         transform: translateY(-8px) rotate(-45deg);
     }
+
 
     .scrim {
         display: block;
@@ -414,16 +316,21 @@ RESPONSIVIDADE
         align-items: stretch;
         background-color: var(--background);
         border-bottom: 2px solid var(--text);
-        box-shadow: none;
         transform-origin: top center;
         transform: translateY(-100%);
-        transition: transform 0.5s ease-in-out;
+        visibility: hidden;
+        transition: transform 0.5s ease-in-out, visibility 0s linear 0.5s;
         z-index: 999;
     }
 
-    .menu.active {
-        transform: translateY(0%);
+    .menu {
+        box-shadow: none;
+    }
 
+    .menu.active {
+        transform: translateY(0);
+        visibility: visible;
+        transition: transform 0.5s ease-in-out, visibility 0s;
     }
 
     .menu .logo,
