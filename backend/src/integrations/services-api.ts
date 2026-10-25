@@ -52,27 +52,30 @@ async function checkServiceAvailiability(
   }
 }
 
-async function reqCoordinates(){
+async function reqCoordinates(service: ServiceTypes) {
   try {
-    const response = await fetch(serviceURL);
+    const response = await fetch(metricsURL + `/${service.id}`);
 
-    if(response.ok){
-      const serviceList: ServiceTypes[] = await response.json();
-      console.log(serviceList)
-      // const serviceCoordinate: CoordinatesTypes = serviceList
+    if (!response.ok) {
+      throw new Error(`Erro na requisição de dados`)
     }
-    
-  } catch (error) {
-    
+    const serviceData: ServiceTypes = await response.json();
+
+    const serviceCoordinate = serviceData.location;
+    if(!serviceCoordinate?.latitude || !serviceCoordinate?.longitude){
+      throw new Error(`Não foi possível encontrar as coordenadas`)
+    }
+
+    return serviceCoordinate; 
+  } catch (error:any) {
+    error.message("Erro ao buscar coordenadas:", error);
   }
 
 }
-reqCoordinates();
 
 
-
+teste();
 async function teste() {
-  console.log(await reqServices());
+  console.log();
 }
 
-// teste();
