@@ -24,7 +24,7 @@ Também continuamos a criar mais endpoints para as coletas de métricas e CRUD d
 
 **Beatriz** -> Inicia implementação tela dashboard (DW07)   
 **Darcy** -> Inicia estrutura para armazenar histórico das coletas (BD04)  
-**Júlia** -> Auxilia na criação de endpoints e faz relatório do dia   
+**Júlia** -> Auxilia na criação de endpoints, faz relatório do dia e cria burndown (ES16)   
 **Kauã** -> Inicia tratamento de coordenadas ausentes (TP17)  
 **Lorenzo** -> Inicia implementação da tela de comparação (DW11)  
 **Mariana** -> Inicia ciação de mais endpoints (TP18)
@@ -32,6 +32,14 @@ Também continuamos a criar mais endpoints para as coletas de métricas e CRUD d
 ---
 
 #### 24/out
+Nesse dia, apenas foi dado continuação nas tasks iniciadas no dia anterior, como a implementação de telas e desenvolvimento do backend. E também foi inciado criação de queries específicas para retornar dados do histórico, que não há relação com algum requisito.
+
+**Beatriz** -> Finaliza implementação tela dashboard (DW07)   
+**Darcy** -> Desenvolve queries SQL para coleta de dados de histórico    
+**Júlia** -> Auxilia na criação de endpoints e faz relatório do dia     
+**Kauã** -> Finaliza tratamento de coordenadas ausentes (TP17)  
+**Lorenzo** -> Continua implementação da tela de comparação (DW11)  
+**Mariana** -> Finaliza ciação de endpoints (TP18)
 
 ---
 
