@@ -15,6 +15,11 @@ export interface CoordinatesTypes {
     longitude?: number;
 }
 
+export interface Coordinates {
+  latitude?: number;
+  longitude?: number;
+};
+
 export type ServiceStatus = "disponivel" | "indisponivel" | "incompleto";
 
 export interface MetricsType {
