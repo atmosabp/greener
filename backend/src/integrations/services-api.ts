@@ -54,7 +54,7 @@ async function checkServiceAvailiability(
 
 async function reqCoordinates(service: ServiceTypes) {
   try {
-    const response = await fetch(metricsURL + `/${service.id}`);
+    const response = await fetch(`${serviceURL}/${service.id}`);
 
     if (!response.ok) {
       throw new Error(`Erro na requisição de dados`)
@@ -62,20 +62,21 @@ async function reqCoordinates(service: ServiceTypes) {
     const serviceData: ServiceTypes = await response.json();
 
     const serviceCoordinate = serviceData.location;
+    
     if(!serviceCoordinate?.latitude || !serviceCoordinate?.longitude){
       throw new Error(`Não foi possível encontrar as coordenadas`)
     }
 
     return serviceCoordinate; 
   } catch (error:any) {
-    error.message("Erro ao buscar coordenadas:", error);
+    throw new Error(`Erro ao buscar coordenadas: ${error.message}`, { cause: error });
   }
 
 }
 
 
-teste();
+
 async function teste() {
   console.log();
 }
-
+teste()
