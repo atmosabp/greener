@@ -1,4 +1,5 @@
-import {findUsers, findUserById, createUser, updateUser} from "./users.repository";
+import { UserEditValues } from "../../types/user-types";
+import {findUsers, findUserById, createUser, updateUser, deleteUserById} from "./users.repository";
 
 export async function createNewUser(name: string, email: string, password: string, isAdm: boolean){
     const result = await createUser(name, email, password, isAdm);
@@ -24,8 +25,16 @@ export async function searchUserById(id: number){
     return result;
 }
 
-export async function editUser(id: number){
-    const result = await updateUser(id);
+export async function editUser(id: number, values: UserEditValues){
+    const result = await updateUser(id, values);
+
+    if(!result) return null;
+
+    return result;
+}
+
+export async function removeUserById(id: number){
+    const result = await deleteUserById(id);
 
     if(!result) return null;
 
