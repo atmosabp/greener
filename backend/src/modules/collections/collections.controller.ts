@@ -78,7 +78,8 @@ export async function findAllHistoryController(req: Request, res: Response) {
 }
 
 export async function findServiceHistoryController(req: Request, res: Response) {
-  const { periodType, datePull, serviceId } = req.body;
+  const serviceId = String(req.params.id)
+  const { periodType, datePull } = req.body;
 
   try {
     const result = await searchServiceHistory(periodType, datePull, serviceId);
