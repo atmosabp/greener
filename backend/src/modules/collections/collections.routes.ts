@@ -14,23 +14,23 @@ export const router = Router();
 // GET localhost:3000/collections/get-history
 router.get("/get-history", getHistoryController);
 
-// Rota para adicionar histórico no banco de dados
+// REFACTOR: Rota para adicionar histórico no banco de dados
 // POST localhost:3000/collections/add-history
 router.post("/add-history", addHistoryController);
 
-// apenas pega o dado mais recente da api auxiliar e retorna pro frontend (dashboard), sem guardar nada no banco de dados
+// TODO: apenas pega o dado mais recente da api auxiliar e retorna pro frontend (dashboard), sem guardar nada no banco de dados
 // POST localhost:3000/collections/service-metrics
 router.post("/service-metrics", getServiceMetricsController);
 
-//rota para retornar todos os serviços e todas as métricas
+// TODO: rota para retornar todos os serviços e todas as métricas
 // POST localhost:3000/collections/all-service-data
 router.post("/all-service-data", getAllServicesDataController);
 
-//rota para retornar todos os serviços e todas as métricas
+// TODO: rota para retornar histórico de um serviço
 // GET localhost:3000/collections/all-service-history
 router.get("/service-history", findServiceHistoryController);
 
-//rota para retornar todos os serviços e todas as métricas
+// REVISAR: rota para retornar histórico de todos os serviços (ranking)
 // POST localhost:3000/collections/all-service-history
 router.post("/all-service-history", findAllHistoryController);
 

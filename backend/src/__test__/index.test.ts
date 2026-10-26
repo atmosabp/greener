@@ -30,3 +30,21 @@ describe("consulta todos os usuários", () => {
     });
 });
 
+// TODO: teste de consultar usuário específico
+
+// TODO: teste de editar usuário
+
+// TODO: teste de deletar usuário
+
+
+// ============= Testes para Collections (Métricas) ================
+
+// TODO: teste de ver métrica atual de serviço específico
+
+// TODO: teste de listar disponibilidade dos serviços 
+
+// TODO: teste de adicionar histórico atual de serviço específico
+
+// TODO: teste de ver histórico de serviço específico
+
+// TODO: teste de ver todo o histórico de uma tabela
