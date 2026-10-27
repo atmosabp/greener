@@ -1,16 +1,18 @@
 export interface ServiceTypes {
   id?: string;
   name?: string;
-  location?: {
+  location?: CoordinatesTypes;
+  metrics_path?: string;
+  status: ServiceStatus | undefined;
+}
+
+export interface CoordinatesTypes {
     region_code?: string;
     country?: string;
     region?: string;
     city?: string;
     latitude?: number;
     longitude?: number;
-  };
-  metrics_path?: string;
-  status: ServiceStatus | undefined;
 }
 
 export type ServiceStatus = "disponivel" | "indisponivel" | "incompleto";
