@@ -15,7 +15,7 @@ export interface CoordinatesTypes {
     longitude?: number;
 }
 
-export type ServiceStatus = "disponivel" | "indisponivel" | "incompleto";
+export type ServiceStatus = "active" | "incomplete" | "inactive";
 
 export interface MetricsType {
   collection_interval_seconds?: number;

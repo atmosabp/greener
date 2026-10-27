@@ -10,10 +10,22 @@ export type ServiceStatus = "active" | "incomplete" | "inactive";
 export interface Service {
   id: string;
   name: string;
+  location: {
+    city?: string;
+    country?: string
+    latitude?: number;
+    longitude?: number;
+    region?: string;
+    region_code?: string;
+  };
+  metrics_path?: string;
+  metrics: {
+    co2e?: number;
+    kwh?: number;
+    cpu?: number;
+    ram?: number;
+  }
   status: ServiceStatus;
-  latitude?: number;
-  longitude?: number;
-  co2e?: number;
 }
 
 interface HomepageProps {
@@ -22,66 +34,6 @@ interface HomepageProps {
 }
 
 type VisualizationMode = "globe" | "map";
-
-// lista de serviços 'mockada'
-const mockServices: Service[] = [
-  {
-    id: "1",
-    name: "Billing API",
-    status: "inactive",
-    latitude: -23.5505,
-    longitude: -46.6333,
-    co2e: 120,
-  },
-  {
-    id: "2",
-    name: "Checkout Worker",
-    status: "incomplete",
-    latitude: 39.0438,
-    longitude: -77.4874,
-    co2e: 120,
-  },
-  {
-    id: "3",
-    name: "Inventory Sync",
-    status: "active",
-    latitude: 43.6532,
-    longitude: -79.3832,
-    co2e: 120,
-  },
-  {
-    id: "4",
-    name: "Audit Stream",
-    status: "active",
-    latitude: 35.6762,
-    longitude: 139.6503,
-    co2e: 120,
-  },
-  {
-    id: "5",
-    name: "Email Dispatcher",
-    status: "inactive",
-    latitude: -23.5505,
-    longitude: -46.6333,
-    co2e: 120,
-  },
-  {
-    id: "6",
-    name: "Fraud Detector",
-    status: "incomplete",
-    latitude: 39.0438,
-    longitude: -77.4874,
-    co2e: 120,
-  },
-  {
-    id: "7",
-    name: "Reporting Batch",
-    status: "active",
-    latitude: 43.6532,
-    longitude: -79.3832,
-    co2e: 120,
-  },
-];
 
 const statusLabels: Record<ServiceStatus, string> = {
   active: "Ativo",
@@ -99,8 +51,15 @@ export default function Homepage({
   const [services, setServices] = useState<Service[]>([]);
 
   async function updateServices(){
-    const result = await fetch("https://metrics.unilaunch.org/services");
+    const result = await fetch("http://localhost:3000/collections/all-service-data");
     const data = await result.json();
+
+    for(let i in data){
+      const metricsResponse = await fetch(`https://metrics.unilaunch.org${data[i].metrics_path}`);
+      const metricsData = await metricsResponse.json();
+      data[i].metrics = {co2e: 2, kwh: 4, cpu: metricsData.metrics.cpu_percent, ram: 5}
+    }
+
     setServices(data);
   }
 

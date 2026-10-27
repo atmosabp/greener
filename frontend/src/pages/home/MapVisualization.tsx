@@ -35,7 +35,7 @@ function MapController({
     useEffect(() => {
         if (!selectedService) return;
 
-        const { latitude, longitude } = selectedService;
+        const { latitude, longitude } = selectedService.location;
 
         if (
             latitude === undefined ||
@@ -73,14 +73,14 @@ export default function MapVisualization({
     // Mantém apenas serviços com coordenadas válidas.
     const validMapServices = services.filter(
         (service) =>
-            service.latitude !== undefined &&
-            service.longitude !== undefined &&
-            Number.isFinite(service.latitude) &&
-            Number.isFinite(service.longitude) &&
-            service.latitude >= -90 &&
-            service.latitude <= 90 &&
-            service.longitude >= -180 &&
-            service.longitude <= 180
+            service.location.latitude !== undefined &&
+            service.location.longitude !== undefined &&
+            Number.isFinite(service.location.latitude) &&
+            Number.isFinite(service.location.longitude) &&
+            service.location.latitude >= -90 &&
+            service.location.latitude <= 90 &&
+            service.location.longitude >= -180 &&
+            service.location.longitude <= 180
     );
 
     const selectedMapService = validMapServices.find(
@@ -90,8 +90,8 @@ export default function MapVisualization({
     // Coordenadas próprias da visualização do mapa.
     const selectedMapPoint = selectedMapService
         ? {
-            latitude: selectedMapService.latitude!,
-            longitude: selectedMapService.longitude!,
+            latitude: selectedMapService.location.latitude!,
+            longitude: selectedMapService.location.longitude!,
         }
         : null;
 
@@ -134,8 +134,8 @@ export default function MapVisualization({
                         <CircleMarker
                             key={service.id}
                             center={[
-                                service.latitude!,
-                                service.longitude!,
+                                service.location.latitude!,
+                                service.location.longitude!,
                             ]}
                             radius={isMapServiceSelected ? 11 : 8}
                             bubblingMouseEvents={false}
@@ -199,18 +199,26 @@ export default function MapVisualization({
                         <div className="map-service-metric-col">
                             <div className="map-service-metric">
                                 <span>CPU</span>
-                                <strong>—</strong>
+                                <strong>{typeof selectedMapService.metrics.cpu ===
+                                        "number" &&
+                                        Number.isFinite(
+                                            selectedMapService.metrics.cpu
+                                        )
+                                        ? `${selectedMapService.metrics.cpu.toLocaleString(
+                                            "pt-BR"
+                                        )} %`
+                                        : "—"}</strong>
                             </div>
 
                             <div className="map-service-metric">
                                 <span>CO₂e</span>
                                 <strong>
-                                    {typeof selectedMapService.co2e ===
+                                    {typeof selectedMapService.metrics.co2e ===
                                         "number" &&
                                         Number.isFinite(
-                                            selectedMapService.co2e
+                                            selectedMapService.metrics.co2e
                                         )
-                                        ? `${selectedMapService.co2e.toLocaleString(
+                                        ? `${selectedMapService.metrics.co2e.toLocaleString(
                                             "pt-BR"
                                         )} kg`
                                         : "—"}

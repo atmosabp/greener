@@ -1,4 +1,5 @@
 import { reqMetrics } from "../../integrations/metrics-api";
+import { reqServices } from "../../integrations/services-api";
 import {
   addMinuteHistory,
   findMinuteHistory,
@@ -34,12 +35,12 @@ export async function getServiceMetrics(serviceId: string) {
 }
 
 export async function getAllServicesMetrics() {
-  // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking)
-  // const result = await reqMetrics("billing-api");
+  // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking e tela principal/globo)
+  const result = await reqServices();
 
-  // if (!result) return null;
+  if (!result) return null;
 
-  // return result;
+  return result;
 }
 
 export async function searchAllHistory() {

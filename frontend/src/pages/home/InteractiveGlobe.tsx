@@ -25,6 +25,7 @@ interface GlobePoint {
     lng: number;
     color: string;
     co2e: number;
+    cpu: number;
 }
 
 const statusColors: Record<Service["status"], string> = {
@@ -52,8 +53,8 @@ export default function InteractiveGlobe({
     const globeData = useMemo<GlobePoint[]>(() => {
         return services
             .filter((service) => {
-                const lat = service.latitude;
-                const lng = service.longitude;
+                const lat = service.location.latitude;
+                const lng = service.location.longitude;
 
                 return (
                     typeof lat === "number" &&
@@ -70,13 +71,18 @@ export default function InteractiveGlobe({
                 id: service.id,
                 name: service.name,
                 status: service.status,
-                lat: service.latitude!,
-                lng: service.longitude!,
+                lat: service.location.latitude!,
+                lng: service.location.longitude!,
                 color: statusColors[service.status] ?? "#999999",
                 co2e:
-                    typeof service.co2e === "number" &&
-                        Number.isFinite(service.co2e)
-                        ? service.co2e
+                    typeof service.metrics.co2e=== "number" &&
+                        Number.isFinite(service.metrics.co2e)
+                        ? service.metrics.co2e
+                        : 0,
+                cpu:
+                    typeof service.metrics.cpu=== "number" &&
+                        Number.isFinite(service.metrics.cpu)
+                        ? service.metrics.cpu
                         : 0,
             }));
     }, [services]);
@@ -313,7 +319,12 @@ export default function InteractiveGlobe({
                         <div className="globe-service-card__metric-col">
                             <div className="globe-service-card__metric">
                                 <span>CPU</span>
-                                <strong>0%</strong>
+                                <strong>
+                                    {selectedPoint.cpu.toLocaleString(
+                                        "pt-BR"
+                                    )}{" "}
+                                    %
+                                </strong>
                             </div>
 
                             <div className="globe-service-card__metric">
