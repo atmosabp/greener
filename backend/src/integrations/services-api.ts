@@ -1,26 +1,24 @@
 import type { ServiceTypes, MetricsType, CoordinatesTypes } from "../types/services-types";
+import {findServices} from "../modules/collections/collections.repository"
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 const metricsURL = "https://metrics.unilaunch.org/metrics";
 
 export async function reqServices(): Promise<ServiceTypes[]> {
   try {
-    const response = await fetch(serviceURL);
+    const response = await findServices();
 
-    if (!response.ok) {
-      throw new Error(`Erro na requisição de dados`)
-    }
-
-    const serviceList: ServiceTypes[] = await response.json();
+    
     var avaliableList = [];
 
-    for (let i of serviceList) {
+    for (let i of response) {
       avaliableList.push(await checkServiceAvailiability(i));
     }
 
     return avaliableList;
 
   } catch (error: any) {
+    console.log(error.message)
     throw new Error(error.message || "API não disponível");
   }
 }
@@ -81,6 +79,6 @@ export async function reqCoordinates(serviceId: string): Promise<CoordinatesType
 
 
 async function teste() {
-  console.log();
+  console.log(await reqServices());
 }
 teste()
