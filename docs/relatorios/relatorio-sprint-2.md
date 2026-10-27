@@ -34,7 +34,7 @@ Também continuamos a criar mais endpoints para as coletas de métricas e CRUD d
 #### 24/out
 Nesse dia, apenas foi dado continuação nas tasks iniciadas no dia anterior, como a implementação de telas e desenvolvimento do backend. E também foi inciado criação de queries específicas para retornar dados do histórico, que não há relação com algum requisito.
 
-**Beatriz** -> Finaliza implementação tela dashboard (DW07)   
+**Beatriz** -> Continua implementação tela dashboard (DW07)   
 **Darcy** -> Desenvolve queries SQL para coleta de dados de histórico    
 **Júlia** -> Auxilia na criação de endpoints e faz relatório do dia     
 **Kauã** -> Finaliza tratamento de coordenadas ausentes (TP17)  
@@ -43,15 +43,28 @@ Nesse dia, apenas foi dado continuação nas tasks iniciadas no dia anterior, co
 
 ---
 
-#### 25/out
+#### 25/out e 26/out
+Esse final de semana não foi tão produtivo, pois ocorreu o 2° turno das eleições, e não conseguimos produzir tanto por motivos pessoais de vários membros.  
+Portanto, o desenvolvimento dos dois dias está sendo juntado em apenas um item.  
 
----
-
-#### 26/out
+**Beatriz** -> Finaliza implementação tela dashboard (DW07)   
+**Darcy** -> Faz documento para auxiliar na configuração das APIs auxiliares     
+**Júlia** -> Ajusta pequenas coisas nos endpoints e faz relatório   
+**Lorenzo** -> Finaliza implementação da tela de comparação (DW11)  
+**Mariana** -> Finaliza ciação de endpoints (TP18)
 
 ---
 
 #### 27/out
+De acordo com a falta de desenvolvimento do final de semana, nos organizamos melhor e desenvolvemos o máximo que pudemos nesse dia.  
+Continuando com a implementação de erros no frontend, desenvolvimento de READMEs para as pastas e integração de telas com o backend.
+
+**Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
+**Darcy** -> Faz alterações no documento de instruções da API auxiliar  
+**Júlia** -> Inicia integração backend da tela principal e faz relatório do dia (DW08)  
+**Kauã** -> Inicia documento README backend (ES17)  
+**Lorenzo** -> Faz correções tela comparação  
+**Mariana** -> Inicia documento README dos endpoints (ES17) 
 
 ---
 
