@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AppHeader from "../../components/header/AppHeader";
 import InteractiveGlobe from "./InteractiveGlobe";
@@ -23,6 +23,7 @@ interface HomepageProps {
 
 type VisualizationMode = "globe" | "map";
 
+// lista de serviços 'mockada'
 const mockServices: Service[] = [
   {
     id: "1",
@@ -89,11 +90,29 @@ const statusLabels: Record<ServiceStatus, string> = {
 };
 
 export default function Homepage({
-  services = mockServices,
   lastUpdated = "16/10/2026 08:00",
 }: HomepageProps) {
   const [mode, setMode] = useState<VisualizationMode>("globe");
   const [selectedService, setSelectedService] = useState<string | null>(null);
+
+  // TODO: lista de serviços com base nos serviços reais da API
+  const [services, setServices] = useState<Service[]>([]);
+
+  async function updateServices(){
+    const result = await fetch("https://metrics.unilaunch.org/services");
+    const data = await result.json();
+    setServices(data);
+  }
+
+  updateServices();
+
+  useEffect(() => {
+    const fetchTimer = setTimeout(() => {
+      updateServices();
+    }, 5000);
+
+    return () => clearTimeout(fetchTimer);
+  });
 
   const activeCount = services.filter(
     (service) => service.status === "active",
@@ -119,9 +138,7 @@ export default function Homepage({
           <aside className="services-panel">
             <div className="panel-heading">
               <div>
-                <span className="section-kicker">
-                  EXPLORADOR
-                </span>
+                <span className="section-kicker">EXPLORADOR</span>
                 <h2>Seus serviços</h2>
               </div>
 
@@ -131,8 +148,7 @@ export default function Homepage({
             </div>
 
             <p className="panel-description">
-              Selecione um ponto para explorar sua localização e
-              seus dados.
+              Selecione um ponto para explorar sua localização e seus dados.
             </p>
 
             <div className="services-list">
@@ -142,55 +158,37 @@ export default function Homepage({
                 </p>
               ) : (
                 services.map((service, index) => {
-                  const isSelected =
-                    selectedService === service.id;
+                  const isSelected = selectedService === service.id;
 
                   return (
                     <button
                       key={`${service.id}-${index}`}
                       type="button"
-                      className={`service-item ${isSelected
-                          ? "service-item-selected"
-                          : ""
-                        }`}
+                      className={`service-item ${
+                        isSelected ? "service-item-selected" : ""
+                      }`}
                       onClick={() =>
                         setSelectedService((current) =>
-                          current === service.id
-                            ? null
-                            : service.id,
+                          current === service.id ? null : service.id,
                         )
                       }
                       aria-pressed={isSelected}
                     >
                       <span className="service-index">
-                        {String(index + 1).padStart(
-                          2,
-                          "0",
-                        )}
+                        {String(index + 1).padStart(2, "0")}
                       </span>
 
-                      <span
-                        className={`status-dot ${service.status}`}
-                      />
+                      <span className={`status-dot ${service.status}`} />
 
                       <span className="service-content">
-                        <span className="service-name">
-                          {service.name}
-                        </span>
+                        <span className="service-name">{service.name}</span>
 
                         <span className="service-status">
-                          {
-                            statusLabels[
-                            service.status
-                            ]
-                          }
+                          {statusLabels[service.status]}
                         </span>
                       </span>
 
-                      <span
-                        className="service-arrow"
-                        aria-hidden="true"
-                      >
+                      <span className="service-arrow" aria-hidden="true">
                         {isSelected ? "−" : "↗"}
                       </span>
                     </button>
@@ -200,9 +198,7 @@ export default function Homepage({
             </div>
 
             <div className="services-legend">
-              <span className="legend-title">
-                STATUS DOS SERVIÇOS
-              </span>
+              <span className="legend-title">STATUS DOS SERVIÇOS</span>
 
               <div className="legend-items">
                 <span>
@@ -226,52 +222,33 @@ export default function Homepage({
             </div>
           </aside>
 
-          <nav
-            className="homepage-actions"
-            aria-label="Outras análises"
-          >
+          <nav className="homepage-actions" aria-label="Outras análises">
             <Link to="/ranking" className="analysis-link">
-              <span
-                className="analysis-link-icon"
-                aria-hidden="true"
-              >
+              <span className="analysis-link-icon" aria-hidden="true">
                 ↗
               </span>
 
               <span className="analysis-link-content">
                 <strong>Ranking de emissões</strong>
-                <small>
-                  Compare os serviços por impacto
-                </small>
+                <small>Compare os serviços por impacto</small>
               </span>
 
-              <span
-                className="analysis-link-arrow"
-                aria-hidden="true"
-              >
+              <span className="analysis-link-arrow" aria-hidden="true">
                 →
               </span>
             </Link>
 
             <Link to="/comparison" className="analysis-link">
-              <span
-                className="analysis-link-icon"
-                aria-hidden="true"
-              >
+              <span className="analysis-link-icon" aria-hidden="true">
                 ⇄
               </span>
 
               <span className="analysis-link-content">
                 <strong>Comparação</strong>
-                <small>
-                  Analise diferenças entre operações
-                </small>
+                <small>Analise diferenças entre operações</small>
               </span>
 
-              <span
-                className="analysis-link-arrow"
-                aria-hidden="true"
-              >
+              <span className="analysis-link-arrow" aria-hidden="true">
                 →
               </span>
             </Link>
@@ -280,9 +257,7 @@ export default function Homepage({
           <section className="visualization-column">
             <div className="visualization-topline">
               <div className="visualization-heading">
-                <span className="section-kicker">
-                  VISÃO GLOBAL
-                </span>
+                <span className="section-kicker">VISÃO GLOBAL</span>
                 <h2>Explore o planeta</h2>
               </div>
 
@@ -298,9 +273,7 @@ export default function Homepage({
               >
                 <button
                   type="button"
-                  className={
-                    mode === "globe" ? "active" : ""
-                  }
+                  className={mode === "globe" ? "active" : ""}
                   onClick={() => setMode("globe")}
                   aria-pressed={mode === "globe"}
                 >
@@ -310,9 +283,7 @@ export default function Homepage({
 
                 <button
                   type="button"
-                  className={
-                    mode === "map" ? "active" : ""
-                  }
+                  className={mode === "map" ? "active" : ""}
                   onClick={() => setMode("map")}
                   aria-pressed={mode === "map"}
                 >
@@ -322,9 +293,7 @@ export default function Homepage({
               </div>
             </div>
 
-            <div
-              className={`visualization-stage mode-${mode}`}
-            >
+            <div className={`visualization-stage mode-${mode}`}>
               {mode === "globe" ? (
                 <InteractiveGlobe
                   services={services}
@@ -341,10 +310,7 @@ export default function Homepage({
             </div>
 
             <div className="visualization-caption">
-              <span
-                className="caption-symbol"
-                aria-hidden="true"
-              >
+              <span className="caption-symbol" aria-hidden="true">
                 ✳
               </span>
 
@@ -354,9 +320,7 @@ export default function Homepage({
                   : "Explore o mapa, aproxime as regiões e selecione um ponto para ver seus dados."}
               </p>
 
-              <span className="coordinate-note">
-                ATMOS ° / CO₂e
-              </span>
+              <span className="coordinate-note">ATMOS ° / CO₂e</span>
             </div>
           </section>
         </section>
