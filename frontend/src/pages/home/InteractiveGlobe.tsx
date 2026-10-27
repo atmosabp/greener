@@ -24,8 +24,7 @@ interface GlobePoint {
     lat: number;
     lng: number;
     color: string;
-    co2e: number;
-    cpu: number;
+    cpu_percent: number;
 }
 
 const statusColors: Record<Service["status"], string> = {
@@ -74,15 +73,10 @@ export default function InteractiveGlobe({
                 lat: service.location.latitude!,
                 lng: service.location.longitude!,
                 color: statusColors[service.status] ?? "#999999",
-                co2e:
-                    typeof service.metrics.co2e=== "number" &&
-                        Number.isFinite(service.metrics.co2e)
-                        ? service.metrics.co2e
-                        : 0,
-                cpu:
-                    typeof service.metrics.cpu=== "number" &&
-                        Number.isFinite(service.metrics.cpu)
-                        ? service.metrics.cpu
+                cpu_percent:
+                    typeof service.metrics?.cpu_percent=== "number" &&
+                        Number.isFinite(service.metrics.cpu_percent)
+                        ? service.metrics.cpu_percent
                         : 0,
             }));
     }, [services]);
@@ -320,7 +314,7 @@ export default function InteractiveGlobe({
                             <div className="globe-service-card__metric">
                                 <span>CPU</span>
                                 <strong>
-                                    {selectedPoint.cpu.toLocaleString(
+                                    {selectedPoint.cpu_percent.toLocaleString(
                                         "pt-BR"
                                     )}{" "}
                                     %
@@ -330,7 +324,7 @@ export default function InteractiveGlobe({
                             <div className="globe-service-card__metric">
                                 <span>CO₂e</span>
                                 <strong>
-                                    {selectedPoint.co2e.toLocaleString(
+                                    {selectedPoint.cpu_percent.toLocaleString(
                                         "pt-BR"
                                     )}{" "}
                                     kg

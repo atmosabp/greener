@@ -47,12 +47,13 @@ export async function checkServiceAvailiability(
       !metrics.metrics.memory_gb ||
       !metrics.metrics.network_gb
     ) {
-      service.status = "inactive";
+      service.status = "incomplete";
     }
 
     if (!response.ok) {
       service.status = "inactive";
     }
+    
   } catch (error: any) {
     service.status = "inactive";
   } finally {

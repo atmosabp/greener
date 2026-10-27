@@ -19,11 +19,11 @@ export interface Service {
     region_code?: string;
   };
   metrics_path?: string;
-  metrics: {
-    co2e?: number;
-    kwh?: number;
-    cpu?: number;
-    ram?: number;
+  metrics?: {
+    cpu_percent?: number;
+    memory_gb?: number;
+    disk_gb?: number;
+    network_gb?: number;
   }
   status: ServiceStatus;
 }
@@ -53,13 +53,6 @@ export default function Homepage({
   async function updateServices(){
     const result = await fetch("http://localhost:3000/collections/all-service-data");
     const data = await result.json();
-
-    for(let i in data){
-      const metricsResponse = await fetch(`https://metrics.unilaunch.org${data[i].metrics_path}`);
-      const metricsData = await metricsResponse.json();
-      data[i].metrics = {co2e: 2, kwh: 4, cpu: metricsData.metrics.cpu_percent, ram: 5}
-    }
-
     setServices(data);
   }
 

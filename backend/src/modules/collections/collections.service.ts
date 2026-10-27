@@ -1,5 +1,6 @@
-import { reqMetrics } from "../../integrations/metrics-api";
+import { reqMetrics, reqMetricsCPU, reqMetricsMemory } from "../../integrations/metrics-api";
 import { reqServices } from "../../integrations/services-api";
+import { ServiceTypes } from "../../types/services-types";
 import {
   addMinuteHistory,
   findMinuteHistory,
@@ -31,12 +32,19 @@ export async function getServiceMetrics(serviceId: string) {
 
   if (!result) return null;
 
+
   return result;
 }
 
 export async function getAllServicesMetrics() {
   // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking e tela principal/globo)
   const result = await reqServices();
+
+  for(let service of result){
+    const cpu = (await reqMetricsCPU(service.id!));
+    const memory = (await reqMetricsMemory(service.id!));
+    service.metrics = {cpu_percent: cpu, memory_gb: memory, disk_gb: 0, network_gb: 0}
+  }
 
   if (!result) return null;
 
