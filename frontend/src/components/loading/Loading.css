@@ -10,6 +10,7 @@
     align-items: center;
     flex-direction: column;
     color: var(--text);
+    padding: 30px;
 }
 
 
@@ -54,4 +55,10 @@
 
 .loading-messages {
     font-size: 1.15rem;
+}
+
+@media screen and (max-width:480px) {
+    .loading-messages {
+        text-align: center;
+    }
 }

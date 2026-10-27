@@ -6,7 +6,7 @@ export default function Loading() {
   const texts = [
     "Garantindo que todas informações sejam carregadas..",
     "Refinando dados para você...",
-    "Obrigada pela paciência...",
+    "Obrigada pela paciência!",
     "Qual serviço seu tem maior impacto?",
     "Já se perguntou quanto de CO2e foi emitido?",
   ];
