@@ -10,6 +10,7 @@ import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
 import Loading from "../../components/loading/Loading";
+import Toast from "../../components/toast/Toast";
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState<boolean>(
@@ -29,7 +30,10 @@ export default function Login() {
 
   return (
     <>
-      <Loading />
+      {/*Lógica de isLoading aqui  */}
+      {/* <Loading /> */}
+      {/* Lógica de success  */}
+      <Toast icon="success" title="oi" message="teste teste"/>
       <header>
         <div className="header-btns">
           <Link to="/" className="btn-back">
