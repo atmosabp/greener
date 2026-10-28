@@ -10,7 +10,7 @@ import {
 import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-api";
 import {differenceInDays, differenceInHours, differenceInMonths } from 'date-fns';
 
-export async function addMinuteHistory(datePull: any, serviceId: string) {
+export async function addMinuteHistory(datePull: Date, serviceId: string) {
   const client = await pool.connect();
 
   const collectionIntervalSeconds = (await reqInterval(serviceId));
@@ -109,7 +109,7 @@ export async function findServices() {
   return result.rows || [];
 }
 
-export async function findMonthHistory(datePull: any) {
+export async function findMonthHistory(datePull: Date) {
   //preciso de um if que detecta de o date pull é um mes antes do atual
   var result 
     if(differenceInMonths(Date(), datePull) < 2){
@@ -135,7 +135,7 @@ export async function findMonthHistory(datePull: any) {
 }
 
 export async function findServiceMonthHistory(
-  datePull: any,
+  datePull: Date,
   serviceId: string,
 ) {
   var result 
@@ -163,7 +163,7 @@ export async function findServiceMonthHistory(
   return result.rows[0] || null;
 }
 
-export async function findDayHistory(datePull: any) {
+export async function findDayHistory(datePull: Date) {
   //preciso de um if que detecta de o date pull é um mes antes do atual
   var result 
     if(differenceInDays(Date(), datePull) < 2){
@@ -189,7 +189,7 @@ export async function findDayHistory(datePull: any) {
 }
 
 export async function findServiceDayHistory(
-  datePull: any,
+  datePull: Date,
   serviceId: string,
 ) {
   var result 
@@ -217,7 +217,7 @@ export async function findServiceDayHistory(
   return result.rows[0] || null;
 }
 
-export async function findHourHistory(datePull: any) {
+export async function findHourHistory(datePull: Date) {
   var result 
     if(differenceInHours(Date(), datePull) < 2){
       result = await pool.query(
@@ -241,7 +241,7 @@ export async function findHourHistory(datePull: any) {
   return result.rows[0] || null;
 }
 
-export async function findServiceHourHistory(datePull: any, serviceId: string) {
+export async function findServiceHourHistory(datePull: Date, serviceId: string) {
   var result 
     if(differenceInHours(Date(), datePull) < 2){
       result = await pool.query(
@@ -267,7 +267,7 @@ export async function findServiceHourHistory(datePull: any, serviceId: string) {
   return result.rows[0] || null;
 }
 
-export async function findMinuteHistory(datePull: number) {
+export async function findMinuteHistory(datePull: Date) {
   const result = await pool.query(
     `SELECT * FROM minute_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 seconds' limit 1`,
     [datePull],
@@ -276,7 +276,7 @@ export async function findMinuteHistory(datePull: number) {
 }
 
 export async function findServiceMinuteHistory(
-  datePull: number,
+  datePull: Date,
   serviceId: string,
 ) {
   const result = await pool.query(
@@ -286,8 +286,8 @@ export async function findServiceMinuteHistory(
   return result.rows[0] || null;
 }
 
-async function teste(){
-  const response = await findHourHistory(new Date(2026,10,27,21))
-  console.log(await response)
-}
-teste()
+// async function teste(){
+//   const response = await findHourHistory(new Date(2026,10,27,21))
+//   console.log(await response)
+// }
+// teste()
