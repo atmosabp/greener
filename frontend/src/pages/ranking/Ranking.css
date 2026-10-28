@@ -22,6 +22,7 @@
     background-color: var(--background);
     color: var(--text);
     font-family: "Roboto", sans-serif;
+    align-items: center;
 }
 
 .ranking-page,
@@ -30,7 +31,7 @@
 }
 
 .ranking-main {
-    width: 100%;
+    width: 90%;
     flex: 1 0 auto;
     min-height: 0;
     margin-top: 5rem;
@@ -52,7 +53,7 @@
 
 .ranking-intro {
     display: grid;
-    grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.5fr);
+    grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr);
     align-items: center;
     gap: 1.5rem;
     width: 100%;
@@ -82,7 +83,7 @@
 
 .ranking-filters {
     display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr);
     align-items: stretch;
     gap: 3rem;
     width: 100%;
@@ -97,7 +98,7 @@
     flex-direction: column;
     justify-content: center;
     gap: 0.6rem;
-    padding: 0.85rem 1.1rem;
+    padding: 0.5rem 1.1rem;
     border-radius: 1.15rem;
     background-color: var(--primary-light);
     color: var(--text);
@@ -107,7 +108,7 @@
 .ranking-classification > span {
     display: block;
     text-align: center;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 600;
     line-height: 1.25;
 }
@@ -153,8 +154,9 @@
 
 .ranking-period select {
     width: 100%;
-    height: 2.7rem;
+    height: 2.3rem;
     padding: 0 2.5rem 0 0.85rem;
+    font-size: 1rem;
     text-align: center;
     text-align-last: center;
 }
@@ -183,7 +185,7 @@
 
 .ranking-metric-button {
     min-width: 0;
-    min-height: 2.7rem;
+    min-height: 2.3rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -292,26 +294,23 @@
     width: 100%;
 
     /* Aumenta a área visível da tabela */
-    height: 75vh;
-    height: 75dvh;
+    height: auto;
 
     /* Evita que outras regras limitem a altura */
-    min-height: 30rem;
-    max-height: none;
+    min-height: 0;
+    max-height: 75dvh;
 
     display: flex;
     flex-direction: column;
 
     overflow: hidden;
-
     border-radius: 0.9rem;
 }
 
 .ranking-page .ranking-table-scroll {
-    flex: 1 1 0;
-    min-height: 0;
-    /* max-height: none; */
+    flex: 0 1 auto;
     width: 100%;
+    min-height: 0;
 
     overflow-x: auto;
     overflow-y: auto;
@@ -359,7 +358,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    height: 2.7rem;
+    height: 2rem;
     padding: 0.45rem 0.6rem;
     background-color: var(--primary-light);
     color: var(--text);
@@ -383,7 +382,7 @@
 }
 
 .ranking-table td {
-    height: 2.65rem;
+    height: 2.4rem;
     padding: 0.4rem 0.6rem;
     border-bottom: 0.1rem solid var(--ranking-border);
     font-size: 1.15rem;
@@ -474,12 +473,12 @@
         overflow: visible;
     }
 
-    .ranking-table-section {
+    /* .ranking-table-section {
         flex: 0 0 auto;
         height: clamp(22rem, 55vh, 42rem);
         height: clamp(22rem, 55dvh, 42rem);
         min-height: 22rem;
-    }
+    } */
 }
 
 
@@ -524,12 +523,12 @@
         font-size: 2.25rem;
     }
 
-    .ranking-table-section {
+    /* .ranking-table-section {
         flex: 0 0 auto;
         height: clamp(22rem, 55vh, 38rem);
         height: clamp(22rem, 55dvh, 38rem);
         min-height: 22rem;
-    }
+    } */
 
     .ranking-table th {
         font-size: 1.1rem;
@@ -630,23 +629,27 @@
         font-size: 0.75rem;
     }
 
-    .ranking-table-section {
-        flex: 0 0 auto;
-        width: 100%;
-        height: 55dvh;
-        min-height: 18rem;
-        max-height: 32rem;
-        overflow: hidden;
-        border-radius: 0.9rem;
-    }
+.ranking-table-section {
+    width: 100%;
+    height: auto;
+    max-height: 75dvh;
+    min-height: 0;
 
-    .ranking-table-scroll {
-        flex: 1 1 auto;
-        min-height: 0;
-        max-height: 100%;
-        overflow-x: auto;
-        overflow-y: auto;
-    }
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    border-radius: 0.9rem;
+}
+
+.ranking-table-scroll {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 100%;
+
+    overflow-x: auto;
+    overflow-y: auto;
+}
 
     .ranking-table {
         min-width: 38rem;
@@ -674,6 +677,12 @@
     .ranking-footer {
         padding: 0.8rem;
         font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ranking-main {
+        margin-top: 2.2rem;
     }
 }
 
