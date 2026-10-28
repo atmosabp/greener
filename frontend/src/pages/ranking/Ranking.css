@@ -303,12 +303,14 @@
     flex-direction: column;
 
     overflow: hidden;
+
+    border-radius: 0.9rem;
 }
 
 .ranking-page .ranking-table-scroll {
     flex: 1 1 0;
     min-height: 0;
-    max-height: none;
+    /* max-height: none; */
     width: 100%;
 
     overflow-x: auto;
@@ -457,7 +459,7 @@
    Página com rolagem normal
 ========================================= */
 
-@media (min-width: 70.001rem) {
+@media (min-width: 1121px) {
     .ranking-page {
         min-height: 100vh;
         min-height: 100dvh;
@@ -485,7 +487,7 @@
    TABLETS
 ========================================= */
 
-@media (max-width: 70rem) {
+@media (max-width: 1120px) {
     .ranking-page {
         height: auto;
         min-height: 100vh;
@@ -498,7 +500,7 @@
         flex: 1 0 auto;
         min-height: 0;
         gap: 1.25rem;
-        margin-top: 2rem;
+        margin-top: 5rem;
         padding: 1.25rem 1.5rem 0.75rem;
         overflow: visible;
     }
@@ -543,7 +545,7 @@
    CELULARES
 ========================================= */
 
-@media (max-width: 40rem) {
+@media (max-width: 640px) {
     .ranking-page {
         height: auto;
         min-height: 100dvh;
@@ -554,7 +556,7 @@
     .ranking-main {
         flex: 1 0 auto;
         gap: 1rem;
-        margin-top: 1.5rem;
+        margin-top: 5rem;
         padding: 1.1rem 1rem 0.75rem;
         overflow: visible;
     }
