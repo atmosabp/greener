@@ -91,7 +91,7 @@
 
 /* Última atualização */
 
-.last-update {
+.homepage .last-update {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -263,7 +263,7 @@
     opacity: 0.55;
 }
 
-.status-dot {
+.homepage .status-dot {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -711,7 +711,7 @@
         font-size: 12px;
     }
 
-    .last-update {
+    .homepage .last-update {
         align-items: flex-start;
         min-width: 0;
     }
@@ -836,7 +836,8 @@
         display: none;
     }
 
-    .last-update {
+
+    .homepage .last-update {
         display: flex;
         flex-direction: column;
         align-items: center;

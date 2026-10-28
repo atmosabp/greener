@@ -12,62 +12,29 @@ export default function Header({
   message,
   activeHref,
 }: HeaderProps) {
+  const compact_query =  "(max-width: 1024px)";
   const [openMenu, setOpenMenu] = useState(false);
-  const [isMobile, setIsMobile] = useState<boolean>(
-    () => window.innerWidth < 1024,
+  const [isCompact, setIsCompact] = useState(
+    () => window.matchMedia(compact_query).matches,
   );
 
-  const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-
   useEffect(() => {
-    let lastY = window.scrollY;
-    let ticking = false;
+    const mediaQuery = window.matchMedia(compact_query);
 
-    const update = () => {
-      const y = Math.max(window.scrollY, 0); // iOS tem "bounce" com valor negativo
+    const handleChange = () => {
+      setIsCompact(mediaQuery.matches);
 
-      // histerese: liga em 80, desliga em 20.
-      // Com um limite só, o header encolhe, a altura muda, o scroll se
-      // ajusta e ele fica piscando entre os dois estados.
-      setScrolled((prev) => (y > 80 ? true : y < 20 ? false : prev));
-
-      // direção: ignora movimentos pequenos para não tremer
-      const delta = y - lastY;
-      if (Math.abs(delta) > 8) {
-        setHidden(delta > 0 && y > 120); // desceu e já passou do topo
-        lastY = y;
+      if (!mediaQuery.matches) {
+        setOpenMenu(false);
       }
-      ticking = false;
     };
 
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update); // no máximo 1 cálculo por frame
-    };
-
-    update(); // estado correto se a página carregar já rolada
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-
-      if (window.innerWidth > 1024) setOpenMenu(false); // Para evitar bug de travar
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const headerImage = isMobile ? logoText : logo;
+  const headerImage = isCompact ? logoText : logo;
   const closeMenu = () => setOpenMenu(false);
-  const floatClasses = `${scrolled ? "is-scrolled" : ""} ${
-    hidden && !openMenu ? "is-hidden" : ""
-  }`;
 
   return (
     <>
@@ -101,7 +68,7 @@ export default function Header({
 
       <header
         id="main-menu"
-        className={`menu ${openMenu ? "active" : ""} ${floatClasses}`}
+        className={`menu ${openMenu ? "active" : ""}`}
       >
         <img src={headerImage} alt="Logo Greener" className="logo" />
         <nav className="menu-links">
