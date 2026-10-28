@@ -456,7 +456,8 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    overflow-y: auto;
+    margin: -6px;
+    padding: 6px;
     scrollbar-width: thin;
     scrollbar-color: var(--primary-light) transparent;
 
@@ -490,11 +491,11 @@
     font-size: 1rem;
     text-align: left;
     cursor: pointer;
-    transition: border 0.15s ease-in-out, background-color 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .service-link:hover:not(:disabled) {
-    border: 2px solid var(--primary-light)
+    transform: scale(1.035);
 }
 
 .service-link:disabled {
@@ -512,12 +513,12 @@
     flex-shrink: 0;
 }
 
-.dashboard-page footer{
+.dashboard-page footer {
     text-align: center;
     padding: 15px;
 }
 
-.dashboard-page footer span{
+.dashboard-page footer span {
     color: var(--secondary);
 }
 
