@@ -37,13 +37,13 @@ Serão usados para conseguir informações realizadas a partir da coleta de dado
 
 `/all-service-history`: Retorna histórico de todos os serviços para o ranking.
 
-**Endpoints tipo PATCH:**
+**Endpoint tipo PATCH:**
 
 `/:id`: Rota para editar usuário.
 
-**Endpoints tipo DELETE:**
+**Endpoint tipo DELETE:**
 
-`(A definir)`: ...
+`/:id`: Deleta usuário baseado no id
 
 ---
 
