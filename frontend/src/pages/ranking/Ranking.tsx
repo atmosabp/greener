@@ -23,14 +23,6 @@ const initialServices: RankingService[] = [
   { id: 6, name: "Fraud Detector", energy: 6.82, co2e: 2.51 },
   { id: 7, name: "Reporting Batch", energy: 5.74, co2e: 2.13 },
   { id: 8, name: "Authentication API", energy: 4.91, co2e: 1.84 },
-  { id: 9, name: "Notification Service", energy: 3.76, co2e: 1.39 },
-  { id: 10, name: "Cache Worker", energy: 2.48, co2e: 0.92 },
-  { id: 11, name: "Data Processor", energy: 2.12, co2e: 0.81 },
-  { id: 12, name: "Search Engine", energy: 1.86, co2e: 0.67 },
-  { id: 12, name: "Search Engine", energy: 1.86, co2e: 0.67 },
-  { id: 12, name: "Search Engine", energy: 1.86, co2e: 0.67 },
-  { id: 12, name: "Search Engine", energy: 1.86, co2e: 0.67 },
-  { id: 12, name: "Search Engine", energy: 1.86, co2e: 0.67 },
 ];
 
 const currentYear = new Date().getFullYear();
