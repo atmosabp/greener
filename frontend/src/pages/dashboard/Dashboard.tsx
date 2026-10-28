@@ -79,6 +79,8 @@ export default function Dashboard() {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  let year = new Date().getFullYear();
+
   return (
     <div className="dashboard-page">
       <AppHeader />
@@ -363,7 +365,9 @@ export default function Dashboard() {
           />
         )}
       </main>
-
+      <footer>
+        <span>Desenvolvido por Atmos &copy; {year}</span>
+        </footer>
       {/* mobile: botão voltar ao topo */}
       <button
         type="button"
