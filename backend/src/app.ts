@@ -5,12 +5,17 @@ import { router } from "./modules";
 export const app = express();
 app.use(express.json());
 
-app.use((_req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:8080'
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(String(origin))) {
+    res.setHeader('Access-Control-Allow-Origin', String(origin));
+    res.setHeader('Vary', 'Origin');
+  }
   next();
 });
 

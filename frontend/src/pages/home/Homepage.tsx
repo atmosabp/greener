@@ -13,17 +13,19 @@ export interface Service {
   location: {
     city?: string;
     country?: string
-    latitude?: number;
-    longitude?: number;
+    latitude?: number | undefined;
+    longitude?: number | undefined;
     region?: string;
     region_code?: string;
-  };
+  } | undefined;
   metrics_path?: string;
   metrics?: {
     cpu_percent?: number;
     memory_gb?: number;
     disk_gb?: number;
     network_gb?: number;
+    co2e?: number;
+    kwh?: number;
   }
   status: ServiceStatus;
 }
@@ -42,7 +44,7 @@ const statusLabels: Record<ServiceStatus, string> = {
 };
 
 export default function Homepage({
-  lastUpdated = "16/10/2026 08:00",
+  lastUpdated = "27/10/2026 08:00",
 }: HomepageProps) {
   const [mode, setMode] = useState<VisualizationMode>("globe");
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -106,7 +108,7 @@ export default function Homepage({
             <div className="services-list">
               {services.length === 0 ? (
                 <p className="services-empty">
-                  Nenhum serviço disponível no momento.
+                  Nenhum serviço foi encontrado.
                 </p>
               ) : (
                 services.map((service, index) => {

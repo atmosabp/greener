@@ -28,4 +28,6 @@ interface ServiceMetricsType {
   memory_gb?: number;
   disk_gb?: number;
   network_gb?: number;
+  co2e?: number;
+  kwh?: number;
 }

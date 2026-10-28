@@ -100,6 +100,14 @@ export async function findHistory() {
   return result.rows || [];
 }
 
+export async function findServices() {
+  const result = await pool.query(
+    `SELECT id, name FROM services`
+  );
+
+  return result.rows || [];
+}
+
 export async function findMonthHistory(datePull: any) {
   const result = await pool.query(
     `SELECT * FROM month_data WHERE date_pull = $1`,

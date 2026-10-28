@@ -1,24 +1,16 @@
-import type {
-  ServiceTypes,
-  MetricsType,
-  CoordinatesTypes,
-} from "../types/services-types";
+import type { ServiceTypes, MetricsType, CoordinatesTypes } from "../types/services-types";
+import {findServices} from "../modules/collections/collections.repository"
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 const metricsURL = "https://metrics.unilaunch.org/metrics";
 
 export async function reqServices(): Promise<ServiceTypes[]> {
   try {
-    const response = await fetch(serviceURL);
+    const responseDb = await findServices();
 
-    if (!response.ok) {
-      throw new Error(`Erro na requisição de dados`);
-    }
+    var avaliableList = [];
 
-    const serviceList: ServiceTypes[] = await response.json();
-    var avaliableList: ServiceTypes[] = [];
-
-    for (let i of serviceList) {
+    for (let i of responseDb) {
       avaliableList.push(await checkServiceAvailiability(i));
     }
 
@@ -34,6 +26,16 @@ export async function checkServiceAvailiability(
   try {
     const response = await fetch(`${metricsURL}/${service.id}`);
     const metrics: MetricsType = await response.json();
+
+    const responseApi = await fetch(serviceURL);
+    const data = await responseApi.json();
+
+    for(let i in data){
+      if (service.id == data[i].id){
+        service.location = data[i].location;
+        break;
+      }
+    }
 
     if (response.ok) {
       service.status = "active";
@@ -83,9 +85,3 @@ export async function reqCoordinates(serviceId: string): Promise<CoordinatesType
     });
   }
 }
-
-async function teste() {
-  console.log(await reqServices());
-}
-
-// teste();

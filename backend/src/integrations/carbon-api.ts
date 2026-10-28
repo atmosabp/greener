@@ -6,8 +6,6 @@ export async function reqMetrics(serviceId: string) {
   try {
     const resp = await fetch(urlApi); //+serviceId
 
-    console.log(resp)
-
     if (resp.ok) {
       const objMetrics: ApiCarbon = await resp.json();
 
@@ -47,11 +45,3 @@ export async function reqRenewablePercent(serviceId: string): Promise<number|und
 
   return valueRenewable;
 }
-
-//Pra testar
-async function inicia() {
-  const valor = await reqCarbonValue("billing-api");
-  console.log(valor)
-}
-
-// inicia();
