@@ -37,4 +37,6 @@ jobs:
     
       - name: Fazer limpeza containers
         if: always()
-        run: docker compose down -v
+        run: |
+          docker compose logs database
+          docker compose down -v
