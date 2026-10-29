@@ -1,4 +1,4 @@
-# Endpoints
+## Endpoints
 Esse documento tem como objetivo descrever os endpoints mapeados pela nossa aplicação.  
 Todos os endpoints descritos abaixo estão aplicados nos arquivos `.routes.ts `do diretório `backend/src/modules/`.  
 Você também pode acessar essa pasta [aqui](https://github.com/atmosabp/greener/tree/develop/backend/src/modules).
