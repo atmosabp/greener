@@ -30,7 +30,7 @@ O frontend é uma *Single Page Application* (SPA) feita com **React**, **TypeScr
 - oferecer telas de **dashboard**, **ranking**, **comparação** e **administração** de usuários;
 - permitir alternar entre **tema claro/escuro** e **paleta verde/azul**.
 
-Os dados são fornecidos pelo servidor em `backend/`, que por sua vez consome as APIs auxiliares do cliente. Veja o [README principal](../README.md) para a visão geral do projeto.
+Os dados são fornecidos pelo servidor em `backend/`, que por sua vez consome as APIs auxiliares do cliente.
 
 <br>
 
@@ -98,19 +98,7 @@ Cada página e componente mantém seu arquivo `.css` ao lado do `.tsx`, facilita
 
 <br>
 
-## Rotas e páginas
-
-As rotas são definidas em `src/main.tsx` com o React Router:
-
-| Rota | Página | Descrição | Situação |
-| ---- | ------ | --------- | -------- |
-| `/` | `App.tsx` | Landing page com apresentação do projeto | Implementada |
-| `/login` | `Login.tsx` | Login com e-mail corporativo | Interface e validação prontas; autenticação pendente |
-| `/home` | `Homepage.tsx` | Explorador de serviços com globo 3D e mapa | Implementada com dados de exemplo (*mock*) |
-| `/dashboard` | `Dashboard.tsx` | Acompanhamento de métricas | Estrutura inicial (*placeholder*) |
-| `/ranking` | `Ranking.tsx` | Ranking dos serviços por impacto ambiental | Estrutura inicial (*placeholder*) |
-| `/comparison` | `Comparison.tsx` | Comparação de métricas entre serviços | Estrutura inicial (*placeholder*) |
-| `/admin` | `Admin.tsx` | Gerenciamento de usuários | Estrutura inicial (*placeholder*) |
+## Páginas
 
 ### Landing page (`/`)
 
