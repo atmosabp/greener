@@ -1,5 +1,5 @@
 
-import type { Metrics, Service, CompareTarget } from '../comparisonData';
+import type { Metrics, Service, CompareTarget } from './comparisonData';
 
 import {
     CarbonCard,
