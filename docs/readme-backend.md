@@ -38,7 +38,7 @@ Ele coleta as métricas de uso (CPU, memória, disco e rede) de cada serviço mo
 | Jest + Supertest | Testes de integração das rotas |
 | Docker / Docker Compose | Execução do backend, banco e frontend em containers |
 
-
+<br>
 
 ## Estrutura de arquivos
 
@@ -71,6 +71,7 @@ backend/
 └ README.md
 ```
 
+<br>
 
 ## Arquitetura
 
@@ -91,6 +92,7 @@ requisição → routes → controller → service → repository → PostgreSQL
 | `integrations/` | Requisições às APIs externas |
 | `metrics-calculator.ts` | Classe `MetricsCalculator`, que calcula energia e emissão |
 
+<br>
 
 ## Variáveis de ambiente
 
@@ -112,28 +114,9 @@ O backend lê o arquivo `.env` que fica na **raiz do projeto** (e não dentro de
 <br>
 
 ## Instruções para execução
+Caso queira utilizar o backend, há instruções para rodar o projeto com e sem Docker no README do projeto. Você pode acessar ele clicando [aqui](https://github.com/atmosabp/greener#instru%C3%A7%C3%B5es-para-execu%C3%A7%C3%A3o).
 
-### Com Docker (recomendado)
-
-Na raiz do projeto, com o `.env` já criado:
-
-```bash
-docker compose up --build
-```
-
-O Compose sobe o banco de dados, o backend e o frontend, nessa ordem. O backend só inicia depois que o banco estiver saudável (`healthcheck`). O backend ficará disponível em `http://localhost:<PORT>`.
-
-### Sem Docker
-
-1. Crie o banco de dados no PostgreSQL da sua máquina (por exemplo, com o PgAdmin) e execute as queries do arquivo [`database/schema.sql`](../database/schema.sql).
-2. Crie o `.env` na raiz do projeto, com `POSTGRES_HOST=localhost` e a porta do seu PostgreSQL.
-3. Instale as dependências e inicie o servidor:
-
-```bash
-cd backend
-npm install
-npm run dev
-```
+<br>
 
 ### Scripts disponíveis
 
@@ -144,17 +127,21 @@ npm run dev
 | `npm start` | Executa a versão compilada (`dist/server.js`) |
 | `npm test` | Roda os testes com Jest (precisa do banco de dados rodando) |
 
-
+<br>
 
 ## Endpoints
 
 Todas as requisições e respostas usam JSON. Em caso de erro, os controllers respondem com status `400` e o corpo `{ "message": "..." }`. Rotas que não existem respondem `404` com `{ "message": "Rota inexistente!" }`.
+
+<br>
 
 ### Geral
 
 | Método | Rota | Descrição | Resposta |
 | ------ | ---- | --------- | -------- |
 | GET | `/health` | Verifica se o servidor está no ar (usado pelo `healthcheck` do Docker) | `200` `{ "status": "ok" }` |
+
+<br>
 
 ### Usuários
 
@@ -175,6 +162,8 @@ Todas as requisições e respostas usam JSON. Em caso de erro, os controllers re
 ```
 
 O campo `email` é único no banco: tentar cadastrar um e-mail repetido retorna erro `400`.
+
+<br>
 
 ### Coletas (histórico)
 
@@ -197,7 +186,7 @@ O campo `email` é único no banco: tentar cadastrar um e-mail repetido retorna 
 
 > Os serviços precisam existir na tabela `services` para receberem histórico (o `service_id` é uma chave estrangeira). O `schema.sql` já cadastra os serviços padrão: `billing-api`, `checkout-worker`, `recommendation-ai`, `inventory-sync`, `audit-stream`, `email-dispatcher`, `fraud-detector` e `reporting-batch`.
 
-
+<br>
 
 ## Integrações externas
 
@@ -215,7 +204,7 @@ O status de cada serviço é calculado em `checkServiceAvailiability`:
 - `incompleto`: a API respondeu, mas faltam métricas ou o intervalo de coleta.
 - `indisponivel`: a API não respondeu ou retornou erro.
 
-
+<br>
 
 ## Cálculos
 
@@ -227,9 +216,9 @@ Os cálculos são feitos pela classe `MetricsCalculator` (`src/modules/metrics-c
 | Energia (kWh) | Potência (W) × intervalo de coleta (h) / 1000 |
 | Emissão (CO₂e) | Energia (kWh) × intensidade de carbono (gCO₂e/kWh) |
 
-O detalhamento de todas as fórmulas está em [`docs/calculos.md`](../docs/calculos.md).
+O detalhamento de todas as fórmulas está em [`docs/calculos.md`](https://github.com/atmosabp/greener/blob/develop/docs/calculos.md).
 
-
+<br>
 
 ## Banco de dados
 
@@ -245,7 +234,7 @@ O banco é o PostgreSQL, está em [`database/schema.sql`](../database/schema.sql
 
 A conexão é feita pelo `Pool` do `pg` em `src/db/connections.ts`, com os dados vindos das variáveis de ambiente.
 
-
+<br>
 
 ## Testes
 
@@ -259,6 +248,7 @@ docker compose exec backend npm test
 
 O passo a passo completo está em [`src/__test__/README.md`](src/__test__/README.md).
 
+<br>
 
 ## Status e pendências
 
@@ -271,6 +261,7 @@ O que ainda está em desenvolvimento no backend:
 - Ainda não há login/autenticação. A senha é gravada como foi recebida, sem criptografia (hash).
 - Os controllers ainda não validam os dados recebidos no corpo das requisições.
 
+---
 
 <div align="center">
     <i> Desenvolvido por Atmos <br>2026</i>
