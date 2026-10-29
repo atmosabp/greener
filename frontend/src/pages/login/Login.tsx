@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
 import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
+import Warning from "../../components/warning/Warning";
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState<boolean>(
@@ -32,8 +33,9 @@ export default function Login() {
     <>
       {/*Lógica de isLoading aqui  */}
       {/* <Loading /> */}
-      {/* Lógica de success  */}
-      <Toast icon="success" title="oi" message="teste teste"/>
+      {/* Lógica de success ou error  */}
+      {/* <Toast icon="success" title="oi" message="teste teste"/> */}
+      <Warning/>
       <header>
         <div className="header-btns">
           <Link to="/" className="btn-back">
