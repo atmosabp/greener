@@ -17,7 +17,9 @@ services:
       retries: 10
       start_period: 10s
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      target: development #ambiente de desenvolvimento (development) e de produção (runtime)
     container_name: greener-backend
     command: npm run dev
     ports:
@@ -30,6 +32,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}
       NODE_WATCH_USE_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
     depends_on:
       database:
         condition: service_healthy

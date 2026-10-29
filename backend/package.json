@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "npx tsx watch src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "test": "jest --detectOpenHandles --forceExit"
   },
   "repository": {
