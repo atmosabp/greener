@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
-import type { Metrics } from '../comparisonData';
+import type { Metrics } from './comparisonData';
 
 /* ------------------------------------------------------------------ */
 /* Saudação                                                            */
