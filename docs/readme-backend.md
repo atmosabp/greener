@@ -133,58 +133,7 @@ Caso queira utilizar o backend, há instruções para rodar o projeto com e sem 
 
 Todas as requisições e respostas usam JSON. Em caso de erro, os controllers respondem com status `400` e o corpo `{ "message": "..." }`. Rotas que não existem respondem `404` com `{ "message": "Rota inexistente!" }`.
 
-<br>
-
-### Geral
-
-| Método | Rota | Descrição | Resposta |
-| ------ | ---- | --------- | -------- |
-| GET | `/health` | Verifica se o servidor está no ar (usado pelo `healthcheck` do Docker) | `200` `{ "status": "ok" }` |
-
-<br>
-
-### Usuários
-
-| Método | Rota | Descrição | Resposta |
-| ------ | ---- | --------- | -------- |
-| POST | `/users` | Cadastra um novo usuário | `201` com o usuário criado |
-| GET | `/users/get-users` | Lista todos os usuários | `200` |
-
-**Corpo do `POST /users`:**
-
-```json
-{
-  "name": "Teste",
-  "email": "teste@email.com",
-  "password": "123456",
-  "isAdm": false
-}
-```
-
-O campo `email` é único no banco: tentar cadastrar um e-mail repetido retorna erro `400`.
-
-<br>
-
-### Coletas (histórico)
-
-| Método | Rota | Descrição | Resposta |
-| ------ | ---- | --------- | -------- |
-| GET | `/collections/get-history` | Retorna todo o histórico guardado na tabela `minute_data` | `200` |
-| POST | `/collections/add-history` | Busca as métricas atuais de um serviço, calcula kWh e CO₂e e grava no histórico | `200` com o registro criado |
-| POST | `/collections/service-data` | Consulta o histórico de um serviço em uma data | `200` |
-| POST | `/collections/history-data` | Consulta o histórico de todos os serviços em uma data | `200` |
-
-**Parâmetros enviados no corpo das requisições `POST`:**
-
-| Campo | Tipo | Descrição | Usado em |
-| ----- | ---- | --------- | -------- |
-| `periodType` | `"minute"` \| `"hour"` \| `"month"` | Granularidade do histórico | todas |
-| `datePull` | string de data (ex.: `"2026-10-17"`) | Data da coleta ou da consulta | todas |
-| `serviceId` | string (ex.: `"billing-api"`) | Identificador do serviço | `add-history` e `service-data` |
-
-
-
-> Os serviços precisam existir na tabela `services` para receberem histórico (o `service_id` é uma chave estrangeira). O `schema.sql` já cadastra os serviços padrão: `billing-api`, `checkout-worker`, `recommendation-ai`, `inventory-sync`, `audit-stream`, `email-dispatcher`, `fraud-detector` e `reporting-batch`.
+Para saber mais sobre os Endpoints acesse [aqui](https://github.com/atmosabp/greener/blob/docs/endpoints/docs/endpoints.md)
 
 <br>
 
@@ -192,17 +141,17 @@ O campo `email` é único no banco: tentar cadastrar um e-mail repetido retorna 
 
 O backend consome três APIs, cada uma com seu arquivo em `src/integrations/`:
 
-| Arquivo | API | Para que serve |
+| Arquivo | API | Onde ver |
 | ------- | --- | -------------- |
-| `metrics-api.ts` | `metrics.unilaunch.org/metrics/:serviceId` | Intervalo de coleta e métricas de CPU, memória, disco e rede do serviço |
-| `carbon-api.ts` | `carbon.unilaunch.org/carbon-intensity/br-sudeste` | Intensidade de carbono (gCO₂e/kWh) e porcentagem de energia renovável |
-| `services-api.ts` | `metrics.unilaunch.org/services` | Lista de serviços, status de disponibilidade e coordenadas de cada serviço |
+| `metrics-api.ts` | `metrics.unilaunch.org/metrics/:serviceId` | Você pode encontrar as descrições [aqui](https://github.com/atmosabp/greener/blob/develop/docs/orientacoes-config-api.md) |
+| `carbon-api.ts` | `carbon.unilaunch.org/carbon-intensity/br-sudeste` | Você pode encontrar as descrições [aqui](https://github.com/atmosabp/greener/blob/develop/docs/orientacoes-config-api.md)|
+| `services-api.ts` | `metrics.unilaunch.org/services` | Você pode encontrar as descrições [aqui](https://github.com/atmosabp/greener/blob/develop/docs/orientacoes-config-api.md) |
 
 O status de cada serviço é calculado em `checkServiceAvailiability`:
 
-- `disponivel`: a API de métricas respondeu com sucesso.
-- `incompleto`: a API respondeu, mas faltam métricas ou o intervalo de coleta.
-- `indisponivel`: a API não respondeu ou retornou erro.
+- `active`: a API de métricas respondeu com sucesso.
+- `incomplete`: a API respondeu, mas faltam uma ou mais métricas.
+- `inactive`: a API não respondeu para tal serviço ou retornou erro.
 
 <br>
 
@@ -230,6 +179,7 @@ O banco é o PostgreSQL, está em [`database/schema.sql`](../database/schema.sql
 | `services` | Serviços monitorados, com `max_emitted` e `min_emitted` |
 | `minute_data` | Histórico por minuto: CPU, memória, disco, rede, kWh, CO₂e e % renovável |
 | `hour_data` | Histórico por hora (mesma estrutura de `minute_data`) |
+| `day_data` | Histórico por dia (mesma estrutura de `minute_data`) |
 | `month_data` | Histórico por mês (mesma estrutura de `minute_data`) |
 
 A conexão é feita pelo `Pool` do `pg` em `src/db/connections.ts`, com os dados vindos das variáveis de ambiente.
