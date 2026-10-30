@@ -1,3 +1,4 @@
+import { useState } from "react";
 
 import {
     availableYears,
@@ -46,6 +47,23 @@ export default function RankingCalendar({
     onConfirmYear,
     onConfirmHour,
 }: RankingCalendarProps) {
+    const [draftDay, setDraftDay] = useState(selectedDay);
+    const [draftHour, setDraftHour] = useState(selectedHour);
+    const [draftMonth, setDraftMonth] = useState(selectedMonth);
+    const [draftYear, setDraftYear] = useState(selectedYear);
+
+    const handleConfirm = () => {
+        if (period === "today") {
+            onConfirmHour(draftHour);
+        } else if (period === "month") {
+            onConfirmDay(draftDay);
+        } else if (period === "year") {
+            onConfirmMonth(draftMonth);
+        } else if (period === "other-years") {
+            onConfirmYear(draftYear);
+        }
+    };
+
     return (
         <div
             className="ranking-calendar-overlay"
@@ -125,13 +143,11 @@ export default function RankingCalendar({
                                                 day > currentDay
                                             }
                                             className={
-                                                day === selectedDay &&
-                                                    viewMonth === selectedMonth &&
-                                                    viewYear === selectedYear
+                                                day === draftDay
                                                     ? "is-selected"
                                                     : ""
                                             }
-                                            onClick={() => onConfirmDay(day)}
+                                            onClick={() => setDraftDay(day)}
                                         >
                                             {day}
                                         </button>
@@ -150,9 +166,9 @@ export default function RankingCalendar({
                                     type="button"
                                     key={hour}
                                     className={
-                                        selectedHour === hour ? "is-selected" : ""
+                                        draftHour === hour ? "is-selected" : ""
                                     }
-                                    onClick={() => onConfirmHour(hour)}
+                                    onClick={() => setDraftHour(hour)}
                                 >
                                     {String(hour).padStart(2, "0")}:00
                                 </button>
@@ -169,9 +185,9 @@ export default function RankingCalendar({
                                     type="button"
                                     key={month}
                                     className={
-                                        selectedMonth === index ? "is-selected" : ""
+                                        draftMonth === index ? "is-selected" : ""
                                     }
-                                    onClick={() => onConfirmMonth(index)}
+                                    onClick={() => setDraftMonth(index)}
                                 >
                                     {month}
                                 </button>
@@ -188,9 +204,9 @@ export default function RankingCalendar({
                                     type="button"
                                     key={year}
                                     className={
-                                        selectedYear === year ? "is-selected" : ""
+                                        draftYear === year ? "is-selected" : ""
                                     }
-                                    onClick={() => onConfirmYear(year)}
+                                    onClick={() => setDraftYear(year)}
                                 >
                                     {year}
                                 </button>
@@ -202,7 +218,7 @@ export default function RankingCalendar({
                 <button
                     type="button"
                     className="ranking-calendar-confirm"
-                    onClick={onClose}
+                    onClick={handleConfirm}
                 >
                     Confirmar seleção
                 </button>

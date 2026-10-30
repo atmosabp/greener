@@ -244,7 +244,7 @@ export default function Ranking() {
       </main>
 
       <footer className="ranking-footer">
-        Desenvolvido por Atmos ° © 2026
+        Desenvolvido por Atmos © 2026
       </footer>
 
       {calendar.calendarOpen && (
