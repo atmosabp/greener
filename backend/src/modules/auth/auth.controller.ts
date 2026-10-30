@@ -39,3 +39,14 @@ export async function loginController(req: Request, res: Response) {
         });
     }
 }
+
+export function currentUserController(req: Request, res: Response) {
+    const user = res.locals.authUser;
+
+    return res.status(200).json({
+        user: {
+            id: user.id,
+            isAdm: user.isAdm
+        }
+    });
+}

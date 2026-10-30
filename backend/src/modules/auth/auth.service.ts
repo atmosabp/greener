@@ -25,16 +25,11 @@ export async function authenticateUser(email: string, password: string) {
         throw new Error("JWT_SECRET não configurado.");
     }
 
-    const token = jwt.sign(
-        {
-            id: user.id,
-            isAdm: user.is_adm
-        },
-        secret,
-        {
-            expiresIn: "8h"
-        }
-    );
+const token = jwt.sign(
+    { id: user.id, isAdm: user.is_adm },
+    secret,
+    { expiresIn: "8h" }
+);
 
     return {
         token,

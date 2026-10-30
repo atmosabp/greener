@@ -1,5 +1,18 @@
 import { Router } from "express";
-import { loginController } from "./auth.controller";
+import {
+    loginController,
+    currentUserController
+} from "./auth.controller";
+
+import { authenticateToken } from "../../middlewares/middleware";
+
+export const router = Router();
+
+// Login
+router.post("/login", loginController);
+
+// Verificar sessão
+router.get("/me", authenticateToken, currentUserController);
 
 /*
 ========================================
@@ -17,7 +30,3 @@ Resposta esperada:
 - Retorna o token JWT e os dados do usuário.
 - Status 401: email ou senha incorretos.
 */
-
-export const router = Router();
-
-router.post("/login", loginController);

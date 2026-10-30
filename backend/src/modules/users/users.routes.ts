@@ -8,7 +8,14 @@ import {
     listUsersController,
 } from "./users.controller";
 
+import {
+    authenticateToken,
+    requireAdmin
+} from "../../middlewares/middleware";
+
 export const router = Router();
+
+router.use(authenticateToken, requireAdmin);
 
 // POST - Criar usuário
 router.post("/", createUserController);
