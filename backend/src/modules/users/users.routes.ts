@@ -1,43 +1,93 @@
 import { Router } from "express";
+
 import {
-  createUserController,
-  deleteUserByIdController,
-  editUserController,
-  listUserByIdController,
-  listUsersController,
+    createUserController,
+    deleteUserByIdController,
+    editUserController,
+    listUserByIdController,
+    listUsersController,
 } from "./users.controller";
 
 export const router = Router();
 
-// POST localhost:3000/users
+// POST - Criar usuário
 router.post("/", createUserController);
 
-// GET localhost:3000/users/get-users
+// GET - Listar todos os usuários
 router.get("/get-users", listUsersController);
 
-// GET localhost:3000/users/:id
+// GET - Consultar usuário por ID
 router.get("/:id", listUserByIdController);
 
-//PATCH localhost:3000/users/:id
+// PATCH - Atualizar usuário
 router.patch("/:id", editUserController);
 
-//DELETE localhost:3000/users/:id
+// DELETE - Excluir usuário
 router.delete("/:id", deleteUserByIdController);
 
 /*
-Teste de endpoints
+========================================
+TESTES DE ENDPOINTS - USUÁRIOS
+========================================
 
-Cadastro de usuários:
-curl -X POST http://localhost:3000/users/ \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Teste", "email": "teste@email.com", "password": "123456", "isAdm": true}'
+IMPORTANTE:
+Antes de testar, inicie o backend:
 
-Editar usuário (pode ter entre um e todos os campos):
-curl -X PATCH http://localhost:3000/users/9 \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Teste2", "email": "teste@email.com", "password": "123456", "isAdm": false}'
+npm run dev
 
-Deletar usuário:
-curl -X DELETE http://localhost:3000/users/1
+Os comandos abaixo devem ser executados em outro terminal CMD.
 
+----------------------------------------
+1. CADASTRAR USUÁRIO - POST
+----------------------------------------
+
+POST http://localhost:3002/users/
+
+curl -X POST http://localhost:3002/users/ -H "Content-Type: application/json" -d "{\"name\":\"Usuário Teste\",\"email\":\"teste@greener.com\",\"password\":\"123456\",\"isAdm\":false}"
+
+----------------------------------------
+2. LISTAR TODOS OS USUÁRIOS - GET
+----------------------------------------
+
+GET http://localhost:3002/users/get-users
+
+curl -X GET http://localhost:3002/users/get-users
+
+----------------------------------------
+3. BUSCAR USUÁRIO POR ID - GET
+----------------------------------------
+
+GET http://localhost:3002/users/:id
+
+Exemplo com ID 2:
+
+curl -X GET http://localhost:3002/users/2
+
+----------------------------------------
+4. EDITAR USUÁRIO - PATCH
+----------------------------------------
+
+PATCH http://localhost:3002/users/:id
+
+É possível enviar apenas os campos que deseja alterar.
+
+Exemplo:
+
+curl -X PATCH http://localhost:3002/users/2 -H "Content-Type: application/json" -d "{\"name\":\"Usuário Atualizado\"}"
+
+Exemplo alterando vários campos:
+
+curl -X PATCH http://localhost:3002/users/2 -H "Content-Type: application/json" -d "{\"name\":\"Novo Nome\",\"email\":\"novo@greener.com\",\"password\":\"novaSenha123\",\"isAdm\":false}"
+
+----------------------------------------
+5. EXCLUIR USUÁRIO - DELETE
+----------------------------------------
+
+DELETE http://localhost:3002/users/:id
+
+Exemplo com ID 2:
+
+curl -X DELETE http://localhost:3002/users/2
+
+========================================
 */

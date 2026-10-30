@@ -4,29 +4,46 @@ import { Client } from "pg";
 import { UserEditValues } from "../../types/user-types";
 
 export async function findUsers() {
-  const result = await pool.query(`SELECT * FROM users`);
+    const result = await pool.query(`
+        SELECT
+            id,
+            name,
+            email,
+            is_adm
+        FROM users
+    `);
 
-  return result.rows || null;
+    return result.rows || null;
 }
 
 export async function findUserById(id: number) {
-  const result = await pool.query(
-    `SELECT 
-        id,
-        name, 
-        email, 
-        password, 
-        is_adm 
-        FROM users 
-        WHERE id=$1`,
-    [id],
-  );
+    const result = await pool.query(
+        `SELECT
+            id,
+            name,
+            email,
+            is_adm
+        FROM users
+        WHERE id = $1`,
+        [id]
+    );
 
-  if (result && result.rowCount == 1) {
-    return result.rows;
-  } else {
+    if (result && result.rowCount === 1) {
+        return result.rows;
+    }
+
     return null;
-  }
+}
+
+export async function findUserByEmail(email: string) {
+    const result = await pool.query(
+        `SELECT id, name, email, password, is_adm
+        FROM users
+        WHERE email = $1`,
+        [email]
+    );
+
+    return result.rows[0] || null;
 }
 
 async function insertUser(
@@ -39,7 +56,7 @@ async function insertUser(
   const result = await client.query(
     `INSERT INTO users (name, email, password, is_adm)
         VALUES ($1, $2, $3, $4)
-        RETURNING id, name, email, password, is_adm`,
+        RETURNING id, name, email, is_adm`,
     [name, email, password, isAdm],
   );
 
@@ -65,7 +82,6 @@ export async function createUser(
     return user;
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
-    // console.error("Erro no banco: ",error);
     throw new Error(
       error.message ||
         "Ocorreu um erro ao adicionar o usuário. Tente novamente mais tarde.",
@@ -110,7 +126,7 @@ export async function updateUser(id: number, newValues: UserEditValues) {
     `UPDATE users
         SET ${fields.join(", ")}
         WHERE id = $${paramIndex}
-        RETURNING *`,
+        RETURNING id, name, email, is_adm`,
     values
   );
 
