@@ -1,4 +1,4 @@
-drop table services; 
+-- drop table if exists services; 
 -- create database greener_db;
 create table if not exists users(
 	id serial primary key,
@@ -73,20 +73,21 @@ create table if not exists month_data(
 	foreign key(service_id) references services(id)
 );
 
-create index idx_hour_data_services_dt on hour_data (service_id, date_pull);
-create index idx_minute_data_services_dt on minute_data (service_id, date_pull);
-create index idx_month_data_services_dt on month_data (service_id, date_pull);
+create index if not exists idx_hour_data_services_dt on hour_data (service_id, date_pull);
+create index if not exists idx_minute_data_services_dt on minute_data (service_id, date_pull);
+create index if not exists idx_month_data_services_dt on month_data (service_id, date_pull);
 
-insert into services (id, name, max_emitted, min_emitted)
-values
-('billing-api', 'Billing API', 0, 99999),
-('checkout-worker', 'Checkout Worker', 0, 99999),
-('recommendation-ai', 'Recommendation AI', 0, 99999),
-('inventory-sync', 'Inventory Sync', 0, 99999),
-('audit-stream', 'Audit Stream', 0, 99999),
-('email-dispatcher', 'Email Dispatcher', 0, 99999),
-('fraud-detector', 'Fraud Detector', 0, 99999),
-('reporting-batch', 'Reporting Batch', 0, 99999);
+INSERT INTO services (id, name, max_emitted, min_emitted)
+VALUES
+    ('billing-api', 'Billing API', 0, 99999),
+    ('checkout-worker', 'Checkout Worker', 0, 99999),
+    ('recommendation-ai', 'Recommendation AI', 0, 99999),
+    ('inventory-sync', 'Inventory Sync', 0, 99999),
+    ('audit-stream', 'Audit Stream', 0, 99999),
+    ('email-dispatcher', 'Email Dispatcher', 0, 99999),
+    ('fraud-detector', 'Fraud Detector', 0, 99999),
+    ('reporting-batch', 'Reporting Batch', 0, 99999)
+ON CONFLICT (id) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION minutes_to_hours_func()
 	RETURNS trigger
@@ -195,21 +196,28 @@ return new;
 end;
 $BODY$;
 
-CREATE or replace TRIGGER minutes_to_hours
-	AFTER INSERT 
-	ON minute_data
-	FOR EACH ROW
-	EXECUTE FUNCTION minutes_to_hours_func();
 
-CREATE or replace TRIGGER hours_to_days
-	AFTER INSERT 
-	ON hour_data
-	FOR EACH ROW
-	EXECUTE FUNCTION hours_to_days_func();
+DROP TRIGGER IF EXISTS minutes_to_hours ON minute_data;
 
-CREATE or replace TRIGGER days_to_months
-	AFTER INSERT 
-	ON day_data
-	FOR EACH ROW
-	EXECUTE FUNCTION days_to_months_func();
+CREATE TRIGGER minutes_to_hours
+AFTER INSERT ON minute_data
+FOR EACH ROW
+EXECUTE FUNCTION minutes_to_hours_func();
 
+
+
+DROP TRIGGER IF EXISTS hours_to_days ON hour_data;
+
+CREATE TRIGGER hours_to_days
+AFTER INSERT ON hour_data
+FOR EACH ROW
+EXECUTE FUNCTION hours_to_days_func();
+
+
+
+DROP TRIGGER IF EXISTS days_to_months ON day_data;
+
+CREATE TRIGGER days_to_months
+AFTER INSERT ON day_data
+FOR EACH ROW
+EXECUTE FUNCTION days_to_months_func();
