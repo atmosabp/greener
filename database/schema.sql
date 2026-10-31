@@ -1,5 +1,5 @@
-drop table services; 
 -- create database greener_db;
+
 create table if not exists users(
 	id serial primary key,
 	name varchar(100),
