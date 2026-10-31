@@ -1,11 +1,17 @@
 import type { ToastProps } from "../../types/toast";
 import { X, Check } from "lucide-react";
 import "./Toast.css";
+import { useState } from "react";
 
 export default function Toast({ icon, title, message, onClose }: ToastProps) {
+  const [open, setOpen] = useState(true);
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
   return (
     <div
-      className={`toast toast--${icon}`}
+      className={`toast toast--${icon} ${!open ? "close" : ""}`}
       role={icon === "error" ? "alert" : "status"}
     >
       <div className={`toast-icon toast-icon--${icon}`}>
@@ -25,7 +31,7 @@ export default function Toast({ icon, title, message, onClose }: ToastProps) {
         type="button"
         className="toast-close"
         aria-label="Fechar"
-        onClick={onClose}
+        onClick={handleCancel}
       >
         <X size={20} />
       </button>
