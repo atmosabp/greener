@@ -1,64 +1,47 @@
 
 import { useMemo, useState, type ChangeEvent } from "react";
+
 import AppHeader from "../../components/header/AppHeader";
+
+import RankingCalendar from "./components/rankingCalendar";
+import useRankingCalendar from "./components/useRankingCalendar";
+
+import {
+  initialServices,
+  monthNames,
+  numberFormatter,
+  timeFormatter,
+  type RankingMetric,
+  type RankingPeriod,
+} from "./components/rankingData";
+
 import "./Ranking.css";
-
-type RankingService = {
-  id: number;
-  name: string;
-  energy: number;
-  co2e: number;
-};
-
-type RankingMetric = "energy" | "co2e";
-
-type RankingPeriod = "now" | "today" | "month" | "year" | "other-years";
-
-const initialServices: RankingService[] = [
-  { id: 1, name: "Billing API", energy: 12.48, co2e: 4.21 },
-  { id: 2, name: "Checkout Worker", energy: 10.82, co2e: 3.86 },
-  { id: 3, name: "Inventory Sync", energy: 9.64, co2e: 3.42 },
-  { id: 4, name: "Audit Stream", energy: 8.91, co2e: 3.18 },
-  { id: 5, name: "Email Dispatcher", energy: 7.35, co2e: 2.74 },
-  { id: 6, name: "Fraud Detector", energy: 6.82, co2e: 2.51 },
-  { id: 7, name: "Reporting Batch", energy: 5.74, co2e: 2.13 },
-  { id: 8, name: "Authentication API", energy: 4.91, co2e: 1.84 },
-];
-
-const currentYear = new Date().getFullYear();
-
-const availableYears = Array.from(
-  { length: Math.max(0, currentYear - 2019) },
-  (_, index) => currentYear - 1 - index,
-);
 
 export default function Ranking() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
-  const [selectedYear, setSelectedYear] = useState(
-    String(currentYear - 1),
-  );
   const [metric, setMetric] = useState<RankingMetric>("energy");
   const [updateInterval, setUpdateInterval] = useState("5");
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
 
-  const ranking = useMemo(() => {
-    return [...initialServices].sort((a, b) =>
-      metric === "energy"
-        ? b.energy - a.energy
-        : b.co2e - a.co2e,
-    );
-  }, [metric]);
+  const calendar = useRankingCalendar();
+
+  const ranking = useMemo(
+    () =>
+      [...initialServices].sort((a, b) =>
+        metric === "energy"
+          ? b.energy - a.energy
+          : b.co2e - a.co2e,
+      ),
+    [metric],
+  );
 
   function handlePeriodChange(
     event: ChangeEvent<HTMLSelectElement>,
   ) {
-    setPeriod(event.target.value as RankingPeriod);
-  }
+    const nextPeriod = event.target.value as RankingPeriod;
 
-  function handleYearChange(
-    event: ChangeEvent<HTMLSelectElement>,
-  ) {
-    setSelectedYear(event.target.value);
+    setPeriod(nextPeriod);
+    calendar.openCalendar(nextPeriod);
   }
 
   function handleUpdateIntervalChange(
@@ -73,20 +56,15 @@ export default function Ranking() {
 
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
-    today: "Hoje",
-    month: "Esse mês",
-    year: "Esse ano",
-    "other-years": selectedYear,
+    today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
+    month: `${calendar.selectedDay} de ${
+      monthNames[calendar.selectedMonth]
+    } de ${calendar.selectedYear}`,
+    year: `${monthNames[calendar.selectedMonth]} de ${calendar.selectedYear}`,
+    "other-years": String(calendar.selectedYear),
   };
 
-  const formattedLastUpdate = lastUpdate.toLocaleTimeString(
-    "pt-BR",
-    {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    },
-  );
+  const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   return (
     <div className="ranking-page">
@@ -97,9 +75,7 @@ export default function Ranking() {
           <section className="ranking-intro">
             <div className="ranking-heading">
               <h1>Ranking</h1>
-              <p>
-                Veja o ranking de desempenho dos serviços.
-              </p>
+              <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
             <div className="ranking-filters">
@@ -117,28 +93,8 @@ export default function Ranking() {
                   <option value="today">Hoje</option>
                   <option value="month">Esse mês</option>
                   <option value="year">Esse ano</option>
-                  <option value="other-years">
-                    Outros anos
-                  </option>
+                  <option value="other-years">Outros anos</option>
                 </select>
-
-                {period === "other-years" && (
-                  <select
-                    className="ranking-year-select"
-                    aria-label="Selecionar ano"
-                    value={selectedYear}
-                    onChange={handleYearChange}
-                  >
-                    {availableYears.map((year) => (
-                      <option
-                        key={year}
-                        value={String(year)}
-                      >
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                )}
               </div>
 
               <div className="ranking-classification">
@@ -268,25 +224,11 @@ export default function Ranking() {
                     </td>
 
                     <td>
-                      {service.energy.toLocaleString(
-                        "pt-BR",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )}{" "}
-                      kWh
+                      {numberFormatter.format(service.energy)} kWh
                     </td>
 
                     <td>
-                      {service.co2e.toLocaleString(
-                        "pt-BR",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )}{" "}
-                      kg CO₂e
+                      {numberFormatter.format(service.co2e)} kg CO₂e
                     </td>
                   </tr>
                 ))}
@@ -295,20 +237,39 @@ export default function Ranking() {
           </div>
 
           <div className="ranking-table-caption">
-            <span>
-              Período selecionado: {periodLabel[period]}
-            </span>
-
-            <span>
-              {ranking.length} serviços demonstrativos
-            </span>
+            <span>Período selecionado: {periodLabel[period]}</span>
+            <span>{ranking.length} serviços demonstrativos</span>
           </div>
         </section>
       </main>
 
       <footer className="ranking-footer">
-        Desenvolvido por Atmos ° © 2026
+        Desenvolvido por Atmos © 2026
       </footer>
+
+      {calendar.calendarOpen && (
+        <RankingCalendar
+          period={period}
+          selectedHour={calendar.selectedHour}
+          selectedDay={calendar.selectedDay}
+          selectedMonth={calendar.selectedMonth}
+          selectedYear={calendar.selectedYear}
+          viewMonth={calendar.viewMonth}
+          viewYear={calendar.viewYear}
+          currentYear={calendar.currentYear}
+          currentMonth={calendar.currentMonth}
+          currentDay={calendar.currentDay}
+          calendarDays={calendar.calendarDays}
+          onClose={calendar.closeCalendar}
+          onChangeMonth={(direction) =>
+            calendar.changeMonth(direction, period)
+          }
+          onConfirmDay={calendar.confirmDay}
+          onConfirmMonth={calendar.confirmMonth}
+          onConfirmYear={calendar.confirmYear}
+          onConfirmHour={calendar.confirmHour}
+        />
+      )}
     </div>
   );
 }
