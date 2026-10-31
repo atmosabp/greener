@@ -48,9 +48,7 @@ Os dados são fornecidos pelo servidor em `backend/`, que por sua vez consome as
 | [lucide-react](https://lucide.dev/) | ^1.52 | Ícones |
 | [Bootstrap Icons](https://icons.getbootstrap.com/) | 1.13.2 (CDN) | Ícones complementares, carregados via `index.html` |
 | [ESLint](https://eslint.org/) + typescript-eslint | ^10 / ^8.69 | Padronização e análise estática do código |
-| [Docker](https://www.docker.com/) + [Nginx](https://nginx.org/) | - | Empacotamento e entrega da aplicação |
-
-> As versões acima seguem o `package.json`. Para a versão exata instalada, consulte o `package-lock.json`.
+| [Docker](https://www.docker.com/) - | Empacotamento e entrega da aplicação |
 
 <br>
 
@@ -84,9 +82,8 @@ frontend/
 │ ├ App.tsx / App.css         # Landing page (rota "/")
 │ ├ index.css                 # Estilos globais e variáveis de tema
 │ └ main.tsx                  # Ponto de entrada e definição das rotas
-├ Dockerfile                  # Build de produção (Node + Nginx)
+├ Dockerfile                  # Build de produção (Node)
 ├ Dockerfile.dev              # Imagem de desenvolvimento
-├ nginx.conf                  # Configuração do Nginx (SPA + proxy da API)
 ├ eslint.config.js            # Regras de lint
 ├ index.html                  # HTML base da SPA
 ├ vite.config.ts              # Configuração do Vite
@@ -102,28 +99,24 @@ Cada página e componente mantém seu arquivo `.css` ao lado do `.tsx`, facilita
 
 ### Landing page (`/`)
 
-Página pública dividida em seções navegáveis pelo header: **O que é**, **Missão**, **Funcionalidades** e **Resultado**, além de um chamado para login e do rodapé. Os cards de missão, funcionalidades e indicadores são gerados a partir de listas (`steps`, `features` e `indicators`) no próprio `App.tsx`, o que facilita alterar o conteúdo.
+Página pública dividida em seções navegáveis pelo header: **O que é**, **Missão**, **Funcionalidades** e **Resultado**. Aqui é onde todo nosso sistema sendo explicado e passado um panorama geral do que somos 
 
 ### Login (`/login`)
 
-Formulário com validação no próprio navegador (`LoginForm`):
+Tela de validação de usuário:
 
 - **E-mail:** campo obrigatório e formato válido (`texto@dominio.com`);
 - **Senha:** campo obrigatório e mínimo de 6 caracteres;
-- botão de olho para mostrar a senha **enquanto estiver pressionado**;
 - mensagens de erro exibidas ao perder o foco do campo ou ao enviar.
-
-Atualmente, após a validação o usuário é redirecionado para `/home`. A integração com o backend ainda será adicionada.
 
 ### Visão geral (`/home`)
 
-Tela principal da aplicação autenticada. Possui:
+Tela principal da aplicação. Possui: Nosso globo terrestre e mapa geográfico, onde temos nossa funcionalidade principal nesta tela, lista de serviços e marcações geográficas de cada serviço
 
 - **painel lateral** com a lista de serviços, numeração, status e contadores por status (ativos, incompletos e inativos);
-- **alternância entre Globo e Mapa** pelo componente `view-switch`;
-- indicação da **última atualização** dos dados;
+- **alternância entre Globo e Mapa**;
 - atalhos para **Ranking** e **Comparação**;
-- seleção de serviço sincronizada entre a lista, o globo e o mapa. Ao alternar a visualização, a seleção é mantida.
+- seleção de serviço sincronizada entre a lista, o globo e o mapa.
 
 Os serviços seguem este formato:
 
@@ -140,8 +133,6 @@ interface Service {
 }
 ```
 
-Cores de status usadas nos pontos: ativo `#91bd79`, incompleto `#e0d344` e inativo `#df7779`. Serviços sem coordenadas válidas (latitude entre -90 e 90, longitude entre -180 e 180) não aparecem no globo nem no mapa.
-
 #### Globo 3D (`InteractiveGlobe`)
 
 - Rotação automática, pausada ao passar o cursor e também enquanto houver um serviço selecionado;
@@ -151,7 +142,7 @@ Cores de status usadas nos pontos: ativo `#91bd79`, incompleto `#e0d344` e inati
 
 #### Mapa 2D (`MapVisualization`)
 
-- Mapa Leaflet com *tiles* do OpenStreetMap e pontos coloridos por status;
+- Mapa com marcação de serviços com pontos coloridos por status;
 - ao selecionar um serviço, o mapa centraliza nele com animação;
 - clicar em uma área vazia limpa a seleção;
 - card com detalhes do serviço, com link para o `/dashboard`.
@@ -196,46 +187,7 @@ O hook lança um erro caso seja usado fora do `ThemeProvider`, que envolve toda 
 
 <br>
 
-## Instruções para execução
-
-### Pré-requisitos
-
-- [Node.js](https://nodejs.org/) 22 ou superior (o Docker de desenvolvimento usa a versão 22);
-- npm (instalado junto com o Node.js);
-- (opcional) Docker e Docker Compose, para rodar a aplicação completa.
-
-### Sem Docker
-
-1. Clone o repositório:
-
-```bash
-git clone https://github.com/atmosabp/greener
-```
-
-2. Entre na pasta do frontend e instale as dependências:
-
-```bash
-cd greener/frontend
-npm install
-```
-
-3. Inicie o servidor de desenvolvimento:
-
-```bash
-npm run dev
-```
-
-4. Acesse [http://localhost:5173](http://localhost:5173).
-
-> O script `dev` usa `vite --host`, então a aplicação também fica acessível por outros dispositivos da mesma rede.
-
-### Com Docker
-
-Na raiz do projeto, com o arquivo `.env` configurado (veja o [README principal](../README.md#instruções-para-execução)), execute:
-
-```bash
-docker compose up --build
-```
+## Execução
 
 O frontend ficará disponível na porta definida em `FRONT_PORT`. Exemplo: `localhost:8080`.
 
@@ -247,47 +199,6 @@ O frontend ficará disponível na porta definida em `FRONT_PORT`. Exemplo: `loca
 | `npm run build` | Verifica os tipos (`tsc -b`) e gera a versão de produção na pasta `dist/` |
 | `npm run preview` | Serve localmente a versão gerada pelo build |
 | `npm run lint` | Executa o ESLint em todo o projeto |
-
-<br>
-
-## Docker e Nginx
-
-O `Dockerfile` de produção usa duas etapas (*multi-stage build*):
-
-1. **Build:** imagem `node:24-alpine` instala as dependências e executa `npm run build`;
-2. **Entrega:** imagem `nginx:alpine` serve os arquivos estáticos gerados.
-
-O `nginx.conf` cumpre dois papéis:
-
-- **Fallback de SPA:** qualquer rota desconhecida retorna `index.html`, permitindo que o React Router resolva a página (por exemplo, ao atualizar a página em `/ranking`);
-- **Proxy da API:** requisições para `/api/` são encaminhadas ao serviço `backend`, na porta definida pela variável `BACKEND_PORT` (repassada pelo `compose.yaml`).
-
-O `Dockerfile.dev` é voltado ao desenvolvimento: usa `node:22-alpine`, copia o projeto, expõe a porta `5173` e executa o Vite com `--host 0.0.0.0`.
-
-<br>
-
-## Design
-
-Os protótipos das telas (versões desktop e mobile) estão em [`docs/design`](../docs/design), organizados por tela: landing page, login, tela principal (globo e mapa), dashboard, ranking, comparação, cadastro, página 404 e avisos (modal, toast e *loading*).
-
-<br>
-
-## Status atual e próximos passos
-
-O frontend está em desenvolvimento. Neste momento:
-
-- ✅ Landing page, login (interface e validação), tema e visão geral (globo e mapa) implementados;
-- ✅ Configuração de Docker, Nginx e proxy para a API prontas;
-- 🚧 A visão geral usa **dados de exemplo**; ainda falta integrar com as rotas do backend (`/api/...`);
-- 🚧 Login ainda **não autentica**: após validar os campos, apenas redireciona para `/home`;
-- 🚧 Botão **sair** e saudação "Olá, &lt;nome&gt;!" do `AppHeader` ainda são provisórios;
-- 🚧 `Dashboard`, `Ranking`, `Comparison` e `Admin` aguardam implementação conforme os protótipos;
-- 🚧 Proteção das rotas internas (acesso apenas para usuários autenticados) ainda não existe;
-- 🚧 Tela 404 prevista no design e ainda não criada.
-
-<br>
-
----
 
 <br>
 
