@@ -9,6 +9,9 @@ import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
+import Loading from "../../components/loading/Loading";
+import Toast from "../../components/toast/Toast";
+import Warning from "../../components/warning/Warning";
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState<boolean>(
@@ -28,13 +31,19 @@ export default function Login() {
 
   return (
     <>
+      {/*Lógica de isLoading aqui  */}
+      {/* <Loading /> */}
+      {/* Lógica de success ou error  */}
+      <Toast icon="success" title="oi" message="teste teste"/>
+      {/* Lógica para modal de tem certeza? */}
+     {/* <Warning variant="logout" /> */}
       <header>
         <div className="header-btns">
           <Link to="/" className="btn-back">
             <ChevronLeft />
             <span>Voltar ao início</span>
           </Link>
-          <ThemeToggle/>
+          <ThemeToggle />
         </div>
         <a href="/" className="brand" aria-label="Greener">
           <img className="brand-logo" src={logo} alt="" />
