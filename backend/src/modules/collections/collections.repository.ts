@@ -103,7 +103,7 @@ export async function findHistory() {
 
 export async function findServices() {
   const result = await pool.query(
-    `SELECT id FROM services`
+    `SELECT id, name FROM services`
   );
 
   return result.rows || [];
