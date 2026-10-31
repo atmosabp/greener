@@ -50,7 +50,7 @@ export default function ServiceCard({
           selectedServicePoint.location.latitude != undefined &&
           selectedServicePoint.location.longitude != undefined ? (
             <span>
-              Lat: {selectedServicePoint.location.latitude!.toFixed(3)}| Long:{" "}
+              Lat: {selectedServicePoint.location.latitude!.toFixed(3)} | Long:{" "}
               {selectedServicePoint.location.longitude!.toFixed(3)}
             </span>
           ) : (

@@ -10,14 +10,16 @@ export type ServiceStatus = "active" | "incomplete" | "inactive";
 export interface Service {
   id: string;
   name: string;
-  location: {
-    city?: string;
-    country?: string
-    latitude?: number | undefined;
-    longitude?: number | undefined;
-    region?: string;
-    region_code?: string;
-  } | undefined;
+  location:
+    | {
+        city?: string;
+        country?: string;
+        latitude?: number | undefined;
+        longitude?: number | undefined;
+        region?: string;
+        region_code?: string;
+      }
+    | undefined;
   metrics_path?: string;
   metrics?: {
     cpu_percent?: number;
@@ -26,13 +28,13 @@ export interface Service {
     network_gb?: number;
     co2e?: number;
     kwh?: number;
-  }
+  };
   status: ServiceStatus;
 }
 
 interface HomepageProps {
-  services?: Service[];
   lastUpdated?: string;
+  updateTime?: number;
 }
 
 type VisualizationMode = "globe" | "map";
@@ -43,30 +45,30 @@ const statusLabels: Record<ServiceStatus, string> = {
   inactive: "Inativo",
 };
 
-export default function Homepage({
-  lastUpdated = "27/10/2026 08:00",
-}: HomepageProps) {
+export default function Homepage({ updateTime = 5 }: HomepageProps) {
   const [mode, setMode] = useState<VisualizationMode>("globe");
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [timeUpdated, setTimeUpdated] = useState<string>("");
 
   // TODO: lista de serviços com base nos serviços reais da API
   const [services, setServices] = useState<Service[]>([]);
 
-  async function updateServices(){
-    const result = await fetch("http://localhost:3000/collections/all-service-data");
+  async function updateServices() {
+    const result = await fetch(
+      "http://localhost:3000/collections/all-service-data",
+    );
     const data = await result.json();
+    setTimeUpdated(new Date().toLocaleString());
     setServices(data);
   }
 
-  updateServices();
-
   useEffect(() => {
-    const fetchTimer = setTimeout(() => {
-      updateServices();
-    }, 5000);
+    updateServices();
+    // multiplica [tempo_segundo] x 1200 que dá o tempo em milisegundos, mais uma margem de erro de 200 milisegundos
+    const fetchTimer = setInterval(updateServices, updateTime * 1200);
 
-    return () => clearTimeout(fetchTimer);
-  });
+    return () => clearInterval(fetchTimer);
+  }, []);
 
   const activeCount = services.filter(
     (service) => service.status === "active",
@@ -107,9 +109,7 @@ export default function Homepage({
 
             <div className="services-list">
               {services.length === 0 ? (
-                <p className="services-empty">
-                  Nenhum serviço foi encontrado.
-                </p>
+                <p className="services-empty">Nenhum serviço foi encontrado.</p>
               ) : (
                 services.map((service, index) => {
                   const isSelected = selectedService === service.id;
@@ -217,7 +217,7 @@ export default function Homepage({
 
               <div className="last-update">
                 <span>Última atualização:</span>
-                <strong>{lastUpdated}</strong>
+                <strong>{timeUpdated || "-"}</strong>
               </div>
 
               <div
