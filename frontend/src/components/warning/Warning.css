@@ -1,0 +1,116 @@
+.warning {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: var(--background-transparent);
+    backdrop-filter: blur(5px);
+    z-index: 9998;
+}
+
+.warning-modal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    width: 475px;
+    height: 275px;
+    padding: 30px;
+    background-color: var(--background);
+    color: var(--text);
+    border: 2px solid var(--text);
+    border-radius: 15px;
+    text-align: center;
+    z-index: 9999;
+}
+
+.warning-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    padding: 4px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.warning-title {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.warning-message {
+    font-size: 16px;
+}
+
+.warning-actions {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.warning-btn {
+    height: 2.5rem;
+    width: 7.75rem;
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.warning-btn:hover {
+    filter: brightness(0.94);
+}
+
+.warning-danger {
+    --warning-accent: var(--error);
+}
+
+/* .warning-attention {
+    --warning-accent: var(--warning-attention);
+} */
+
+.warning-icon {
+    color: var(--warning-accent);
+    fill: var(--warning-accent);
+    stroke: var(--background);
+}
+
+.warning-icon.lucide-circle-alert {
+    fill: none;
+    stroke: var(--warning-accent);
+}
+
+
+.warning-btn-cancel {
+    background-color: var(--complementary);
+    color: var(--warning-text);
+}
+
+.warning-btn-confirm {
+    background-color: var(--warning-accent);
+    color: #fff;
+}
+
+@media (max-width: 480px) {
+    .warning-modal {
+        width: 350px;
+        height: 250px;
+    }
+
+    .warning-actions {
+        gap: 15px;
+    }
+}

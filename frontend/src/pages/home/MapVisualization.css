@@ -83,10 +83,8 @@
     position: absolute;
     z-index: 1000;
 
-    top: 1rem;
-    right: 1rem;
-
-    font-size: 0.8rem;
+    top: 16px;
+    right: 16px;
 
     width: min(250px, calc(100% - 32px));
     box-sizing: border-box;

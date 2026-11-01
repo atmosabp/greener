@@ -5,6 +5,9 @@ RUN npm install
 COPY tsconfig*.json ./
 COPY vite.config.ts index.html ./
 COPY src ./src
+RUN npm run build
 
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY --from=build /app/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]

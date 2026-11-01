@@ -87,3 +87,11 @@ export async function reqMetricsNetwork(serviceId: string) {
   const valueNetwork = respMetrics.network_gb;
   return valueNetwork;
 }
+
+// pra testar
+async function iniciar() {
+  const valor = await reqMetricsCPU("email-dispatcher");
+  console.log(valor);
+}
+
+// iniciar();

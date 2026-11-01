@@ -1,16 +1,10 @@
-FROM node:24-alpine AS base
+FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json ./
 RUN npm install
 COPY tsconfig.json ./
 COPY src ./src
-
-# configuração para desenvolvimento
-FROM base AS development
-CMD ["npm", "run", "dev"]
-
-# configuração para produto final
-FROM base AS build
+#  remove as dependências de desenvolvimento (devDependencies) que já foram instaladas na pasta node_modules
 RUN npm run build && npm prune --omit=dev
 
 FROM node:24-alpine AS runtime
