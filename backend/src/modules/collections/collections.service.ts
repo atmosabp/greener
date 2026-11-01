@@ -39,7 +39,6 @@ export async function addHistory(datePull: any) {
 }
 
 export async function getServiceMetrics(serviceId: string) {
-  // TODO: revisar a lógica para retornar TODOS os dados necessários para a tela dashboard
   const service = (await reqServices()).find((value) => value.id == serviceId);
   const cpu = await reqMetricsCPU(serviceId);
   const memory = await reqMetricsMemory(serviceId);
@@ -81,6 +80,8 @@ export async function getServiceMetrics(serviceId: string) {
     network_gb: network,
     co2e: co2e,
     kwh: kwh,
+    renewable_percent: renewablePercent,
+    carbon_intensity: carbonIntensity,
   };
 
   const result = {
@@ -96,7 +97,6 @@ export async function getServiceMetrics(serviceId: string) {
 }
 
 export async function getAllServicesMetrics() {
-  // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking e tela principal/globo)
   const result = await reqServices();
 
   for (let service of result) {

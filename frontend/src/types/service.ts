@@ -14,4 +14,6 @@ export interface MetricsType {
   network_gb: number;
   co2e: number;
   kwh: number;
+  renewable_percent?: number;
+  carbon_intensity?: number;
 }

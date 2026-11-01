@@ -55,7 +55,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
   async function updateServices() {
     const result = await fetch(
-      `http://localhost:${import.meta.env.PORT}/collections/all-service-data`,
+      `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
     );
     const data = await result.json();
     setTimeUpdated(new Date().toLocaleString());

@@ -85,7 +85,7 @@ export default function Dashboard() {
   async function getServiceMetrics() {
     try {
       const result = await fetch(
-        `http://localhost:3000/collections/service-metrics/${serviceId}`,
+        `http://localhost:${import.meta.env.VITE_PORT}/collections/service-metrics/${serviceId}`,
       );
       const data = await result.json();
       setTimeUpdated(new Date().toLocaleString());
@@ -231,9 +231,12 @@ export default function Dashboard() {
 
             <section className="metric-card metric-card--data metric-co2">
               <p>Emissão de CO₂e</p>
-              <h4>{serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
-                      maximumSignificantDigits: 6,
-                    })} CO₂e</h4>
+              <h4>
+                {serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
+                  maximumSignificantDigits: 6,
+                })}{" "}
+                CO₂e
+              </h4>
             </section>
 
             <div className="metrics-carousel">
@@ -314,7 +317,7 @@ export default function Dashboard() {
                       {
                         maximumSignificantDigits: 4,
                       },
-                    )} {" "}
+                    )}{" "}
                     GB
                   </h4>
                 </section>
@@ -329,25 +332,53 @@ export default function Dashboard() {
                   className="donut"
                   role="img"
                   aria-label="83% de energia renovável"
-                  style={{ "--value": 83 } as CSSProperties}
+                  style={
+                    {
+                      "--value": serviceMetrics.metrics?.renewable_percent,
+                    } as CSSProperties
+                  }
                 >
-                  {/* backend: trocar o --value (0–100) e o texto abaixo */}
-                  <span>oie</span>
+                  <span>
+                    {serviceMetrics.metrics?.renewable_percent+"%" || "-"}
+                  </span>
                 </div>
               </section>
 
               <section className="analytics-card analytics-card--carbon">
                 <h3>Intensidade de carbono</h3>
-                <p className="carbon-level">Baixo</p>
-                {/* backend: data-level = "low" (≤100) | "medium" (>100) | "high" (>500) */}
-                <div className="carbon-scale" data-level="low">
+                <p className="carbon-level">
+                  {serviceMetrics.metrics?.carbon_intensity
+                    ? serviceMetrics.metrics?.carbon_intensity <= 100
+                      ? "Baixo"
+                      : serviceMetrics.metrics?.carbon_intensity &&
+                          serviceMetrics.metrics.carbon_intensity > 500
+                        ? "Alto"
+                        : "Médio"
+                    : "-"}
+                </p>
+                <div
+                  className="carbon-scale"
+                  data-level={
+                    serviceMetrics.metrics?.carbon_intensity
+                      ? serviceMetrics.metrics?.carbon_intensity <= 100
+                        ? "low"
+                        : serviceMetrics.metrics?.carbon_intensity &&
+                            serviceMetrics.metrics.carbon_intensity > 500
+                          ? "high"
+                          : "medium"
+                      : "low"
+                  }
+                >
                   <span className="carbon-scale-fill" />
                   <span className="carbon-node carbon-node--low" />
                   <span className="carbon-node carbon-node--medium" />
                   <span className="carbon-node carbon-node--high" />
                 </div>
                 <p className="carbon-value">
-                  <strong>85</strong> gCO₂e/kWh
+                  <strong>
+                    {serviceMetrics.metrics?.carbon_intensity || "-"}
+                  </strong>{" "}
+                  gCO₂e/kWh
                 </p>
               </section>
             </div>
