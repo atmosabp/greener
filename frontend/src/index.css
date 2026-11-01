@@ -106,6 +106,7 @@
 
   /* Texto */
   --text: #38322E;                             /* cor do texto */
+  --text-muted: #877a71;                        /* texto placeholder  */
   --text-inverse: #F9EEDC;                     /* texto sobre fundo escuro */
 
   /* Secundária */
@@ -120,7 +121,7 @@
   /* Status */
   --error: #AA4F3E;                            /* Cor para erros: toast, warnings.. */
   --success: #73915F;                          /* Cor para sucesso: toast, warnings.. */
-  --warning: #C98A2B;                          /* Cor para avisos: warnings.. */
+  --warning: #e3d26f;                          /* Cor para avisos: warnings.. */
 
   /* Amostras do seletor de paleta */
   --theme-primary: #99C47C;                    /* verde */
@@ -134,6 +135,7 @@
 
   /* Texto */
   --text: #F9EEDC;
+  --text-muted: #aea49c;                        /* texto placeholder  */
   --text-inverse: #1A1F1C;
 
   /* Secundária */
@@ -148,11 +150,7 @@
   /* Status */
   --error: #E05252;                            /* Cor para erros: toast, warnings.. */
   --success: #6BAA75;                          /* Cor para sucesso: toast, warnings.. */
-  --warning: #E0A84A;                          /* Cor para avisos: warnings.. */
-
-  /* Estados */
-  --disabled-bg: rgba(249, 238, 220, 0.10);
-  --disabled-text: rgba(249, 238, 220, 0.35);
+  --warning: #ead76c;                          /* Cor para avisos: warnings.. */
 
   /* Amostras do seletor de paleta */
   --theme-primary: #669546;                    /* verde */

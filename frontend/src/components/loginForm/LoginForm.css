@@ -43,7 +43,7 @@
 }
 
 .form-login input::placeholder {
-    color: #AA988B;
+    color: var(--text-muted);
 }
 
 .form-login input:focus-visible {

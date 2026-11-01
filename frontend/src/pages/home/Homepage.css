@@ -233,7 +233,7 @@
     min-height: 62px;
     padding: 10px 5px;
     border: 0;
-    border-top: 2px solid var(--text);
+    border-top: 1px solid var(--text);
     border-radius: 0;
     background: transparent;
     color: var(--text);
@@ -269,21 +269,19 @@
     width: 12px;
     height: 12px;
     flex: 0 0 12px;
-
-    border: #000000 solid 2px;
     border-radius: 50%;
 }
 
 .status-dot.active {
-    background: #91bd79;
+    background: var(--primary);
 }
 
 .status-dot.incomplete {
-    background: #dfd044;
+    background: var(--warning);
 }
 
 .status-dot.inactive {
-    background: #df7779;
+    background: var(--error);
 }
 
 .service-content {

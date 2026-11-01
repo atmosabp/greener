@@ -131,7 +131,7 @@
 
 .day.future,
 .day:disabled {
-    background: #a99f7d;
+    background: var(--secondary-light);
     color: var(--background);
     cursor: not-allowed;
     opacity: 0.7;
@@ -175,7 +175,7 @@
 }
 
 .day:disabled {
-    background: #a99f7d;
+    background: var(--secondary-light);
     color: var(--background);
     opacity: 0.5;
     cursor: not-allowed;
