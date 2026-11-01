@@ -21,6 +21,7 @@
     height: 275px;
     padding: 30px;
     background-color: var(--background);
+    color: var(--text);
     border: 2px solid var(--text);
     border-radius: 15px;
     text-align: center;

@@ -1,5 +1,5 @@
 .toast {
-    --toast-color: var(--primary-dark);
+    --toast-color: var(--success);
     z-index: 9999;
     position: fixed;
     right: 30px;
