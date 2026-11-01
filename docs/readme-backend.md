@@ -171,7 +171,7 @@ O detalhamento de todas as fórmulas está em [`docs/calculos.md`](https://githu
 
 ## Banco de dados
 
-O banco é o PostgreSQL, está em [`database/schema.sql`](../database/schema.sql). O backend usa as seguintes tabelas:
+O banco de dados usa PostgreSQL, e todo seu código e SQL com as queries está em [`database/schema.sql`](../database/schema.sql). O backend usa as seguintes tabelas:
 
 | Tabela | Conteúdo |
 | ------ | -------- |
@@ -188,30 +188,11 @@ A conexão é feita pelo `Pool` do `pg` em `src/db/connections.ts`, com os dados
 
 ## Testes
 
-Os testes ficam em `src/__test__/` e verificam se as rotas conversam corretamente com o banco de dados. Como usam o banco de verdade, o Docker Compose precisa estar rodando:
-
-```bash
-docker compose up --build -d
-docker compose exec backend npm install
-docker compose exec backend npm test
-```
+Os testes ficam em `src/__test__/` e verificam se as rotas conversam corretamente com o banco de dados. 
 
 O passo a passo completo está em [`src/__test__/README.md`](src/__test__/README.md).
 
 <br>
-
-## Status e pendências
-
-O que ainda está em desenvolvimento no backend:
-
-- A coleta e a consulta de histórico estão completas apenas para `periodType: "minute"`. Os tipos `hour` e `month` ainda são esboços.
-- As consultas por serviço (`/collections/service-data`) ainda precisam ser ajustadas para ler as tabelas de histórico.
-- As funções de `services-api.ts` (lista de serviços, disponibilidade e coordenadas) já existem, mas ainda não estão expostas em nenhuma rota.
-- Usuários: faltam buscar um usuário por id ou e-mail (`/users/user/:id` ainda é um esboço), editar e deletar.
-- Ainda não há login/autenticação. A senha é gravada como foi recebida, sem criptografia (hash).
-- Os controllers ainda não validam os dados recebidos no corpo das requisições.
-
----
 
 <div align="center">
     <i> Desenvolvido por Atmos <br>2026</i>
