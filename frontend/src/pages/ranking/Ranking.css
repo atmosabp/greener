@@ -32,7 +32,7 @@
 
 .ranking-main {
     width: 90%;
-    flex: 1 0 auto;
+    flex: 0 0 auto;
     min-height: 0;
     margin-top: 5rem;
     padding: 1rem 2.5rem 0.75rem;
@@ -698,7 +698,7 @@
     }
 
     .ranking-main {
-        flex: 1 0 auto;
+        flex: 0 0 auto;
         min-height: 0;
         overflow: visible;
     }
@@ -719,7 +719,7 @@
     }
 
     .ranking-main {
-        flex: 1 0 auto;
+        flex: 0 0 auto;
         min-height: 0;
         gap: 1.25rem;
         margin-top: 5rem;
@@ -769,7 +769,7 @@
     }
 
     .ranking-main {
-        flex: 1 0 auto;
+        flex: 0 0 auto;
         gap: 1rem;
         margin-top: 5rem;
         padding: 1.1rem 1rem 0.75rem;
