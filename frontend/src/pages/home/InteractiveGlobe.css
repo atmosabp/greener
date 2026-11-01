@@ -75,7 +75,7 @@
 
     flex: 0 0 15px;
 
-    border: #000000 solid 1px;
+    border: var(--text) solid 1px;
     border-radius: 50%;
 }
 

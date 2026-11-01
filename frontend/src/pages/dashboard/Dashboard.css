@@ -14,9 +14,9 @@
 }
 
 .dashboard {
-    --dash-ok: #94c47d;
-    --dash-warn: #e3d26f;
-    --dash-error: #db7b7b;
+    --dash-ok: var(--primary);
+    --dash-warn: var(--warning);
+    --dash-error: var(--error);
     --dash-track: color-mix(in srgb, var(--text) 14%, var(--complementary));
     box-sizing: border-box;
     margin-top: 70px;
@@ -252,13 +252,25 @@
 
 .metric-card--data {
     background-color: var(--primary-dark);
-    color: var(--background);
+    color: var(--text-inverse);
+}
+
+[data-theme="dark"] .metric-card--data {
+    background-color: var(--primary-light);
+    color: var(--text-inverse);
+}
+
+.metric-card--data ::selection {
+    background-color: var(--primary-darker) !important;
 }
 
 .metric-card--usage {
     background-color: var(--primary-light);
 }
 
+[data-theme="dark"] .metric-card--usage {
+    background-color: var(--primary-dark);
+}
 
 .analytics {
     display: flex;
@@ -425,9 +437,6 @@
     right: 0;
     background-color: var(--dash-error);
 }
-
-
-
 
 .other-services {
     display: flex;

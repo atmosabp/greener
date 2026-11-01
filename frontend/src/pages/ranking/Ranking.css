@@ -202,7 +202,6 @@
     cursor: pointer;
     transition:
         background-color 0.2s ease,
-        color 0.2s ease,
         border-color 0.2s ease;
 }
 
@@ -447,7 +446,7 @@
     flex-shrink: 0;
     margin-top: auto;
     padding: 0.8rem 1rem 0.9rem;
-    color: #b28b72;
+    color: var(--secondary);
     font-size: 0.8rem;
     text-align: center;
 }

@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* ! Utilizar o ui-kit já criado */
+
 .cmp-comparison {
     --bg: var(--background, #f9eedc);
     --ink: var(--text, #3a322c);
