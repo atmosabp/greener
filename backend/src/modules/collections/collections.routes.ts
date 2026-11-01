@@ -23,8 +23,8 @@ router.post("/add-history", addHistoryController);
 router.post("/service-metrics", getServiceMetricsController);
 
 // TODO: rota para retornar todos os serviços e todas as métricas
-// POST localhost:3000/collections/all-service-data
-router.post("/all-service-data", getAllServicesDataController);
+// GET localhost:3000/collections/all-service-data
+router.get("/all-service-data", getAllServicesDataController);
 
 // TODO: rota para retornar histórico de um serviço
 // POST localhost:3000/collections/service-history/:id

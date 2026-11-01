@@ -1,4 +1,8 @@
-import { reqMetrics } from "../../integrations/metrics-api";
+import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-api";
+import { reqInterval, reqMetrics, reqMetricsCPU, reqMetricsDisk, reqMetricsMemory, reqMetricsNetwork } from "../../integrations/metrics-api";
+import { reqServices } from "../../integrations/services-api";
+import { ServiceTypes } from "../../types/services-types";
+import { MetricsCalculator } from "../metrics-calculator";
 import {
   addMinuteHistory,
   findMinuteHistory,
@@ -30,16 +34,50 @@ export async function getServiceMetrics(serviceId: string) {
 
   if (!result) return null;
 
+
   return result;
 }
 
 export async function getAllServicesMetrics() {
-  // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking)
-  // const result = await reqMetrics("billing-api");
+  // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking e tela principal/globo)
+  const result = await reqServices();
 
-  // if (!result) return null;
+  for(let service of result){
+    const cpu = (await reqMetricsCPU(service.id!));
+    const memory = (await reqMetricsMemory(service.id!));
+    const collectionIntervalSeconds = (await reqInterval(service.id!));
+    const carbonIntensity = (await reqCarbonValue(service.id!));
+    const renewablePercent = (await reqRenewablePercent(service.id!));
+    const disk = (await reqMetricsDisk(service.id!));
+    const network = (await reqMetricsNetwork(service.id!));
+    
+    const metricsCalculator = new MetricsCalculator({
+      collection_interval_seconds: collectionIntervalSeconds,
+      metrics: {
+        cpu_percent: cpu,
+        memory_gb: memory,
+        disk_gb: disk,
+        network_gb: network,
+      },
+      carbon_intensity_gco2e_per_kwh: carbonIntensity,
+      renewable_share_percent: renewablePercent,
+    });
 
-  // return result;
+    let kwh;
+    let co2e;
+
+    try{
+      kwh = metricsCalculator.calculateKWh() || undefined;
+      co2e = metricsCalculator.calculateCO2e() || undefined;
+    } catch(error: any){
+    }
+
+    service.metrics = {cpu_percent: cpu, memory_gb: memory, disk_gb: disk, network_gb: network, co2e: co2e, kwh: kwh}
+  }
+
+  if (!result) return null;
+
+  return result;
 }
 
 export async function searchAllHistory() {
