@@ -75,6 +75,7 @@ create table if not exists month_data(
 
 create index idx_hour_data_services_dt on hour_data (service_id, date_pull);
 create index idx_minute_data_services_dt on minute_data (service_id, date_pull);
+create index idx_day_data_services_dt on day_data (service_id, date_pull);
 create index idx_month_data_services_dt on month_data (service_id, date_pull);
 
 insert into services (id, name, max_emitted, min_emitted)
