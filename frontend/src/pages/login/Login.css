@@ -127,7 +127,6 @@ main .logo {
   color: var(--background);
   width: 2.75rem;
   height: 2.75rem;
-  transition: color 0.5s ease-in-out;
 }
 
 .info-txt {

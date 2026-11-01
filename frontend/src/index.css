@@ -3,7 +3,7 @@
 /* Tema padrão */
 
 /* Modo claro + paleta verde */
-:root,
+/* :root,
 [data-theme="light"][data-palette="green"] {
   --background: #F9EEDC;
   --background-transparent: rgba(56, 50, 46, 0.25);
@@ -24,7 +24,7 @@
   --theme-secondary: #7CA2C4;
 }
 
-/* Modo escuro + paleta verde */
+/* Modo escuro + paleta verde 
 [data-theme="dark"][data-palette="green"] {
   --background: #29342D;
   --background-transparent: rgba(26, 31, 28, 0.5);
@@ -46,7 +46,7 @@
   --theme-secondary: #4A7092;
 }
 
-/* Modo claro + paleta azul */
+/* Modo claro + paleta azul 
 [data-theme="light"][data-palette="blue"] {
   --background: #F9EEDC;
   --background-transparent: rgba(56, 50, 46, 0.25);
@@ -67,7 +67,7 @@
   --theme-secondary: #7CA2C4;
 }
 
-/* Modo escuro + paleta azul */
+/* Modo escuro + paleta azul 
 [data-theme="dark"][data-palette="blue"] {
   --background: #262E30;
   --background-transparent: rgb(38, 46, 48, 0.5);
@@ -86,6 +86,136 @@
 
   --theme-primary: #669546;
   --theme-secondary: #4A7092;
+} */
+
+
+/* 
+  =-=-=-=-=-=
+  1) TEMAS
+  =-=-=-=-=-= 
+*/
+
+/* Modo claro (padrão) */
+:root,
+[data-theme="light"] {
+
+  /* Base */
+  --background: #F9EEDC;                       /* cor do fundo */
+  --background-transparent: #38322e40;         /* scrim / overlay */
+  --complementary: #ECDEC7;                    /* superfície: cards, inputs.. */
+
+  /* Texto */
+  --text: #38322E;                             /* cor do texto */
+  --text-inverse: #F9EEDC;                     /* texto sobre fundo escuro */
+
+  /* Secundária */
+  --secondary: #AB876E;
+  --secondary-light: #C4A48D;
+  --secondary-dark: #8A6A53;
+
+  /* Sombras */
+  --shadow: rgba(145, 124, 110, 0.5);
+  --banner-shadow: rgba(56, 50, 46, 0.15);
+
+  /* Status */
+  --error: #AA4F3E;                            /* Cor para erros: toast, warnings.. */
+  --success: #73915F;                          /* Cor para sucesso: toast, warnings.. */
+  --warning: #C98A2B;                          /* Cor para avisos: warnings.. */
+
+  /* Amostras do seletor de paleta */
+  --theme-primary: #99C47C;                    /* verde */
+  --theme-secondary: #7CA2C4;                  /* azul */
+}
+
+/* Modo escuro */
+[data-theme="dark"] {
+
+  /* Base: background, background-transparent e complementary são tingidos pela paleta */
+
+  /* Texto */
+  --text: #F9EEDC;
+  --text-inverse: #1A1F1C;
+
+  /* Secundária */
+  --secondary: #978072;
+  --secondary-light: #AE998B;
+  --secondary-dark: #75604F;
+
+  /* Sombras */
+  --shadow: rgba(43, 43, 43, 0.5);
+  --banner-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Status */
+  --error: #E05252;                            /* Cor para erros: toast, warnings.. */
+  --success: #6BAA75;                          /* Cor para sucesso: toast, warnings.. */
+  --warning: #E0A84A;                          /* Cor para avisos: warnings.. */
+
+  /* Estados */
+  --disabled-bg: rgba(249, 238, 220, 0.10);
+  --disabled-text: rgba(249, 238, 220, 0.35);
+
+  /* Amostras do seletor de paleta */
+  --theme-primary: #669546;                    /* verde */
+  --theme-secondary: #4A7092;                  /* azul */
+}
+
+
+/* 
+  =-=-=-=-=-=
+  2) PALETAS
+  =-=-=-=-=-= 
+*/
+
+/* Claro + verde (padrão) */
+:root,
+[data-theme="light"][data-palette="green"] {
+  --primary: #99C47C;
+  --primary-light: #BFC47C;
+  --primary-dark: #73915F;
+  --primary-darker: #547757;
+  --on-primary: #38322E;
+  --focus-ring: #547757;
+}
+
+/* Claro + azul */
+[data-theme="light"][data-palette="blue"] {
+  --primary: #7CA2C4;
+  --primary-light: #93BADD;
+  --primary-dark: #4F7291;
+  --primary-darker: #355068;
+  --on-primary: #38322E;
+  --focus-ring: #355068;
+}
+
+/* Escuro + verde (fallback do dark sem data-palette) */
+[data-theme="dark"][data-palette="green"],
+[data-theme="dark"]:not([data-palette]) {
+  --background: #29342D;
+  --background-transparent: rgba(26, 31, 28, 0.5);
+  --complementary: #1F2521;
+
+
+  --primary: #6F8E5A;
+  --primary-light: #8BB078;
+  --primary-dark: #506B42;
+  --primary-darker: #425535;
+  --on-primary: #1A1F1C;
+  --focus-ring: #8BB078;
+}
+
+/* Escuro + azul */
+[data-theme="dark"][data-palette="blue"] {
+  --background: #262E30;
+  --background-transparent: rgba(38, 46, 48, 0.5);
+  --complementary: #1D2223;
+
+
+  --primary: #506F8A;
+  --primary-light: #6A8FAF;
+  --primary-dark: #3F5A72;
+  --primary-darker: #2E4152;
+  --on-primary: #F9EEDC;
+  --focus-ring: #6A8FAF;
 }
 
 
@@ -126,4 +256,9 @@ body {
 [data-theme="dark"] ::selection {
   background-color: var(--primary-dark);
   color: var(--text);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }

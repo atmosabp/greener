@@ -137,7 +137,7 @@
     min-height: 0;
     padding: 20px 18px 16px;
 
-    border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+    border: 2px solid var(--text);
     border-radius: 15px;
 
     background: color-mix(in srgb,
@@ -170,7 +170,7 @@
     width: 2.2rem;
     height: 2.2rem;
     place-items: center;
-    border: 1px solid color-mix(in srgb, var(--text) 20%, transparent);
+    border: 2px solid var(--text);
     border-radius: 50%;
     font-size: 0.9rem;
     font-variant-numeric: tabular-nums;
@@ -233,7 +233,7 @@
     min-height: 62px;
     padding: 10px 5px;
     border: 0;
-    border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    border-top: 2px solid var(--text);
     border-radius: 0;
     background: transparent;
     color: var(--text);
@@ -245,7 +245,7 @@
 }
 
 .service-item:last-child {
-    border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    border-bottom: 2px solid var(--text);
 }
 
 .service-item:hover,
@@ -270,7 +270,7 @@
     height: 12px;
     flex: 0 0 12px;
 
-    border: #000000 solid 1px;
+    border: #000000 solid 2px;
     border-radius: 50%;
 }
 
@@ -346,7 +346,7 @@
     justify-content: space-between;
     gap: 8px;
     padding-top: 9px;
-    border-top: 1px solid color-mix(in srgb, var(--text) 15%, transparent);
+    border-top: 2px solid var(--text);
     font-size: 10px;
 }
 
@@ -425,7 +425,7 @@
     width: 100%;
     min-width: 0;
     padding: 13px 14px;
-    border: 1px solid color-mix(in srgb, var(--text) 17%, transparent);
+    border: 2px solid var(--text);
     border-radius: 11px;
     color: var(--text);
     text-decoration: none;
@@ -504,7 +504,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 3px;
     padding: 3px;
-    border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+    border: 2px solid var(--text);
     border-radius: 30px;
     background: color-mix(in srgb, var(--background) 75%, var(--primary-light));
 }
@@ -583,7 +583,7 @@
 
 .visualization-stage>.map-visualization {
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+    border: 2px solid var(--text);
     border-radius: 18px;
 }
 
