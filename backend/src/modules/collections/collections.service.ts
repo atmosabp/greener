@@ -1,5 +1,15 @@
-import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-api";
-import { reqInterval, reqMetrics, reqMetricsCPU, reqMetricsDisk, reqMetricsMemory, reqMetricsNetwork } from "../../integrations/metrics-api";
+import {
+  reqCarbonValue,
+  reqRenewablePercent,
+} from "../../integrations/carbon-api";
+import {
+  reqInterval,
+  reqMetrics,
+  reqMetricsCPU,
+  reqMetricsDisk,
+  reqMetricsMemory,
+  reqMetricsNetwork,
+} from "../../integrations/metrics-api";
 import { reqServices } from "../../integrations/services-api";
 import { ServiceTypes } from "../../types/services-types";
 import { MetricsCalculator } from "../metrics-calculator";
@@ -30,10 +40,57 @@ export async function addHistory(datePull: any) {
 
 export async function getServiceMetrics(serviceId: string) {
   // TODO: revisar a lógica para retornar TODOS os dados necessários para a tela dashboard
-  const result = await reqMetrics(serviceId);
+  const service = (await reqServices()).find((value) => value.id == serviceId);
+  const cpu = await reqMetricsCPU(serviceId);
+  const memory = await reqMetricsMemory(serviceId);
+  const collectionIntervalSeconds = await reqInterval(serviceId);
+  const carbonIntensity = await reqCarbonValue(serviceId);
+  const renewablePercent = await reqRenewablePercent(serviceId);
+  const disk = await reqMetricsDisk(serviceId);
+  const network = await reqMetricsNetwork(serviceId);
+
+  const metricsCalculator = new MetricsCalculator({
+    collection_interval_seconds: collectionIntervalSeconds,
+    metrics: {
+      cpu_percent: cpu,
+      memory_gb: memory,
+      disk_gb: disk,
+      network_gb: network,
+    },
+    carbon_intensity_gco2e_per_kwh: carbonIntensity,
+    renewable_share_percent: renewablePercent,
+  });
+
+  let kwh;
+  let co2e;
+
+  try {
+    kwh = metricsCalculator.calculateKWh() || undefined;
+    co2e = metricsCalculator.calculateCO2e() || undefined;
+  } catch (error: any) {
+    console.log(
+      "Ocorreu um erro ao calcular as métricas de KWh e CO2e. Erro: ",
+      error.message,
+    );
+  }
+
+  const metrics = {
+    cpu_percent: cpu,
+    memory_gb: memory,
+    disk_gb: disk,
+    network_gb: network,
+    co2e: co2e,
+    kwh: kwh,
+  };
+
+  const result = {
+    name: service?.name,
+    status: service?.status,
+    location: service?.location,
+    metrics: metrics,
+  };
 
   if (!result) return null;
-
 
   return result;
 }
@@ -42,15 +99,15 @@ export async function getAllServicesMetrics() {
   // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking e tela principal/globo)
   const result = await reqServices();
 
-  for(let service of result){
-    const cpu = (await reqMetricsCPU(service.id!));
-    const memory = (await reqMetricsMemory(service.id!));
-    const collectionIntervalSeconds = (await reqInterval(service.id!));
-    const carbonIntensity = (await reqCarbonValue(service.id!));
-    const renewablePercent = (await reqRenewablePercent(service.id!));
-    const disk = (await reqMetricsDisk(service.id!));
-    const network = (await reqMetricsNetwork(service.id!));
-    
+  for (let service of result) {
+    const cpu = await reqMetricsCPU(service.id!);
+    const memory = await reqMetricsMemory(service.id!);
+    const collectionIntervalSeconds = await reqInterval(service.id!);
+    const carbonIntensity = await reqCarbonValue(service.id!);
+    const renewablePercent = await reqRenewablePercent(service.id!);
+    const disk = await reqMetricsDisk(service.id!);
+    const network = await reqMetricsNetwork(service.id!);
+
     const metricsCalculator = new MetricsCalculator({
       collection_interval_seconds: collectionIntervalSeconds,
       metrics: {
@@ -66,13 +123,24 @@ export async function getAllServicesMetrics() {
     let kwh;
     let co2e;
 
-    try{
+    try {
       kwh = metricsCalculator.calculateKWh() || undefined;
       co2e = metricsCalculator.calculateCO2e() || undefined;
-    } catch(error: any){
+    } catch (error: any) {
+      console.log(
+        "Ocorreu um erro ao calcular as métricas de KWh e CO2e. Erro: ",
+        error.message,
+      );
     }
 
-    service.metrics = {cpu_percent: cpu, memory_gb: memory, disk_gb: disk, network_gb: network, co2e: co2e, kwh: kwh}
+    service.metrics = {
+      cpu_percent: cpu,
+      memory_gb: memory,
+      disk_gb: disk,
+      network_gb: network,
+      co2e: co2e,
+      kwh: kwh,
+    };
   }
 
   if (!result) return null;

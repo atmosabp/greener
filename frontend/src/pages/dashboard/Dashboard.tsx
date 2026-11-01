@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
 import Calendar from "../../components/calendar/Calendar";
+import { useParams } from "react-router-dom";
+import type { CoordinatesType, MetricsType } from "../../types/service";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -25,6 +27,8 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 }
 
 export default function Dashboard() {
+  const { serviceId } = useParams();
+
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -68,7 +72,31 @@ export default function Dashboard() {
     () => window.matchMedia(compact_query).matches,
   );
 
+  interface ServicesType {
+    name?: string;
+    status?: "active" | "inactive";
+    location?: CoordinatesType;
+    metrics?: MetricsType;
+  }
+
+  const [serviceMetrics, setServiceMetrics] = useState<ServicesType>({});
+  const [timeUpdated, setTimeUpdated] = useState<string>("");
+
+  async function getServiceMetrics() {
+    try {
+      const result = await fetch(
+        `http://localhost:3000/collections/service-metrics/${serviceId}`,
+      );
+      const data = await result.json();
+      setTimeUpdated(new Date().toLocaleString());
+      setServiceMetrics(data);
+    } catch (e: any) {
+      console.log(e.message);
+    }
+  }
+
   useEffect(() => {
+    getServiceMetrics();
     const mediaQuery = window.matchMedia(compact_query);
 
     const handleChange = () => {
@@ -90,14 +118,15 @@ export default function Dashboard() {
             <h1>Bom dia, &lt;nome usu&aacute;rio&gt;.</h1>
             {/* backend: nome do usuário */}
             <p>
-              Analise os dados do serviço{" "}
-              <strong>&lt;nome do serviço&gt;</strong>.
-              {/* backend: nome do serviço */}
+              Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
+              .{/* backend: nome do serviço */}
             </p>
           </div>
 
           <div className="btns">
-            <span className="last-update">Última atualização: 00:30</span>
+            <span className="last-update">
+              Última atualização: {timeUpdated || "-"}
+            </span>
             {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
 
             {isCompact ? (
@@ -159,7 +188,7 @@ export default function Dashboard() {
           <div className="dashboard-grid">
             <section className="service-info service-info--selected">
               <h4>Serviço selecionado</h4>
-              <p>Email Dispatcher</p>
+              <p>{serviceMetrics.name}</p>
             </section>
 
             <section className="service-info service-info--status">
@@ -171,24 +200,40 @@ export default function Dashboard() {
                   aria-hidden="true"
                 />
                 {/* backend: data-status = "active" | "warning" | "inactive" */}
-                <p>Ativo</p>
+                <p>
+                  {serviceMetrics &&
+                  serviceMetrics.status &&
+                  serviceMetrics.status == "active"
+                    ? "Ativo"
+                    : "Inativo"}
+                </p>
               </div>
             </section>
 
             <section className="service-info service-info--location">
               <h4>Localização</h4>
-              <p>Sao Paulo, Brazil - Sudeste</p>
-              {/* backend: localização do serviço */}
+              <p>
+                {serviceMetrics.location?.city},{" "}
+                {serviceMetrics.location?.country} -{" "}
+                {serviceMetrics.location?.region}
+              </p>
             </section>
 
             <section className="metric-card metric-card--data metric-energy">
               <p>Consumo energético</p>
-              <h4>12,48 kWh</h4>
+              <h4>
+                {serviceMetrics.metrics?.kwh.toLocaleString("pt-BR", {
+                  maximumSignificantDigits: 4,
+                })}{" "}
+                kWh
+              </h4>
             </section>
 
             <section className="metric-card metric-card--data metric-co2">
               <p>Emissão de CO₂e</p>
-              <h4>4,21 kg CO₂e</h4>
+              <h4>{serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
+                      maximumSignificantDigits: 6,
+                    })} CO₂e</h4>
             </section>
 
             <div className="metrics-carousel">
@@ -227,25 +272,51 @@ export default function Dashboard() {
                 <section className="metric-card metric-card--usage metric-cpu">
                   <p>CPU</p>
                   <span className="metric-counter">1/4</span>
-                  <h4>38%</h4> {/* backend: tem que mudar dado aqui */}
+                  <h4>
+                    {serviceMetrics.metrics?.cpu_percent.toLocaleString(
+                      "pt-BR",
+                      {
+                        maximumSignificantDigits: 5,
+                      },
+                    )}{" "}
+                    %
+                  </h4>
                 </section>
 
                 <section className="metric-card metric-card--usage metric-memory">
                   <p>Memória</p>
                   <span className="metric-counter">2/4</span>
-                  <h4>1,36GB</h4> {/* backend: tem que mudar dado aqui */}
+                  <h4>
+                    {serviceMetrics.metrics?.memory_gb.toLocaleString("pt-BR", {
+                      maximumSignificantDigits: 4,
+                    })}{" "}
+                    GB
+                  </h4>
                 </section>
 
                 <section className="metric-card metric-card--usage metric-storage">
                   <p>Armazenamento</p>
                   <span className="metric-counter">3/4</span>
-                  <h4>8GB</h4> {/* backend: tem que mudar dado aqui */}
+                  <h4>
+                    {serviceMetrics.metrics?.disk_gb.toLocaleString("pt-BR", {
+                      maximumSignificantDigits: 4,
+                    })}{" "}
+                    GB
+                  </h4>
                 </section>
 
                 <section className="metric-card metric-card--usage metric-network">
                   <p>Rede</p>
                   <span className="metric-counter">4/4</span>
-                  <h4>0,21GB</h4> {/* backend: tem que mudar dado aqui */}
+                  <h4>
+                    {serviceMetrics.metrics?.network_gb.toLocaleString(
+                      "pt-BR",
+                      {
+                        maximumSignificantDigits: 4,
+                      },
+                    )} {" "}
+                    GB
+                  </h4>
                 </section>
               </div>
             </div>
@@ -261,7 +332,7 @@ export default function Dashboard() {
                   style={{ "--value": 83 } as CSSProperties}
                 >
                   {/* backend: trocar o --value (0–100) e o texto abaixo */}
-                  <span>83%</span>
+                  <span>oie</span>
                 </div>
               </section>
 
@@ -367,7 +438,7 @@ export default function Dashboard() {
       </main>
       <footer>
         <span>Desenvolvido por Atmos &copy; {year}</span>
-        </footer>
+      </footer>
       {/* mobile: botão voltar ao topo */}
       <button
         type="button"

@@ -35,10 +35,12 @@ export async function addHistoryController(_req: Request, res: Response) {
 }
 
 export async function getServiceMetricsController(req: Request, res: Response) {
-  const { serviceId } = req.body;
+  const serviceId = req.params.serviceId;
+
+  console.log(serviceId)
 
   try {
-    const result = await getServiceMetrics(serviceId);
+    const result = await getServiceMetrics(String(serviceId));
     return res.status(200).json(result);
   } catch (error: any) {
     return res.status(400).json({
