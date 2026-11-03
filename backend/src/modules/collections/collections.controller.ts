@@ -21,9 +21,10 @@ export async function getHistoryController(_req: Request, res: Response) {
   }
 }
 
-export async function addHistoryController(_req: Request, res: Response) {
+export async function addHistoryController(req: Request, res: Response) {
+  const { serviceId } = req.body;
   try {
-    const result = await addHistory(Date.now());
+    const result = await addHistory( serviceId);
     return res.status(200).json(result);
   } catch (error: any) {
     return res.status(400).json({
