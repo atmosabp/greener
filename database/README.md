@@ -21,9 +21,9 @@ Será usado junto ao `compose.yaml` que está na raiz do projeto para inicializa
 
 Implementa a modelagem lógica do banco.
 
-#### Como está a estrutura de tabelas do arquivo `schema.sql`?
+#### Como está a estrutura de tabelas do arquivo `schema.sql`:
 
-**Tabela Usuário:**
+**Tabela Users:**
 
 A tabela usuário serve para guardar quais são os usuários cadastrados no site, ela está estruturada da seguinte forma:
 
@@ -32,6 +32,8 @@ A tabela usuário serve para guardar quais são os usuários cadastrados no site
  - **email:** varchar(150);
  - **password:** varchar(255);
  - **is_adm:** boolean.
+
+*Obs:* O `is_adm` um campo que identifica se a pessoa é um administrador. Alguém com esse cargo pode realizar ações que um usuário comum não poderia, como: adicionar usuário, remover usuário, mudar um usuário específico para administrador, entre outros.
 
 <br>
 
@@ -110,9 +112,12 @@ A tabela services serve para guardar quais são os serviços que já foram salvo
 
 <br>
 
-**Tabelas:**
+**Tabelas de histórico:**
 
-As tabelas minute_data, hour_data, day_data e month_data servem para guardar as métricas brutas de cada serviço. Começa-se com a tabela minute_data e quando atinge uma hora (60 minutos) de dados guardados nessa tabela é feita uma média desses dados e esse valor passa para a tabela hour_data, quando completar um dia a mesma coisa é feita, porém para a tabela day_data, e assim por diante. Elas estão estruturadas da seguinte forma:
+As tabelas `minute_data`, `hour_data`, `day_data` e `month_data` servem para guardar as métricas brutas de cada serviço.  
+Todos os dados vêm das APIs auxiliares **Greener Metrics Aggregator API** e **Greener Carbon Intensity API**. Os dados são inseridos pelo servidor backend da aplicação, por meio de um Worker que funciona a cada minuto.   
+O Worker começa inserindo os dados do serviço na tabela `minute_data`. E um trigger detecta quando o intervalo de inserção atinge uma hora (60 minutos) de dados guardados nessa tabela, e então é feita uma média desses dados e esse valor passa para a tabela `hour_data`. Quando completar um dia a mesma coisa é feita, porém para a tabela `day_data`, e por fim, o mesmo com o `month_data`.   
+Todas elas estão estruturadas da seguinte forma:
 
  - **id:** serial e primary key;
  - **co2e:** float;
@@ -175,11 +180,7 @@ As tabelas minute_data, hour_data, day_data e month_data servem para guardar as 
 
 <br>
 
-**Origem dos dados:** Greener Metrics Aggregator API e Greener Carbon Intensity API
-
 ---
-
-
 
 ### Indexação
 
@@ -190,9 +191,11 @@ Os índices são mantidos internamente pelo banco e servem para evitar que ele p
  - **colunas:** service_id, date_pull;
  - **tipo:** composto (B-tree).
 
+**Exemplo de código SQL:**  
+`create index idx_hour_data_services_dt on hour_data (service_id, date_pull);`
 <br>
 
-**Por que service_id e date_pull, nessa ordem?**
+**Motivo de ser service_id e date_pull, nessa ordem:**
 
 A ordem das colunas importa. O `service_id` vem primeiro porque é filtrado por igualdade (queremos um serviço específico), o que já reduz muito a busca. O `date_pull` vem depois porque é filtrado por intervalo ou usado para ordenar, e dentro de cada serviço as datas já ficam em ordem. Por isso, consultas que filtram só por `date_pull`, sem informar o `service_id`, não aproveitam bem esses índices.
 
