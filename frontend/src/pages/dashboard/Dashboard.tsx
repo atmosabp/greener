@@ -4,7 +4,7 @@ import "./Dashboard.css";
 import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
-import { Oval } from "react-loader-spinner";
+// import { Oval } from "react-loader-spinner";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -81,7 +81,7 @@ export default function Dashboard() {
     metrics?: MetricsType;
   }
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, _setLoading] = useState<boolean>(true);
   const [updateInterval, setUpdateInterval] = useState<number>(5);
   const [serviceMetrics, setServiceMetrics] = useState<ServicesType>({});
   const [serviceList, setServiceList] = useState<
