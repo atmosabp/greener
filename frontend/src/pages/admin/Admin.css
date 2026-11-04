@@ -1,1 +1,753 @@
-/* Estilo da página do adm */
+.admin-page {
+    --row-a: color-mix(in srgb, var(--background) 55%, #fff);
+    --row-b: var(--background);
+    --row-selected: color-mix(in srgb, var(--primary) 28%, var(--background));
+
+    /* botões */
+    --btn-fg: var(--text-inverse, var(--background));
+    --btn-disabled: color-mix(in srgb, var(--text) 68%, var(--background));
+    --btn-disabled-fg: color-mix(in srgb, var(--btn-fg) 70%, var(--text));
+    --icon-btn-bg: color-mix(in srgb, var(--primary) 78%, var(--background));
+
+    /* curvas das animações -> não vai ficar (odiei)*/
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--text);
+}
+
+[data-theme="dark"] .admin-page {
+    --row-a: color-mix(in srgb, var(--background) 90%, #fff);
+    --row-selected: color-mix(in srgb, var(--primary) 35%, var(--background));
+}
+
+.admin {
+    flex: 1;
+    margin-top: 70px;
+    padding: 30px;
+}
+
+/* esconde o checkbox da lista mobile, mas ele continua acessível */
+.checkbox-user {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Cabeçalho da página */
+
+.admin .start-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 15px;
+}
+
+.admin .start-section h1 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 600;
+}
+
+.admin .start-section p {
+    margin: 2px 0 0;
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+}
+
+/* Barra de ferramentas */
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.toolbar-btns {
+    display: flex;
+    gap: 15px;
+}
+
+.toolbar h2 {
+    font-weight: 600;
+}
+
+.total {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding-left: 15px;
+    border-radius: 999px;
+    background: var(--primary-light);
+}
+
+.total strong {
+    display: grid;
+    place-items: center;
+    min-width: 70px;
+    height: 100%;
+    margin-left: 15px;
+    padding: 0 15px;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--btn-fg);
+    font-size: 1.15rem;
+    font-weight: 400;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 40px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--btn-fg);
+    font-family: inherit;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition:
+        transform 0.3s ease-in-out,
+        background-color 0.35s ease,
+        color 0.35s ease;
+}
+
+.btn svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.4s var(--ease-spring);
+}
+
+.btn:hover:not(:disabled) {
+    transform: scale(1.025);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.btn-add:hover:not(:disabled) svg {
+    transform: rotate(90deg) scale(1.1);
+}
+
+.btn-delete:hover:not(:disabled) svg {
+    animation: wiggle 0.5s ease;
+}
+
+.btn:disabled {
+    background: var(--btn-disabled);
+    color: var(--btn-disabled-fg);
+    cursor: not-allowed;
+}
+
+/* Checkbox customizado */
+
+.check {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+}
+
+.check input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.check-box {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 2px solid color-mix(in srgb, var(--text) 75%, transparent);
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--background) 60%, #fff);
+    color: var(--primary-darker);
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.35s var(--ease-spring);
+}
+
+/* o "check" é desenhado traço a traço */
+.check-box svg {
+    width: 16px;
+    height: 16px;
+}
+
+.check-box svg path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    transition: stroke-dashoffset 0.3s 0.05s ease;
+}
+
+.check:hover .check-box {
+    transform: scale(1.1);
+}
+
+.check input:checked + .check-box {
+    background: var(--primary);
+    border-color: var(--primary-dark);
+    animation: pop 0.35s var(--ease-spring);
+}
+
+.check input:checked + .check-box svg path {
+    stroke-dashoffset: 0;
+}
+
+.check input:focus-visible + .check-box {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+/* estado "alguns selecionados" no cabeçalho */
+.check-box.is-mixed {
+    position: relative;
+    background: var(--primary);
+    border-color: var(--primary-dark);
+}
+
+.check-box.is-mixed svg {
+    display: none;
+}
+
+.check-box.is-mixed::after {
+    content: "";
+    width: 10px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--primary-darker);
+}
+
+/* Tabela (desktop) */
+
+.table-card {
+    border: 5px solid var(--primary);
+    border-radius: 34px;
+    background: var(--row-a);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table thead th {
+    height: 60px;
+    padding: 0 14px;
+    background: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+}
+
+.table tbody td {
+    height: 50px;
+    padding: 0 14px;
+    font-size: 1.05rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: background-color 0.35s ease;
+    text-align: left;
+}
+
+.table tbody td + td {
+    border-left: 2px solid var(--primary);
+}
+
+.table tbody tr:nth-child(odd) td {
+    background: var(--row-a);
+}
+
+.table tbody tr:nth-child(even) td {
+    background: var(--row-b);
+}
+
+.table tbody tr.is-selected td {
+    background: var(--row-selected);
+}
+
+.cell-id {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botões de ícone (editar / excluir) */
+
+.icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 34px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--icon-btn-bg);
+    color: var(--primary-darker);
+    cursor: pointer;
+    transition:
+        transform 0.3s var(--ease-spring),
+        background-color 0.25s ease,
+        opacity 0.3s ease;
+}
+
+.icon-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.35s var(--ease-spring);
+}
+
+.icon-btn:hover:not(:disabled) {
+    background: var(--primary);
+    transform: scale(1.12);
+}
+
+.icon-btn--edit:hover:not(:disabled) svg {
+    transform: rotate(-14deg);
+}
+
+.icon-btn--delete:hover:not(:disabled) svg {
+    animation: wiggle 0.5s ease;
+}
+
+.icon-btn:active:not(:disabled) {
+    transform: scale(0.92);
+}
+
+.icon-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.admin-page :is(.btn, .icon-btn, .m-toggle, .pager-btn):focus-visible,
+.admin-page .select select:focus-visible {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+/* Lista expansível (mobile) */
+
+.m-card {
+    display: none;
+    border: 3px solid var(--primary);
+    border-radius: 26px;
+    background: var(--row-a);
+    overflow: hidden;
+}
+
+.m-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.m-item {
+    position: relative;
+    background: var(--row-a);
+    transition: background-color 0.35s ease;
+}
+
+.m-item:nth-child(even) {
+    background: var(--row-b);
+}
+
+.m-item.is-selected {
+    background: var(--row-selected);
+}
+
+/* barra lateral que "cresce" ao selecionar */
+.m-item::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: var(--primary-dark);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.35s var(--ease-out);
+}
+
+.m-item.is-selected::before {
+    transform: scaleY(1);
+}
+
+.m-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+}
+
+.m-toggle {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--text);
+    color: var(--btn-fg);
+    cursor: pointer;
+    transition: transform 0.4s var(--ease-spring);
+}
+
+.m-toggle svg {
+    width: 22px;
+    height: 22px;
+}
+
+.m-item.is-open .m-toggle {
+    transform: rotate(180deg);
+}
+
+.m-label,
+.m-row {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.m-label {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    cursor: pointer;
+}
+
+.m-label:has(input:focus-visible) {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.m-key {
+    font-weight: 600;
+}
+
+.m-val {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 0.95rem;
+}
+
+/* expansão suave: a linha vai de 0fr para 1fr, sem precisar medir a altura */
+.m-details {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s var(--ease-out);
+}
+
+.m-item.is-open .m-details {
+    grid-template-rows: 1fr;
+}
+
+.m-details-inner {
+    min-height: 0;
+    overflow: hidden;
+    display: grid;
+    gap: 14px;
+    padding: 0 18px 0 78px;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+        opacity 0.3s ease,
+        padding 0.45s var(--ease-out),
+        visibility 0s 0.45s;
+}
+
+.m-item.is-open .m-details-inner {
+    padding-bottom: 18px;
+    visibility: visible;
+    opacity: 1;
+    transition:
+        opacity 0.4s 0.1s ease,
+        padding 0.45s var(--ease-out),
+        visibility 0s;
+}
+
+.m-row {
+    grid-template-columns: 64px 1fr;
+}
+
+.m-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Estado vazio */
+
+.table-empty td {
+    height: 300px;
+    padding: 0;
+    border-left: 0;
+    white-space: normal;
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 240px;
+    padding: 32px 20px;
+    text-align: center;
+}
+
+.empty strong {
+    font-size: 1.15rem;
+}
+
+.empty span {
+    font-size: 0.95rem;
+    opacity: 0.75;
+}
+
+.empty-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+    color: var(--primary-dark);
+    transform-origin: 50% 100%;
+    animation: sway 3.6s ease-in-out infinite;
+}
+
+/* Paginação */
+
+.table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 0.95rem;
+}
+
+.per-page {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.select select {
+    appearance: none;
+    height: 34px;
+    padding: 0 28px 0 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--complementary);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+.select select:hover {
+    background: color-mix(in srgb, var(--complementary) 80%, var(--primary));
+}
+
+.select-icon {
+    position: absolute;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+}
+
+.pager {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pager-btn {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition:
+        transform 0.25s var(--ease-spring),
+        background-color 0.25s ease,
+        opacity 0.25s ease;
+}
+
+.pager-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.pager-btn:hover:not(:disabled) {
+    background: var(--complementary);
+}
+
+.pager-btn--prev:hover:not(:disabled) {
+    transform: translateX(-3px);
+}
+
+.pager-btn--next:hover:not(:disabled) {
+    transform: translateX(3px);
+}
+
+.pager-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* o número "dá um tick" a cada troca de página */
+.pager-count {
+    min-width: 46px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--complementary);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    animation: tick 0.35s var(--ease-spring);
+}
+
+.admin-footer {
+    padding: 28px 20px 24px;
+    color: var(--secondary);
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+/* Responsivo */
+
+@media (max-width: 768px) {
+    .table-card--desktop {
+        display: none;
+    }
+
+    .m-card {
+        display: block;
+    }
+
+    .toolbar h2 {
+        flex-basis: 100%;
+        margin: 0;
+    }
+
+    /* os botões ocupam a linha toda: o total fica na esquerda e os botões na direita */
+    .toolbar-btns {
+        width: 100%;
+        gap: 12px;
+    }
+
+    .total {
+        margin-right: auto;
+        height: 46px;
+        padding-left: 14px;
+        font-size: 0.8rem;
+    }
+
+    .total strong {
+        min-width: 0;
+        margin-left: 10px;
+        padding: 0 20px;
+        font-size: 1.1rem;
+    }
+
+    .btn {
+        width: 46px;
+        height: 46px;
+        padding: 0;
+    }
+
+    .btn-label {
+        display: none;
+    }
+}
+
+/* Keyframes -> NÃO SEI SE VAI FICAR, TESTANDO ANIMAÇÕES PARA O PROJETO*/
+
+@keyframes wiggle {
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+
+    25% {
+        transform: rotate(-14deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
+
+    75% {
+        transform: rotate(-6deg);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.8);
+    }
+
+    60% {
+        transform: scale(1.18);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes tick {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes sway {
+    0%,
+    100% {
+        transform: rotate(-4deg);
+    }
+
+    50% {
+        transform: rotate(4deg);
+    }
+}
