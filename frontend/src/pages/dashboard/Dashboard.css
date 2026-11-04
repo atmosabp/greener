@@ -1,1 +1,843 @@
-/* Estilo da página dashboard */
+/* Estilização desktop */
+
+.dashboard-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+}
+
+.main-section {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+}
+
+.dashboard {
+    --dash-ok: #94c47d;
+    --dash-warn: #e3d26f;
+    --dash-error: #db7b7b;
+    --dash-track: color-mix(in srgb, var(--text) 14%, var(--complementary));
+    box-sizing: border-box;
+    margin-top: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 24px;
+    min-height: 0;
+    height: auto;
+    padding: 30px 30px 30px 30px;
+}
+
+.dashboard-grid {
+    height: 100%;
+    min-height: 0;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.25fr 0.9fr;
+    grid-template-rows: 5.25rem repeat(3, minmax(0, 1fr));
+
+    grid-template-areas:
+        "selected    status   location  others"
+        "energy      co2      analytics others"
+        "cpu         memory   analytics others"
+        "storage     network  analytics others";
+
+    gap: clamp(16px, 2vh, 32px);
+}
+
+.dashboard-grid>* {
+    min-width: 0;
+    min-height: 0;
+}
+
+.start-section {
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.btns {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.dashboard .last-update {
+    padding: 0;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.btn-update {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-left: 15px;
+    background-color: var(--primary-light);
+    border-radius: 999px;
+    font-weight: 500;
+    white-space: nowrap;
+    height: 40px;
+}
+
+.dashboard select {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 40px;
+    font-weight: 400;
+    padding: 0 2.75rem 0 1.25rem;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--text);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    color: var(--background);
+    font-size: 1.15rem;
+    cursor: pointer;
+    outline: none;
+}
+
+[data-theme="dark"] .dashboard select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.dashboard select option {
+    background-color: var(--text);
+    color: var(--background);
+    cursor: pointer;
+}
+
+.btn-date select {
+    min-width: 10.5rem;
+}
+
+.service-info--selected {
+    grid-area: selected;
+}
+
+.service-info--status {
+    grid-area: status;
+}
+
+.service-info--location {
+    grid-area: location;
+}
+
+.metric-energy {
+    grid-area: energy;
+}
+
+.metric-co2 {
+    grid-area: co2;
+}
+
+.metric-cpu {
+    grid-area: cpu;
+}
+
+.metric-memory {
+    grid-area: memory;
+}
+
+.metric-storage {
+    grid-area: storage;
+}
+
+.metric-network {
+    grid-area: network;
+}
+
+.analytics {
+    grid-area: analytics;
+}
+
+.other-services {
+    grid-area: others;
+}
+
+
+.service-info {
+    position: relative;
+    background-color: var(--complementary);
+    border-radius: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    padding: 15px 20px;
+    gap: 5px;
+    transition: border 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.service-info--selected {
+    border: 2px solid var(--text);
+}
+
+.service-info h4 {
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+.service-info p {
+    font-size: 1.2rem;
+}
+
+.service-info-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard .status-dot {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background-color: var(--dash-ok);
+}
+
+.status-dot[data-status="warning"] {
+    background-color: var(--dash-warn);
+}
+
+.status-dot[data-status="inactive"] {
+    background-color: var(--dash-error);
+}
+
+/* botões só do mobile (escondidos aqui) */
+.jump-btn,
+.back-to-top,
+.metrics-header,
+.metric-counter {
+    display: none;
+}
+
+
+.metrics-carousel,
+.metrics-track {
+    display: contents;
+}
+
+.metric-card {
+    position: relative;
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+
+    border-radius: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    padding: 20px;
+}
+
+
+.metric-card p {
+    font-size: 1.25rem;
+}
+
+.metric-card h4 {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.metric-card--data {
+    background-color: var(--primary-dark);
+    color: var(--background);
+}
+
+.metric-card--usage {
+    background-color: var(--primary-light);
+}
+
+
+.analytics {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+}
+
+.analytics-card {
+    flex: 1;
+    background-color: var(--complementary);
+    border-radius: 1.25rem;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.analytics {
+    min-height: 0;
+    gap: clamp(16px, 2.5vh, 36px);
+}
+
+.other-services {
+    min-height: 0;
+}
+
+.other-services ul {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.analytics-card--renewable {
+    flex: 1.2;
+    justify-content: space-between;
+}
+
+.analytics-card h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+
+.donut {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: min(100%, 10rem);
+    aspect-ratio: 1;
+    flex-shrink: 1;
+    border-radius: 50%;
+    background: conic-gradient(from 180deg,
+            var(--primary-dark) calc(var(--value) * 1%),
+            var(--dash-track) 0);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.donut span {
+    position: relative;
+    font-size: clamp(1.25rem, 5vw, 2.25rem);
+    font-weight: 500;
+}
+
+.donut::before {
+    content: "";
+    position: absolute;
+    inset: 11%;
+    border-radius: 50%;
+    transition: background-color 0.3s ease-in-out;
+    background-color: var(--complementary);
+}
+
+
+
+/* Intensidade de carbono */
+.analytics-card--carbon {
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.carbon-level {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.carbon-scale {
+    position: relative;
+    width: 100%;
+    max-width: 17rem;
+    min-width: 0;
+    height: 1.5rem;
+    box-sizing: border-box;
+}
+
+.carbon-value {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+}
+
+.carbon-value strong {
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.carbon-scale::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    background-color: var(--dash-track);
+}
+
+.carbon-scale-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 999px;
+}
+
+.carbon-scale[data-level="low"] .carbon-scale-fill {
+    width: 38%;
+    background: linear-gradient(90deg, var(--dash-ok) 45%, var(--dash-warn));
+}
+
+.carbon-scale[data-level="medium"] .carbon-scale-fill {
+    width: 58%;
+    background: linear-gradient(90deg, var(--dash-ok) 30%, var(--dash-warn));
+}
+
+.carbon-scale[data-level="high"] .carbon-scale-fill {
+    width: 100%;
+    background: linear-gradient(90deg,
+            var(--dash-ok) 20%,
+            var(--dash-warn) 55%,
+            var(--dash-error));
+}
+
+.carbon-node {
+    position: absolute;
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+}
+
+.carbon-node--low {
+    left: 0;
+    background-color: var(--dash-ok);
+}
+
+.carbon-node--medium {
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--dash-warn);
+}
+
+.carbon-node--high {
+    right: 0;
+    background-color: var(--dash-error);
+}
+
+
+
+
+.other-services {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    border: 2px solid var(--text);
+    border-radius: 1.25rem;
+    background-color: color-mix(in srgb,
+            var(--primary-light) 55%,
+            var(--background));
+    min-height: 0;
+    transition: border 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.other-services h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.other-services ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: -6px;
+    padding: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-light) transparent;
+
+}
+
+.other-services ul::-webkit-scrollbar {
+    width: 8px;
+}
+
+.other-services ul::-webkit-scrollbar-track {
+    background: color-mix(in srgb, var(--primary-light) 35%, transparent);
+    border-radius: 999px;
+}
+
+.other-services ul::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 999px;
+}
+
+.service-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: transparent;
+    border-radius: 999px;
+    background-color: var(--background);
+    color: inherit;
+    font: inherit;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.service-link:hover:not(:disabled) {
+    transform: scale(1.035);
+}
+
+.service-link:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.service-link-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.service-link svg {
+    flex-shrink: 0;
+}
+
+.dashboard-page footer {
+    text-align: center;
+    padding: 15px;
+}
+
+.dashboard-page footer span {
+    color: var(--secondary);
+}
+
+
+.icon-left {
+    transform: rotate(180deg);
+}
+
+.icon-down {
+    transform: rotate(90deg);
+}
+
+.icon-up {
+    transform: rotate(-90deg);
+}
+
+
+
+@media (min-width: 481px) and (max-width: 1024px) {
+    .dashboard-page {
+        height: auto;
+        height: auto;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        overflow: hidden;
+    }
+
+    .dashboard {
+        padding: 24px;
+        gap: 24px;
+    }
+
+    .start-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btns {
+        padding-top: 15px;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .alter-btns {
+        display: flex;
+        gap: 30px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: none;
+        grid-auto-rows: auto;
+        grid-template-areas:
+            "selected  status"
+            "location  location"
+            "energy    co2"
+            "cpu       memory"
+            "storage   network"
+            "analytics analytics"
+            "others    others";
+        gap: 1.25rem;
+    }
+
+    .service-info {
+        min-height: 6.25rem;
+    }
+
+    .analytics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    .analytics-card {
+        padding: 24px 20px;
+        gap: 1rem;
+    }
+
+    .other-services ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        overflow: visible;
+    }
+}
+
+
+
+@media (max-width: 480px) {
+    .dashboard-page {
+        height: auto;
+        height: auto;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        overflow: hidden;
+    }
+
+    .dashboard {
+        margin-top: 1.5rem;
+        padding: 2rem;
+        gap: 1.25rem;
+    }
+
+
+    .start-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .start-section h1 {
+        font-size: 2.25rem;
+        line-height: 1.1;
+        padding-right: 3.5rem;
+    }
+
+    .start-section p {
+        font-size: 0.8rem;
+    }
+
+    .btns {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 0px;
+    }
+
+    .dashboard .last-update {
+        order: 3;
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .alter-btns {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn-update {
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-date {
+        flex: 1;
+        min-width: 7rem;
+    }
+
+    .btn-date select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .dashboard select {
+        height: 2.6rem;
+        font-size: 1rem;
+    }
+
+    .btn-update select {
+        font-size: 1.05rem;
+    }
+
+
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        grid-auto-rows: auto;
+        grid-template-areas:
+            "selected"
+            "status"
+            "location"
+            "energy"
+            "co2"
+            "metrics"
+            "analytics"
+            "others";
+        gap: 1.5rem;
+    }
+
+    .service-info {
+        min-height: 6.25rem;
+        padding: 15px 22px;
+    }
+
+    .service-info--location {
+        margin-bottom: 1.5rem;
+    }
+
+    .jump-btn {
+        position: absolute;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background-color: var(--text);
+        color: var(--background);
+        cursor: pointer;
+    }
+
+    .metric-card {
+        min-height: 9.375rem;
+        padding: 20px 22px;
+    }
+
+    .metrics-carousel {
+        grid-area: metrics;
+        display: block;
+        margin: 1.5rem 0;
+    }
+
+    .metrics-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .metrics-header h3 {
+        font-size: 1.5rem;
+        font-weight: 400;
+    }
+
+    .carousel-controls {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .carousel-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background-color: var(--text);
+        color: var(--background);
+        cursor: pointer;
+    }
+
+    .carousel-btn:disabled {
+        opacity: 0.65;
+        cursor: default;
+    }
+
+    .metrics-track {
+        display: flex;
+        gap: 1.25rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        margin-right: -2rem;
+        padding-right: 2rem;
+    }
+
+    .metrics-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .metrics-track .metric-card {
+        flex: 0 0 78%;
+        scroll-snap-align: start;
+    }
+
+    .metric-counter {
+        display: block;
+        position: absolute;
+        top: 20px;
+        right: 22px;
+        font-size: 1rem;
+        opacity: 0.6;
+    }
+
+    .analytics {
+        gap: 1.5rem;
+    }
+
+    .analytics-card {
+        padding: 22px 20px;
+        gap: 1rem;
+    }
+
+    .donut {
+        --size: 11.75rem;
+    }
+
+    .analytics-card--carbon {
+        padding: 22px 28px;
+    }
+
+    .other-services {
+        margin-top: 1.5rem;
+        padding: 20px 16px 20px 24px;
+    }
+
+    .other-services ul {
+        max-height: 17.5rem;
+        padding-right: 0.75rem;
+    }
+
+
+    .back-to-top {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 10;
+        width: 3rem;
+        height: 3rem;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background-color: var(--text);
+        color: var(--background);
+        cursor: pointer;
+    }
+}
