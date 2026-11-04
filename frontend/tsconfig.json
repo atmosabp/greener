@@ -4,4 +4,9 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
+  "compilerOptions": {
+      "lib": [
+          "es5", "es6", "dom", "DOM.Iterable"
+      ]
+  }
 }

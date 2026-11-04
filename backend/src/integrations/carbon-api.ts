@@ -14,8 +14,6 @@ export async function reqMetrics(serviceId: string) {
 
       const objMetrics: ApiCarbon = await resp.json();
 
-      console.log(objMetrics)
-
       return objMetrics;
     }
   } catch (error: any) {
