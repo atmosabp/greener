@@ -155,7 +155,7 @@ export async function findServiceMonthHistory(
         [serviceId],
       );
     }else{
-      const result = await pool.query(
+      result = await pool.query(
         `SELECT * FROM month_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '1 month' limit 1`,
         [serviceId, datePull],
       );
@@ -209,7 +209,7 @@ export async function findServiceDayHistory(
         [serviceId],
       );
     }else{
-      const result = await pool.query(
+      result = await pool.query(
         `SELECT * FROM day_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '1 day' limit 1`,
         [serviceId, datePull],
       );
@@ -233,7 +233,7 @@ export async function findHourHistory(datePull: Date) {
           where date_pull <= date_trunc('hour',current_timestamp)`,
       );
     }else{
-      const result = await pool.query(
+      result = await pool.query(
         `SELECT * FROM hour_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 minutes'`,
         [datePull],
       );
@@ -259,7 +259,7 @@ export async function findServiceHourHistory(datePull: Date, serviceId: string) 
         [serviceId],
       );
     }else{
-      const result = await pool.query(
+      result = await pool.query(
         `SELECT * FROM hour_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '59 minutes' limit 1`,
         [serviceId, datePull],);
       }
