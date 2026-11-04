@@ -17,7 +17,7 @@ import {
   differenceInMonths,
 } from "date-fns";
 
-export async function addMinuteHistory(datePull: Date, serviceId: string) {
+export async function addMinuteHistory(datePull: any, serviceId: string) {
   const client = await pool.connect();
 
   const collectionIntervalSeconds = await reqInterval(serviceId);
@@ -95,8 +95,37 @@ async function insertMinuteHistory(
   return result.rows[0] || null;
 }
 
-// TODO: fazer as seguintes funções para a tarefa TP15 -> Persistir métricas coletadas no banco de dados ==========
-// Usar como base a função acima para desenvolver as outras
+// Funções que ainda serão feitas ==========
+
+export async function addHourHistory(datePull: any) {
+  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = $1`, [
+    datePull,
+  ]);
+  return result.rows[0] || null;
+}
+
+async function insertHourHistory(datePull: any) {
+  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = $1`, [
+    datePull,
+  ]);
+  return result.rows[0] || null;
+}
+
+export async function addMonthHistory(datePull: any) {
+  const result = await pool.query(
+    `SELECT FROM month_data WHERE date_pull = $1`,
+    [datePull],
+  );
+  return result.rows[0] || null;
+}
+
+async function insertMonthHistory(datePull: any) {
+  const result = await pool.query(
+    `SELECT FROM month_data WHERE date_pull = $1`,
+    [datePull],
+  );
+  return result.rows[0] || null;
+}
 
 // ==========================================
 
@@ -140,7 +169,7 @@ export async function findMonthHistory(datePull: Date) {
 }
 
 export async function findServiceMonthHistory(
-  datePull: Date,
+  datePull: any,
   serviceId: string,
 ) {
   var result;
@@ -243,6 +272,30 @@ export async function findHourHistory(datePull: Date) {
   return result.rows[0] || null;
 }
 
+export async function findMinuteHistory(datePull: Date) {
+  var result;
+  if (differenceInHours(Date(), datePull) < 2) {
+    result = await pool.query(
+      `select 
+          AVG(co2e) as co2e,
+          AVG(kwh) as kwh,
+          AVG(cpu_percentage) as cpu_percentage,
+          AVG(memory_gb) as memory_gb,
+          AVG(disk_gb) as disk_gb,
+          AVG(network_gb) as network_gb,
+          AVG(renewable_percent) as renewable_percent
+          from minute_data 
+          where date_pull <= date_trunc('hour',current_timestamp)`,
+    );
+  } else {
+    result = await pool.query(
+      `SELECT * FROM hour_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 minutes'`,
+      [datePull],
+    );
+  }
+  return result.rows[0] || null;
+}
+
 export async function findServiceHourHistory(
   datePull: Date,
   serviceId: string,
@@ -273,20 +326,20 @@ export async function findServiceHourHistory(
   return result.rows[0] || null;
 }
 
-export async function findMinuteHistory(datePull: Date) {
-  const result = await pool.query(
-    `SELECT * FROM minute_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 seconds' limit 1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
+// export async function findMinuteHistory(datePull: Date) {
+//   const result = await pool.query(
+//     `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
+//     [serviceId, datePull],
+//   );
+//   return result.rows[0] || null;
+// }
 
 export async function findServiceMinuteHistory(
-  datePull: Date,
+  datePull: number,
   serviceId: string,
 ) {
   const result = await pool.query(
-    `SELECT * FROM minute_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '59 seconds'`,
+    `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
     [serviceId, datePull],
   );
   return result.rows[0] || null;

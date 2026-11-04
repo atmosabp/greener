@@ -82,6 +82,7 @@ export default function Dashboard() {
   }
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [updateInterval, setUpdateInterval] = useState<number>(5);
   const [serviceMetrics, setServiceMetrics] = useState<ServicesType>({});
   const [serviceList, setServiceList] = useState<
     {
@@ -93,6 +94,8 @@ export default function Dashboard() {
   const [timeUpdated, setTimeUpdated] = useState<string>("");
 
   async function getServiceMetrics() {
+    setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
+
     try {
       const result = await fetch(
         `http://localhost:${import.meta.env.VITE_PORT}/collections/service-metrics/${serviceId}`,
@@ -129,6 +132,28 @@ export default function Dashboard() {
       console.log(e.message);
     }
   }
+
+  function changeInterval(newTime: number): void{
+    setUpdateInterval(newTime);
+    localStorage.setItem("refresh_interval", String(newTime));
+    window.location.reload();
+  }
+
+  async function updateMetrics(): Promise<void>{
+    await getServiceMetrics();
+    await getServiceList();
+  }
+
+  // useEffect para atualizar de acordo com o intervalo
+  useEffect(() => {
+    updateMetrics();
+    const fetchData = async () => {
+      await updateMetrics();
+    }
+    const fetchTimer = setInterval(fetchData, (localStorage.getItem("refresh_interval") ? Number(localStorage.getItem("refresh_interval")) : updateInterval) * 1000);
+
+    return () => clearInterval(fetchTimer);
+  }, []);
 
   function createServiceList() {
     let serviceItemList = [];
@@ -170,8 +195,6 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    getServiceMetrics();
-    getServiceList();
     const mediaQuery = window.matchMedia(compact_query);
 
     const handleChange = () => {
@@ -208,7 +231,7 @@ export default function Dashboard() {
               <div className="alter-btns">
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
-                  <select name="updates" id="update-select">
+                  <select name="updates" value={Number(updateInterval)} id="update-select" onChange={(event) => changeInterval(Number(event.target.value))}>
                     <option value="5">05s</option>
                     <option value="10">10s</option>
                     <option value="15">15s</option>
@@ -234,7 +257,7 @@ export default function Dashboard() {
               <>
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
-                  <select name="updates" id="update-select">
+                  <select name="updates" id="update-select" value={Number(updateInterval)} onChange={(event) => changeInterval(Number(event.target.value))}>
                     <option value="5">05s</option>
                     <option value="10">10s</option>
                     <option value="15">15s</option>
