@@ -58,6 +58,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
       "http://localhost:3000/collections/all-service-data",
     );
     const data = await result.json();
+    console.log(data)
     setTimeUpdated(new Date().toLocaleString());
     setServices(data);
   }
