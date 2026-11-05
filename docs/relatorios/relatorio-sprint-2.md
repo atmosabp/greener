@@ -48,8 +48,8 @@ Esse final de semana não foi tão produtivo, pois ocorreu o 2° turno das elei�
 Portanto, o desenvolvimento dos dois dias está sendo juntado em apenas um item.  
 
 **Beatriz** -> Finaliza implementação tela dashboard (DW07)   
-**Darcy** -> Faz documento para auxiliar na configuração das APIs auxiliares     
-**Júlia** -> Ajusta pequenas coisas nos endpoints e faz relatório   
+**Darcy** -> Faz documento para auxiliar na configuração das APIs auxiliares (ES17)    
+**Júlia** -> Ajusta pequenas coisas nos endpoints, inicia integração backend da tela principal e faz relatório (DW08)  
 **Lorenzo** -> Finaliza implementação da tela de comparação (DW11)  
 **Mariana** -> Finaliza ciação de endpoints (TP18)
 
@@ -60,23 +60,45 @@ De acordo com a falta de desenvolvimento do final de semana, nos organizamos mel
 Continuando com a implementação de erros no frontend, desenvolvimento de READMEs para as pastas e integração de telas com o backend.
 
 **Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
-**Darcy** -> Faz alterações no documento de instruções da API auxiliar  
+**Darcy** -> Faz alterações no documento de instruções da API auxiliar (ES17)  
 **Júlia** -> Inicia integração backend da tela principal e faz relatório do dia (DW08)  
 **Kauã** -> Inicia documento README backend (ES17)  
 **Lorenzo** -> Faz correções tela comparação  
-**Mariana** -> Inicia documento README dos endpoints (ES17) 
+**Mariana** -> Inicia documento README dos endpoints (ES17)  
 
 ---
 
 #### 31/out
+Hoje foi iniciado o sistema de segurança da aplicação, começando a autenticação JWT no backend.  
+
+**Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
+**Darcy** -> Inicia mecanismo de coleta periódica (TP16)  
+**Júlia** -> Continua integração backend da tela principal e faz relatório do dia (DW08)  
+**Kauã** -> Finaliza documento README backend (ES17)  
+**Lorenzo** -> Faz autenticação JWT (TP12)  
+**Mariana** -> Finaliza documento README dos endpoints (ES17)  
 
 ---
 
 #### 01/nov
 
+**Beatriz** -> Faz correções de cores dos temas nos avisos e erros (DW09)   
+**Darcy** -> Continua mecanismo de coleta periódica (TP16)  
+**Júlia** -> Finaliza integração backend da tela principal e faz relatório do dia (DW08)  
+**Kauã** -> Faz documento README frontend (ES17)  
+**Lorenzo** -> Implementa validação de login e logout (DW05 e DW06)   
+**Mariana** -> Inicia documento README do database (ES17) 
+
 ---
 
 #### 03/nov
+
+**Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
+**Darcy** -> Finaliza mecanismo de coleta periódica e inicia integração backend tela de ranking (TP16 e DW10)  
+**Júlia** -> Faz relatório e cria documento de nomeação de branches e commits  
+**Kauã** -> Inicia integração backend tela de comparação (DW11)  
+**Lorenzo** -> Inicia implementação tratamento de erros no login (DW05)  
+**Mariana** -> Inicia documento README do database (ES17)  
 
 ---
 
