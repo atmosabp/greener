@@ -1,17 +1,21 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import AppHeader from '../../components/header/AppHeader';
 
 import {
-  MOCK_SERVICES,
+  calculateAverages,
+  calculateMax,
+  fetchServices,
+  formatMetric,
+  formatNumber,
   PERIODS,
-  STATIC_AVERAGES,
 } from './components/comparisonData';
 
 import type {
   Service,
   CompareTarget,
+  Metrics,
 } from './components/comparisonData';
 
 import {
@@ -46,27 +50,84 @@ export default function Comparison({
 }: ComparisonProps) {
   const [period, setPeriod] = useState('today');
 
-  const [order, setOrder] = useState<string[]>(
-    () => MOCK_SERVICES.map((service) => service.id),
-  );
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [order, setOrder] = useState<string[]>([]);
 
   const [selected, setSelected] = useState<Set<string>>(
-    () => new Set(MOCK_SERVICES.map((service) => service.id)),
+    () => new Set(),
   );
 
-  const [referenceId, setReferenceId] = useState<string | null>(
-    'billing-api',
-  );
+  const [referenceId, setReferenceId] = useState<string | null>(null);
 
   const [compareMap, setCompareMap] = useState<
     Record<string, CompareTarget>
   >({});
 
+  /* Buscar os serviços e suas métricas no backend. */
+  useEffect(() => {
+    let ignore = false;
+
+    fetchServices()
+      .then((data) => {
+        if (ignore) return;
+
+        setServices(data);
+        setOrder(data.map((service) => service.id));
+        setSelected(new Set(data.map((service) => service.id)));
+        setReferenceId(data[0]?.id ?? null);
+        setError(null);
+      })
+      .catch((error: unknown) => {
+        if (ignore) return;
+
+        setError(
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível carregar os serviços. Tente novamente mais tarde.',
+        );
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   /* Serviços selecionados na ordem atual. */
   const visible = order
     .filter((id) => selected.has(id))
-    .map((id) => MOCK_SERVICES.find((service) => service.id === id))
+    .map((id) => services.find((service) => service.id === id))
     .filter((service): service is Service => service !== undefined);
+
+  /* Médias dos serviços selecionados e escala dos medidores. */
+  const averages = calculateAverages(visible);
+  const maxConsumo = calculateMax(visible, 'consumo');
+  const maxEmissao = calculateMax(visible, 'emissao');
+
+  const gaugeFill = (value?: number, max?: number) =>
+    value === undefined || !max ? '0' : String((value / max) * 100);
+
+  const referenceService = services.find(
+    (service) => service.id === referenceId,
+  );
+
+  /* Base de comparação de cada cartão: referência ou média. */
+  const baseMetricsFor = (service: Service): Metrics | undefined => {
+    if (service.id === referenceId) return undefined;
+
+    const target = compareMap[service.id] ?? 'reference';
+
+    if (target === 'reference' && referenceService) {
+      return referenceService.metrics;
+    }
+
+    return averages;
+  };
 
   /* Selecionar ou desmarcar serviços. */
   const toggleSelected = (id: string) => {
@@ -146,7 +207,7 @@ export default function Comparison({
             >
               {() => (
                 <ul className="cmp-menu">
-                  {MOCK_SERVICES.map((service) => (
+                  {services.map((service) => (
                     <li key={service.id}>
                       <label>
                         <input
@@ -193,7 +254,7 @@ export default function Comparison({
             type="button"
             className="cmp-averages__help"
             aria-label="Ajuda sobre os indicadores"
-            title="Valores demonstrativos estáticos"
+            title="Média dos serviços selecionados"
           >
             <HelpIcon />
           </button>
@@ -202,39 +263,50 @@ export default function Comparison({
             <div className="cmp-averages__tiles">
               <div className="cmp-avg-tile">
                 <span>Rede</span>
-                <strong>{STATIC_AVERAGES.rede}</strong>
+                <strong>
+                  {formatMetric('rede', averages.rede)}
+                </strong>
               </div>
 
               <div className="cmp-avg-tile">
                 <span>CPU</span>
-                <strong>{STATIC_AVERAGES.cpu}</strong>
+                <strong>
+                  {formatMetric('cpu', averages.cpu)}
+                </strong>
               </div>
 
               <div className="cmp-avg-tile">
                 <span>Armazenamento</span>
                 <strong>
-                  {STATIC_AVERAGES.armazenamento}
+                  {formatMetric(
+                    'armazenamento',
+                    averages.armazenamento,
+                  )}
                 </strong>
               </div>
 
               <div className="cmp-avg-tile">
                 <span>Memória</span>
-                <strong>{STATIC_AVERAGES.memoria}</strong>
+                <strong>
+                  {formatMetric('memoria', averages.memoria)}
+                </strong>
               </div>
             </div>
 
             <Gauge
               title="Consumo energético"
-              value={STATIC_AVERAGES.consumo}
+              value={formatMetric('consumo', averages.consumo)}
               unit=""
-              fill="65"
+              fill={gaugeFill(averages.consumo, maxConsumo)}
+              max={formatNumber(maxConsumo)}
             />
 
             <Gauge
               title="Emissão de CO₂e"
-              value={STATIC_AVERAGES.emissao}
+              value={formatMetric('emissao', averages.emissao)}
               unit=""
-              fill="45"
+              fill={gaugeFill(averages.emissao, maxEmissao)}
+              max={formatNumber(maxEmissao)}
             />
           </div>
         </section>
@@ -292,7 +364,15 @@ export default function Comparison({
           </div>
 
           <div className="cmp-services__scroll">
-            {visible.length === 0 && (
+            {loading && (
+              <p className="cmp-empty">Carregando serviços...</p>
+            )}
+
+            {!loading && error && (
+              <p className="cmp-empty">{error}</p>
+            )}
+
+            {!loading && !error && visible.length === 0 && (
               <p className="cmp-empty">
                 Nenhum serviço selecionado. Escolha ao menos um em
                 “Serviços selecionados”.
@@ -314,6 +394,7 @@ export default function Comparison({
                   referenceId !== null &&
                   referenceId !== service.id
                 }
+                baseMetrics={baseMetricsFor(service)}
                 onMove={(direction) =>
                   move(service.id, direction)
                 }

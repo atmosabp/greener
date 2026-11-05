@@ -72,7 +72,7 @@ export async function getAllServicesMetrics() {
     } catch(error: any){
     }
 
-    service.metrics = {cpu_percent: cpu, memory_gb: memory, disk_gb: disk, network_gb: network, co2e: co2e, kwh: kwh}
+    service.metrics = {cpu_percent: cpu, memory_gb: memory, disk_gb: disk, network_gb: network, co2e: co2e, kwh: kwh, carbon_intensity: carbonIntensity}
   }
 
   if (!result) return null;
