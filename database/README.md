@@ -116,7 +116,7 @@ A tabela services serve para guardar quais são os serviços que já foram salvo
 
 As tabelas `minute_data`, `hour_data`, `day_data` e `month_data` servem para guardar as métricas brutas de cada serviço.  
 Todos os dados vêm das APIs auxiliares **Greener Metrics Aggregator API** e **Greener Carbon Intensity API**. Os dados são inseridos pelo servidor backend da aplicação, por meio de um Worker que funciona a cada minuto.   
-O Worker começa inserindo os dados do serviço na tabela `minute_data`. E um trigger detecta quando o intervalo de inserção atinge uma hora (60 minutos) de dados guardados nessa tabela, e então é feita uma média desses dados e esse valor passa para a tabela `hour_data`. Quando completar um dia a mesma coisa é feita, porém para a tabela `day_data`, e por fim, o mesmo com o `month_data`.   
+O Worker começa inserindo os dados do serviço na tabela `minute_data`. E um trigger detecta quando os dados podem ser comprimidos, e  passa esse valor para a tabela `hour_data` e esse mesmo processo é replicado para as outras.
 Todas elas estão estruturadas da seguinte forma:
 
  - **id:** serial e primary key;
@@ -186,16 +186,11 @@ Todas elas estão estruturadas da seguinte forma:
 
 Os índices são mantidos internamente pelo banco e servem para evitar que ele precise ler uma enorme quantidade de dados repetidamente. Em vez de ler a tabela inteira, ele apenas consulta o índice e lê a respectiva linha na tabela indicada. Eles estão estruturados da seguinte forma:
 
- - **nome:** `idx_<tabela>_services_dt`;
- - **tabela:** minute_data, hour_data, day_data ou month_data (um índice para cada uma);
- - **colunas:** service_id, date_pull;
- - **tipo:** composto (B-tree).
-
 **Exemplo de código SQL:**  
 `create index idx_hour_data_services_dt on hour_data (service_id, date_pull);`
 <br>
 
-**Motivo de ser service_id e date_pull, nessa ordem:**
+**Motivo de ser (service_id e date_pull), nessa ordem:**
 
 A ordem das colunas importa. O `service_id` vem primeiro porque é filtrado por igualdade (queremos um serviço específico), o que já reduz muito a busca. O `date_pull` vem depois porque é filtrado por intervalo ou usado para ordenar, e dentro de cada serviço as datas já ficam em ordem. Por isso, consultas que filtram só por `date_pull`, sem informar o `service_id`, não aproveitam bem esses índices.
 
@@ -205,6 +200,15 @@ A ordem das colunas importa. O `service_id` vem primeiro porque é filtrado por 
 
 Índices ocupam espaço em disco e deixam as escritas um pouco mais lentas, já que o banco precisa atualizá-los a cada insert. Nesse caso o custo compensa, porque as métricas são gravadas de forma simples e periódica, mas lidas com muita frequência por serviço e período.
 
+### Triggers
+
+Os triggers servem para identificar quando os dados de uma tabela podem ser comprimidos para passar a uma outra tabela. A compressão é feita fazendo a média dos dados que estão na tabela.  
+
+**1 - minutes_to_hours:** O trigger é acionado quando o intervalo de 120min de coleta é atingido. Os dados comprimidos são apenas os correspondentes aos primeiros 60min do intervalo, para que seja possível acessar os minutos da hora em que você se encontra.
+
+**2 - hours_to_days:** O trigger é acionado quando o intervalo de 2 dias de coleta é atingido. Os dados comprimidos são apenas os correspondentes aos primeiros 1 dia do intervalo, para que seja possível acessar as horas do dia em que você se encontra.
+
+**3 - days_to_months:** O trigger é acionado quando o intervalo de 2 meses de coleta é atingido. Os dados comprimidos são apenas os correspondentes ao primeiro mês do intervalo, para que seja possível acessar os meses do ano em que você se encontra.
 
 ---
 
