@@ -6,9 +6,11 @@ import {
   ChevronRight,
   Pencil,
   Plus,
-  Trash2,
+  Trash,
 } from "lucide-react";
 import CadHeader from "../../components/header/CadHeader";
+import CadForm from "../../components/form/CadForm";
+import AltForm from "../../components/form/AltForm";
 import "./Admin.css";
 
 interface User {
@@ -62,15 +64,11 @@ function Checkbox({
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        aria-label={label}
         ref={(el) => {
           if (el) el.indeterminate = indeterminate;
         }}
       />
-      <span
-        className={`check-box${indeterminate ? " is-mixed" : ""}`}
-        aria-hidden="true"
-      >
+      <span className={`check-box${indeterminate ? " is-mixed" : ""}`}>
         <Check strokeWidth={3.5} />
       </span>
     </span>
@@ -88,8 +86,7 @@ function EditButton({ name, disabled, onClick }: ActionProps) {
   return (
     <button
       type="button"
-      className="icon-btn icon-btn--edit"
-      aria-label={`Editar ${name}`}
+      className="icon-btn icon-btn-edit"
       disabled={disabled}
       onClick={onClick}
     >
@@ -103,12 +100,11 @@ function DeleteButton({ name, disabled, onClick }: ActionProps) {
   return (
     <button
       type="button"
-      className="icon-btn icon-btn--delete"
-      aria-label={`Excluir ${name}`}
+      className="icon-btn icon-btn-delete"
       disabled={disabled}
       onClick={onClick}
     >
-      <Trash2 />
+      <Trash />
     </button>
   );
 }
@@ -125,7 +121,6 @@ function EmptyState() {
         strokeWidth={1.6}
         strokeLinecap="round"
         strokeLinejoin="round"
-        aria-hidden="true"
       >
         <path d="M12 21v-8" />
         <path d="M12 13c0-4-3-6-7-6 0 4 3 6 7 6z" />
@@ -153,8 +148,10 @@ export default function Admin() {
 
   const [selected, setSelected] = useState<Set<number>>(new Set()); // ids marcados
   const [openRows, setOpenRows] = useState<Set<number>>(new Set()); // linhas abertas no mobile
+  const [openCadModal, setOpenCadModal] = useState<boolean>(false); // abre o modal de cadastro
+  const [openAltModal, setOpenAltModal] = useState<boolean>(false); // abre o modal de alterar user
   const [pageSize, setPageSize] = useState(() =>
-    window.matchMedia("(max-width: 768px)").matches ? 5 : 10,
+    window.matchMedia("(max-width: 480px)").matches ? 5 : 10,
   );
   const [page, setPage] = useState(1);
 
@@ -182,10 +179,14 @@ export default function Admin() {
   };
 
   // TODO: abrir modal de cadastro
-  const addUser = () => console.log("adicionar usuário");
+  const addUser = () => {
+    setOpenCadModal(true);
+  };
 
   // TODO: abrir modal de alteração
-  const editUser = (user: User) => console.log("editar usuário:", user);
+  const editUser = () => {
+    setOpenAltModal(true);
+  };
 
   // TODO: integrar com o back
   const deleteUsers = (ids: number[]) => {
@@ -195,6 +196,12 @@ export default function Admin() {
 
   return (
     <div className="admin-page">
+      {openCadModal && <CadForm onClose={() => setOpenCadModal(false)} />}
+
+      {/* TODO: fazer alteração aqui */}
+      {openAltModal && (
+        <AltForm user={{ name: "bia", email: "bia@gmail.com" }} onClose={() => setOpenAltModal(false)}/>
+      )}
       <CadHeader />
 
       <main className="admin">
@@ -205,7 +212,7 @@ export default function Admin() {
           <p>Crie, altere e exclua usuários de acesso restrito.</p>
         </div>
 
-        <section className="users" aria-labelledby="users-title">
+        <section className="users">
           <div className="toolbar">
             <h2 id="users-title">Usuários</h2>
 
@@ -218,20 +225,14 @@ export default function Admin() {
               <button
                 type="button"
                 className="btn btn-delete"
-                aria-label="Deletar selecionados"
                 disabled={selected.size === 0}
                 onClick={() => deleteUsers([...selected])}
               >
-                <Trash2 />
+                <Trash />
                 <span className="btn-label">Deletar</span>
               </button>
 
-              <button
-                type="button"
-                className="btn btn-add"
-                aria-label="Adicionar usuário"
-                onClick={addUser}
-              >
+              <button type="button" className="btn btn-add" onClick={addUser}>
                 <Plus />
                 <span className="btn-label">Adicionar</span>
               </button>
@@ -239,7 +240,7 @@ export default function Admin() {
           </div>
 
           {/* tabela (desktop) */}
-          <div className="table-card table-card--desktop">
+          <div className="table-card table-card-desktop">
             <table className="table">
               <colgroup>
                 <col style={{ width: "10%" }} />
@@ -287,7 +288,9 @@ export default function Admin() {
                           <div className="cell-id">
                             <Checkbox
                               checked={isSelected}
-                              onChange={() => setSelected(toggle(selected, u.id))}
+                              onChange={() =>
+                                setSelected(toggle(selected, u.id))
+                              }
                               label={`Selecionar ${u.name}`}
                             />
                             <span>{pad(u.id)}</span>
@@ -299,7 +302,7 @@ export default function Admin() {
                           <EditButton
                             name={u.name}
                             disabled={isSelected}
-                            onClick={() => editUser(u)}
+                            onClick={() => editUser()}
                           />
                         </td>
                         <td>
@@ -335,11 +338,6 @@ export default function Admin() {
                         <button
                           type="button"
                           className="m-toggle"
-                          aria-expanded={isOpen}
-                          aria-controls={`m-details-${u.id}`}
-                          aria-label={
-                            isOpen ? "Recolher detalhes" : "Expandir detalhes"
-                          }
                           onClick={() => setOpenRows(toggle(openRows, u.id))}
                         >
                           <ChevronDown />
@@ -374,7 +372,7 @@ export default function Admin() {
                               <EditButton
                                 name={u.name}
                                 disabled={isSelected}
-                                onClick={() => editUser(u)}
+                                onClick={() => editUser()}
                               />
                               <DeleteButton
                                 name={u.name}
@@ -418,25 +416,19 @@ export default function Admin() {
             <div className="pager">
               <button
                 type="button"
-                className="pager-btn pager-btn--prev"
-                aria-label="Página anterior"
+                className="pager-btn pager-btn-prev"
                 disabled={currentPage === 1}
                 onClick={() => setPage(currentPage - 1)}
               >
                 <ChevronLeft />
               </button>
               {/* o key faz o React recriar o elemento e repetir a animação a cada página */}
-              <span
-                className="pager-count"
-                key={currentPage}
-                aria-live="polite"
-              >
+              <span className="pager-count" key={currentPage}>
                 {currentPage}/{totalPages}
               </span>
               <button
                 type="button"
-                className="pager-btn pager-btn--next"
-                aria-label="Próxima página"
+                className="pager-btn pager-btn-next"
                 disabled={currentPage === totalPages}
                 onClick={() => setPage(currentPage + 1)}
               >

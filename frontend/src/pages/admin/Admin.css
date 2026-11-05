@@ -11,7 +11,7 @@
 
     /* curvas das animações -> não vai ficar (odiei)*/
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); */
 
     min-height: 100vh;
     display: flex;
@@ -131,7 +131,7 @@
 .btn svg {
     width: 22px;
     height: 22px;
-    transition: transform 0.4s var(--ease-spring);
+    transition: transform 0.4s ease-in-out;
 }
 
 .btn:hover:not(:disabled) {
@@ -142,13 +142,13 @@
     transform: scale(0.96);
 }
 
-.btn-add:hover:not(:disabled) svg {
+/* .btn-add:hover:not(:disabled) svg {
     transform: rotate(90deg) scale(1.1);
-}
+} */
 
-.btn-delete:hover:not(:disabled) svg {
+/* .btn-delete:hover:not(:disabled) svg {
     animation: wiggle 0.5s ease;
-}
+} */
 
 .btn:disabled {
     background: var(--btn-disabled);
@@ -185,7 +185,7 @@
     transition:
         background-color 0.25s ease,
         border-color 0.25s ease,
-        transform 0.35s var(--ease-spring);
+        transform 0.35s ease-in-out;
 }
 
 /* o "check" é desenhado traço a traço */
@@ -207,7 +207,7 @@
 .check input:checked + .check-box {
     background: var(--primary);
     border-color: var(--primary-dark);
-    animation: pop 0.35s var(--ease-spring);
+    /* animation: pop 0.35s ease-in-out; */
 }
 
 .check input:checked + .check-box svg path {
@@ -308,7 +308,7 @@
     color: var(--primary-darker);
     cursor: pointer;
     transition:
-        transform 0.3s var(--ease-spring),
+        transform 0.3s ease-in-out,
         background-color 0.25s ease,
         opacity 0.3s ease;
 }
@@ -316,7 +316,7 @@
 .icon-btn svg {
     width: 18px;
     height: 18px;
-    transition: transform 0.35s var(--ease-spring);
+    transition: transform 0.35s ease-in-out;
 }
 
 .icon-btn:hover:not(:disabled) {
@@ -324,13 +324,13 @@
     transform: scale(1.12);
 }
 
-.icon-btn--edit:hover:not(:disabled) svg {
+/* .icon-btn-edit:hover:not(:disabled) svg {
     transform: rotate(-14deg);
 }
 
-.icon-btn--delete:hover:not(:disabled) svg {
+.icon-btn-delete:hover:not(:disabled) svg {
     animation: wiggle 0.5s ease;
-}
+} */
 
 .icon-btn:active:not(:disabled) {
     transform: scale(0.92);
@@ -411,7 +411,7 @@
     background: var(--text);
     color: var(--btn-fg);
     cursor: pointer;
-    transition: transform 0.4s var(--ease-spring);
+    transition: transform 0.4s ease-in-out;
 }
 
 .m-toggle svg {
@@ -419,9 +419,9 @@
     height: 22px;
 }
 
-.m-item.is-open .m-toggle {
+/* .m-item.is-open .m-toggle {
     transform: rotate(180deg);
-}
+} */
 
 .m-label,
 .m-row {
@@ -534,7 +534,7 @@
     margin-bottom: 8px;
     color: var(--primary-dark);
     transform-origin: 50% 100%;
-    animation: sway 3.6s ease-in-out infinite;
+    /* animation: sway 3.6s ease-in-out infinite; */
 }
 
 /* Paginação */
@@ -602,7 +602,7 @@
     color: inherit;
     cursor: pointer;
     transition:
-        transform 0.25s var(--ease-spring),
+        transform 0.25s ease-in-out,
         background-color 0.25s ease,
         opacity 0.25s ease;
 }
@@ -637,7 +637,7 @@
     background: var(--complementary);
     text-align: center;
     font-variant-numeric: tabular-nums;
-    animation: tick 0.35s var(--ease-spring);
+    /* animation: tick 0.35s ease-in-out; */
 }
 
 .admin-footer {
@@ -649,8 +649,8 @@
 
 /* Responsivo */
 
-@media (max-width: 768px) {
-    .table-card--desktop {
+@media (max-width: 480px) {
+    .table-card-desktop {
         display: none;
     }
 
@@ -661,6 +661,7 @@
     .toolbar h2 {
         flex-basis: 100%;
         margin: 0;
+        text-align: left;
     }
 
     /* os botões ocupam a linha toda: o total fica na esquerda e os botões na direita */
@@ -694,8 +695,8 @@
     }
 }
 
-/* Keyframes -> NÃO SEI SE VAI FICAR, TESTANDO ANIMAÇÕES PARA O PROJETO*/
-
+/* Keyframes -> NÃO SEI SE VAI FICAR, TESTANDO ANIMAÇÕES PARA O PROJETO -> TIREI PARA MANTER A PADRONIZAÇÂO MAS QUERO IMPLEMENAR*/
+/*
 @keyframes wiggle {
     0%,
     100% {
@@ -751,3 +752,5 @@
         transform: rotate(4deg);
     }
 }
+
+*/
