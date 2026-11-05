@@ -1,6 +1,6 @@
-import { findServices } from "../modules/collections/collections.repository";
+import { findServices,addNewService } from "../modules/collections/collections.repository";
 const serviceApiUrl = "https://metrics.unilaunch.org/services"
-const pullTimer : number = 30000
+const pullTimer : number = 60000
 
 export async function historyWorker() {
     console.log("Worker ativado")
@@ -19,13 +19,15 @@ async function fetchServices() {
     const responseDb = await findServices();
     const responseApi = await fetch(serviceApiUrl)
     const responseApiContent = await responseApi.json()
-    console.log(await responseApiContent)
-    console.log(await responseDb)
+    // console.log(await responseApiContent)
+    // console.log(await responseDb)
     verifyService(responseDb,responseApiContent)
     for (let i of responseDb) {
       fetchMetricsAddHistory(i.id);
     }
-  } catch (e) {}
+  } catch (e:any) {
+    console.error(e.message);
+  }
 }
 
 async function fetchMetricsAddHistory(serviceId: string) {
@@ -38,8 +40,9 @@ async function fetchMetricsAddHistory(serviceId: string) {
         body: JSON.stringify({ serviceId: serviceId }),
       },
     );
-    console.log(result)
-  } catch (e) {}
+  } catch (e:any) {
+    console.error(e.message);
+  }
 }
 
 async function verifyService(dbList:any[],apiList:any[]){
@@ -53,10 +56,10 @@ async function verifyService(dbList:any[],apiList:any[]){
       }
       if(!verifyed){
         try{
-          //faz o insert do serviço
+          addNewService(i.id,i.name)
           fetchMetricsAddHistory(i.id)
-        }catch(e){
-          
+        }catch(e:any){
+          console.error(e.message);
         }
       }
     }
