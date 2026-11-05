@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
+const FRONT_PORT = import.meta.env.FRONT_PORT ?? 3000;
+
 interface ProtectedRouteProps {
     requireAdmin?: boolean;
 }
@@ -26,7 +28,7 @@ export default function ProtectedRoute({
             }
 
             try {
-                const response = await fetch("http://localhost:3002/auth/me", {
+                const response = await fetch(`http://localhost:${FRONT_PORT}/auth/me`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
