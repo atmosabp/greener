@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
-import type { Metrics } from './comparisonData';
+import { carbonLevel, formatNumber } from './comparisonData';
 
 /* ------------------------------------------------------------------ */
 /* Saudação                                                            */
@@ -98,6 +98,46 @@ export function Chevron({
                 strokeLinecap="round"
                 strokeLinejoin="round"
             />
+        </svg>
+    );
+}
+
+export function ArrowIcon({ dir }: { dir: 'up' | 'down' }) {
+    return (
+        <svg
+            className="cmp-arrow"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path
+                d={
+                    dir === 'up'
+                        ? 'M12 20V5M6 11l6-6 6 6'
+                        : 'M12 4v15M6 13l6 6 6-6'
+                }
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
+export function AlertIcon() {
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="11" fill="var(--moss)" />
+            <path
+                d="M12 6.5v7"
+                stroke="var(--bg)"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+            />
+            <circle cx="12" cy="17.5" r="1.4" fill="var(--bg)" />
         </svg>
     );
 }
@@ -216,11 +256,13 @@ export function Gauge({
     value,
     fill,
     unit,
+    max,
 }: {
     title: string;
     value: string;
     fill: string;
     unit: string;
+    max: string;
 }) {
     const arc = 'M 12 80 A 68 68 0 0 1 148 80';
 
@@ -246,7 +288,7 @@ export function Gauge({
 
             <div className="cmp-gauge__scale">
                 <span>0</span>
-                <span>1000</span>
+                <span>{max}</span>
             </div>
 
             <p className="cmp-gauge-card__value">
@@ -260,17 +302,19 @@ export function Gauge({
 /* Cartão de intensidade de carbono                                    */
 /* ------------------------------------------------------------------ */
 
-export function CarbonCard({ metrics }: { metrics: Metrics }) {
+export function CarbonCard({ intensity }: { intensity?: number }) {
+    const level = carbonLevel(intensity);
+
     return (
         <div className="cmp-carbon">
             <p className="cmp-carbon__title">Intensidade de carbono</p>
 
-            <p className="cmp-carbon__level">{metrics.nivelCarbono}</p>
+            <p className="cmp-carbon__level">{level.label}</p>
 
             <div className="cmp-carbon__bar" aria-hidden="true">
                 <span
                     className="cmp-carbon__fill"
-                    style={{ width: metrics.barraCarbono }}
+                    style={{ width: level.bar }}
                 />
 
                 <span className="cmp-carbon__dot cmp-carbon__dot--mid" />
@@ -278,10 +322,47 @@ export function CarbonCard({ metrics }: { metrics: Metrics }) {
             </div>
 
             <p className="cmp-carbon__value">
-                {metrics.intensidade} <small>gCO₂e/kWh</small>
+                {intensity === undefined ? '—' : formatNumber(intensity)}{' '}
+                <small>gCO₂e/kWh</small>
             </p>
         </div>
     );
+}
+
+/* ------------------------------------------------------------------ */
+/* Diferença percentual                                                */
+/* ------------------------------------------------------------------ */
+
+export function Delta({ value }: { value: number }) {
+    const rounded = Math.round(value * 10) / 10;
+
+    if (rounded === 0) {
+        return (
+            <span className="cmp-delta">
+                <span className="cmp-delta__eq">=</span>0%
+            </span>
+        );
+    }
+
+    return (
+        <span className="cmp-delta">
+            <ArrowIcon dir={rounded > 0 ? 'up' : 'down'} />
+            {formatNumber(Math.abs(rounded))}%
+        </span>
+    );
+}
+
+/* Texto para leitores de tela e dica ao passar o mouse. */
+function deltaTitle(delta?: number) {
+    if (delta === undefined) return undefined;
+
+    const rounded = Math.round(delta * 10) / 10;
+
+    if (rounded === 0) return 'Igual à base de comparação';
+
+    return `${formatNumber(Math.abs(rounded))}% ${
+        rounded > 0 ? 'acima' : 'abaixo'
+    } da base de comparação`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -291,14 +372,33 @@ export function CarbonCard({ metrics }: { metrics: Metrics }) {
 export function MetricTile({
     label,
     value,
+    delta,
+    unavailable = false,
 }: {
     label: string;
     value: string;
+    delta?: number;
+    unavailable?: boolean;
 }) {
+    if (unavailable) {
+        return (
+            <div
+                className="cmp-tile cmp-tile--unavailable"
+                title={`${label}: métrica indisponível`}
+            >
+                <span className="cmp-tile__label">Métrica indisponível</span>
+                <AlertIcon />
+            </div>
+        );
+    }
+
     return (
-        <div className="cmp-tile">
+        <div className="cmp-tile" title={deltaTitle(delta) ?? value}>
             <span className="cmp-tile__label">{label}</span>
-            <span className="cmp-tile__value">{value}</span>
+
+            <span className="cmp-tile__value">
+                {delta === undefined ? value : <Delta value={delta} />}
+            </span>
         </div>
     );
 }
@@ -306,13 +406,25 @@ export function MetricTile({
 export function EnergyTile({
     label,
     value,
+    delta,
 }: {
     label: string;
     value: string;
+    delta?: number;
 }) {
+    const rounded =
+        delta === undefined ? undefined : Math.round(delta * 10) / 10;
+
     return (
-        <div className="cmp-energy">
-            <span className="cmp-energy__label">{label}</span>
+        <div className="cmp-energy" title={deltaTitle(delta)}>
+            <span className="cmp-energy__label">
+                {label}
+
+                {rounded !== undefined && rounded !== 0 && (
+                    <ArrowIcon dir={rounded > 0 ? 'up' : 'down'} />
+                )}
+            </span>
+
             <span className="cmp-energy__value">{value}</span>
         </div>
     );
