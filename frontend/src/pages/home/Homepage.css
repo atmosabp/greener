@@ -25,7 +25,7 @@
     max-width: 1700px;
     flex: 1;
     margin: 0 auto;
-    margin-top: 6rem;
+    padding: 112px 0 30px;
 }
 
 /* Introdução */
@@ -49,7 +49,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.9rem;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.15em;
     line-height: 1.5;
@@ -84,21 +84,21 @@
 .intro-copy>p {
     max-width: 560px;
     margin-top: 15px;
-    font-size: 0.9rem;
+    font-size: 13px;
     line-height: 1.8;
     opacity: 0.78;
 }
 
 /* Última atualização */
 
-.homepage .last-update {
+.last-update {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
     min-width: 190px;
     padding-bottom: 4px;
-    font-size: 1rem;
+    font-size: 16px;
 }
 
 .last-update .update-indicator {
@@ -111,7 +111,7 @@
 
 .last-update strong {
     grid-column: 2;
-    font-size: 1rem;
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -154,31 +154,31 @@
 
 .section-kicker {
     color: var(--primary);
-    font-size: 0.9rem;
+    font-size: 12px;
 }
 
 .panel-heading h2,
 .visualization-heading h2 {
     margin-top: 5px;
-    font-size: 1.3rem;
+    font-size: 20px;
     font-weight: 400;
     letter-spacing: -0.035em;
 }
 
 .service-count {
     display: grid;
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 34px;
+    height: 34px;
     place-items: center;
     border: 1px solid color-mix(in srgb, var(--text) 20%, transparent);
     border-radius: 50%;
-    font-size: 0.9rem;
+    font-size: 11px;
     font-variant-numeric: tabular-nums;
 }
 
 .panel-description {
     margin: 10px 0 19px;
-    font-size: 0.9rem;
+    font-size: 12px;
     line-height: 1.7;
     opacity: 0.7;
 }
@@ -188,7 +188,7 @@
 .services-list {
     display: flex;
     flex-direction: column;
-    max-height: 230px;
+    max-height: 340px;
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0;
@@ -199,18 +199,17 @@
 }
 
 .services-list::-webkit-scrollbar {
-    width: 0.6rem;
-    transition: all 0.5s;
+    width: 5px;
 }
 
 .services-list::-webkit-scrollbar-track {
     background: transparent;
-    border-radius: 0.8rem;
+    border-radius: 10px;
 }
 
 .services-list::-webkit-scrollbar-thumb {
     background: var(--primary-dark);
-    border-radius: 0.8rem;
+    border-radius: 10px;
 }
 
 .services-list::-webkit-scrollbar-thumb:hover {
@@ -219,7 +218,7 @@
 
 .services-empty {
     padding: 16px 4px;
-    font-size: 0.9rem;
+    font-size: 12px;
     line-height: 1.6;
     opacity: 0.7;
 }
@@ -264,7 +263,7 @@
     opacity: 0.55;
 }
 
-.homepage .status-dot {
+.status-dot {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -375,7 +374,6 @@
 
 .services-legend {
     margin-top: 21px;
-    bottom: 0;
 }
 
 .legend-title {
@@ -484,7 +482,7 @@
     min-width: 0;
     width: 100%;
     flex-direction: column;
-    justify-content: start;
+    justify-content: center;
 }
 
 .visualization-topline {
@@ -641,12 +639,13 @@
     color: var(--primary-dark);
 }
 
-
-/* ====== RESPONSIVO ====== */
-
 /* Telas grandes */
 
 @media (min-width: 1500px) {
+    .homepage-main {
+        padding-top: 125px;
+    }
+
     .visualization-stage {
         height: 540px;
     }
@@ -712,7 +711,7 @@
         font-size: 12px;
     }
 
-    .homepage .last-update {
+    .last-update {
         align-items: flex-start;
         min-width: 0;
     }
@@ -837,8 +836,7 @@
         display: none;
     }
 
-
-    .homepage .last-update {
+    .last-update {
         display: flex;
         flex-direction: column;
         align-items: center;
