@@ -67,7 +67,7 @@ export default function Ranking() {
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   return (
-    <>
+    <div className="ranking-page">
       <AppHeader />
 
       <main className="ranking-main">
@@ -270,6 +270,6 @@ export default function Ranking() {
           onConfirmHour={calendar.confirmHour}
         />
       )}
-    </>
+    </div>
   );
 }

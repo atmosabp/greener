@@ -1,23 +1,22 @@
-import type { ServiceTypes, MetricsType } from "../types/services-types";
+import type { ServiceTypes, MetricsType, CoordinatesTypes } from "../types/services-types";
+import {findServices} from "../modules/collections/collections.repository"
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 const metricsURL = "https://metrics.unilaunch.org/metrics";
 
-export async function reqServices() {
+export async function reqServices(): Promise<ServiceTypes[]> {
   try {
-    const response = await fetch(serviceURL);
+    const responseDb = await findServices();
 
-    if (response.ok) {
-      const serviceList: ServiceTypes[] = await response.json();
-      var avaliableList = [];
-      for (let i of serviceList) {
-        avaliableList.push(await checkServiceAvailiability(i));
-      }
+    var avaliableList = [];
 
-      return avaliableList;
+    for (let i of responseDb) {
+      avaliableList.push(await checkServiceAvailiability(i));
     }
+
+    return avaliableList;
   } catch (error: any) {
-    throw new Error(error.message || "API não disponível");
+    throw new Error(error.message || "API não disponível.");
   }
 }
 
@@ -25,10 +24,21 @@ export async function checkServiceAvailiability(
   service: ServiceTypes,
 ): Promise<ServiceTypes> {
   try {
-    const response = await fetch(metricsURL + `/${service.id}`);
+    const response = await fetch(`${metricsURL}/${service.id}`);
     const metrics: MetricsType = await response.json();
+
+    const responseApi = await fetch(serviceURL);
+    const data = await responseApi.json();
+
+    for(let i in data){
+      if (service.id == data[i].id){
+        service.location = data[i].location;
+        break;
+      }
+    }
+
     if (response.ok) {
-      service.status = "disponivel";
+      service.status = "active";
     }
 
     if (
@@ -39,21 +49,39 @@ export async function checkServiceAvailiability(
       !metrics.metrics.memory_gb ||
       !metrics.metrics.network_gb
     ) {
-      service.status = "incompleto";
+      service.status = "incomplete";
     }
 
     if (!response.ok) {
-      service.status = "indisponivel";
+      service.status = "inactive";
     }
+    
   } catch (error: any) {
-    service.status = "indisponivel";
+    service.status = "inactive";
   } finally {
     return service;
   }
 }
 
-async function teste() {
-  console.log(await reqServices());
-}
+export async function reqCoordinates(serviceId: string): Promise<CoordinatesTypes> {
+  try {
+    const response = await fetch(`${serviceURL}/${serviceId}`);
 
-// teste();
+    if (!response.ok) {
+      throw new Error(`Erro na requisição de dados`);
+    }
+    const serviceData: ServiceTypes = await response.json();
+
+    const serviceCoordinate = serviceData.location;
+
+    if (!serviceCoordinate?.latitude || !serviceCoordinate?.longitude) {
+      throw new Error(`Não foi possível encontrar as coordenadas`);
+    }
+
+    return serviceCoordinate;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar coordenadas: ${error.message}`, {
+      cause: error,
+    });
+  }
+}
