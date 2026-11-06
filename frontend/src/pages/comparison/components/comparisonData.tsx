@@ -105,6 +105,7 @@ export function formatNumber(value: number) {
     return value.toLocaleString('pt-BR', options);
 }
 
+// metrica sem valor
 export function formatMetric(key: MetricKey, value?: number) {
     if (value === undefined) return '—';
 
