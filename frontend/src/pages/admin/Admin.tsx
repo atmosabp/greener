@@ -240,7 +240,7 @@ export default function Admin() {
           </div>
 
           {/* tabela (desktop) */}
-          <div className="table-card table-card-desktop">
+          {/* <div className="table-card table-card-desktop"> */}
             <table className="table">
               <colgroup>
                 <col style={{ width: "10%" }} />
@@ -318,7 +318,7 @@ export default function Admin() {
                 )}
               </tbody>
             </table>
-          </div>
+          {/* </div> */}
 
           {/* lista expansível (mobile) */}
           <div className="m-card">
