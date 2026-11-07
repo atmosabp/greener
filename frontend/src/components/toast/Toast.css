@@ -28,7 +28,7 @@
 }
 
 .toast.close {
-    animation: disappear 1s  forwards;
+    animation: disappear 1s forwards;
 }
 
 @keyframes disappear {
@@ -105,5 +105,19 @@
         right: 15px;
         width: auto;
         max-width: none;
+    }
+}
+
+.toast-progress {
+    animation: toast-progress 5s linear forwards;
+}
+
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
     }
 }

@@ -149,12 +149,18 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
         throw new Error("INVALID_RESPONSE");
       }
 
-      // Armazena os dados da sessão
       sessionStorage.setItem("token", data.token);
       sessionStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redireciona para a página inicial
-      navigate("/home");
+      onShowToast({
+        icon: "success",
+        title: "Login realizado!",
+        message: "Bem-vindo! Você será redirecionado.",
+      });
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 5000);
 
     } catch (error) {
       console.error("Erro ao realizar login:", error);
