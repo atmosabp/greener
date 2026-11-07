@@ -1,5 +1,4 @@
-
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useMemo, useState, useEffect, type ChangeEvent } from "react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -7,51 +6,82 @@ import RankingCalendar from "./components/rankingCalendar";
 import useRankingCalendar from "./components/useRankingCalendar";
 
 import {
-  initialServices,
   monthNames,
   numberFormatter,
   timeFormatter,
   type RankingMetric,
   type RankingPeriod,
+  type RankingService,
 } from "./components/rankingData";
 
 import "./Ranking.css";
 
 export default function Ranking() {
+  const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
-  const [updateInterval, setUpdateInterval] = useState("5");
+  const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
 
   const calendar = useRankingCalendar();
 
-  const ranking = useMemo(
-    () =>
-      [...initialServices].sort((a, b) =>
-        metric === "energy"
-          ? b.energy - a.energy
-          : b.co2e - a.co2e,
-      ),
-    [metric],
-  );
-
-  function handlePeriodChange(
-    event: ChangeEvent<HTMLSelectElement>,
-  ) {
+  var ranking: RankingService[] | undefined = [];
+  function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
     const nextPeriod = event.target.value as RankingPeriod;
 
     setPeriod(nextPeriod);
     calendar.openCalendar(nextPeriod);
   }
 
-  function handleUpdateIntervalChange(
-    event: ChangeEvent<HTMLSelectElement>,
-  ) {
-    setUpdateInterval(event.target.value);
+  function handleUpdateIntervalChange(new_time: number) {
+    setUpdateInterval(new_time);
+    localStorage.setItem("refresh_interval", String(new_time));
+    window.location.reload();
   }
 
-  function handleRefresh() {
+  async function handleRefresh() {
     setLastUpdate(new Date());
+    await fetchServices();
+  }
+
+  async function fetchServices() {
+    setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
+    
+    var formatedData: RankingService[] = [];
+
+    const port: number = import.meta.env.VITE_PORT || 3000;
+
+    const result = await fetch(
+      `http://localhost:${port}/collections/all-service-data`,
+    );
+    const data = await result.json();
+
+    for (let service of data) {
+      formatedData.push({
+        id: service.id,
+        name: service.name,
+        energy: service.metrics.kwh,
+        co2e: service.metrics.co2e,
+      });
+    }
+
+    setLastUpdate(new Date());
+
+
+    sortRanking(formatedData)
+    // setInitialServices(
+    //   formatedData.sort((a, b) =>
+    //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
+    //   ),
+    // );
+  }
+
+  function sortRanking(data:RankingService[]){
+    setInitialServices(
+      data.sort((a, b) =>
+        metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
+      ),
+    );
   }
 
   const periodLabel: Record<RankingPeriod, string> = {
@@ -65,6 +95,18 @@ export default function Ranking() {
   };
 
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
+
+  useEffect(() => {
+    fetchServices();
+    const fetchTimer = setInterval(
+      fetchServices,
+      (localStorage.getItem("refresh_interval")
+        ? Number(localStorage.getItem("refresh_interval"))
+        : updateInterval) * 1000,
+    );
+
+    return () => clearInterval(fetchTimer);
+  }, []);
 
   return (
     <div className="ranking-page">
@@ -109,7 +151,7 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "energy"}
-                    onClick={() => setMetric("energy")}
+                    onClick={() => {setMetric("energy"); sortRanking(initialServices)}}
                   >
                     Consumo energético
                   </button>
@@ -122,7 +164,7 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "co2e"}
-                    onClick={() => setMetric("co2e")}
+                    onClick={() => {setMetric("co2e"); sortRanking(initialServices)}}
                   >
                     Emissão de CO₂e
                   </button>
@@ -133,21 +175,21 @@ export default function Ranking() {
 
           <section className="ranking-toolbar">
             <div className="ranking-update">
-              <label htmlFor="ranking-update-select">
-                Atualizações:
-              </label>
+              <label htmlFor="ranking-update-select">Atualizações:</label>
 
               <select
                 id="ranking-update-select"
-                value={updateInterval}
-                onChange={handleUpdateIntervalChange}
+                value={Number(updateInterval)}
+                onChange={(event) =>
+                  handleUpdateIntervalChange(Number(event.target.value))
+                }
               >
-                <option value="5">05s</option>
-                <option value="10">10s</option>
-                <option value="15">15s</option>
-                <option value="30">30s</option>
-                <option value="60">60s</option>
-                <option value="120">120s</option>
+                <option value={5}>05s</option>
+                <option value={10}>10s</option>
+                <option value={15}>15s</option>
+                <option value={30}>30s</option>
+                <option value={60}>60s</option>
+                <option value={120}>120s</option>
               </select>
             </div>
 
@@ -205,33 +247,37 @@ export default function Ranking() {
               </thead>
 
               <tbody>
-                {ranking.map((service, index) => (
-                  <tr key={service.id}>
-                    <td>
-                      <span
-                        className={
-                          index < 3
-                            ? `ranking-position ranking-position--${index + 1}`
-                            : "ranking-position"
-                        }
-                      >
-                        #{index + 1}
-                      </span>
-                    </td>
+                {initialServices
+                  ? initialServices.map((service, index) => (
+                      <tr key={service.id}>
+                        <td>
+                          <span
+                            className={
+                              index < 3
+                                ? `ranking-position ranking-position--${index + 1}`
+                                : "ranking-position"
+                            }
+                          >
+                            #{index + 1}
+                          </span>
+                        </td>
 
-                    <td className="ranking-service-name">
-                      {service.name}
-                    </td>
+                        <td className="ranking-service-name">{service.name}</td>
 
-                    <td>
-                      {numberFormatter.format(service.energy)} kWh
-                    </td>
+                        <td>
+                          {numberFormatter.format(service.energy) != "NaN"
+                            ? numberFormatter.format(service.energy)+" kWh"
+                            : "Indisponível"}{" "}
+                        </td>
 
-                    <td>
-                      {numberFormatter.format(service.co2e)} kg CO₂e
-                    </td>
-                  </tr>
-                ))}
+                        <td>
+                          {numberFormatter.format(service.co2e) != "NaN"
+                            ? (numberFormatter.format(service.co2e)+" kg CO₂e")
+                            : "Indisponível"}{" "}
+                        </td>
+                      </tr>
+                    ))
+                  : "não foi possível pegar os serviços"}
               </tbody>
             </table>
           </div>
@@ -243,9 +289,7 @@ export default function Ranking() {
         </section>
       </main>
 
-      <footer className="ranking-footer">
-        Desenvolvido por Atmos © 2026
-      </footer>
+      <footer className="ranking-footer">Desenvolvido por Atmos © 2026</footer>
 
       {calendar.calendarOpen && (
         <RankingCalendar
@@ -261,9 +305,7 @@ export default function Ranking() {
           currentDay={calendar.currentDay}
           calendarDays={calendar.calendarDays}
           onClose={calendar.closeCalendar}
-          onChangeMonth={(direction) =>
-            calendar.changeMonth(direction, period)
-          }
+          onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
           onConfirmDay={calendar.confirmDay}
           onConfirmMonth={calendar.confirmMonth}
           onConfirmYear={calendar.confirmYear}
