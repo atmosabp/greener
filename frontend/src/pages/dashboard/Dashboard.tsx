@@ -4,6 +4,8 @@ import "./Dashboard.css";
 import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
+import Toast from "../../components/toast/Toast";
 // import { Oval } from "react-loader-spinner";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
@@ -133,13 +135,13 @@ export default function Dashboard() {
     }
   }
 
-  function changeInterval(newTime: number): void{
+  function changeInterval(newTime: number): void {
     setUpdateInterval(newTime);
     localStorage.setItem("refresh_interval", String(newTime));
     window.location.reload();
   }
 
-  async function updateMetrics(): Promise<void>{
+  async function updateMetrics(): Promise<void> {
     await getServiceMetrics();
     await getServiceList();
   }
@@ -149,8 +151,13 @@ export default function Dashboard() {
     updateMetrics();
     const fetchData = async () => {
       await updateMetrics();
-    }
-    const fetchTimer = setInterval(fetchData, (localStorage.getItem("refresh_interval") ? Number(localStorage.getItem("refresh_interval")) : updateInterval) * 1000);
+    };
+    const fetchTimer = setInterval(
+      fetchData,
+      (localStorage.getItem("refresh_interval")
+        ? Number(localStorage.getItem("refresh_interval"))
+        : updateInterval) * 1000,
+    );
 
     return () => clearInterval(fetchTimer);
   }, []);
@@ -209,7 +216,9 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-page">
+      <Loading data={serviceList} />
       <AppHeader />
+
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
@@ -231,7 +240,14 @@ export default function Dashboard() {
               <div className="alter-btns">
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
-                  <select name="updates" value={Number(updateInterval)} id="update-select" onChange={(event) => changeInterval(Number(event.target.value))}>
+                  <select
+                    name="updates"
+                    value={Number(updateInterval)}
+                    id="update-select"
+                    onChange={(event) =>
+                      changeInterval(Number(event.target.value))
+                    }
+                  >
                     <option value="5">05s</option>
                     <option value="10">10s</option>
                     <option value="15">15s</option>
@@ -257,7 +273,14 @@ export default function Dashboard() {
               <>
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
-                  <select name="updates" id="update-select" value={Number(updateInterval)} onChange={(event) => changeInterval(Number(event.target.value))}>
+                  <select
+                    name="updates"
+                    id="update-select"
+                    value={Number(updateInterval)}
+                    onChange={(event) =>
+                      changeInterval(Number(event.target.value))
+                    }
+                  >
                     <option value="5">05s</option>
                     <option value="10">10s</option>
                     <option value="15">15s</option>
@@ -497,19 +520,7 @@ export default function Dashboard() {
               >
                 <h3 id="others-title">Outros serviços</h3>
                 <ul>
-                  {loading
-                    ? createServiceList()
-                    : // <Oval
-                      //   height={50}
-                      //   width={50}
-                      //   color="#0bbc32"
-                      //   visible={true}
-                      //   ariaLabel="oval-loading"
-                      //   secondaryColor="#06b3ad"
-                      //   strokeWidth={4}
-                      //   strokeWidthSecondary={4}
-                      // />
-                      createServiceList()}
+                  {createServiceList()}
                 </ul>
               </aside>
             </div>
@@ -518,6 +529,7 @@ export default function Dashboard() {
               O serviço está inativo.
               <br />
               Volte à tela principal e selecione outro serviço.
+              <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." />
             </div>
           )}
         </div>
