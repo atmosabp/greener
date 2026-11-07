@@ -7,12 +7,12 @@ import {
   MOCK_SERVICES,
   PERIODS,
   STATIC_AVERAGES,
-} from './comparisonData';
+} from './components/comparisonData';
 
 import type {
   Service,
   CompareTarget,
-} from './comparisonData';
+} from './components/comparisonData';
 
 import {
   Chevron,
