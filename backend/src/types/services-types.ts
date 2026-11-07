@@ -8,12 +8,12 @@ export interface ServiceTypes {
 }
 
 export interface CoordinatesTypes {
-    region_code?: string;
-    country?: string;
-    region?: string;
-    city?: string;
-    latitude?: number;
-    longitude?: number;
+  region_code?: string;
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type ServiceStatus = "active" | "incomplete" | "inactive";

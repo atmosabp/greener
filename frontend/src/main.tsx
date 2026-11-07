@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Homepage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/:serviceId" element={<Dashboard />} />
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/comparison" element={<Comparison />} />
           <Route path="/admin" element={<Admin />} />

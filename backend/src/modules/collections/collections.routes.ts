@@ -19,8 +19,8 @@ router.get("/get-history", getHistoryController);
 router.post("/add-history", addHistoryController);
 
 // TODO: apenas pega o dado mais recente da api auxiliar e retorna pro frontend (dashboard), sem guardar nada no banco de dados
-// POST localhost:3000/collections/service-metrics
-router.post("/service-metrics", getServiceMetricsController);
+// GET localhost:3000/collections/service-metrics/:serviceId
+router.get("/service-metrics/:serviceId", getServiceMetricsController);
 
 // TODO: rota para retornar todos os serviços e todas as métricas
 // GET localhost:3000/collections/all-service-data
@@ -41,9 +41,6 @@ Cadastro de histórico de um serviço:
 curl -X POST http://localhost:3000/collections/add-history \
   -H "Content-Type: application/json" \
   -d '{"serviceId": "inventory-sync"}'
-
-Ver histórico de um serviço em específico:
-curl -X GET http://localhost:3000/collections/service-history
 
 Ver todo o histórico da data especificada:
 curl -X POST http://localhost:3000/collections/all-service-history \

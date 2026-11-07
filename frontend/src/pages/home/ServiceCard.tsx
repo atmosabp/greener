@@ -8,13 +8,12 @@ const mapStatusColors: Record<Service["status"], string> = {
 };
 
 interface ServiceCardProps {
-  viewType: string;
+  viewType?: string;
   selectedServicePoint: Service;
   onSelectService: (id: string | null) => void;
 }
 
 export default function ServiceCard({
-  viewType,
   selectedServicePoint,
   onSelectService,
 }: ServiceCardProps) {
@@ -113,7 +112,7 @@ export default function ServiceCard({
         </div>
       </div>
 
-      <Link to="/dashboard" className="map-service-details-button">
+      <Link to={`/dashboard/${selectedServicePoint.id}`} className="map-service-details-button">
         Ver detalhes
       </Link>
     </div>
