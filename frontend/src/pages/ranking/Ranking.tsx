@@ -76,12 +76,35 @@ export default function Ranking() {
     // );
   }
 
+  function handleParamChange(param:RankingMetric){
+    console.log("a função ta rodando o param")
+    setMetric(param);
+    sortRanking(initialServices)
+  }
+
   function sortRanking(data:RankingService[]){
+    var key: (x: undefined | number) => undefined | number = x => x
     setInitialServices(
-      data.sort((a, b) =>
-        metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
-      ),
+      data.sort((a, b) => {
+        if(metric === "energy"){
+          const xKey = key(a.energy), yKey = key(b.energy);
+          if(typeof xKey === 'undefined') {
+              return typeof yKey === 'string' ? 0 : 1;
+          } else {
+              return typeof yKey === 'string' ? -1 : yKey! - xKey!;
+          }
+        }else{
+          const xKey = key(a.co2e), yKey = key(b.co2e);
+          if(typeof xKey === 'undefined') {
+              return typeof yKey === 'string' ? 0 : 1;
+          } else {
+              return typeof yKey === 'string' ? -1 : yKey! - xKey!;
+          }
+        } 
+  }),
     );
+    console.log("a função ta rodando sort")
+    
   }
 
   const periodLabel: Record<RankingPeriod, string> = {
@@ -151,7 +174,7 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "energy"}
-                    onClick={() => {setMetric("energy"); sortRanking(initialServices)}}
+                    onClick={() => {handleParamChange("energy")}}
                   >
                     Consumo energético
                   </button>
@@ -164,7 +187,7 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "co2e"}
-                    onClick={() => {setMetric("co2e"); sortRanking(initialServices)}}
+                    onClick={() => {handleParamChange("co2e")}}
                   >
                     Emissão de CO₂e
                   </button>
@@ -284,7 +307,7 @@ export default function Ranking() {
 
           <div className="ranking-table-caption">
             <span>Período selecionado: {periodLabel[period]}</span>
-            <span>{ranking.length} serviços demonstrativos</span>
+            <span>{ranking.length} serviços encontrados</span>
           </div>
         </section>
       </main>
