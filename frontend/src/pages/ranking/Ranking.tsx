@@ -25,7 +25,7 @@ export default function Ranking() {
 
   const calendar = useRankingCalendar();
 
-  var ranking : RankingService[] | undefined= []
+  var ranking: RankingService[] | undefined = [];
   function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
     const nextPeriod = event.target.value as RankingPeriod;
 
@@ -33,8 +33,7 @@ export default function Ranking() {
     calendar.openCalendar(nextPeriod);
   }
 
-
-  function handleUpdateIntervalChange(new_time:number) {
+  function handleUpdateIntervalChange(new_time: number) {
     setUpdateInterval(new_time);
     localStorage.setItem("refresh_interval", String(new_time));
     window.location.reload();
@@ -47,11 +46,13 @@ export default function Ranking() {
 
   async function fetchServices() {
     setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
-    setLastUpdate(new Date())
+    
     var formatedData: RankingService[] = [];
 
+    const port: number = import.meta.env.VITE_PORT || 3000;
+
     const result = await fetch(
-      "http://localhost:3000/collections/all-service-data",
+      `http://localhost:${port}/collections/all-service-data`,
     );
     const data = await result.json();
 
@@ -63,9 +64,24 @@ export default function Ranking() {
         co2e: service.metrics.co2e,
       });
     }
- 
-      setInitialServices(formatedData.sort((a, b) =>
-       metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,));
+
+    setLastUpdate(new Date());
+
+
+    sortRanking(formatedData)
+    // setInitialServices(
+    //   formatedData.sort((a, b) =>
+    //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
+    //   ),
+    // );
+  }
+
+  function sortRanking(data:RankingService[]){
+    setInitialServices(
+      data.sort((a, b) =>
+        metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
+      ),
+    );
   }
 
   const periodLabel: Record<RankingPeriod, string> = {
@@ -82,7 +98,12 @@ export default function Ranking() {
 
   useEffect(() => {
     fetchServices();
-    const fetchTimer = setInterval(fetchServices, (localStorage.getItem("refresh_interval") ? Number(localStorage.getItem("refresh_interval")) : updateInterval) * 1000);;
+    const fetchTimer = setInterval(
+      fetchServices,
+      (localStorage.getItem("refresh_interval")
+        ? Number(localStorage.getItem("refresh_interval"))
+        : updateInterval) * 1000,
+    );
 
     return () => clearInterval(fetchTimer);
   }, []);
@@ -130,7 +151,7 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "energy"}
-                    onClick={() => setMetric("energy")}
+                    onClick={() => {setMetric("energy"); sortRanking(initialServices)}}
                   >
                     Consumo energético
                   </button>
@@ -143,7 +164,7 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "co2e"}
-                    onClick={() => setMetric("co2e")}
+                    onClick={() => {setMetric("co2e"); sortRanking(initialServices)}}
                   >
                     Emissão de CO₂e
                   </button>
@@ -159,7 +180,9 @@ export default function Ranking() {
               <select
                 id="ranking-update-select"
                 value={Number(updateInterval)}
-                onChange={(event) => handleUpdateIntervalChange(Number(event.target.value))}
+                onChange={(event) =>
+                  handleUpdateIntervalChange(Number(event.target.value))
+                }
               >
                 <option value={5}>05s</option>
                 <option value={10}>10s</option>
@@ -224,29 +247,37 @@ export default function Ranking() {
               </thead>
 
               <tbody>
-                {initialServices ? initialServices.map((service, index) => (
-                  <tr key={service.id}>
-                    <td>
-                      <span
-                        className={
-                          index < 3
-                            ? `ranking-position ranking-position--${index + 1}`
-                            : "ranking-position"
-                        }
-                      >
-                        #{index + 1}
-                      </span>
-                    </td>
+                {initialServices
+                  ? initialServices.map((service, index) => (
+                      <tr key={service.id}>
+                        <td>
+                          <span
+                            className={
+                              index < 3
+                                ? `ranking-position ranking-position--${index + 1}`
+                                : "ranking-position"
+                            }
+                          >
+                            #{index + 1}
+                          </span>
+                        </td>
 
-                    <td className="ranking-service-name">{service.name}</td>
+                        <td className="ranking-service-name">{service.name}</td>
 
-                    <td>{(numberFormatter.format(service.energy) != "NaN" )? numberFormatter.format(service.energy) :  "Indisponível"} kWh</td>
+                        <td>
+                          {numberFormatter.format(service.energy) != "NaN"
+                            ? numberFormatter.format(service.energy)+" kWh"
+                            : "Indisponível"}{" "}
+                        </td>
 
-                    <td>
-                      {(numberFormatter.format(service.co2e) != "NaN")? numberFormatter.format(service.co2e) : "Indisponível"} kg CO₂e
-                    </td>
-                  </tr>
-                )) : "não foi possível pegar os serviços"}
+                        <td>
+                          {numberFormatter.format(service.co2e) != "NaN"
+                            ? (numberFormatter.format(service.co2e)+" kg CO₂e")
+                            : "Indisponível"}{" "}
+                        </td>
+                      </tr>
+                    ))
+                  : "não foi possível pegar os serviços"}
               </tbody>
             </table>
           </div>

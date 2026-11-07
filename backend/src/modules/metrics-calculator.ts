@@ -34,7 +34,7 @@ export class MetricsCalculator {
       !this.metrics.metrics?.disk_gb ||
       !this.metrics.metrics?.network_gb
     ) {
-      throw new Error("Métricas insuficientes para cálculo do KWh.");
+      console.log("Métricas insuficientes para cálculo do KWh.");
     }
     this.W =
       this.metrics.metrics?.cpu_percent! +
@@ -55,7 +55,7 @@ export class MetricsCalculator {
     let Kwhconf: number = this.KWh ?? this.calculateKWh();
 
     if (!Kwhconf || !this.metrics.carbon_intensity_gco2e_per_kwh) {
-      throw new Error("Métricas insuficientes para cálculo do CO2e.");
+      console.log("Métricas insuficientes para cálculo do CO2e.");
     }
 
     this.CO2e = Kwhconf * this.metrics.carbon_intensity_gco2e_per_kwh!;

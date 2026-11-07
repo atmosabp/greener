@@ -55,6 +55,7 @@ services:
       - "${FRONT_PORT}:5173"
     environment:
       BACKEND_PORT: ${PORT}
+      VITE_PORT: ${VITE_PORT}
     depends_on:
       backend:
         condition: service_healthy
