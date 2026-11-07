@@ -98,16 +98,18 @@ async function insertMinuteHistory(
 // Funções que ainda serão feitas ==========
 
 export async function addHourHistory(datePull: any) {
-  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = $1`, [
-    datePull,
-  ]);
+  const result = await pool.query(
+    `SELECT FROM hour_data WHERE date_pull = $1`,
+    [datePull],
+  );
   return result.rows[0] || null;
 }
 
 async function insertHourHistory(datePull: any) {
-  const result = await pool.query(`SELECT FROM hour_data WHERE date_pull = $1`, [
-    datePull,
-  ]);
+  const result = await pool.query(
+    `SELECT FROM hour_data WHERE date_pull = $1`,
+    [datePull],
+  );
   return result.rows[0] || null;
 }
 
