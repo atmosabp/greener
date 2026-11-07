@@ -1,14 +1,29 @@
+import { useEffect, useState } from "react";
 import type { ToastProps } from "../../types/toast";
 import { X, Check } from "lucide-react";
 import "./Toast.css";
-import { useState } from "react";
 
-export default function Toast({ icon, title, message, onClose }: ToastProps) {
+export default function Toast({
+  icon,
+  title,
+  message,
+  onClose,
+}: ToastProps) {
   const [open, setOpen] = useState(true);
 
   const handleCancel = () => {
     setOpen(false);
+    onClose?.();
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleCancel();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div
       className={`toast toast--${icon} ${!open ? "close" : ""}`}

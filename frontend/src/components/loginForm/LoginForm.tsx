@@ -1,18 +1,25 @@
 
 import { Eye, EyeClosed } from "lucide-react";
-import "./LoginForm.css";
 import { useState } from "react";
-import { type ErrorsLogin } from "../../types/login";
 import { useNavigate } from "react-router-dom";
+import "./LoginForm.css";
 
-export default function LoginForm() {
-  // Variáveis
+import type { ErrorsLogin } from "../../types/login";
+import type { ToastProps } from "../../types/toast";
+
+const API_URL = import.meta.env.VITE_PORT;
+
+interface LoginFormProps {
+  onShowToast: (toast: ToastProps) => void;
+}
+
+export default function LoginForm({ onShowToast }: LoginFormProps) {
+  // Estados
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<ErrorsLogin>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
 
   const navigate = useNavigate();
 
@@ -20,8 +27,9 @@ export default function LoginForm() {
   const validateEmail = (value: string) => {
     if (!value.trim()) return "Este campo é obrigatório*";
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       return "Digite um e-mail válido*";
+    }
 
     return undefined;
   };
@@ -33,11 +41,10 @@ export default function LoginForm() {
     return undefined;
   };
 
-  // Função do login
+  // Função de login
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Evita múltiplas requisições simultâneas
     if (isLoading) return;
 
     // Validação dos campos
@@ -47,15 +54,20 @@ export default function LoginForm() {
     };
 
     setErrors(newErrors);
-    setApiError("");
 
-    // Impede o envio se houver erros
-    if (newErrors.email || newErrors.password) return;
+    if (newErrors.email || newErrors.password) {
+      onShowToast({
+        icon: "error",
+        title: "Dados obrigatórios",
+        message: "Preencha corretamente todos os campos para continuar.",
+      });
+      return;
+    }
 
     try {
       setIsLoading(true);
 
-      const response = await fetch("http://localhost:3002/auth/login", {
+      const response = await fetch(`http://localhost:${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +78,7 @@ export default function LoginForm() {
         }),
       });
 
-      // Verifica se a resposta da API é um JSON válido
+      // Verifica se a resposta é um JSON válido
       let data;
 
       try {
@@ -75,56 +87,70 @@ export default function LoginForm() {
         throw new Error("INVALID_RESPONSE");
       }
 
-      // Tratamento dos erros retornados pelo servidor
+      // Tratamento dos erros HTTP
       if (!response.ok) {
         switch (response.status) {
           case 400:
-            setApiError("Verifique os dados informados.");
+            onShowToast({
+              icon: "error",
+              title: "Dados incorretos",
+              message: "Verifique os dados informados.",
+            });
             break;
 
           case 401:
-            setApiError("E-mail ou senha incorretos.");
+            onShowToast({
+              icon: "error",
+              title: "Dados incorretos",
+              message: "E-mail ou senha incorretos.",
+            });
             break;
 
           case 403:
-            setApiError(
-              "Você não tem permissão para acessar esta plataforma."
-            );
+            onShowToast({
+              icon: "error",
+              title: "Acesso negado",
+              message: "Você não tem permissão para acessar esta plataforma.",
+            });
             break;
 
           case 429:
-            setApiError(
-              "Muitas tentativas de login. Aguarde alguns minutos."
-            );
+            onShowToast({
+              icon: "error",
+              title: "Muitas tentativas",
+              message: "Aguarde alguns minutos antes de tentar novamente.",
+            });
             break;
 
           case 500:
           case 502:
           case 503:
           case 504:
-            setApiError(
-              "O servidor está indisponível. Tente novamente mais tarde."
-            );
+            onShowToast({
+              icon: "error",
+              title: "Servidor indisponível",
+              message: "Tente novamente mais tarde.",
+            });
             break;
 
           default:
-            setApiError(
-              data?.message || "Não foi possível realizar o login."
-            );
+            onShowToast({
+              icon: "error",
+              title: "Erro ao realizar login",
+              message: data?.message || "Não foi possível realizar o login.",
+            });
         }
 
         return;
       }
 
-      // Verifica se o servidor retornou os dados necessários
+      // Verifica os dados recebidos
       if (!data?.token || !data?.user) {
         throw new Error("INVALID_RESPONSE");
       }
 
-      // Armazena o token JWT
+      // Armazena os dados da sessão
       sessionStorage.setItem("token", data.token);
-
-      // Armazena os dados do usuário
       sessionStorage.setItem("user", JSON.stringify(data.user));
 
       // Redireciona para a página inicial
@@ -137,13 +163,17 @@ export default function LoginForm() {
         error instanceof Error &&
         error.message === "INVALID_RESPONSE"
       ) {
-        setApiError(
-          "O servidor retornou uma resposta inválida. Tente novamente."
-        );
+        onShowToast({
+          icon: "error",
+          title: "Resposta inválida",
+          message: "O servidor retornou uma resposta inválida. Tente novamente.",
+        });
       } else {
-        setApiError(
-          "Não foi possível conectar ao servidor. Verifique sua conexão."
-        );
+        onShowToast({
+          icon: "error",
+          title: "Falha na conexão",
+          message: "Não foi possível conectar ao servidor. Verifique sua conexão.",
+        });
       }
 
     } finally {
@@ -158,14 +188,8 @@ export default function LoginForm() {
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="email" title="Campo obrigatório">
-            {errors.email ? "E-mail" : "E-mail*"}
+            E-mail*
           </label>
-
-          {errors.email && (
-            <span id="email-error" className="error-msg">
-              {errors.email}
-            </span>
-          )}
         </div>
 
         <input
@@ -175,15 +199,12 @@ export default function LoginForm() {
           value={email}
           autoComplete="email"
           aria-invalid={!!errors.email}
-          aria-describedby={errors.email ? "email-error" : undefined}
           onChange={(e) => {
             setEmail(e.target.value);
 
             if (errors.email) {
               setErrors((p) => ({ ...p, email: undefined }));
             }
-
-            if (apiError) setApiError("");
           }}
           onBlur={() =>
             setErrors((p) => ({
@@ -199,14 +220,8 @@ export default function LoginForm() {
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="password" title="Campo obrigatório">
-            {errors.password ? "Senha" : "Senha*"}
+            Senha*
           </label>
-
-          {errors.password && (
-            <span id="password-error" className="error-msg">
-              {errors.password}
-            </span>
-          )}
         </div>
 
         <div className="password-input">
@@ -217,17 +232,12 @@ export default function LoginForm() {
             value={password}
             autoComplete="current-password"
             aria-invalid={!!errors.password}
-            aria-describedby={
-              errors.password ? "password-error" : undefined
-            }
             onChange={(e) => {
               setPassword(e.target.value);
 
               if (errors.password) {
                 setErrors((p) => ({ ...p, password: undefined }));
               }
-
-              if (apiError) setApiError("");
             }}
             onBlur={() =>
               setErrors((p) => ({
@@ -241,9 +251,7 @@ export default function LoginForm() {
           <button
             type="button"
             className="btn-eye"
-            aria-label={
-              showPassword ? "Ocultar senha" : "Mostrar senha"
-            }
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             onMouseDown={() => setShowPassword(true)}
             onMouseUp={() => setShowPassword(false)}
             onMouseLeave={() => setShowPassword(false)}
@@ -256,22 +264,15 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {/* Link para recuperação de senha */}
+      {/* Recuperação de senha */}
       <div className="form-link password">
         <a href="#" className="forgotten-password">
           Esqueci minha senha
         </a>
       </div>
 
-      {/* Mensagem de erro da API */}
+      {/* Botão de login */}
       <div className="form-link">
-        {apiError && (
-          <p className="error-msg" role="alert">
-            {apiError}
-          </p>
-        )}
-
-        {/* Botão de login */}
         <button
           type="submit"
           className="btn-login"

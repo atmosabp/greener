@@ -11,9 +11,11 @@ import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
 import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
+import type { ToastProps } from "../../types/toast";
 import Warning from "../../components/warning/Warning";
 
 export default function Login() {
+  const [toast, setToast] = useState<ToastProps | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
@@ -33,12 +35,15 @@ export default function Login() {
     <>
       {/*Lógica de isLoading aqui  */}
       {/* <Loading /> */}
-      {/* <Toast icon="" title="" message="" /> */}
       {/* <Warning /> */}
-      {/* Lógica de success ou error  */}
-      {/* <Toast icon="success" title="oi" message="teste teste"/> */}
       {/* Lógica para modal de tem certeza? */}
-     {/* <Warning variant="logout" /> */}
+      {/* <Warning variant="logout" /> */}
+      {toast && (
+        <Toast
+          {...toast}
+          onClose={() => setToast(null)}
+        />
+      )}
       <header>
         <div className="header-btns">
           <Link to="/" className="btn-back">
@@ -57,7 +62,7 @@ export default function Login() {
       <main className="login">
         <img src={logoFull} alt="Logo Greener" className="logo" />
         <span>Faça login com seu e-mail corporativo.</span>
-        <LoginForm />
+        <LoginForm onShowToast={setToast} />
         <div className="info-txt">
           <div className="safe-warning">
             <ShieldCheck fill="var(--primary-dark)" />

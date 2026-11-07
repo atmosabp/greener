@@ -1,39 +1,37 @@
-import express from 'express';
 
+import express from "express";
 import cors from "cors";
 
 import { router } from "./modules";
 
-const FRONT_PORT = Number(process.env.FRONT_PORT ?? 3000);
+const FRONT_PORT = Number(process.env.FRONT_PORT ?? 8080);
 
 export const app = express();
 
-app.use(cors({
-    origin: `http://localhost:${FRONT_PORT}`
-}));
+const allowedOrigins = [
+  `http://localhost:${FRONT_PORT}`,
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Permite requisições sem origem ou origens autorizadas
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Origem não permitida pelo CORS."));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:8080'
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // permite requisições sem origem (terminal) ou as que estão na lista
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Caminho bloqueado pelo CORS.'));
-    }
-  },
-  credentials: true
-}));
-
 // localhost:3000/health
 app.get("/health", (_req, res) => {
-    res.json({ status: "ok" });
+  res.json({ status: "ok" });
 });
 
 app.use("/", router);
