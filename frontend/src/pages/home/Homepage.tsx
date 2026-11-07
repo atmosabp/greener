@@ -26,8 +26,8 @@ export interface Service {
     memory_gb?: number;
     disk_gb?: number;
     network_gb?: number;
-    co2e?: number;
-    kwh?: number;
+    co2e?: number | undefined;
+    kwh?: number | undefined;
   };
   status: ServiceStatus;
 }
@@ -57,30 +57,39 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
     const result = await fetch(
       `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
     );
-    const data = await result.json();
+    const data: Service[] = await result.json();
     setTimeUpdated(new Date().toLocaleString());
     setServices(data);
   }
 
   useEffect(() => {
-    updateServices();
-    // multiplica [tempo_segundo] x 1200 que dá o tempo em milisegundos, mais uma margem de erro de 200 milisegundos
-    const fetchTimer = setInterval(updateServices, updateTime * 1200);
+    const fetchData = async () => {
+      await updateServices();
+    };
+
+    fetchData();
+
+    const fetchTimer = setInterval(
+      fetchData,
+      localStorage.getItem("refresh_interval")
+        ? Number(localStorage.getItem("refresh_interval")) * 1000
+        : updateTime * 1000,
+    );
 
     return () => clearInterval(fetchTimer);
   }, []);
 
-  const activeCount = services.filter(
-    (service) => service.status === "active",
-  ).length;
+  const activeCount = services
+    ? services.filter((service) => service.status === "active").length
+    : 0;
 
-  const incompleteCount = services.filter(
-    (service) => service.status === "incomplete",
-  ).length;
+  const incompleteCount = services
+    ? services.filter((service) => service.status === "incomplete").length
+    : 0;
 
-  const inactiveCount = services.filter(
-    (service) => service.status === "inactive",
-  ).length;
+  const inactiveCount = services
+    ? services.filter((service) => service.status === "inactive").length
+    : 0;
 
   return (
     <div className="homepage">

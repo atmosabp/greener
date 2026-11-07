@@ -4,7 +4,6 @@ import {
 } from "../../integrations/carbon-api";
 import {
   reqInterval,
-  reqMetrics,
   reqMetricsCPU,
   reqMetricsDisk,
   reqMetricsMemory,
@@ -39,38 +38,44 @@ export async function addHistory(datePull: any) {
 }
 
 export async function getServiceMetrics(serviceId: string) {
-  const service = (await reqServices()).find((value) => value.id == serviceId);
-  const cpu = await reqMetricsCPU(serviceId);
-  const memory = await reqMetricsMemory(serviceId);
-  const collectionIntervalSeconds = await reqInterval(serviceId);
-  const carbonIntensity = await reqCarbonValue(serviceId);
-  const renewablePercent = await reqRenewablePercent(serviceId);
-  const disk = await reqMetricsDisk(serviceId);
-  const network = await reqMetricsNetwork(serviceId);
-
-  const metricsCalculator = new MetricsCalculator({
-    collection_interval_seconds: collectionIntervalSeconds,
-    metrics: {
-      cpu_percent: cpu,
-      memory_gb: memory,
-      disk_gb: disk,
-      network_gb: network,
-    },
-    carbon_intensity_gco2e_per_kwh: carbonIntensity,
-    renewable_share_percent: renewablePercent,
-  });
-
-  let kwh;
-  let co2e;
+  let cpu,
+    memory,
+    collectionIntervalSeconds,
+    carbonIntensity,
+    renewablePercent,
+    disk,
+    network,
+    kwh,
+    co2e: number | undefined = undefined;
+  let service: ServiceTypes | undefined = undefined;
 
   try {
+    service = (await reqServices()).find((value) => value.id == serviceId);
+
+    cpu = await reqMetricsCPU(serviceId);
+    memory = await reqMetricsMemory(serviceId);
+    collectionIntervalSeconds = await reqInterval(serviceId);
+    carbonIntensity = await reqCarbonValue(serviceId);
+    renewablePercent = await reqRenewablePercent(serviceId);
+    disk = await reqMetricsDisk(serviceId);
+    network = await reqMetricsNetwork(serviceId);
+
+    const metricsCalculator = new MetricsCalculator({
+      collection_interval_seconds: collectionIntervalSeconds,
+      metrics: {
+        cpu_percent: cpu,
+        memory_gb: memory,
+        disk_gb: disk,
+        network_gb: network,
+      },
+      carbon_intensity_gco2e_per_kwh: carbonIntensity,
+      renewable_share_percent: renewablePercent,
+    });
+
     kwh = metricsCalculator.calculateKWh() || undefined;
     co2e = metricsCalculator.calculateCO2e() || undefined;
   } catch (error: any) {
-    console.log(
-      "Ocorreu um erro ao calcular as métricas de KWh e CO2e. Erro: ",
-      error.message,
-    );
+    console.error(error.message);
   }
 
   const metrics = {
@@ -97,55 +102,63 @@ export async function getServiceMetrics(serviceId: string) {
 }
 
 export async function getAllServicesMetrics() {
-  const result = await reqServices();
+  let result: ServiceTypes[] | undefined = undefined;
+  let fetchedServices: any;
 
-  for (let service of result) {
-    const cpu = await reqMetricsCPU(service.id!);
-    const memory = await reqMetricsMemory(service.id!);
-    const collectionIntervalSeconds = await reqInterval(service.id!);
-    const carbonIntensity = await reqCarbonValue(service.id!);
-    const renewablePercent = await reqRenewablePercent(service.id!);
-    const disk = await reqMetricsDisk(service.id!);
-    const network = await reqMetricsNetwork(service.id!);
+  try {
+    result = await reqServices();
 
-    const metricsCalculator = new MetricsCalculator({
-      collection_interval_seconds: collectionIntervalSeconds,
-      metrics: {
-        cpu_percent: cpu,
-        memory_gb: memory,
-        disk_gb: disk,
-        network_gb: network,
-      },
-      carbon_intensity_gco2e_per_kwh: carbonIntensity,
-      renewable_share_percent: renewablePercent,
-    });
+    if (!result) return null;
 
-    let kwh;
-    let co2e;
+    fetchedServices = await Promise.all(
+      result.map(async (service) => {
+        const id = service.id!;
 
-    try {
-      kwh = metricsCalculator.calculateKWh() || undefined;
-      co2e = metricsCalculator.calculateCO2e() || undefined;
-    } catch (error: any) {
-      console.log(
-        "Ocorreu um erro ao calcular as métricas de KWh e CO2e. Erro: ",
-        error.message,
-      );
-    }
+        try {
+          const [cpu, memory, interval, carbon, renewable, disk, network] =
+            await Promise.all([
+              reqMetricsCPU(id),
+              reqMetricsMemory(id),
+              reqInterval(id),
+              reqCarbonValue(id),
+              reqRenewablePercent(id),
+              reqMetricsDisk(id),
+              reqMetricsNetwork(id),
+            ]);
 
-    service.metrics = {
-      cpu_percent: cpu,
-      memory_gb: memory,
-      disk_gb: disk,
-      network_gb: network,
-      co2e: co2e,
-      kwh: kwh,
-    };
+          const calc = new MetricsCalculator({
+            collection_interval_seconds: interval,
+            metrics: {
+              cpu_percent: cpu,
+              memory_gb: memory,
+              disk_gb: disk,
+              network_gb: network,
+            },
+            carbon_intensity_gco2e_per_kwh: carbon,
+            renewable_share_percent: renewable,
+          });
+
+          service.metrics = {
+            cpu_percent: cpu,
+            memory_gb: memory,
+            disk_gb: disk,
+            network_gb: network,
+            co2e: calc.calculateCO2e() || undefined,
+            kwh: calc.calculateKWh() || undefined,
+          };
+        } catch (e: any) {
+          console.error(`Falha no serviço ${id}. Erro:`, e.message);
+          service.metrics = {};
+        }
+
+        return service;
+      }),
+    );
+  } catch (e: any) {
+    // console.error(e.message);
   }
 
-  if (!result) return null;
-
-  return result;
+  return fetchedServices;
 }
 
 export async function searchAllHistory() {
