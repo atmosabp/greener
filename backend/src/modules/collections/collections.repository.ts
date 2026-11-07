@@ -10,7 +10,7 @@ import {
 import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-api";
 import {differenceInDays, differenceInHours, differenceInMonths } from 'date-fns';
 
-export async function addMinuteHistory(datePull: Date, serviceId: string) {
+export async function addMinuteHistory( serviceId: string) {
   const client = await pool.connect();
 
   const collectionIntervalSeconds = (await reqInterval(serviceId));
@@ -42,7 +42,6 @@ export async function addMinuteHistory(datePull: Date, serviceId: string) {
     await client.query("BEGIN");
     const result = await insertMinuteHistory(
       client,
-      datePull,
       serviceId,
       metrics,
       kwh,
@@ -59,29 +58,60 @@ export async function addMinuteHistory(datePull: Date, serviceId: string) {
   }
 }
 
+export async function addNewService(serviceId:string,name:string){
+  const client = await pool.connect();
+     try {
+    await client.query("BEGIN");
+    const result = await insertService(
+      serviceId,
+      name,
+      client
+    );
+
+    await client.query("COMMIT");
+    return result;
+  } catch (error: any) {
+    if (client) await client.query("ROLLBACK");
+    throw new Error(error.message || "Não foi possível registrar o novo serviço.");
+  } finally{
+    await client.release();
+  }
+}
+
+async function insertService(serviceId:string,name:string, client:any){
+  const result = await client.query(
+      `INSERT INTO services (id,name,max_emited,min_emited) VALUES
+      ($1,$2,0, 99999)
+    RETURNING id,name`,
+    [serviceId,
+      name
+    ]
+  );
+  return result.rows[0] || null;
+
+}
+
 async function insertMinuteHistory(
   client: any,
-  datePull: any,
   serviceId: string,
   metrics: any,
   kwh: number,
   co2e: number,
 ) {
   const result = await client.query(
-    `INSERT INTO minute_data (date_pull, service_id, cpu_percentage, disk_gb, memory_gb, network_gb, kwh, co2e, renewable_percent)
+    `INSERT INTO minute_data ( service_id, cpu_percentage, disk_gb, memory_gb, network_gb, kwh, co2e, renewable_percent)
         VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id, date_pull, service_id, cpu_percentage, disk_gb, memory_gb, network_gb, kwh, co2e, renewable_percent`,
     [
-      datePull,
-      serviceId,
-      Number(metrics.cpu),
-      Number(metrics.disk),
-      Number(metrics.memory),
-      Number(metrics.network),
-      kwh,
-      co2e,
-      Number(metrics.renewablePercent),
+      serviceId  ,
+      (Number(metrics.cpu)) ? Number(metrics.cpu) : "null",
+      (Number(metrics.disk)) ?  Number(metrics.disk) : "null",
+      (Number(metrics.memory)) ? Number(metrics.memory) : "null",
+      (Number(metrics.network)) ? Number(metrics.network) : "null",
+      (kwh) ? kwh : "null",
+      (co2e) ? co2e : "null",
+      (Number(metrics.renewablePercent)) ? Number(metrics.renewablePercent) : "null",
     ],
   );
 
@@ -95,7 +125,7 @@ async function insertMinuteHistory(
 
 export async function findHistory() {
   const result = await pool.query(
-    `SELECT * FROM minute_data UNION hour_data UNION month_data`
+    `SELECT * FROM minute_data where service_id = 'billing-api'`
   );
 
   return result.rows || [];
