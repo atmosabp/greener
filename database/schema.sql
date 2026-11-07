@@ -12,7 +12,8 @@ create table if not exists services(
 	id varchar(100) primary key,
 	name varchar(100),
 	max_emitted float,
-	min_emitted float
+	min_emitted float,
+	is_active bool default true
 );
 
 create table if not exists minute_data(
