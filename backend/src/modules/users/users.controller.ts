@@ -10,10 +10,27 @@ import {
 export async function createUserController(req: Request, res: Response) {
   const { name, email, password, isAdm } = req.body;
 
+  if (!name || !email || !password) {
+    return res.status(400).json({
+      message: "Nome, email e senha são obrigatórios.",
+    });
+  }
+
+  if (password.trim().length < 6) {
+    return res.status(400).json({
+      message: "A senha deve ter pelo menos 6 caracteres.",
+    });
+  }
+
   try {
-    const result = await createNewUser(name, email, password, isAdm);
+    const result = await createNewUser(name, email, password, isAdm ?? false);
     return res.status(201).json(result);
   } catch (error: any) {
+    if (error && error.code == "23505") {
+      return res.status(409).json({
+        message: "Já existe um usuário com o email informado.",
+      });
+    }
     return res.status(400).json({
       message: error.message || "Ocorreu um erro ao cadastrar o usuário.",
     });
@@ -72,7 +89,7 @@ export async function editUserController(req: Request, res: Response) {
   } catch (error: any) {
     if (error && error.code == "23505") {
       return res.status(409).json({
-        message: error.message || "Já existe um usuário com o email informado.",
+        message: "Já existe um usuário com o email informado.",
       });
     } else {
       return res.status(500).json({

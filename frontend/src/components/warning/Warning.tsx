@@ -12,13 +12,21 @@ export default function Warning({
   const { Icon, tone, title, message, confirm } =
     variants[variant as keyof typeof variants] ?? variants.logout; // solução achada para o typescript não reclamar
 
+  // fecha o modal e avisa quem abriu (X, fundo e botão Cancelar)
   const handleCancel = () => {
     setOpen(false);
+    onCancel?.();
   };
 
   if (!open) return null;
   return (
-    <div className="warning" onClick={handleCancel}>
+    <div
+      className="warning"
+      // só fecha se clicou no fundo, não dentro do modal
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleCancel();
+      }}
+    >
       <div className={`warning-modal warning-${tone}`}>
         <button type="button" className="warning-close" onClick={handleCancel}>
           <X size={32} strokeWidth={3} />
@@ -42,7 +50,7 @@ export default function Warning({
           <button
             type="button"
             className="warning-btn warning-btn-cancel"
-            onClick={onCancel}
+            onClick={handleCancel}
           >
             Cancelar
           </button>
