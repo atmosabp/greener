@@ -31,19 +31,12 @@ import {
 import ServiceCard from './components/ServiceCard';
 
 import './Comparison.css';
-
-/* ------------------------------------------------------------------ */
-/* Propriedades da página                                              */
-/* ------------------------------------------------------------------ */
+import Loading from '../../components/loading/Loading';
 
 interface ComparisonProps {
   userName?: string;
   onLogout?: () => void;
 }
-
-/* ------------------------------------------------------------------ */
-/* Página de comparação                                                */
-/* ------------------------------------------------------------------ */
 
 export default function Comparison({
   userName = 'Júlia',
@@ -175,13 +168,10 @@ export default function Comparison({
 
   return (
     <div className="cmp-comparison">
+      <Loading data={services} />
       <AppHeader />
 
       <main className="cmp-page">
-        {/* ---------------------------------------------------------- */}
-        {/* Cabeçalho e filtros                                        */}
-        {/* ---------------------------------------------------------- */}
-
         <section className="cmp-intro">
           <div>
             <h1>

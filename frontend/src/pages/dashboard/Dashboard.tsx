@@ -83,7 +83,6 @@ export default function Dashboard() {
     metrics?: MetricsType;
   }
 
-  const [loading, _setLoading] = useState<boolean>(true);
   const [updateInterval, setUpdateInterval] = useState<number>(5);
   const [serviceMetrics, setServiceMetrics] = useState<ServicesType>({});
   const [serviceList, setServiceList] = useState<
