@@ -9,8 +9,10 @@ import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
+import type { ToastProps } from "../../types/toast";
 
 export default function Login() {
+  const [toast, setToast] = useState<ToastProps | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
@@ -34,7 +36,7 @@ export default function Login() {
             <ChevronLeft />
             <span>Voltar ao início</span>
           </Link>
-          <ThemeToggle/>
+          <ThemeToggle />
         </div>
         <a href="/" className="brand" aria-label="Greener">
           <img className="brand-logo" src={logo} alt="" />

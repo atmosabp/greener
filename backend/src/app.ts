@@ -1,8 +1,12 @@
-import express from 'express';
+import express from "express";
+import cors from "cors";
 
 import { router } from "./modules";
 
+const FRONT_PORT = Number(process.env.FRONT_PORT ?? 8080);
+
 export const app = express();
+
 app.use(express.json());
 
 const allowedOrigins = [
@@ -10,14 +14,17 @@ const allowedOrigins = [
   'http://localhost:8080'
 ];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(String(origin))) {
-    res.setHeader('Access-Control-Allow-Origin', String(origin));
-    res.setHeader('Vary', 'Origin');
-  }
-  next();
-});
+app.use(cors({
+  origin: function (origin, callback) {
+    // permite requisições sem origem (terminal) ou as que estão na lista
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Caminho bloqueado pelo CORS.'));
+    }
+  },
+  credentials: true
+}));
 
 // localhost:3000/health
 app.get("/health", (_req, res) => {
