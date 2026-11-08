@@ -339,6 +339,8 @@ export default function Admin() {
         />
       )}
 
+      {/* Aqui está a lógica de aparecer os modais em cada ação */}
+
       {openCadModal && (
         <CadForm onSave={createUser} onClose={() => setOpenCadModal(false)} />
       )}
