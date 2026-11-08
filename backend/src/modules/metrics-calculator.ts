@@ -1,3 +1,5 @@
+import { PassThrough } from "node:stream";
+
 export interface MetricsProps {
   collection_interval_seconds?: number;
   metrics?: {
@@ -34,6 +36,7 @@ export class MetricsCalculator {
       !this.metrics.metrics?.disk_gb ||
       !this.metrics.metrics?.network_gb
     ) {
+      PassThrough
       console.log("Métricas insuficientes para cálculo do KWh.");
     }
     this.W =

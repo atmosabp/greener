@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -25,7 +25,6 @@ export default function Ranking() {
 
   const calendar = useRankingCalendar();
 
-  var ranking: RankingService[] | undefined = [];
   function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
     const nextPeriod = event.target.value as RankingPeriod;
 
@@ -77,7 +76,6 @@ export default function Ranking() {
   }
 
   function handleParamChange(param:RankingMetric){
-    console.log("a função ta rodando o param")
     setMetric(param);
     sortRanking(initialServices)
   }
@@ -103,8 +101,6 @@ export default function Ranking() {
         } 
   }),
     );
-    console.log("a função ta rodando sort")
-    
   }
 
   const periodLabel: Record<RankingPeriod, string> = {
@@ -307,7 +303,7 @@ export default function Ranking() {
 
           <div className="ranking-table-caption">
             <span>Período selecionado: {periodLabel[period]}</span>
-            <span>{ranking.length} serviços encontrados</span>
+            <span>{initialServices ? initialServices.length : 0} serviços encontrados</span>
           </div>
         </section>
       </main>

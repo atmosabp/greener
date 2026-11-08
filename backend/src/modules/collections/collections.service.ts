@@ -1,5 +1,14 @@
-import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-api";
-import { reqInterval, reqMetrics, reqMetricsCPU, reqMetricsDisk, reqMetricsMemory, reqMetricsNetwork } from "../../integrations/metrics-api";
+import {
+  reqCarbonValue,
+  reqRenewablePercent,
+} from "../../integrations/carbon-api";
+import {
+  reqInterval,
+  reqMetricsCPU,
+  reqMetricsDisk,
+  reqMetricsMemory,
+  reqMetricsNetwork,
+} from "../../integrations/metrics-api";
 import { reqServices } from "../../integrations/services-api";
 import { ServiceTypes } from "../../types/services-types";
 import { MetricsCalculator } from "../metrics-calculator";
@@ -29,11 +38,65 @@ export async function addHistory(datePull: any) {
 }
 
 export async function getServiceMetrics(serviceId: string) {
-  // TODO: revisar a lógica para retornar TODOS os dados necessários para a tela dashboard
-  const result = await reqMetrics(serviceId);
+  let cpu,
+    memory,
+    collectionIntervalSeconds,
+    carbonIntensity,
+    renewablePercent,
+    disk,
+    network,
+    kwh,
+    co2e: number | undefined = undefined;
+  let service: ServiceTypes | undefined = undefined;
+
+  try {
+    service = (await reqServices()).find((value) => value.id == serviceId);
+
+    cpu = await reqMetricsCPU(serviceId);
+    memory = await reqMetricsMemory(serviceId);
+    collectionIntervalSeconds = await reqInterval(serviceId);
+    carbonIntensity = await reqCarbonValue(serviceId);
+    renewablePercent = await reqRenewablePercent(serviceId);
+    disk = await reqMetricsDisk(serviceId);
+    network = await reqMetricsNetwork(serviceId);
+
+    const metricsCalculator = new MetricsCalculator({
+      collection_interval_seconds: collectionIntervalSeconds,
+      metrics: {
+        cpu_percent: cpu,
+        memory_gb: memory,
+        disk_gb: disk,
+        network_gb: network,
+      },
+      carbon_intensity_gco2e_per_kwh: carbonIntensity,
+      renewable_share_percent: renewablePercent,
+    });
+
+    kwh = metricsCalculator.calculateKWh() || undefined;
+    co2e = metricsCalculator.calculateCO2e() || undefined;
+  } catch (error: any) {
+    console.error(error.message);
+  }
+
+  const metrics = {
+    cpu_percent: cpu,
+    memory_gb: memory,
+    disk_gb: disk,
+    network_gb: network,
+    co2e: co2e,
+    kwh: kwh,
+    renewable_percent: renewablePercent,
+    carbon_intensity: carbonIntensity,
+  };
+
+  const result = {
+    name: service?.name,
+    status: service?.status,
+    location: service?.location,
+    metrics: metrics,
+  };
 
   if (!result) return null;
-
 
   return result;
 }
@@ -84,7 +147,7 @@ export async function getAllServicesMetrics() {
             kwh: calc.calculateKWh() || undefined,
           };
         } catch (e: any) {
-          console.error(`Falha no serviço ${id}. Erro: `, e.message);
+          console.error(`Falha no serviço ${id}. Erro:`, e.message);
           service.metrics = {};
         }
 
