@@ -30,4 +30,5 @@ interface ServiceMetricsType {
   network_gb?: number;
   co2e?: number;
   kwh?: number;
+  carbon_intensity?: number;
 }
