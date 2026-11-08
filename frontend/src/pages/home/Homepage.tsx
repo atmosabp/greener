@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AppHeader from "../../components/header/AppHeader";
 import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
+import { useLoading } from "../../providers/LoadingProvider";
 import "./Homepage.css";
 
 export type ServiceStatus = "active" | "incomplete" | "inactive";
@@ -11,15 +12,15 @@ export interface Service {
   id: string;
   name: string;
   location:
-    | {
-        city?: string;
-        country?: string;
-        latitude?: number | undefined;
-        longitude?: number | undefined;
-        region?: string;
-        region_code?: string;
-      }
-    | undefined;
+  | {
+    city?: string;
+    country?: string;
+    latitude?: number | undefined;
+    longitude?: number | undefined;
+    region?: string;
+    region_code?: string;
+  }
+  | undefined;
   metrics_path?: string;
   metrics?: {
     cpu_percent?: number;
@@ -46,6 +47,7 @@ const statusLabels: Record<ServiceStatus, string> = {
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
+  const { showLoading, hideLoading } = useLoading();
   const [mode, setMode] = useState<VisualizationMode>("globe");
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
@@ -63,14 +65,21 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      await updateServices();
+    const fetchData = async (initial = false) => {
+      if (initial) showLoading();
+
+      try {
+        await updateServices();
+      } finally {
+        if (initial) hideLoading();
+      }
     };
 
-    fetchData();
+    fetchData(true);
 
-    const fetchTimer = setInterval(
-      fetchData,
+    const fetchTimer = setInterval( () => {
+      fetchData();
+  },
       localStorage.getItem("refresh_interval")
         ? Number(localStorage.getItem("refresh_interval")) * 1000
         : updateTime * 1000,
@@ -127,9 +136,8 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                     <button
                       key={`${service.id}-${index}`}
                       type="button"
-                      className={`service-item ${
-                        isSelected ? "service-item-selected" : ""
-                      }`}
+                      className={`service-item ${isSelected ? "service-item-selected" : ""
+                        }`}
                       onClick={() =>
                         setSelectedService((current) =>
                           current === service.id ? null : service.id,

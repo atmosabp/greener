@@ -3,6 +3,7 @@ import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
+import { useLoading } from "../../providers/LoadingProvider";
 
 import type { ErrorsLogin } from "../../types/login";
 import type { ToastProps } from "../../types/toast";
@@ -21,6 +22,7 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
   const [errors, setErrors] = useState<ErrorsLogin>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const { showLoading } = useLoading();
   const navigate = useNavigate();
 
   // Validação do e-mail
@@ -66,7 +68,6 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
 
     try {
       setIsLoading(true);
-
       const response = await fetch(`http://localhost:${API_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -155,15 +156,8 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
       sessionStorage.setItem("token", data.token);
       sessionStorage.setItem("user", JSON.stringify(data.user));
 
-      onShowToast({
-        icon: "success",
-        title: "Login realizado!",
-        message: "Bem-vindo! Você será redirecionado.",
-      });
-
-      setTimeout(() => {
-        navigate("/home");
-      }, 5000);
+      showLoading();
+      navigate("/home");
 
     } catch (error) {
       console.error("Erro ao realizar login:", error);
