@@ -71,7 +71,9 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
     fetchData();
 
     const fetchTimer = setInterval(
-      fetchData,
+      () => {
+        fetchData();
+      },
       localStorage.getItem("refresh_interval")
         ? Number(localStorage.getItem("refresh_interval")) * 1000
         : updateTime * 1000,

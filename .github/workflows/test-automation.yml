@@ -23,6 +23,10 @@ jobs:
           echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "ADMIN_NAME=${{ secrets.ADMIN_NAME }}" >> .env
+          echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
+          echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
 
       - name: Iniciar composer
         run: docker compose up -d --build

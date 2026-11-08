@@ -11,39 +11,39 @@ import {
 export const router = Router();
 
 // Rota de teste para retornar todo o histórico
-// GET localhost:3000/collections/get-history
+// GET localhost:PORT/collections/get-history
 router.get("/get-history", getHistoryController);
 
-// REFACTOR: Rota para adicionar histórico no banco de dados
-// POST localhost:3000/collections/add-history
+// Tota para adicionar histórico no banco de dados
+// POST localhost:PORT/collections/add-history
 router.post("/add-history", addHistoryController);
 
-// TODO: apenas pega o dado mais recente da api auxiliar e retorna pro frontend (dashboard), sem guardar nada no banco de dados
-// GET localhost:3000/collections/service-metrics/:serviceId
+// Apenas pega o dado mais recente da api auxiliar e retorna pro frontend (dashboard), sem guardar nada no banco de dados
+// GET localhost:PORT/collections/service-metrics/:serviceId
 router.get("/service-metrics/:serviceId", getServiceMetricsController);
 
-// TODO: rota para retornar todos os serviços e todas as métricas
-// GET localhost:3000/collections/all-service-data
+// Rota para retornar todos os serviços e todas as métricas
+// GET localhost:PORT/collections/all-service-data
 router.get("/all-service-data", getAllServicesDataController);
 
-// TODO: rota para retornar histórico de um serviço
-// POST localhost:3000/collections/service-history/:id
+// Tota para retornar histórico de um serviço
+// POST localhost:PORT/collections/service-history/:id
 router.post("/service-history", findServiceHistoryController);
 
-// REVISAR: rota para retornar histórico de todos os serviços (ranking)
-// POST localhost:3000/collections/all-service-history
+// Tota para retornar histórico de todos os serviços (ranking)
+// POST localhost:PORT/collections/all-service-history
 router.post("/all-service-history", findAllHistoryController);
 
 /*
 Teste de endpoints
 
 Cadastro de histórico de um serviço:
-curl -X POST http://localhost:3000/collections/add-history \
+curl -X POST http://localhost:PORT/collections/add-history \
   -H "Content-Type: application/json" \
   -d '{"serviceId": "inventory-sync"}'
 
 Ver todo o histórico da data especificada:
-curl -X POST http://localhost:3000/collections/all-service-history \
+curl -X POST http://localhost:PORT/collections/all-service-history \
   -H "Content-Type: application/json" \
   -d '{"periodType": "minute", "datePull": "2026-10-17"}'
 

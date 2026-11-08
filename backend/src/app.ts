@@ -1,10 +1,10 @@
-import express from 'express';
-
+import express from "express";
 import cors from "cors";
 
 import { router } from "./modules";
 
 export const app = express();
+
 app.use(express.json());
 
 const allowedOrigins = [
@@ -24,7 +24,7 @@ app.use(cors({
   credentials: true
 }));
 
-// localhost:3000/health
+// localhost:PORT/health
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
