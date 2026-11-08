@@ -116,6 +116,22 @@ Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/
 
 <br>
 
+### Sprint Review
+A Sprint Review é um dos eventos do Scrum em que é apresentado o trabalho desenvolvido durate a sprint para o cliente.  
+Ela foi realizada dia **19/10/2026**.  
+
+O feedback geral do cliente foi muito bom. Foi elogiado sobre o processo e o produto final. Também foram apontados alguns erros de código e inconsistências que serão abordadas durante a 2° sprint.
+
+Aqui serão mostrados os pontos que foram apontados pelo cliente e pelo professor:
+- Dados placeholder usados ao invés dos dados reais -> planejamos usar completamente os dados reais apenas a partir da 2° sprint. O único uso deles seria no `MetricsCalculator`, para definir os cálculos para o KWh e o CO2e.
+- Senhas armazenadas e devolvidas em texto puro -> foi definido no Product Backlog que isso será feito na 2° sprint, a tela de Login e a rota era apenas para testar a tela e aconectividade do banco de dados.
+- Queries SQL com sintaxe errada, funções não utilizadas e arquivos duplicados -> foi abordado logo no dia seguinte da Sprint Review.
+- Algumas consultas usam tabela e colunas erradas -> Isso provavelmente são alguns traços de versões anteriores, decidi deixar aqui como um lembrete de qualquer forma.
+- Tipar as variáveis e funções corretamente (tirar uso excessivo de any) -> será abordado na 2° sprint.
+- Colocar entrega na branch main -> foi feito logo após a Sprint Review, com o produto pronto. 
+
+<br>
+
 ### Sprint Retrospective
 Este é um evento da metodologia Scrum que permite que a equipe se junte e dialogue sobre o processo, sem focar no produto. Seguimos um formato para falar o que não deu certo, o que deu certo, e o que podemos fazer para melhorar. Garantindo que levamos tudo o que foi discutido em consideração para ter um processo (e consequentemente, um produto) muito melhor.  
 Essa reunião aconteceu dia **20 de outubro**. Esses foram os pontos levantados:

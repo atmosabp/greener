@@ -59,7 +59,7 @@ Greener é feito para funcionários credenciados de empresas terem controle da e
 | [![My Skills](https://skillicons.dev/icons?i=react)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=ts)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=figma)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=git)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=github)](https://skillicons.dev) |
 | ------ | ---- | ------- | ---- | ---- | ---- | ---- | ---- |
 | React | TypeScript | NodeJS | Docker | PostgreSQL | Figma | Git | GitHub |
-| v19.3 | v7.0 | v22.16.0 | v29 | v18.3 | Web | v2.53 | Web |
+| v19.3 | v7.0 | v22.16.0 | v29 | v16 | Web | v2.53 | Web |
 
 <br>
 
