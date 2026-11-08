@@ -133,7 +133,11 @@ async function insertMonthHistory(datePull: any) {
 
 export async function findHistory() {
   const result = await pool.query(
-    `SELECT * FROM minute_data UNION hour_data UNION month_data`,
+    `SELECT * FROM minute_data
+    UNION
+    SELECT * FROM hour_data
+    UNION
+    SELECT * FROM month_data;`,
   );
 
   return result.rows || [];

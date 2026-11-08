@@ -40,11 +40,38 @@ describe("consulta todos os usuários", () => {
 // ============= Testes para Collections (Métricas) ================
 
 // TODO: teste de ver métrica atual de serviço específico
+    describe("consulta métricas de um serviço", () => {
+        it("retorna status 200 caso a consulta seja feita", async () => {
+            const response = await request(app)
+            //Usei um serviço que estva no códico CURL no collection.routes
+            .get("/collections/service-metrics/inventory-sync")
+            .send();
+
+            expect(response.statusCode).toEqual(200);
+        });
+    });
 
 // TODO: teste de listar disponibilidade dos serviços 
+    describe("consulta todos os serviços", () => {
+        it("retorna status 200 caso a consulta seja feita", async () => {
+            const response = await request(app)
+                .get("/collections/all-service-data")
+                .send();
+
+            expect(response.statusCode).toEqual(200);
+        });
+    });
 
 // TODO: teste de adicionar histórico atual de serviço específico
 
+
 // TODO: teste de ver histórico de serviço específico
 
+
 // TODO: teste de ver todo o histórico de uma tabela
+    describe("consulta todo o histórico", () => {
+        it("retorna status 200 caso a consulta seja feita", async () => {
+            const response = await request(app).get("/collections/get-history").send();
+            expect(response.statusCode).toEqual(200);
+        });
+    });

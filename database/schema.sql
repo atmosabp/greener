@@ -33,8 +33,8 @@ create table if not exists hour_data(
 -- decidir entre serial e guid
 	id serial primary key, 
 	co2e float,
-	date_pull timestamp with time zone default current_timestamp,
 	kwh float,
+	date_pull timestamp with time zone default current_timestamp,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
@@ -48,8 +48,8 @@ create table if not exists day_data(
 -- decidir entre serial e guid
 	id serial primary key, 
 	co2e float,
-	date_pull timestamp with time zone default current_timestamp,
 	kwh float,
+	date_pull timestamp with time zone default current_timestamp,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
@@ -213,4 +213,3 @@ CREATE or replace TRIGGER days_to_months
 	ON day_data
 	FOR EACH ROW
 	EXECUTE FUNCTION days_to_months_func();
-
