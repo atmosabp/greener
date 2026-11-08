@@ -11,6 +11,19 @@ export default function Toast({
 }: ToastProps) {
   const [open, setOpen] = useState(true);
 
+  // fecha sozinho quando a barra de progresso acaba (5s, igual ao Toast.css)
+  useEffect(() => {
+    const timer = setTimeout(() => setOpen(false), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // espera a animação de saída (1s) terminar antes de avisar quem abriu o toast
+  useEffect(() => {
+    if (open || !onClose) return;
+    const timer = setTimeout(onClose, 1000);
+    return () => clearTimeout(timer);
+  }, [open, onClose]);
+
   const handleCancel = () => {
     setOpen(false);
     onClose?.();

@@ -101,7 +101,6 @@ export default function Dashboard() {
         `http://localhost:${import.meta.env.VITE_PORT}/collections/service-metrics/${serviceId}`,
       );
       const data = await result.json();
-      // console.log(data)
       setTimeUpdated(new Date().toLocaleString());
       setServiceMetrics(data);
     } catch (e: any) {

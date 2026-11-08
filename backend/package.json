@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "db:dev": "npm run db:init && tsx watch src/server.ts",
-    "db:init": "tsx src/db/init.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest --detectOpenHandles --forceExit"

@@ -1,4 +1,3 @@
--- drop table if exists services; 
 -- create database greener_db;
 
 create table if not exists users(

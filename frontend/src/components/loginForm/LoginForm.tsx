@@ -1,28 +1,24 @@
-
 import { Eye, EyeClosed } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
-import { useLoading } from "../../providers/LoadingProvider";
+import { useState } from "react";
+import { type ErrorsLogin } from "../../types/login";
+import { useNavigate } from "react-router-dom";
+import Toast from "../toast/Toast";
 
-import type { ErrorsLogin } from "../../types/login";
-import type { ToastProps } from "../../types/toast";
+import "./LoginForm.css";
 
-const API_URL = import.meta.env.VITE_PORT;
+const port = import.meta.env.VITE_PORT;
 
-interface LoginFormProps {
-  onShowToast: (toast: ToastProps) => void;
-}
 
-export default function LoginForm({ onShowToast }: LoginFormProps) {
+export default function LoginForm() {
   // Estados
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<ErrorsLogin>({});
+  const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { showLoading } = useLoading();
   const navigate = useNavigate();
 
   // Validação do e-mail
@@ -56,28 +52,28 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
     };
 
     setErrors(newErrors);
+    setApiError("");
 
     if (newErrors.email || newErrors.password) {
-      onShowToast({
-        icon: "error",
-        title: "Dados obrigatórios",
-        message: "Preencha corretamente todos os campos para continuar.",
-      });
-      return;
+      return <Toast icon="error" title="Dados obrigatórios" message="Preencha corretamente todos os campos para continuar." />;
     }
 
     try {
       setIsLoading(true);
-      const response = await fetch(`http://localhost:${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+
+      const response = await fetch(
+        `http://localhost:${port}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            password,
+          }),
         },
-        body: JSON.stringify({
-          email: email.trim(),
-          password,
-        }),
-      });
+      );
 
       // Verifica se a resposta é um JSON válido
       let data;
@@ -93,58 +89,7 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
 
       // Tratamento dos erros HTTP
       if (!response.ok) {
-        switch (response.status) {
-          case 400:
-            onShowToast({
-              icon: "error",
-              title: "Dados incorretos",
-              message: "Verifique os dados informados.",
-            });
-            break;
-
-          case 401:
-            onShowToast({
-              icon: "error",
-              title: "Dados incorretos",
-              message: "E-mail ou senha incorretos.",
-            });
-            break;
-
-          case 403:
-            onShowToast({
-              icon: "error",
-              title: "Acesso negado",
-              message: "Você não tem permissão para acessar esta plataforma.",
-            });
-            break;
-
-          case 429:
-            onShowToast({
-              icon: "error",
-              title: "Muitas tentativas",
-              message: "Aguarde alguns minutos antes de tentar novamente.",
-            });
-            break;
-
-          case 500:
-          case 502:
-          case 503:
-          case 504:
-            onShowToast({
-              icon: "error",
-              title: "Servidor indisponível",
-              message: "Tente novamente mais tarde.",
-            });
-            break;
-
-          default:
-            onShowToast({
-              icon: "error",
-              title: "Erro ao realizar login",
-              message: data?.message || "Não foi possível realizar o login.",
-            });
-        }
-
+        setApiError(data.message || "Não foi possível realizar o login.");
         return;
       }
 
@@ -156,29 +101,12 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
       sessionStorage.setItem("token", data.token);
       sessionStorage.setItem("user", JSON.stringify(data.user));
 
-      showLoading();
       navigate("/home");
 
-    } catch (error) {
+      navigate("/home");
+    } catch (error: any) {
       console.error("Erro ao realizar login:", error);
-
-      if (
-        error instanceof Error &&
-        error.message === "INVALID_RESPONSE"
-      ) {
-        onShowToast({
-          icon: "error",
-          title: "Resposta inválida",
-          message: "O servidor retornou uma resposta inválida. Tente novamente.",
-        });
-      } else {
-        onShowToast({
-          icon: "error",
-          title: "Falha na conexão",
-          message: "Não foi possível conectar ao servidor. Verifique sua conexão.",
-        });
-      }
-
+      setApiError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -193,6 +121,17 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
           <label htmlFor="email" title="Campo obrigatório">
             E-mail*
           </label>
+          {errors.email && (
+              <span id="email-error" className="error-msg">
+                {errors.email}
+              </span>
+            ) && (
+              <Toast
+                icon="error"
+                title="Informações incorretas"
+                message={errors.email}
+              />
+            )}
         </div>
 
         <input
@@ -225,6 +164,17 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
           <label htmlFor="password" title="Campo obrigatório">
             Senha*
           </label>
+          {errors.password && (
+              <span id="password-error" className="error-msg">
+                {errors.password}
+              </span>
+            ) && (
+              <Toast
+                icon="error"
+                title="Informações incorretas"
+                message={errors.password}
+              />
+            )}
         </div>
 
         <div className="password-input">
@@ -276,11 +226,19 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
 
       {/* Botão de login */}
       <div className="form-link">
-        <button
-          type="submit"
-          className="btn-login"
-          disabled={isLoading}
-        >
+        {apiError && (
+            <p className="error-msg" role="alert">
+              {apiError}
+            </p>
+          ) && (
+            <Toast
+              icon="error"
+              title="Erro"
+              message={apiError}
+            />
+          )}
+
+        <button type="submit" className="btn-login" disabled={isLoading}>
           {isLoading ? "Entrando..." : "Entrar"}
         </button>
       </div>

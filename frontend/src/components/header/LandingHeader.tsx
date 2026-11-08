@@ -16,7 +16,7 @@ export default function LandingHeader() {
       links={landingLinks}
       action={
         <Link to="/login" className="btn-logout">
-          login 
+          Login 
         </Link>
       }
     />

@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Toast from "../toast/Toast";
 
 const FRONT_PORT = import.meta.env.VITE_PORT;
 
@@ -22,13 +23,15 @@ export default function ProtectedRoute({
         async function verifyAuthentication() {
             const token = sessionStorage.getItem("token");
 
+
             if (!token) {
+                <Toast icon="error" title="Erro" message="Usuário não autenticado." />
                 setStatus("unauthenticated");
                 return;
             }
 
             try {
-                const response = await fetch(`http://localhost:${FRONT_PORT}/auth/me`, {
+                const response = await fetch(`http://localhost:${import.meta.env.VITE_PORT}/auth/me`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -39,11 +42,13 @@ export default function ProtectedRoute({
                 if (response.status === 401) {
                     sessionStorage.removeItem("token");
                     sessionStorage.removeItem("user");
+                    <Toast icon="error" title="Erro" message="Usuário não autenticado." />
                     setStatus("unauthenticated");
                     return;
                 }
 
                 if (!response.ok) {
+                    <Toast icon="error" title="Erro" message="Não foi possível validar a sessão." />
                     throw new Error("Não foi possível validar a sessão.");
                 }
 
@@ -52,18 +57,20 @@ export default function ProtectedRoute({
                 sessionStorage.setItem("user", JSON.stringify(data.user));
 
                 if (requireAdmin && !data.user.isAdm) {
+                    <Toast icon="error" title="Erro" message="Usuário não é um administrador." />
                     setStatus("forbidden");
                     return;
                 }
 
                 setStatus("authenticated");
 
-            } catch (error) {
+            } catch (error: any) {
                 if (error instanceof Error && error.name === "AbortError") {
                     return;
                 }
 
-                console.error("Erro ao verificar autenticação:", error);
+                <Toast icon="error" title="Erro" message={`Erro ao autenticar. ${error.message}`} />
+                console.error("Erro ao verificar autenticação: ", error);
                 setStatus("error");
             }
         }
