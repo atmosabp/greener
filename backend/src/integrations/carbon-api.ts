@@ -1,7 +1,8 @@
 import type { ApiCarbon } from "../types/carbon";
-import { ServiceTypes } from "../types/services-types";
+import type { ServiceTypes } from "../types/services-types";
 
 const urlApi = "https://carbon.unilaunch.org/carbon-intensity/";
+const serviceURL = "https://metrics.unilaunch.org/services/";
 
 export async function reqMetrics(serviceId: string) {
   try {
@@ -29,7 +30,7 @@ export async function reqCarbonValue(serviceId: string): Promise<number|undefine
   if (!respMetrics) return;
 
   if (!respMetrics.carbon_intensity_gco2e_per_kwh) {
-    throw new Error("Não foi possivel capturar métricas da CPU.");
+    throw new Error("Não foi possivel capturar a intensidade de carbono.");
   }
 
   const valueCarbon = respMetrics.carbon_intensity_gco2e_per_kwh;
