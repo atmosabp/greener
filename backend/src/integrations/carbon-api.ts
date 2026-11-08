@@ -1,17 +1,19 @@
 import type { ApiCarbon } from "../types/carbon";
+import type { ServiceTypes } from "../types/services-types";
 
-const urlApi = "https://carbon.unilaunch.org/carbon-intensity/br-sudeste";
+const urlApi = "https://carbon.unilaunch.org/carbon-intensity/";
+const serviceURL = "https://metrics.unilaunch.org/services/";
 
 export async function reqMetrics(serviceId: string) {
   try {
-    const resp = await fetch(urlApi); //+serviceId
+    const responseService = await fetch(`https://metrics.unilaunch.org/services/${serviceId}`);
+    const data: ServiceTypes = await responseService.json();
 
-    console.log(resp)
+    var resp;
+    if(data.location){
+      resp = await fetch(`${urlApi}${data.location.region_code}`);
 
-    if (resp.ok) {
       const objMetrics: ApiCarbon = await resp.json();
-
-      console.log(objMetrics)
 
       return objMetrics;
     }
@@ -28,7 +30,7 @@ export async function reqCarbonValue(serviceId: string): Promise<number|undefine
   if (!respMetrics) return;
 
   if (!respMetrics.carbon_intensity_gco2e_per_kwh) {
-    throw new Error("Não foi possivel capturar métricas da CPU.");
+    throw new Error("Não foi possivel capturar a intensidade de carbono.");
   }
 
   const valueCarbon = respMetrics.carbon_intensity_gco2e_per_kwh;
@@ -49,11 +51,3 @@ export async function reqRenewablePercent(serviceId: string): Promise<number|und
 
   return valueRenewable;
 }
-
-//Pra testar
-async function inicia() {
-  const valor = await reqCarbonValue("billing-api");
-  console.log(valor)
-}
-
-// inicia();

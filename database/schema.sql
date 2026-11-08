@@ -1,5 +1,5 @@
--- drop table if exists services; 
 -- create database greener_db;
+
 create table if not exists users(
 	id serial primary key,
 	name varchar(100),
@@ -75,6 +75,7 @@ create table if not exists month_data(
 
 create index if not exists idx_hour_data_services_dt on hour_data (service_id, date_pull);
 create index if not exists idx_minute_data_services_dt on minute_data (service_id, date_pull);
+create index if not exists idx_day_data_services_dt on day_data (service_id, date_pull);
 create index if not exists idx_month_data_services_dt on month_data (service_id, date_pull);
 
 INSERT INTO services (id, name, max_emitted, min_emitted)

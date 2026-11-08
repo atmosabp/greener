@@ -9,6 +9,9 @@ import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
+import Loading from "../../components/loading/Loading";
+import Toast from "../../components/toast/Toast";
+import Warning from "../../components/warning/Warning";
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState<boolean>(
@@ -34,7 +37,7 @@ export default function Login() {
             <ChevronLeft />
             <span>Voltar ao início</span>
           </Link>
-          <ThemeToggle/>
+          <ThemeToggle />
         </div>
         <a href="/" className="brand" aria-label="Greener">
           <img className="brand-logo" src={logo} alt="" />

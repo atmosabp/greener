@@ -24,7 +24,7 @@ createRoot(document.getElementById("root")!).render(
           {/* Rotas que exigem autenticação */}
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Homepage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/:serviceId" element={<Dashboard />} />
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/comparison" element={<Comparison />} />
           </Route>

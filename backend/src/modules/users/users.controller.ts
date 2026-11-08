@@ -144,7 +144,7 @@ export async function editUserController(req: Request, res: Response) {
     }
 
     return res.status(500).json({
-      message: "Erro interno ao atualizar o usuário."
+      message: "Erro interno ao atualizar o usuário. Tente novamente mais tarde."
     });
   }
 }

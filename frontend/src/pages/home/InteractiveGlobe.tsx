@@ -9,7 +9,7 @@ import Globe from "react-globe.gl";
 import type { Service } from "./Homepage";
 import "./InteractiveGlobe.css";
 import useTheme from "../../hooks/useTheme";
-// import { bool } from "three/tsl";
+import ServiceCard from "./ServiceCard";
 
 interface InteractiveGlobeProps {
     services: Service[];
@@ -21,10 +21,10 @@ interface GlobePoint {
     id: string;
     name: string;
     status: Service["status"];
-    lat: number;
-    lng: number;
+    lat: number | undefined;
+    lng: number | undefined;
     color: string;
-    co2e: number;
+    cpu_percent: number;
 }
 
 const statusColors: Record<Service["status"], string> = {
@@ -52,8 +52,8 @@ export default function InteractiveGlobe({
     const globeData = useMemo<GlobePoint[]>(() => {
         return services
             .filter((service) => {
-                const lat = service.latitude;
-                const lng = service.longitude;
+                const lat = service.location ? service.location.latitude : undefined;
+                const lng = service.location ? service.location.longitude : undefined;
 
                 return (
                     typeof lat === "number" &&
@@ -70,16 +70,33 @@ export default function InteractiveGlobe({
                 id: service.id,
                 name: service.name,
                 status: service.status,
-                lat: service.latitude!,
-                lng: service.longitude!,
+                lat: service.location ? service.location.latitude : 0,
+                lng: service.location ? service.location.longitude : 0,
                 color: statusColors[service.status] ?? "#999999",
-                co2e:
-                    typeof service.co2e === "number" &&
-                        Number.isFinite(service.co2e)
-                        ? service.co2e
+                cpu_percent:
+                    typeof service.metrics?.cpu_percent=== "number" &&
+                        Number.isFinite(service.metrics.cpu_percent)
+                        ? service.metrics.cpu_percent
                         : 0,
             }));
     }, [services]);
+
+    const validMapServices = services.filter(
+    (service) =>
+      service.location &&
+      service.location.latitude !== undefined &&
+      service.location.longitude !== undefined &&
+      Number.isFinite(service.location.latitude) &&
+      Number.isFinite(service.location.longitude) &&
+      service.location.latitude >= -90 &&
+      service.location.latitude <= 90 &&
+      service.location.longitude >= -180 &&
+      service.location.longitude <= 180,
+  );
+
+    const selectedService = validMapServices.find(
+        (service) => service.id === selectedServiceId,
+    );
 
     const selectedPoint = useMemo(
         () =>
@@ -273,8 +290,10 @@ export default function InteractiveGlobe({
                 atmosphereAltitude={0.2}
             />
 
-            {selectedPoint && (
-                <div
+            {selectedPoint && selectedService && (
+                <div>
+                    <ServiceCard viewType={"globe"} selectedServicePoint={selectedService} onSelectService={onSelectService}/>
+                {/* <div
                     className="globe-service-card"
                     role="dialog"
                     aria-label={`Detalhes de ${selectedPoint.name}`}
@@ -305,21 +324,31 @@ export default function InteractiveGlobe({
                     </div>
 
                     <div className="globe-service-card__location">
-                        Lat: {selectedPoint.lat.toFixed(3)} | Long:{" "}
-                        {selectedPoint.lng.toFixed(3)}
+                        {(selectedPoint.lat != undefined && selectedPoint.lng != undefined) 
+                        ? 
+                            <span>Lat: {selectedPoint.lat!.toFixed(3)}| Long:{" "}
+                            {selectedPoint.lng!.toFixed(3)}</span> 
+                            :
+                            <p>oie</p>
+                        }
                     </div>
 
                     <div className="globe-service-card__metrics">
                         <div className="globe-service-card__metric-col">
                             <div className="globe-service-card__metric">
                                 <span>CPU</span>
-                                <strong>0%</strong>
+                                <strong>
+                                    {selectedPoint.cpu_percent.toLocaleString(
+                                        "pt-BR"
+                                    )}{" "}
+                                    %
+                                </strong>
                             </div>
 
                             <div className="globe-service-card__metric">
                                 <span>CO₂e</span>
                                 <strong>
-                                    {selectedPoint.co2e.toLocaleString(
+                                    {selectedPoint.cpu_percent.toLocaleString(
                                         "pt-BR"
                                     )}{" "}
                                     kg
@@ -343,10 +372,10 @@ export default function InteractiveGlobe({
                     <Link
                         to="/dashboard"
                         className="globe-service-card__details-button"
-
                     >
                         Ver detalhes
                     </Link>
+                </div> */}
                 </div>
             )}
         </div>

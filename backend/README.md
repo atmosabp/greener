@@ -1,322 +1,200 @@
-# GreenER — Backend
+<br>
+<div align="center">
+<img src="../docs/design/logo-greener.svg" width="120">
 
-Backend da aplicação **GreenER**, desenvolvido para gerenciar a autenticação de usuários, o acesso aos recursos do sistema e a comunicação com o banco de dados PostgreSQL.
+<br>
 
-A aplicação utiliza Node.js com Express e TypeScript, além de JWT para autenticação e bcrypt para criptografia de senhas.
+# GreenER - Backend
 
----
+</div>
 
-## 1. Tecnologias utilizadas
+<br>
 
-- **Node.js:** ambiente de execução JavaScript.
-- **Express:** framework para criação da API REST.
-- **TypeScript:** tipagem estática e organização do código.
-- **PostgreSQL:** banco de dados relacional.
-- **pg:** biblioteca para conexão e comunicação com o PostgreSQL.
-- **JWT (JSON Web Token):** autenticação e validação de sessões.
-- **bcrypt:** criptografia de senhas.
-- **dotenv:** gerenciamento de variáveis de ambiente.
-- **CORS:** controle de acesso às requisições entre frontend e backend.
-- **Docker:** conteinerização e execução do ambiente.
+<div align="center">
 
----
+[Sobre](#sobre) - [Tecnologias](#tecnologias-utilizadas) - [Estrutura](#estrutura-de-arquivos) - [Arquitetura](#arquitetura) - [Variáveis de ambiente](#variáveis-de-ambiente) - [Execução](#instruções-para-execução) - [Endpoints](#endpoints) - [Integrações](#integrações-externas) - [Banco de dados](#banco-de-dados) - [Testes](#testes) - [Pendências](#status-e-pendências)
 
-## 2. Estrutura do projeto
+</div>
 
-A organização do backend segue uma divisão por responsabilidades, separando configurações, conexão com o banco de dados e módulos da aplicação.
+<br>
 
-```text
+## Sobre
+
+O backend do *GreenER* é o servidor responsável por conectar o frontend, o banco de dados e as APIs externas de métricas e de intensidade de carbono.
+
+Ele coleta as métricas de uso (CPU, memória, disco e rede) de cada serviço monitorado, estima o consumo de energia (kWh) e as emissões equivalentes de carbono (CO₂e), e guarda tudo no histórico do banco de dados para que o frontend possa exibir dashboards, comparações e rankings.
+
+<br>
+
+## Tecnologias utilizadas
+
+| Tecnologia | Uso no backend |
+| ---------- | -------------- |
+| Node.js 24 (imagem Docker) | Ambiente de execução |
+| TypeScript 5 | Linguagem, compilada com `tsc` para a pasta `dist/` |
+| Express 5 | Servidor HTTP e rotas |
+| PostgreSQL (`pg`) | Banco de dados e conexão por *pool* |
+| dotenv | Leitura das variáveis de ambiente |
+| Jest + Supertest | Testes de integração das rotas |
+| Docker / Docker Compose | Execução do backend, banco e frontend em containers |
+
+<br>
+
+## Estrutura de arquivos
+
+```
 backend/
-├── src/
-│   ├── config/
-│   │   └── env.ts
-│   │
-│   ├── db/
-│   │   ├── connections.ts
-│   │   ├── init.ts
-│   │   └── insert.ts
-│   │
-│   ├── modules/
-│   │   ├── auth/
-│   │   │   ├── auth.routes.ts
-│   │   │   ├── auth.controller.ts
-│   │   │   ├── auth.service.ts
-│   │   │   └── auth.middleware.ts
-│   │   │
-│   │   ├── users/
-│   │   │   ├── users.repository.ts
-│   │   │   ├── users.service.ts
-│   │   │   ├── users.controller.ts
-│   │   │   └── users.routes.ts
-│   │   │
-│   │   ├── collections/
-│   │   │
-│   │   └── index.ts
-│   │
-│   ├── app.ts
-│   └── server.ts
-│
-├── Dockerfile
-├── package.json
-├── package-lock.json
-└── .env
+├ src/
+│ ├ __test__/                 # Testes de integração (Jest + Supertest)
+│ │ ├ index.test.ts
+│ │ └ README.md
+│ ├ config/
+│ │ └ env.ts                  # Carrega o .env e exporta as configurações
+│ ├ db/
+│ │ └ connections.ts          # Pool de conexões com o PostgreSQL
+│ ├ integrations/             # Comunicação com as APIs externas
+│ │ ├ carbon-api.ts           # Intensidade de carbono e % de energia renovável
+│ │ ├ metrics-api.ts          # Métricas de CPU, memória, disco e rede
+│ │ └ services-api.ts         # Lista de serviços, disponibilidade e coordenadas
+│ ├ modules/
+│ │ ├ collections/            # Histórico de coletas (rotas, controller, service, repository)
+│ │ ├ users/                  # Usuários (rotas, controller, service, repository)
+│ │ ├ index.ts                # Registro das rotas e tratamento de rota inexistente
+│ │ └ metrics-calculator.ts   # Cálculos de kWh e CO₂e
+│ ├ types/                    # Interfaces TypeScript das APIs externas
+│ ├ app.ts                    # Criação do app Express e rota /health
+│ └ server.ts                 # Inicialização do servidor
+├ Dockerfile
+├ jest.config.js
+├ package.json
+├ tsconfig.json
+└ README.md
 ```
 
-### Responsabilidade dos principais arquivos
+<br>
 
-| Arquivo | Responsabilidade |
-|---|---|
-| `config/env.ts` | Centraliza configurações e variáveis de ambiente. |
-| `db/connections.ts` | Gerencia a conexão com o PostgreSQL. |
-| `db/init.ts` | Inicializa a estrutura do banco de dados. |
-| `db/insert.ts` | Verifica e cadastra o usuário administrador. |
-| `app.ts` | Configura o Express, middlewares, CORS e rotas. |
-| `server.ts` | Inicializa o servidor HTTP. |
-| `modules/index.ts` | Centraliza os módulos e suas rotas. |
+## Arquitetura
 
-Os módulos seguem uma divisão de responsabilidades:
+Cada módulo (`users` e `collections`) segue a mesma divisão em camadas, em que cada arquivo tem uma responsabilidade:
 
-- **Routes:** definem os endpoints disponíveis.
-- **Controller:** recebem as requisições e retornam as respostas HTTP.
-- **Service:** concentram as regras de negócio.
-- **Repository:** realizam as operações de acesso ao banco de dados.
-
----
-
-## 3. Configuração do ambiente
-
-Antes de executar o backend, é necessário configurar as variáveis de ambiente.
-
-Crie um arquivo `.env` na raiz do projeto, seguindo o formato do env.examples. 
-
-
-**Atenção:**
-
-- Os valores são exemplos. Utilize os dados correspondentes ao seu ambiente.
-- O `JWT_SECRET` deve ser uma chave segura e privada.
-- Não compartilhe o arquivo `.env` nem o envie ao repositório.
-- No Docker, os dados de conexão devem corresponder à configuração do serviço PostgreSQL.
-
----
-
-## 4. Banco de dados
-
-O GreenER utiliza PostgreSQL para armazenar os dados da aplicação.
-
-A estrutura do banco contém as seguintes tabelas principais:
-
-| Tabela | Finalidade |
-|---|---|
-| `users` | Armazena os usuários e suas credenciais. |
-| `services` | Armazena os serviços monitorados. |
-| `minute_data` | Armazena dados de monitoramento por minuto. |
-| `hour_data` | Armazena dados de monitoramento por hora. |
-| `day_data` | Armazena dados de monitoramento por dia. |
-| `month_data` | Armazena dados de monitoramento por mês. |
-
-### Inicialização do banco — `init.ts`
-
-O arquivo `init.ts` é responsável pela inicialização da estrutura do banco de dados quando aplicação estiver sendo executada na maquina local.
-
-Ele deve ser executado quando for necessário criar as tabelas, índices, funções, gatilhos e demais estruturas definidas no script de inicialização.
-
-Em sua execução ele cria o usuario admin de acordo com as credenciais fornecidas no .env (certifique que esteja preenchido).
-
-### Cadastro do administrador — `insert.ts`
-
-O arquivo `insert.ts` é responsável por garantir que exista um usuário administrador cadastrado no banco de dados. Ele realiza essa operação de forma independente da inicialização da estrutura do banco.
-
-Seu funcionamento é o seguinte:
-
-1. Recupera as informações do administrador pelas variáveis de ambiente.
-2. Consulta a tabela `users` para verificar se o e-mail já está cadastrado.
-3. Caso o administrador já exista, encerra a execução sem criar outro registro.
-4. Caso não exista, gera um hash da senha utilizando bcrypt.
-5. Insere o administrador na tabela `users`, definindo `is_adm` como `true`.
-
-Essa verificação evita a criação de administradores duplicados quando o script é executado mais de uma vez.
-
-**Importante:** o `insert.ts` não cria tabelas. O banco e a tabela `users` precisam estar disponíveis antes de sua execução.
-
----
-
-## 5. Autenticação e controle de acesso
-
-A autenticação da aplicação utiliza JWT (JSON Web Token).
-
-O fluxo de autenticação funciona da seguinte maneira:
-
-1. O usuário informa seu e-mail e senha na tela de login.
-2. O frontend envia as credenciais para o endpoint de autenticação.
-3. O backend verifica se o usuário existe.
-4. A senha informada é comparada com o hash armazenado no banco utilizando bcrypt.
-5. Caso as credenciais sejam válidas, o backend gera um token JWT.
-6. O frontend armazena o token na sessão e o utiliza nas requisições protegidas.
-
-### Validade do token
-
-Atualmente, o token JWT possui validade de **8 horas**.
-
-O token contém informações de identificação do usuário e sua permissão administrativa.
-
-### Middleware de autenticação
-
-O arquivo `auth.middleware.ts` contém os middlewares responsáveis pela proteção dos endpoints.
-
-**`authenticateToken`**
-
-- Verifica se a requisição possui um token no cabeçalho `Authorization`.
-- Valida a assinatura e a validade do JWT.
-- Disponibiliza os dados do usuário autenticado para as próximas etapas.
-- Retorna HTTP 401 quando o token está ausente, inválido ou expirado.
-
-**`requireAdmin`**
-
-- Verifica se o usuário autenticado possui permissão administrativa.
-- Retorna HTTP 403 quando o usuário não possui essa permissão.
-
-### Proteção de rotas
-
-As rotas administrativas de gerenciamento de usuários exigem autenticação e permissão de administrador.
-
-O frontend também possui proteção de navegação para impedir que usuários não autenticados acessem páginas internas.
-
-A proteção do frontend complementa a autenticação, mas não substitui a validação realizada pelo backend.
-
----
-
-## 6. Endpoints de autenticação
-
-| Método | Endpoint | Descrição | Acesso |
-|---|---|---|---|
-| POST | `/auth/login` | Realiza o login e retorna o JWT. | Público |
-| GET | `/auth/me` | Valida o token e retorna informações do usuário autenticado. | Autenticado |
-
-### Exemplo de login
-
-**Requisição:**
-
-```http
-POST /auth/login
-Content-Type: application/json
+```
+requisição → routes → controller → service → repository → PostgreSQL
+                                                 ↓
+                                  integrations (APIs externas) + metrics-calculator
 ```
 
-Corpo:
+| Camada | Responsabilidade |
+| ------ | ---------------- |
+| `*.routes.ts` | Define os caminhos e métodos HTTP e liga cada um ao seu controller |
+| `*.controller.ts` | Lê o `req.body`, chama o service e devolve o status HTTP e o JSON |
+| `*.service.ts` | Regras de negócio, como escolher a lógica conforme o `periodType` |
+| `*.repository.ts` | Consultas SQL e transações (`BEGIN`, `COMMIT`, `ROLLBACK`) |
+| `integrations/` | Requisições às APIs externas |
+| `metrics-calculator.ts` | Classe `MetricsCalculator`, que calcula energia e emissão |
 
-```json
-{
-  "email": "admin@greener.com",
-  "password": "sua_senha"
-}
-```
+<br>
 
-**Resposta esperada:**
+## Variáveis de ambiente
 
-```json
-{
-  "token": "JWT_GERADO",
-  "user": {
-    "id": 1,
-    "name": "Administrador",
-    "email": "admin@greener.com",
-    "isAdm": true
-  }
-}
-```
+O backend lê o arquivo `.env` que fica na **raiz do projeto** (e não dentro de `backend/`). Para criá-lo, copie o `.env.example` e preencha os campos:
 
-### Exemplo de validação da sessão
+| Variável | Descrição |
+| -------- | --------- |
+| `PORT` | Porta do backend (se não for definida fora do Docker, o servidor usa `3000`) |
+| `FRONT_PORT` | Porta do frontend |
+| `ENVIRONMENT` | Ambiente de execução (ex.: `dev`) |
+| `POSTGRES_HOST` | Com Docker: `greener-database`. Sem Docker: `localhost` |
+| `POSTGRES_PORT` | Porta do PostgreSQL (ex.: `5432`) |
+| `POSTGRES_DB` | Nome do banco de dados (de preferência `greener_db`) |
+| `POSTGRES_USER` | Usuário do banco (geralmente `postgres`) |
+| `POSTGRES_PASSWORD` | Senha do banco, definida pelo time |
 
-**Requisição:**
+> **Nota:** usuário, senha e nome do banco precisam ser os mesmos usados quando o container do banco foi criado pela primeira vez, senão a autenticação falha.
 
-```http
-GET /auth/me
-Authorization: Bearer JWT_GERADO
-```
+<br>
 
-**Resposta esperada:**
+## Instruções para execução
+Caso queira utilizar o backend, há instruções para rodar o projeto com e sem Docker no README do projeto. Você pode acessar ele clicando [aqui](https://github.com/atmosabp/greener#instru%C3%A7%C3%B5es-para-execu%C3%A7%C3%A3o).
 
-```json
-{
-  "user": {
-    "id": 1,
-    "isAdm": true
-  }
-}
-```
+<br>
 
----
+### Scripts disponíveis
 
-## 7. Códigos de resposta HTTP
+| Comando | O que faz |
+| ------- | --------- |
+| `npm run dev` | Inicia o servidor em modo desenvolvimento, com recarga automática (`tsx watch`) |
+| `npm run build` | Compila o TypeScript para a pasta `dist/` |
+| `npm start` | Executa a versão compilada (`dist/server.js`) |
+| `npm test` | Roda os testes com Jest (precisa do banco de dados rodando) |
 
-A API utiliza códigos HTTP para indicar o resultado das operações.
+<br>
 
-| Código | Significado |
-|---|---|
-| 200 | Requisição realizada com sucesso. |
-| 201 | Recurso criado com sucesso. |
-| 400 | Requisição inválida. |
-| 401 | Usuário não autenticado ou token inválido. |
-| 403 | Usuário autenticado, mas sem permissão para acessar o recurso. |
-| 404 | Recurso não encontrado. |
-| 409 | Conflito com um recurso existente. |
-| 500 | Erro interno do servidor. |
+## Endpoints
 
----
+Todas as requisições e respostas usam JSON. Em caso de erro, os controllers respondem com status `400` e o corpo `{ "message": "..." }`. Rotas que não existem respondem `404` com `{ "message": "Rota inexistente!" }`.
 
-## 8. Considerações de segurança
+Para saber mais sobre os Endpoints acesse [aqui](https://github.com/atmosabp/greener/blob/docs/endpoints/docs/endpoints.md)
 
-Algumas medidas utilizadas no backend:
+<br>
 
-- Senhas armazenadas com hash gerado pelo bcrypt.
-- Autenticação por JWT.
-- Validação de tokens por middleware.
-- Separação entre usuários comuns e administradores.
-- Proteção de endpoints administrativos.
-- Utilização de variáveis de ambiente para informações sensíveis.
-- Controle de origem das requisições por CORS.
+## Integrações externas
 
-O arquivo `.env` não deve ser enviado ao repositório. Para compartilhar o projeto, disponibilize apenas um arquivo de exemplo, como `.env.example`, sem senhas ou chaves reais.
+O backend consome três APIs, cada uma com seu arquivo em `src/integrations/`:
 
----
+| Arquivo | API | Onde ver |
+| ------- | --- | -------------- |
+| `metrics-api.ts` | `metrics.unilaunch.org/metrics/:serviceId` | Você pode encontrar as descrições [aqui](https://github.com/atmosabp/greener/blob/develop/docs/orientacoes-config-api.md) |
+| `carbon-api.ts` | `carbon.unilaunch.org/carbon-intensity/br-sudeste` | Você pode encontrar as descrições [aqui](https://github.com/atmosabp/greener/blob/develop/docs/orientacoes-config-api.md)|
+| `services-api.ts` | `metrics.unilaunch.org/services` | Você pode encontrar as descrições [aqui](https://github.com/atmosabp/greener/blob/develop/docs/orientacoes-config-api.md) |
 
-## 9. Fluxo resumido de execução
+O status de cada serviço é calculado em `checkServiceAvailiability`:
 
-### Ambiente local
+- `active`: a API de métricas respondeu com sucesso.
+- `incomplete`: a API respondeu, mas faltam uma ou mais métricas.
+- `inactive`: a API não respondeu para tal serviço ou retornou erro.
 
-```text
-Instalar dependências
-        ↓
-Configurar .env
-        ↓
-Iniciar PostgreSQL
-        ↓
-Executar init.ts
-        ↓
-Iniciar servidor
-        ↓
-Backend disponível
-```
+<br>
 
-### Ambiente Docker
+## Cálculos
 
-```text
-Configurar variáveis de ambiente
-        ↓
-Executar docker compose up --build
-        ↓
-Docker inicia PostgreSQL e backend
-        ↓
-Aguardar banco ficar disponível
-        ↓
-Garantir que a estrutura do banco exista
-        ↓
-Executar insert.ts no contêiner do backend
-        ↓
-Backend disponível
-```
+Os cálculos são feitos pela classe `MetricsCalculator` (`src/modules/metrics-calculator.ts`) a cada coleta:
 
----
+| Cálculo | Fórmula |
+| ------- | ------- |
+| Potência estimada (W) | CPU + memória + disco + rede |
+| Energia (kWh) | Potência (W) × intervalo de coleta (h) / 1000 |
+| Emissão (CO₂e) | Energia (kWh) × intensidade de carbono (gCO₂e/kWh) |
 
-**GreenER — Fatec Jacareí**
+O detalhamento de todas as fórmulas está em [`docs/calculos.md`](https://github.com/atmosabp/greener/blob/develop/docs/calculos.md).
 
-Projeto acadêmico desenvolvido no curso de Desenvolvimento de Software Multiplataforma.
+<br>
+
+## Banco de dados
+
+O banco de dados usa PostgreSQL, e todo seu código e SQL com as queries está em [`database/schema.sql`](../database/schema.sql). O backend usa as seguintes tabelas:
+
+| Tabela | Conteúdo |
+| ------ | -------- |
+| `users` | Usuários da plataforma (`name`, `email`, `password`, `is_adm`) |
+| `services` | Serviços monitorados, com `max_emitted` e `min_emitted` |
+| `minute_data` | Histórico por minuto: CPU, memória, disco, rede, kWh, CO₂e e % renovável |
+| `hour_data` | Histórico por hora (mesma estrutura de `minute_data`) |
+| `day_data` | Histórico por dia (mesma estrutura de `minute_data`) |
+| `month_data` | Histórico por mês (mesma estrutura de `minute_data`) |
+
+A conexão é feita pelo `Pool` do `pg` em `src/db/connections.ts`, com os dados vindos das variáveis de ambiente.
+
+<br>
+
+## Testes
+
+Os testes ficam em `src/__test__/` e verificam se as rotas conversam corretamente com o banco de dados. 
+
+O passo a passo completo está em [`src/__test__/README.md`](src/__test__/README.md).
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>
+ 

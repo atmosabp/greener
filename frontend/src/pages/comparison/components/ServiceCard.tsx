@@ -1,5 +1,6 @@
 
-import type { Metrics, Service, CompareTarget } from '../comparisonData';
+import type { Metrics, Service, CompareTarget } from './comparisonData';
+import { calculateDelta, formatMetric } from './comparisonData';
 
 import {
     CarbonCard,
@@ -22,6 +23,7 @@ interface ServiceCardProps {
     isReference: boolean;
     compareWith: CompareTarget;
     hasReference: boolean;
+    baseMetrics?: Metrics;
     onMove: (direction: -1 | 1) => void;
     onToggleReference: () => void;
     onCompareChange: (target: CompareTarget) => void;
@@ -39,11 +41,16 @@ export default function ServiceCard({
     isReference,
     compareWith,
     hasReference,
+    baseMetrics,
     onMove,
     onToggleReference,
     onCompareChange,
 }: ServiceCardProps) {
     const metrics: Metrics = service.metrics;
+
+    /* Diferença em relação à base (referência ou média). */
+    const delta = (key: keyof Metrics) =>
+        baseMetrics ? calculateDelta(metrics[key], baseMetrics[key]) : undefined;
 
     return (
         <article
@@ -141,27 +148,50 @@ export default function ServiceCard({
             <div className="cmp-service__body">
                 <EnergyTile
                     label="Consumo energético"
-                    value={metrics.consumo}
+                    value={formatMetric('consumo', metrics.consumo)}
+                    delta={delta('consumo')}
                 />
 
                 <EnergyTile
                     label="Emissão de CO₂e"
-                    value={metrics.emissao}
+                    value={formatMetric('emissao', metrics.emissao)}
+                    delta={delta('emissao')}
                 />
 
                 <div className="cmp-tiles">
-                    <MetricTile label="Rede" value={metrics.rede} />
-                    <MetricTile label="CPU" value={metrics.cpu} />
+                    <MetricTile
+                        label="Rede"
+                        value={formatMetric('rede', metrics.rede)}
+                        delta={delta('rede')}
+                        unavailable={metrics.rede === undefined}
+                    />
+
+                    <MetricTile
+                        label="CPU"
+                        value={formatMetric('cpu', metrics.cpu)}
+                        delta={delta('cpu')}
+                        unavailable={metrics.cpu === undefined}
+                    />
 
                     <MetricTile
                         label="Armazenamento"
-                        value={metrics.armazenamento}
+                        value={formatMetric(
+                            'armazenamento',
+                            metrics.armazenamento,
+                        )}
+                        delta={delta('armazenamento')}
+                        unavailable={metrics.armazenamento === undefined}
                     />
 
-                    <MetricTile label="Memória" value={metrics.memoria} />
+                    <MetricTile
+                        label="Memória"
+                        value={formatMetric('memoria', metrics.memoria)}
+                        delta={delta('memoria')}
+                        unavailable={metrics.memoria === undefined}
+                    />
                 </div>
 
-                <CarbonCard metrics={metrics} />
+                <CarbonCard intensity={metrics.intensidade} />
             </div>
         </article>
     );

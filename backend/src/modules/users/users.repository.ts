@@ -82,6 +82,11 @@ export async function createUser(
     return user;
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
+    // console.error("Erro no banco: ",error);
+
+    // mantém o código do postgres (ex: 23505 = email duplicado) para o controller tratar
+    if (error.code) throw error;
+
     throw new Error(
       error.message ||
         "Ocorreu um erro ao adicionar o usuário. Tente novamente mais tarde.",

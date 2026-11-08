@@ -1,9 +1,8 @@
-
 import { admin } from "../config/env";
 import bcrypt from "bcrypt";
 import { pool } from "./connections";
 
-async function insertAdmin() {
+async function insertAdmin(): Promise<void> {
     try {
         // Recupera os dados do administrador das variáveis de ambiente
         const name = admin.name;
@@ -43,10 +42,9 @@ async function insertAdmin() {
     } catch (error) {
         console.error("Erro ao cadastrar usuário administrador:", error);
         process.exitCode = 1;
-
-    } finally {
-        await pool.end();
     }
 }
 
-insertAdmin();
+export async function runInsert(): Promise<void> {
+    await insertAdmin();
+}

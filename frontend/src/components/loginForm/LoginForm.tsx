@@ -4,6 +4,7 @@ import "./LoginForm.css";
 import { useState } from "react";
 import { type ErrorsLogin } from "../../types/login";
 import { useNavigate } from "react-router-dom";
+import Toast from "../toast/Toast";
 
 export default function LoginForm() {
   // Variáveis
@@ -51,16 +52,19 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
 
-      const response = await fetch("http://localhost:3002/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `http://localhost:${import.meta.env.VITE_PORT}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            password,
+          }),
         },
-        body: JSON.stringify({
-          email: email.trim(),
-          password,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -74,13 +78,11 @@ export default function LoginForm() {
 
       // Armazena os dados do usuário
       sessionStorage.setItem("user", JSON.stringify(data.user));
-      
-      navigate("/home");
 
+      navigate("/home");
     } catch (error) {
       console.error("Erro ao realizar login:", error);
       setApiError("Não foi possível conectar ao servidor.");
-
     } finally {
       setIsLoading(false);
     }
@@ -94,10 +96,16 @@ export default function LoginForm() {
             {errors.email ? "E-mail" : "Email*"}
           </label>
           {errors.email && (
-            <span id="email-error" className="error-msg">
-              {errors.email}
-            </span>
-          )}
+              <span id="email-error" className="error-msg">
+                {errors.email}
+              </span>
+            ) && (
+              <Toast
+                icon="error"
+                title="Informações incorretas"
+                message={errors.email}
+              />
+            )}
         </div>
         <input
           type="email"
@@ -121,10 +129,16 @@ export default function LoginForm() {
             {errors.password ? "Senha" : "Senha*"}
           </label>
           {errors.password && (
-            <span id="password-error" className="error-msg">
-              {errors.password}
-            </span>
-          )}
+              <span id="password-error" className="error-msg">
+                {errors.password}
+              </span>
+            ) && (
+              <Toast
+                icon="error"
+                title="Informações incorretas"
+                message={errors.password}
+              />
+            )}
         </div>
         <div className="password-input">
           <input
@@ -167,20 +181,21 @@ export default function LoginForm() {
 
       <div className="form-link">
         {apiError && (
-          <p className="error-msg" role="alert">
-            {apiError}
-          </p>
-        )}
+            <p className="error-msg" role="alert">
+              {apiError}
+            </p>
+          ) && (
+            <Toast
+              icon="error"
+              title="Erro"
+              message={apiError}
+            />
+          )}
 
-        <button
-          type="submit"
-          className="btn-login"
-          disabled={isLoading}
-        >
+        <button type="submit" className="btn-login" disabled={isLoading}>
           {isLoading ? "Entrando..." : "Entrar"}
         </button>
       </div>
     </form>
   );
 }
-

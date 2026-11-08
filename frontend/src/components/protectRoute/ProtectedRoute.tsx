@@ -26,7 +26,7 @@ export default function ProtectedRoute({
             }
 
             try {
-                const response = await fetch("http://localhost:3002/auth/me", {
+                const response = await fetch(`http://localhost:${import.meta.env.VITE_PORT}/auth/me`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
