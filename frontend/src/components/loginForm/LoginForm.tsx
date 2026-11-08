@@ -87,6 +87,9 @@ export default function LoginForm({ onShowToast }: LoginFormProps) {
         throw new Error("INVALID_RESPONSE");
       }
 
+      console.log("Status:", response.status);
+      console.log("Resposta do servidor:", data);
+
       // Tratamento dos erros HTTP
       if (!response.ok) {
         switch (response.status) {
