@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Toast from "../toast/Toast";
 
+const FRONT_PORT = import.meta.env.VITE_PORT;
+
 interface ProtectedRouteProps {
     requireAdmin?: boolean;
 }

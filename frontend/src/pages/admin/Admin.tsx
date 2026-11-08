@@ -11,7 +11,6 @@ import {
 import CadHeader from "../../components/header/CadHeader";
 import CadForm from "../../components/form/CadForm";
 import AltForm from "../../components/form/AltForm";
-import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
 import Warning from "../../components/warning/Warning";
 import type { FormValues } from "../../types/form";
@@ -166,7 +165,6 @@ function EmptyState() {
 
 export default function Admin() {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // primeira busca no back
   const [saving, setSaving] = useState<boolean>(false); // evita enviar duas vezes
   const [toast, setToast] = useState<ToastState | null>(null);
 
@@ -216,8 +214,6 @@ export default function Admin() {
       setUsers(data ?? []);
     } catch (e) {
       showToast("error", "Erro ao carregar usuários", errorMessage(e));
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -328,8 +324,6 @@ export default function Admin() {
     await getUsers();
   }
 
-  if (loading) return <Loading />;
-
   return (
     <div className="admin-page">
       {toast && (
@@ -363,6 +357,7 @@ export default function Admin() {
           onCancel={() => setDeleteIds(null)}
         />
       )}
+
       <CadHeader />
 
       <main className="admin">
