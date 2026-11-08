@@ -1,5 +1,14 @@
-import { reqCarbonValue, reqRenewablePercent } from "../../integrations/carbon-api";
-import { reqInterval, reqMetrics, reqMetricsCPU, reqMetricsDisk, reqMetricsMemory, reqMetricsNetwork } from "../../integrations/metrics-api";
+import {
+  reqCarbonValue,
+  reqRenewablePercent,
+} from "../../integrations/carbon-api";
+import {
+  reqInterval,
+  reqMetricsCPU,
+  reqMetricsDisk,
+  reqMetricsMemory,
+  reqMetricsNetwork,
+} from "../../integrations/metrics-api";
 import { reqServices } from "../../integrations/services-api";
 import { ServiceTypes } from "../../types/services-types";
 import { MetricsCalculator } from "../metrics-calculator";
@@ -12,16 +21,18 @@ import {
   findServiceHourHistory,
   findServiceMonthHistory,
   findHistory,
+  findDayHistory,
+  findServiceDayHistory,
 } from "./collections.repository";
 
-export async function addHistory(datePull: any) {
+export async function addHistory(serviceId: string) {
   // TODO: fazer com que pegue todos os serviços da lista da API auxiliar, colocar em um json
   // e depois colocar como segundo parâmetro da função abaixo.
 
   // Provavelmente fazer um for loop que a cada serviço no json
   // chame essa função.
 
-  const result = await addMinuteHistory(datePull, "billing-api");
+  const result = await addMinuteHistory(serviceId);
 
   if (!result) return null;
 
@@ -29,28 +40,28 @@ export async function addHistory(datePull: any) {
 }
 
 export async function getServiceMetrics(serviceId: string) {
-  // TODO: revisar a lógica para retornar TODOS os dados necessários para a tela dashboard
-  const result = await reqMetrics(serviceId);
+  let cpu,
+    memory,
+    collectionIntervalSeconds,
+    carbonIntensity,
+    renewablePercent,
+    disk,
+    network,
+    kwh,
+    co2e: number | undefined = undefined;
+  let service: ServiceTypes | undefined = undefined;
 
-  if (!result) return null;
+  try {
+    service = (await reqServices()).find((value) => value.id == serviceId);
 
+    cpu = await reqMetricsCPU(serviceId);
+    memory = await reqMetricsMemory(serviceId);
+    collectionIntervalSeconds = await reqInterval(serviceId);
+    carbonIntensity = await reqCarbonValue(serviceId);
+    renewablePercent = await reqRenewablePercent(serviceId);
+    disk = await reqMetricsDisk(serviceId);
+    network = await reqMetricsNetwork(serviceId);
 
-  return result;
-}
-
-export async function getAllServicesMetrics() {
-  // TODO: fazer a lógica para retornar TODOS os dados de TODOS os serviços (tela de ranking e tela principal/globo)
-  const result = await reqServices();
-
-  for(let service of result){
-    const cpu = (await reqMetricsCPU(service.id!));
-    const memory = (await reqMetricsMemory(service.id!));
-    const collectionIntervalSeconds = (await reqInterval(service.id!));
-    const carbonIntensity = (await reqCarbonValue(service.id!));
-    const renewablePercent = (await reqRenewablePercent(service.id!));
-    const disk = (await reqMetricsDisk(service.id!));
-    const network = (await reqMetricsNetwork(service.id!));
-    
     const metricsCalculator = new MetricsCalculator({
       collection_interval_seconds: collectionIntervalSeconds,
       metrics: {
@@ -63,21 +74,93 @@ export async function getAllServicesMetrics() {
       renewable_share_percent: renewablePercent,
     });
 
-    let kwh;
-    let co2e;
-
-    try{
-      kwh = metricsCalculator.calculateKWh() || undefined;
-      co2e = metricsCalculator.calculateCO2e() || undefined;
-    } catch(error: any){
-    }
-
-    service.metrics = {cpu_percent: cpu, memory_gb: memory, disk_gb: disk, network_gb: network, co2e: co2e, kwh: kwh}
+    kwh = metricsCalculator.calculateKWh() || undefined;
+    co2e = metricsCalculator.calculateCO2e() || undefined;
+  } catch (error: any) {
+    console.error(error.message);
   }
+
+  const metrics = {
+    cpu_percent: cpu,
+    memory_gb: memory,
+    disk_gb: disk,
+    network_gb: network,
+    co2e: co2e,
+    kwh: kwh,
+    renewable_percent: renewablePercent,
+    carbon_intensity: carbonIntensity,
+  };
+
+  const result = {
+    name: service?.name,
+    status: service?.status,
+    location: service?.location,
+    metrics: metrics,
+  };
 
   if (!result) return null;
 
   return result;
+}
+
+export async function getAllServicesMetrics() {
+  let result: ServiceTypes[] | undefined = undefined;
+  let fetchedServices: any;
+
+  try {
+    result = await reqServices();
+
+    if (!result) return null;
+
+    fetchedServices = await Promise.all(
+      result.map(async (service) => {
+        const id = service.id!;
+
+        try {
+          const [cpu, memory, interval, carbon, renewable, disk, network] =
+            await Promise.all([
+              reqMetricsCPU(id),
+              reqMetricsMemory(id),
+              reqInterval(id),
+              reqCarbonValue(id),
+              reqRenewablePercent(id),
+              reqMetricsDisk(id),
+              reqMetricsNetwork(id),
+            ]);
+
+          const calc = new MetricsCalculator({
+            collection_interval_seconds: interval,
+            metrics: {
+              cpu_percent: cpu,
+              memory_gb: memory,
+              disk_gb: disk,
+              network_gb: network,
+            },
+            carbon_intensity_gco2e_per_kwh: carbon,
+            renewable_share_percent: renewable,
+          });
+
+          service.metrics = {
+            cpu_percent: cpu,
+            memory_gb: memory,
+            disk_gb: disk,
+            network_gb: network,
+            co2e: calc.calculateCO2e() || undefined,
+            kwh: calc.calculateKWh() || undefined,
+          };
+        } catch (e: any) {
+          console.error(`Falha no serviço ${id}. Erro:`, e.message);
+          service.metrics = {};
+        }
+
+        return service;
+      }),
+    );
+  } catch (e: any) {
+    // console.error(e.message);
+  }
+
+  return fetchedServices;
 }
 
 export async function searchAllHistory() {
@@ -95,13 +178,13 @@ export async function searchHistory(periodType: string, datePull: any) {
     case "minute":
       result = await findMinuteHistory(datePull);
       break;
-    case "day":
-      //trocar função para a correta
-      result = await findMinuteHistory(datePull);
-      break;
     case "hour":
       result = await findHourHistory(datePull);
       break;
+    case "day":
+      result = await findDayHistory(datePull);
+      break;
+
     case "month":
       result = await findMonthHistory(datePull);
       break;
@@ -125,6 +208,9 @@ export async function searchServiceHistory(
       break;
     case "hour":
       result = await findServiceHourHistory(datePull, serviceId);
+      break;
+    case "day":
+      result = await findServiceDayHistory(datePull, serviceId);
       break;
     case "month":
       result = await findServiceMonthHistory(datePull, serviceId);

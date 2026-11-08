@@ -1,12 +1,18 @@
 import type { ApiCarbon } from "../types/carbon";
+import type { ServiceTypes } from "../types/services-types";
 
-const urlApi = "https://carbon.unilaunch.org/carbon-intensity/br-sudeste";
+const urlApi = "https://carbon.unilaunch.org/carbon-intensity/";
+const serviceURL = "https://metrics.unilaunch.org/services/";
 
 export async function reqMetrics(serviceId: string) {
   try {
-    const resp = await fetch(urlApi); //+serviceId
+    const responseService = await fetch(`https://metrics.unilaunch.org/services/${serviceId}`);
+    const data: ServiceTypes = await responseService.json();
 
-    if (resp.ok) {
+    var resp;
+    if(data.location){
+      resp = await fetch(`${urlApi}${data.location.region_code}`);
+
       const objMetrics: ApiCarbon = await resp.json();
 
       return objMetrics;
@@ -24,7 +30,7 @@ export async function reqCarbonValue(serviceId: string): Promise<number|undefine
   if (!respMetrics) return;
 
   if (!respMetrics.carbon_intensity_gco2e_per_kwh) {
-    throw new Error("Não foi possivel capturar métricas da CPU.");
+    throw new Error("Não foi possivel capturar a intensidade de carbono.");
   }
 
   const valueCarbon = respMetrics.carbon_intensity_gco2e_per_kwh;
