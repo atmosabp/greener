@@ -4,7 +4,10 @@ import { Client } from "pg";
 import { UserEditValues } from "../../types/user-types";
 
 export async function findUsers() {
-  const result = await pool.query(`SELECT * FROM users`);
+  // não devolve a senha para quem lista os usuários
+  const result = await pool.query(
+    `SELECT id, name, email, is_adm FROM users ORDER BY id`,
+  );
 
   return result.rows || null;
 }
@@ -39,7 +42,7 @@ async function insertUser(
   const result = await client.query(
     `INSERT INTO users (name, email, password, is_adm)
         VALUES ($1, $2, $3, $4)
-        RETURNING id, name, email, password, is_adm`,
+        RETURNING id, name, email, is_adm`,
     [name, email, password, isAdm],
   );
 
@@ -66,6 +69,10 @@ export async function createUser(
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
     // console.error("Erro no banco: ",error);
+
+    // mantém o código do postgres (ex: 23505 = email duplicado) para o controller tratar
+    if (error.code) throw error;
+
     throw new Error(
       error.message ||
         "Ocorreu um erro ao adicionar o usuário. Tente novamente mais tarde.",
@@ -110,7 +117,7 @@ export async function updateUser(id: number, newValues: UserEditValues) {
     `UPDATE users
         SET ${fields.join(", ")}
         WHERE id = $${paramIndex}
-        RETURNING *`,
+        RETURNING id, name, email, is_adm`,
     values
   );
 
