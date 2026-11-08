@@ -19,7 +19,7 @@ create table if not exists minute_data(
 	id serial primary key,
 	co2e float,
 	kwh float,
-	date_pull timestamp with time zone default current_timestamp,
+	date_pull timestamp with time zone default date_trunc('minute',current_timestamp at time zone '+06'),
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,

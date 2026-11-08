@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: 'America/Sao_Paulo'
+      PGTZ: 'America/Sao_Paulo'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -38,6 +40,7 @@ services:
       NODE_WATCH_USE_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "1000"
+      TZ: America/Sao_Paulo
     depends_on:
       database:
         condition: service_healthy
@@ -50,7 +53,6 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-    
   frontend:
     build: ./frontend
     container_name: greener-frontend
@@ -58,8 +60,9 @@ services:
     ports:
       - "${FRONT_PORT}:5173"
     environment:
-      BACKEND_PORT: ${PORT}
+      TZ: America/Sao_Paulo
       VITE_PORT: ${VITE_PORT}
+      BACKEND_PORT: ${PORT}
     depends_on:
       backend:
         condition: service_healthy
