@@ -1,6 +1,6 @@
 .toast {
     --toast-color: var(--success);
-    z-index: 9999;
+    z-index: 999999;
     position: fixed;
     right: 30px;
     top: 30px;
