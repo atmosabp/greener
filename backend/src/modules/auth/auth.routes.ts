@@ -8,10 +8,10 @@ import { authenticateToken } from "../../middlewares/middleware";
 
 export const router = Router();
 
-// Login
+// Login - http://localhost:3000/auth/login
 router.post("/login", loginController);
 
-// Verificar sessão
+// Verificar sessão - http://localhost:3000/auth/me
 router.get("/me", authenticateToken, currentUserController);
 
 /*
@@ -23,7 +23,7 @@ LOGIN:
 POST http://localhost:3002/auth/login
 
 CMD:
-curl -X POST http://localhost:3002/auth/login -H "Content-Type: application/json" -d "{\"email\":\"admin@gmail.com\",\"password\":\"admin123\"}"
+curl -X POST http://localhost:3002/auth/login -H "Content-Type: application/json" -d "{\"email\":\"admin@email.com\",\"password\":\"123456\"}"
 
 Resposta esperada:
 - Status 200: login realizado.

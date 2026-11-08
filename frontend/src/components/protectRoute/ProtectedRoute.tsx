@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Toast from "../toast/Toast";
 
 interface ProtectedRouteProps {
     requireAdmin?: boolean;
@@ -20,7 +21,9 @@ export default function ProtectedRoute({
         async function verifyAuthentication() {
             const token = sessionStorage.getItem("token");
 
+
             if (!token) {
+                <Toast icon="error" title="Erro" message="Usuário não autenticado." />
                 setStatus("unauthenticated");
                 return;
             }
@@ -37,11 +40,13 @@ export default function ProtectedRoute({
                 if (response.status === 401) {
                     sessionStorage.removeItem("token");
                     sessionStorage.removeItem("user");
+                    <Toast icon="error" title="Erro" message="Usuário não autenticado." />
                     setStatus("unauthenticated");
                     return;
                 }
 
                 if (!response.ok) {
+                    <Toast icon="error" title="Erro" message="Não foi possível validar a sessão." />
                     throw new Error("Não foi possível validar a sessão.");
                 }
 
@@ -50,18 +55,20 @@ export default function ProtectedRoute({
                 sessionStorage.setItem("user", JSON.stringify(data.user));
 
                 if (requireAdmin && !data.user.isAdm) {
+                    <Toast icon="error" title="Erro" message="Usuário não é um administrador." />
                     setStatus("forbidden");
                     return;
                 }
 
                 setStatus("authenticated");
 
-            } catch (error) {
+            } catch (error: any) {
                 if (error instanceof Error && error.name === "AbortError") {
                     return;
                 }
 
-                console.error("Erro ao verificar autenticação:", error);
+                <Toast icon="error" title="Erro" message={`Erro ao autenticar. ${error.message}`} />
+                console.error("Erro ao verificar autenticação: ", error);
                 setStatus("error");
             }
         }
