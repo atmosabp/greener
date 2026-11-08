@@ -31,14 +31,6 @@ export default function Login() {
 
   return (
     <>
-      {/*Lógica de isLoading aqui  */}
-      {/* <Loading /> */}
-      {/* <Toast icon="" title="" message="" /> */}
-      {/* <Warning /> */}
-      {/* Lógica de success ou error  */}
-      {/* <Toast icon="success" title="oi" message="teste teste"/> */}
-      {/* Lógica para modal de tem certeza? */}
-     {/* <Warning variant="logout" /> */}
       <header>
         <div className="header-btns">
           <Link to="/" className="btn-back">

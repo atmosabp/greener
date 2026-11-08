@@ -1,10 +1,9 @@
-import express from 'express';
-
+import express from "express";
 import cors from "cors";
-
 import { router } from "./modules";
 
 export const app = express();
+
 app.use(express.json());
 
 const allowedOrigins = [
@@ -26,7 +25,7 @@ app.use(cors({
 
 // localhost:3000/health
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
+    res.json({ status: "ok" });
 });
 
 app.use("/", router);

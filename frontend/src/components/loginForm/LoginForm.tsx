@@ -4,6 +4,7 @@ import "./LoginForm.css";
 import { useState } from "react";
 import { type ErrorsLogin } from "../../types/login";
 import { useNavigate } from "react-router-dom";
+import Toast from "../toast/Toast";
 
 export default function LoginForm() {
   // Variáveis
@@ -11,6 +12,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<ErrorsLogin>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
 
   // Função de validação de email (tratamento do campo)
@@ -33,8 +36,8 @@ export default function LoginForm() {
 
   // Função do login
   // React.FormEvent<HYMLFormElement> -> isso aqui foi pq o typescript pediu
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => { 
-    e.preventDefault(); // Evita que o browser recarregue a página após submissão..
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     const newErrors: ErrorsLogin = {
       email: validateEmail(email),
@@ -42,12 +45,47 @@ export default function LoginForm() {
     };
 
     setErrors(newErrors);
+    setApiError("");
 
-    // se algum erro existir, retorna aqui
     if (newErrors.email || newErrors.password) return;
 
-    // Depois adicionar aqui o login e etc
-    navigate("/home");
+    try {
+      setIsLoading(true);
+
+      const response = await fetch(
+        `http://localhost:${import.meta.env.VITE_PORT}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            password,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setApiError(data.message || "Não foi possível realizar o login.");
+        return;
+      }
+
+      // Armazena o token JWT
+      sessionStorage.setItem("token", data.token);
+
+      // Armazena os dados do usuário
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+
+      navigate("/home");
+    } catch (error) {
+      console.error("Erro ao realizar login:", error);
+      setApiError("Não foi possível conectar ao servidor.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,13 +93,19 @@ export default function LoginForm() {
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="email" title="Campo obrigatório">
-           {errors.email ? "E-mail" : "Email*"} 
+            {errors.email ? "E-mail" : "Email*"}
           </label>
           {errors.email && (
-            <span id="email-error" className="error-msg">
-              {errors.email}
-            </span>
-          )}
+              <span id="email-error" className="error-msg">
+                {errors.email}
+              </span>
+            ) && (
+              <Toast
+                icon="error"
+                title="Informações incorretas"
+                message={errors.email}
+              />
+            )}
         </div>
         <input
           type="email"
@@ -82,13 +126,19 @@ export default function LoginForm() {
       <div className="form-field">
         <div className="label-row">
           <label htmlFor="password" title="campo obrigatório.">
-             {errors.password ? "Senha" : "Senha*"} 
+            {errors.password ? "Senha" : "Senha*"}
           </label>
           {errors.password && (
-            <span id="password-error" className="error-msg">
-              {errors.password}
-            </span>
-          )}
+              <span id="password-error" className="error-msg">
+                {errors.password}
+              </span>
+            ) && (
+              <Toast
+                icon="error"
+                title="Informações incorretas"
+                message={errors.password}
+              />
+            )}
         </div>
         <div className="password-input">
           <input
@@ -130,11 +180,22 @@ export default function LoginForm() {
       </div>
 
       <div className="form-link">
-        <button type="submit" className="btn-login">
-          Entrar
+        {apiError && (
+            <p className="error-msg" role="alert">
+              {apiError}
+            </p>
+          ) && (
+            <Toast
+              icon="error"
+              title="Erro"
+              message={apiError}
+            />
+          )}
+
+        <button type="submit" className="btn-login" disabled={isLoading}>
+          {isLoading ? "Entrando..." : "Entrar"}
         </button>
       </div>
     </form>
   );
 }
-

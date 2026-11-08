@@ -4,32 +4,46 @@ import { Client } from "pg";
 import { UserEditValues } from "../../types/user-types";
 
 export async function findUsers() {
-  // não devolve a senha para quem lista os usuários
-  const result = await pool.query(
-    `SELECT id, name, email, is_adm FROM users ORDER BY id`,
-  );
+    const result = await pool.query(`
+        SELECT
+            id,
+            name,
+            email,
+            is_adm
+        FROM users
+    `);
 
-  return result.rows || null;
+    return result.rows || null;
 }
 
 export async function findUserById(id: number) {
-  const result = await pool.query(
-    `SELECT 
-        id,
-        name, 
-        email, 
-        password, 
-        is_adm 
-        FROM users 
-        WHERE id=$1`,
-    [id],
-  );
+    const result = await pool.query(
+        `SELECT
+            id,
+            name,
+            email,
+            is_adm
+        FROM users
+        WHERE id = $1`,
+        [id]
+    );
 
-  if (result && result.rowCount == 1) {
-    return result.rows;
-  } else {
+    if (result && result.rowCount === 1) {
+        return result.rows;
+    }
+
     return null;
-  }
+}
+
+export async function findUserByEmail(email: string) {
+    const result = await pool.query(
+        `SELECT id, name, email, password, is_adm
+        FROM users
+        WHERE email = $1`,
+        [email]
+    );
+
+    return result.rows[0] || null;
 }
 
 async function insertUser(
