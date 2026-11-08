@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "./Header.css";
 import logo from "../../assets/logo-greener-n-text.svg";
 import logoText from "../../assets/logo-greener.svg";
@@ -12,7 +12,7 @@ export default function Header({
   message,
   activeHref,
 }: HeaderProps) {
-  const compact_query =  "(max-width: 1024px)";
+  const compact_query = "(max-width: 1024px)";
   const [openMenu, setOpenMenu] = useState(false);
   const [isCompact, setIsCompact] = useState(
     () => window.matchMedia(compact_query).matches,
@@ -40,7 +40,10 @@ export default function Header({
     <>
       {/* Tablet: barra fixa sempre visível - Celular: só o botão (fixo no canto) */}
       <div className="tablet-bar">
-        <img src={logo} alt="Logo Greener" className="trigger-logo" />
+        <Link to="/home">
+          <img src={logo} alt="Logo Greener" className="trigger-logo" />]
+        </Link>
+
         <div className="trigger-btns">
           {message}
           <ThemeToggle />
@@ -66,11 +69,11 @@ export default function Header({
         aria-hidden="true"
       />
 
-      <header
-        id="main-menu"
-        className={`menu ${openMenu ? "active" : ""}`}
-      >
-        <img src={headerImage} alt="Logo Greener" className="logo" />
+      <header id="main-menu" className={`menu ${openMenu ? "active" : ""}`}>
+        <Link to="/home">
+          <img src={headerImage} alt="Logo Greener" className="logo" />
+        </Link>
+
         <nav className="menu-links">
           {links.map((link) =>
             "to" in link ? (
