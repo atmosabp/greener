@@ -42,7 +42,7 @@ interface ApiService {
 /* Busca no backend                                                    */
 /* ------------------------------------------------------------------ */
 
-const API_URL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_PORT || 3000;
 
 function toService(apiService: ApiService): Service {
     const metrics = apiService.metrics ?? {};
@@ -70,7 +70,7 @@ function toService(apiService: ApiService): Service {
 }
 
 export async function fetchServices(): Promise<Service[]> {
-    const result = await fetch(`${API_URL}/collections/all-service-data`);
+    const result = await fetch(`http://localhost:${API_URL}/collections/all-service-data`);
 
     if (!result.ok) {
         throw new Error('Não foi possível buscar os dados dos serviços.');

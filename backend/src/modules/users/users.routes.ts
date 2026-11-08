@@ -17,17 +17,17 @@ export const router = Router();
 
 router.use(authenticateToken, requireAdmin);
 
-// POST localhost:3000/users
+// POST localhost:PORT/users
 router.post("/", createUserController);
 
-// GET localhost:3000/users/get-users
+// GET localhost:PORT/users/get-users
 router.get("/get-users", listUsersController);
 
-// GET localhost:3000/users/:id
+// GET localhost:PORT/users/:id
 router.get("/:id", listUserByIdController);
 
-// PATCH localhost:3000/users/:id
+// PATCH localhost:PORT/users/:id
 router.patch("/:id", editUserController);
 
-// DELETE localhost:3000/users/:id
+// DELETE localhost:PORT/users/:id
 router.delete("/:id", deleteUserByIdController);

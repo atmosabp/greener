@@ -1,6 +1,7 @@
 import { app } from "./app";
 import { historyWorker } from "./worker/worker";
 import { runInsert } from "./db/insert";
+
 const PORT = Number(process.env.PORT ?? 3000);
 
 app.listen(PORT, () => {
