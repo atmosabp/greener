@@ -18,14 +18,24 @@ export interface ServiceListChanges {
 function normalizeLocation(location: ServiceTypes["location"]): string {
   if (!location) return "";
 
-  return JSON.stringify({
+  const normalizedLocation = {
     region_code: location.region_code ?? null,
     country: location.country ?? null,
     region: location.region ?? null,
     city: location.city ?? null,
     latitude: location.latitude ?? null,
     longitude: location.longitude ?? null,
-  });
+  };
+
+  const hasMeaningfulData = Object.values(normalizedLocation).some(
+    (value) => value !== null && value !== undefined,
+  );
+
+  if (!hasMeaningfulData) {
+    return "";
+  }
+
+  return JSON.stringify(normalizedLocation);
 }
 
 function findChangedFields(
