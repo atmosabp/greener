@@ -70,8 +70,9 @@ Continuando com a implementação de erros no frontend, desenvolvimento de READM
 
 #### 31/out
 Hoje foi iniciado o sistema de segurança da aplicação, começando a autenticação JWT no backend.  
+Também foi iniciado o mecanismo de coleta periódica, que é muito importante pois guarda os históricos de métricas de todos os serviços, que irá ser usado na 3° sprint nas telas de dashboard, ranking e comparação.  
 
-**Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
+**Beatriz** -> Finaliza implementação dos estados de loading e erro (DW09)   
 **Darcy** -> Inicia mecanismo de coleta periódica (TP16)  
 **Júlia** -> Continua integração backend da tela principal e faz relatório do dia (DW08)  
 **Kauã** -> Finaliza documento README backend (ES17)  
@@ -81,6 +82,7 @@ Hoje foi iniciado o sistema de segurança da aplicação, começando a autentica
 ---
 
 #### 01/nov
+Foi iniciado os READMEs da pasta de frontend e do database, que ajuda desenvolvedores a entender como cada parte funciona, e como fazer alterações nela, caso necessário.
 
 **Beatriz** -> Faz correções de cores dos temas nos avisos e erros (DW09)   
 **Darcy** -> Continua mecanismo de coleta periódica (TP16)  
@@ -92,31 +94,53 @@ Hoje foi iniciado o sistema de segurança da aplicação, começando a autentica
 ---
 
 #### 03/nov
+Nesse dia, o mecanismo de coleta periódica foi finalizado, que era uma das adições mais esperadas pelo grupo, para permitir que o histórico fosse guardado automaticamente.  
+Também foi iniciado integrações com backend de algumas telas.
 
 **Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
 **Darcy** -> Finaliza mecanismo de coleta periódica e inicia integração backend tela de ranking (TP16 e DW10)  
 **Júlia** -> Faz relatório e cria documento de nomeação de branches e commits  
-**Kauã** -> Inicia integração backend tela de comparação (DW11)  
+**Kauã** -> Faz integração backend tela de comparação (DW11)  
 **Lorenzo** -> Inicia implementação tratamento de erros no login (DW05)  
-**Mariana** -> Inicia documento README do database (ES17)  
+**Mariana** -> Finaliza documento README do database (ES17)  
 
 ---
 
 #### 06/nov
+O roteiro do vídeo foi iniciado nesse dia, definindo o que cada membro irá falar.  
+O principal foram as integrações das telas de ranking e cadastro com o backend e vários ajustes no código do servidor, também.
+
+**Beatriz** -> Inicia implementação dos estados de loading e erro (DW09)   
+**Darcy** -> Continua integração backend tela de ranking (DW10)  
+**Júlia** -> Faz relatório e cria documento de nomeação de branches e commits  
+**Kauã** -> Inicia integração backend tela de cadastro (DW12)  
+**Lorenzo** -> Inicia implementação tratamento de erros no login (DW05)  
+**Mariana** -> Faz ajustes na detecção de alteração na lista de serviços (TP13)  
 
 ---
 
-
 #### 07/nov
+Os testes de integração foram continuados da sprint anterior, para serem finalizados para cobrir quase todas as rotas, e garantir suas integridades.  
+A edição do vídeo foi iniciada, separando as cenas e gravando os clipes para serem juntados com as falas posteriormente.  
+
+**Beatriz** -> Desenvolve e edita vídeo (ES14)    
+**Darcy** -> Finaliza integração backend tela de ranking (DW10)  
+**Júlia** -> Faz ajustes na integração do backend com o loading, avisos e erros  
+**Kauã** -> Finaliza integração backend tela de cadastro/admin (DW12)  
+**Lorenzo** -> Finaliza implementação tratamento de erros no login e inicia tratamento de erros no cadastro (DW05)  
+**Mariana** -> Inicia testes de integração (ES17)  
 
 ---
 
 #### 08/nov
+Nesse dia, o vídeo foi finalizado, adicionando os áudios de todos os membros e terminando a edição.  
+De tasks funcionais, o grupo inteiro colaborou em terminar e ajustar os testes de implementação, autenticação JWT, tratamento de erros e outras funcionalidades do backend. Completando por fim todas as tasks da sprint.   
 
 ---
 
 #### 09/nov  
-Este é o dia da Sprint Review. Não houve daily pois o desenvolvimento já foi concluído.
+Este é o dia da Sprint Review. Não houve daily pois o desenvolvimento já foi concluído no dia anterior.  
+Caso queira ver sobre as informações da Sprint Review, veja [esse link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-2.md).
 
 </details>
 
