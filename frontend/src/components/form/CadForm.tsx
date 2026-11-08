@@ -48,7 +48,6 @@ export default function CadForm({ onClose }: CadFormProps) {
       onClose={onClose}
       onSubmit={(values) => {
         // Depois enviar values para back,banco...
-        console.log(values);
         navigate("/home");
       }}
     />

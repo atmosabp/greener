@@ -190,7 +190,7 @@ export default function Admin() {
 
   // TODO: integrar com o back
   const deleteUsers = (ids: number[]) => {
-    console.log("deletar usuários:", ids);
+    console.log("deletar usuários:", ids); //transformar em aviso
     setSelected(new Set());
   };
 
