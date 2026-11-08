@@ -21,16 +21,18 @@ import {
   findServiceHourHistory,
   findServiceMonthHistory,
   findHistory,
+  findDayHistory,
+  findServiceDayHistory,
 } from "./collections.repository";
 
-export async function addHistory(datePull: any) {
+export async function addHistory(serviceId: string) {
   // TODO: fazer com que pegue todos os serviços da lista da API auxiliar, colocar em um json
   // e depois colocar como segundo parâmetro da função abaixo.
 
   // Provavelmente fazer um for loop que a cada serviço no json
   // chame essa função.
 
-  const result = await addMinuteHistory(datePull, "billing-api");
+  const result = await addMinuteHistory(serviceId);
 
   if (!result) return null;
 
@@ -176,13 +178,13 @@ export async function searchHistory(periodType: string, datePull: any) {
     case "minute":
       result = await findMinuteHistory(datePull);
       break;
-    case "day":
-      //trocar função para a correta
-      result = await findMinuteHistory(datePull);
-      break;
     case "hour":
       result = await findHourHistory(datePull);
       break;
+    case "day":
+      result = await findDayHistory(datePull);
+      break;
+
     case "month":
       result = await findMonthHistory(datePull);
       break;
@@ -206,6 +208,9 @@ export async function searchServiceHistory(
       break;
     case "hour":
       result = await findServiceHourHistory(datePull, serviceId);
+      break;
+    case "day":
+      result = await findServiceDayHistory(datePull, serviceId);
       break;
     case "month":
       result = await findServiceMonthHistory(datePull, serviceId);

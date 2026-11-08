@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import Form from "./Form";
 import { compose, email, matches, minLength, required } from "./Validators";
-import type { FieldConfig } from "../../types/form";
+import type { FieldConfig, FormValues } from "../../types/form";
 
 const fields: FieldConfig[] = [
   {
@@ -34,12 +33,11 @@ const fields: FieldConfig[] = [
 ];
 
 type CadFormProps = {
+  onSave?: (values: FormValues) => void; // quem usa o form envia para o back
   onClose?: () => void;
 };
 
-export default function CadForm({ onClose }: CadFormProps) {
-  const navigate = useNavigate();
-
+export default function CadForm({ onSave, onClose }: CadFormProps) {
   return (
     <Form
       title="Cadastrar usuário"
@@ -47,9 +45,7 @@ export default function CadForm({ onClose }: CadFormProps) {
       submitLabel="Cadastrar"
       onClose={onClose}
       onSubmit={(values) => {
-        // Depois enviar values para back,banco...
-        console.log(values);
-        navigate("/home");
+        onSave?.(values);
       }}
     />
   );

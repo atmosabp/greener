@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -11,13 +11,49 @@ import {
 import CadHeader from "../../components/header/CadHeader";
 import CadForm from "../../components/form/CadForm";
 import AltForm from "../../components/form/AltForm";
+import Toast from "../../components/toast/Toast";
+import Warning from "../../components/warning/Warning";
+import type { FormValues } from "../../types/form";
+import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
 
 interface User {
   id: number;
   name: string;
   email: string;
+  is_adm?: boolean;
 }
+
+interface ToastState {
+  id: number; // muda a cada toast, para o React recriar o componente
+  icon: ToastIcon;
+  title: string;
+  message?: string;
+}
+
+// rotas de usuários do back (ver docs/endpoints.md)
+const USERS_URL = `http://localhost:${import.meta.env.VITE_PORT}/users`;
+
+// faz o fetch e, se o back responder erro, lança a mensagem que ele mandou
+async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const result = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+    },
+    ...options,
+  });
+  const data = await result.json().catch(() => null);
+
+  if (!result.ok) {
+    throw new Error(data?.message || "Não foi possível falar com o servidor.");
+  }
+  return data as T;
+}
+
+// pega a mensagem de um erro de forma segura para o TypeScript
+const errorMessage = (e: unknown) =>
+  e instanceof Error ? e.message : undefined;
 
 // opções do seletor "Mostrando X por página"
 const PAGE_SIZES = [5, 10, 15, 20, 50];
@@ -52,12 +88,7 @@ interface CheckboxProps {
 // Checkbox customizado: o input de verdade fica invisível por cima e o span
 // desenha a caixinha. O "indeterminate" é o traço do cabeçalho quando só
 // alguns itens estão marcados. Ele só pode ser definido via JS, por isso o ref.
-function Checkbox({
-  checked,
-  indeterminate = false,
-  onChange,
-  label,
-}: CheckboxProps) {
+function Checkbox({ checked, indeterminate = false, onChange }: CheckboxProps) {
   return (
     <span className="check">
       <input
@@ -82,7 +113,7 @@ interface ActionProps {
 }
 
 // botão de lápis (usado na tabela e na lista mobile)
-function EditButton({ name, disabled, onClick }: ActionProps) {
+function EditButton({ disabled, onClick }: ActionProps) {
   return (
     <button
       type="button"
@@ -96,7 +127,7 @@ function EditButton({ name, disabled, onClick }: ActionProps) {
 }
 
 // botão de lixeira de uma linha só (usado na tabela e na lista mobile)
-function DeleteButton({ name, disabled, onClick }: ActionProps) {
+function DeleteButton({ disabled, onClick }: ActionProps) {
   return (
     <button
       type="button"
@@ -133,23 +164,15 @@ function EmptyState() {
 }
 
 export default function Admin() {
-  // dados de teste, trocar pela lista vazia quando integrar com o back:
-  // useState<User[]>([])
-  const [users] = useState<User[]>([
-    { id: 1, name: "Beatriz", email: "bia@gmail.com" },
-    { id: 2, name: "Darcy", email: "darcy@gmail.com" },
-    { id: 3, name: "Júlia", email: "julia@gmail.com" },
-    { id: 4, name: "Kauã", email: "kaua@gmail.com" },
-    { id: 5, name: "Lorenzo", email: "lorenzo@gmail.com" },
-    { id: 6, name: "Mariana", email: "mari@gmail.com" },
-    { id: 7, name: "falecido Tech Fellas", email: "techfellas@gmail.com" },
-    { id: 8, name: "Atmos abp", email: "atmos@gmail.com" },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [saving, setSaving] = useState<boolean>(false); // evita enviar duas vezes
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const [selected, setSelected] = useState<Set<number>>(new Set()); // ids marcados
   const [openRows, setOpenRows] = useState<Set<number>>(new Set()); // linhas abertas no mobile
   const [openCadModal, setOpenCadModal] = useState<boolean>(false); // abre o modal de cadastro
-  const [openAltModal, setOpenAltModal] = useState<boolean>(false); // abre o modal de alterar user
+  const [editingUser, setEditingUser] = useState<User | null>(null); // usuário no modal de alterar
+  const [deleteIds, setDeleteIds] = useState<number[] | null>(null); // ids aguardando confirmação
   const [pageSize, setPageSize] = useState(() =>
     window.matchMedia("(max-width: 480px)").matches ? 5 : 10,
   );
@@ -178,30 +201,163 @@ export default function Admin() {
     setSelected(next);
   };
 
-  // TODO: abrir modal de cadastro
+  const showToast = (icon: ToastIcon, title: string, message?: string) =>
+    setToast({ id: Date.now(), icon, title, message });
+
+  // useCallback para o Toast não reiniciar o timer a cada render
+  const closeToast = useCallback(() => setToast(null), []);
+
+  // busca a lista de usuários no back
+  async function getUsers(): Promise<void> {
+    try {
+      const data = await request<User[] | null>(`${USERS_URL}/get-users`);
+      setUsers(data ?? []);
+    } catch (e) {
+      showToast("error", "Erro ao carregar usuários", errorMessage(e));
+    }
+  }
+
+  // carrega a lista ao abrir a tela
+  useEffect(() => {
+    const fetchData = async () => {
+      await getUsers();
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const addUser = () => {
     setOpenCadModal(true);
   };
 
-  // TODO: abrir modal de alteração
-  const editUser = () => {
-    setOpenAltModal(true);
+  const editUser = (user: User) => {
+    setEditingUser(user);
   };
 
-  // TODO: integrar com o back
+  // abre o aviso de confirmação antes de deletar
   const deleteUsers = (ids: number[]) => {
-    console.log("deletar usuários:", ids);
-    setSelected(new Set());
+    setDeleteIds(ids);
   };
+
+  async function createUser(values: FormValues): Promise<void> {
+    if (saving) return;
+    setSaving(true);
+
+    try {
+      await request(USERS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          password: values.password,
+          isAdm: false,
+        }),
+      });
+      setOpenCadModal(false);
+      showToast(
+        "success",
+        "Usuário cadastrado",
+        `${values.name.trim()} já pode acessar a plataforma.`,
+      );
+      await getUsers();
+    } catch (e) {
+      showToast("error", "Erro ao cadastrar", errorMessage(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function updateUser(values: FormValues): Promise<void> {
+    if (!editingUser || saving) return;
+    setSaving(true);
+
+    // a senha só vai se a pessoa preencheu (vazio = manter a atual)
+    const body: Record<string, string> = {
+      name: values.name.trim(),
+      email: values.email.trim(),
+    };
+    if (values.password) body.password = values.password;
+
+    try {
+      await request(`${USERS_URL}/${editingUser.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      });
+      setEditingUser(null);
+      showToast("success", "Usuário alterado", "Os dados foram salvos.");
+      await getUsers();
+    } catch (e) {
+      showToast("error", "Erro ao alterar", errorMessage(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function confirmDelete(): Promise<void> {
+    if (!deleteIds || saving) return;
+    const ids = deleteIds;
+    setDeleteIds(null);
+    setSaving(true);
+
+    // o back deleta um por vez, então dispara todos juntos
+    const results = await Promise.allSettled(
+      ids.map((id) => request(`${USERS_URL}/${id}`, { method: "DELETE" })),
+    );
+    const failed = results.filter((r) => r.status === "rejected").length;
+
+    if (failed === 0) {
+      showToast(
+        "success",
+        ids.length > 1 ? "Usuários deletados" : "Usuário deletado",
+      );
+    } else {
+      showToast(
+        "error",
+        "Erro ao deletar",
+        `${failed} de ${ids.length} usuário(s) não puderam ser deletados.`,
+      );
+    }
+
+    setSelected(new Set());
+    setSaving(false);
+    await getUsers();
+  }
 
   return (
     <div className="admin-page">
-      {openCadModal && <CadForm onClose={() => setOpenCadModal(false)} />}
-
-      {/* TODO: fazer alteração aqui */}
-      {openAltModal && (
-        <AltForm user={{ name: "bia", email: "bia@gmail.com" }} onClose={() => setOpenAltModal(false)}/>
+      {toast && (
+        <Toast
+          key={toast.id}
+          icon={toast.icon}
+          title={toast.title}
+          message={toast.message}
+          onClose={closeToast}
+        />
       )}
+
+      {/* Aqui está a lógica de aparecer os modais em cada ação */}
+
+      {openCadModal && (
+        <CadForm onSave={createUser} onClose={() => setOpenCadModal(false)} />
+      )}
+
+      {editingUser && (
+        <AltForm
+          user={editingUser}
+          onSave={updateUser}
+          onClose={() => setEditingUser(null)}
+        />
+      )}
+
+      {deleteIds && (
+        <Warning
+          variant="delete"
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteIds(null)}
+        />
+      )}
+
       <CadHeader />
 
       <main className="admin">
@@ -241,83 +397,81 @@ export default function Admin() {
 
           {/* tabela (desktop) */}
           {/* <div className="table-card table-card-desktop"> */}
-            <table className="table">
-              <colgroup>
-                <col style={{ width: "10%" }} />
-                <col style={{ width: "25%" }} />
-                <col style={{ width: "41%" }} />
-                <col style={{ width: "12%" }} />
-                <col style={{ width: "12%" }} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <div className="cell-id">
-                      <Checkbox
-                        checked={allOnPageSelected}
-                        indeterminate={someOnPageSelected && !allOnPageSelected}
-                        onChange={toggleSelectAll}
-                        label="Selecionar todos desta página"
-                      />
-                      <span>ID</span>
-                    </div>
-                  </th>
-                  <th scope="col">Nome</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Editar</th>
-                  <th scope="col">Excluir</th>
-                </tr>
-              </thead>
+          <table className="table">
+            <colgroup>
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "25%" }} />
+              <col style={{ width: "41%" }} />
+              <col style={{ width: "12%" }} />
+              <col style={{ width: "12%" }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">
+                  <div className="cell-id">
+                    <Checkbox
+                      checked={allOnPageSelected}
+                      indeterminate={someOnPageSelected && !allOnPageSelected}
+                      onChange={toggleSelectAll}
+                      label="Selecionar todos desta página"
+                    />
+                    <span>ID</span>
+                  </div>
+                </th>
+                <th scope="col">Nome</th>
+                <th scope="col">Email</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Excluir</th>
+              </tr>
+            </thead>
 
-              <tbody>
-                {pageUsers.length === 0 ? (
-                  <tr className="table-empty">
-                    <td colSpan={5}>
-                      <EmptyState />
-                    </td>
-                  </tr>
-                ) : (
-                  pageUsers.map((u) => {
-                    const isSelected = selected.has(u.id);
-                    return (
-                      <tr
-                        key={u.id}
-                        className={isSelected ? "is-selected" : undefined}
-                      >
-                        <td>
-                          <div className="cell-id">
-                            <Checkbox
-                              checked={isSelected}
-                              onChange={() =>
-                                setSelected(toggle(selected, u.id))
-                              }
-                              label={`Selecionar ${u.name}`}
-                            />
-                            <span>{pad(u.id)}</span>
-                          </div>
-                        </td>
-                        <td>{u.name}</td>
-                        <td>{u.email}</td>
-                        <td>
-                          <EditButton
-                            name={u.name}
-                            disabled={isSelected}
-                            onClick={() => editUser()}
+            <tbody>
+              {pageUsers.length === 0 ? (
+                <tr className="table-empty">
+                  <td colSpan={5}>
+                    <EmptyState />
+                  </td>
+                </tr>
+              ) : (
+                pageUsers.map((u) => {
+                  const isSelected = selected.has(u.id);
+                  return (
+                    <tr
+                      key={u.id}
+                      className={isSelected ? "is-selected" : undefined}
+                    >
+                      <td>
+                        <div className="cell-id">
+                          <Checkbox
+                            checked={isSelected}
+                            onChange={() => setSelected(toggle(selected, u.id))}
+                            label={`Selecionar ${u.name}`}
                           />
-                        </td>
-                        <td>
-                          <DeleteButton
-                            name={u.name}
-                            disabled={isSelected}
-                            onClick={() => deleteUsers([u.id])}
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                          <span>{pad(u.id)}</span>
+                        </div>
+                      </td>
+                      <td>{u.name}</td>
+                      <td>{u.email}</td>
+                      <td>
+                        <EditButton
+                          name={u.name}
+                          disabled={isSelected}
+                          onClick={() => editUser(u)}
+                        />
+                      </td>
+                      <td>
+                        <DeleteButton
+                          name={u.name}
+                          disabled={isSelected}
+                          onClick={() => deleteUsers([u.id])}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
           {/* </div> */}
 
           {/* lista expansível (mobile) */}
@@ -372,7 +526,7 @@ export default function Admin() {
                               <EditButton
                                 name={u.name}
                                 disabled={isSelected}
-                                onClick={() => editUser()}
+                                onClick={() => editUser(u)}
                               />
                               <DeleteButton
                                 name={u.name}

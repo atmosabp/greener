@@ -9,11 +9,10 @@ import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
-import Loading from "../../components/loading/Loading";
-import Toast from "../../components/toast/Toast";
-import Warning from "../../components/warning/Warning";
+import type { ToastProps } from "../../types/toast";
 
 export default function Login() {
+  const [toast, setToast] = useState<ToastProps | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
@@ -31,14 +30,6 @@ export default function Login() {
 
   return (
     <>
-      {/*Lógica de isLoading aqui  */}
-      {/* <Loading /> */}
-      {/* <Toast icon="" title="" message="" /> */}
-      {/* <Warning /> */}
-      {/* Lógica de success ou error  */}
-      {/* <Toast icon="success" title="oi" message="teste teste"/> */}
-      {/* Lógica para modal de tem certeza? */}
-     {/* <Warning variant="logout" /> */}
       <header>
         <div className="header-btns">
           <Link to="/" className="btn-back">
