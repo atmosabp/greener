@@ -4,30 +4,15 @@ import type { ServiceTypes } from "../types/services-types";
 const urlApi = "https://carbon.unilaunch.org/carbon-intensity/";
 const serviceURL = "https://metrics.unilaunch.org/services/";
 
-// Busca a região do serviço (ex.: br-sudeste, us-east) na API de serviços
-export async function reqRegionCode(serviceId: string) {
-  const resp = await fetch(serviceURL + serviceId);
-
-  if (!resp.ok) {
-    throw new Error("Não foi possivel buscar a região do serviço.");
-  }
-
-  const service: ServiceTypes = await resp.json();
-  const regionCode = service.location?.region_code;
-
-  if (!regionCode) {
-    throw new Error("O serviço não possui região cadastrada.");
-  }
-
-  return regionCode;
-}
-
 export async function reqMetrics(serviceId: string) {
   try {
-    const regionCode = await reqRegionCode(serviceId);
-    const resp = await fetch(urlApi + regionCode);
+    const responseService = await fetch(`https://metrics.unilaunch.org/services/${serviceId}`);
+    const data: ServiceTypes = await responseService.json();
 
-    if (resp.ok) {
+    var resp;
+    if(data.location){
+      resp = await fetch(`${urlApi}${data.location.region_code}`);
+
       const objMetrics: ApiCarbon = await resp.json();
 
       return objMetrics;
