@@ -1,29 +1,33 @@
-import { Router } from 'express';
-import { createUserController, listUsersController } from './users.controller';
+import { Router } from "express";
+
+import {
+    createUserController,
+    deleteUserByIdController,
+    editUserController,
+    listUserByIdController,
+    listUsersController,
+} from "./users.controller";
+
+import {
+    authenticateToken,
+    requireAdmin
+} from "../../middlewares/middleware";
 
 export const router = Router();
 
-// POST localhost:3000/users
+router.use(authenticateToken, requireAdmin);
+
+// POST localhost:PORT/users
 router.post("/", createUserController);
 
-// GET localhost:3000/users/get-users
+// GET localhost:PORT/users/get-users
 router.get("/get-users", listUsersController);
 
-router.get('/teste', (_req, res) => {
-    res.send("Essa é a rota teste.");
-});
+// GET localhost:PORT/users/:id
+router.get("/:id", listUserByIdController);
 
-// GET localhost:3000/users/1
-router.get("/user/:id", (req, res) => {
-    res.send("Retorna usuário específico")
-});
+// PATCH localhost:PORT/users/:id
+router.patch("/:id", editUserController);
 
-/*
-Teste de endpoints
-
-Cadastro de usuários:
-curl -X POST http://localhost:3000/users/ \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Teste", "email": "teste@email.com", "password": "123456", "isAdm": true}'
-
-*/
+// DELETE localhost:PORT/users/:id
+router.delete("/:id", deleteUserByIdController);

@@ -59,7 +59,7 @@ Greener é feito para funcionários credenciados de empresas terem controle da e
 | [![My Skills](https://skillicons.dev/icons?i=react)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=ts)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=postgres)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=figma)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=git)](https://skillicons.dev) | [![My Skills](https://skillicons.dev/icons?i=github)](https://skillicons.dev) |
 | ------ | ---- | ------- | ---- | ---- | ---- | ---- | ---- |
 | React | TypeScript | NodeJS | Docker | PostgreSQL | Figma | Git | GitHub |
-| v19.3 | v7.0 | v22.16.0 | v29 | v18.3 | Web | v2.53 | Web |
+| v19.3 | v7.0 | v22.16.0 | v29 | v16 | Web | v2.53 | Web |
 
 <br>
 
@@ -80,8 +80,8 @@ Para cada diretório como `frontend/`, `backend/` e `database/`, também há arq
 
 | N° Sprint | Data início | Status       | Relatório | Vídeo  |
 | --------- | ----------- | ------------ | --------- | ------ |
-| 1         | 28/09/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md) | [Link](https://www.youtube.com/watch?v=EIQv3zTnguM) |
-| 2         | 19/10/2026  | Não iniciada | -         | -      |
+| 1         | 28/09/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md) | [Link](https://youtu.be/no3dPzF96Jo) |
+| 2         | 19/10/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-2.md)         | [Link](https://youtu.be/JRwsLX7Vka0)      |
 | 3         | 09/11/2026  | Não iniciada | -         | -      |
 
 <br>
@@ -100,13 +100,17 @@ Com isso garantido, siga os seguintes passos para utilizar a aplicação ***com 
 
 <br>
 
-Caso não seja necessário rodar a aplicação completa, apenas uma única parte, como o frontend ou o backend, siga os seguintes passos para utilizar a aplicação ***sem Docker***:
+Caso não seja necessário executar a aplicação completa e você queira utilizar apenas uma de suas partes, como o frontend ou o backend, siga os passos abaixo para executar o projeto **sem Docker**:
 
-1. Execute o comando `git clone https://github.com/atmosabp/greener` no terminal bash ou Powershell para copiar os arquivos do projeto no local de escolha do seu computador.
-2. Para rodar o frontend do projeto, abra o terminal na raiz do projeto, execute `cd frontend`, e depois instale as dependências necessárias com `npm i`. Por fim, digite `npm run dev` no terminal.
-3. Antes de executar o backend, é necessário criar o banco de dados. Sem Docker, é preciso configurá-lo na sua própria máquina com o PgAdmin, criando o banco de dados com o nome desejado e executando as queries do arquivo `database/schema.sql`.
-3. Para rodar o backend do projeto, primeiro, crie um arquivo `.env` com base no `.env.example`, abra o terminal na raiz do projeto, execute `cd frontend` e depois instale as dependências necessárias com `npm i`. Para executar, digite `npm run dev` no terminal.
-4. Após isso, ambas as partes do projeto estarão funcionando. Você pode utilizar o projeto frontend com `localhost:5173` e `localhost:3000` para o backend (ou outra porta que foi definida).
+1. Execute o comando `git clone https://github.com/atmosabp/greener` no terminal Bash ou PowerShell para copiar os arquivos do projeto para o local desejado em seu computador.
+
+2. Para executar o frontend, abra o terminal na raiz do projeto, acesse a pasta `frontend` com o comando `cd frontend` e instale as dependências utilizando `npm i`. Em seguida, execute `npm run dev` para iniciar a aplicação.
+
+3. Antes de executar o backend, é necessário configurar o banco de dados localmente. Para isso, utilize o pgAdmin para criar um banco de dados com o nome desejado e execute as queries disponíveis no arquivo `database/schema.sql`.
+
+4. Para executar o backend, crie um arquivo `.env` com base no `.env.example`, preenchendo as variáveis necessárias. Depois, abra o terminal na raiz do projeto, acesse a pasta `backend` com o comando `cd backend` e instale as dependências utilizando `npm i`. Por fim, execute `npm run db:dev`, que inicializará a estrutura do banco de dados e cadastrará o usuário administrador com as credenciais definidas no `.env`.
+
+5. Após seguir os passos correspondentes, as partes executadas estarão disponíveis para utilização. O frontend poderá ser acessado em `http://localhost:5173` e o backend em `http://localhost:3000`, ou na porta definida em sua configuração.
 
 
 <br>

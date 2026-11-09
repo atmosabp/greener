@@ -1,4 +1,5 @@
 ## Sprint 1 - GreenER
+Esta sprint ocorreu entre os dias **28/09/2026** e **19/10/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 15 dias.
 
 ### Objetivo da sprint
 O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas UML, implementação das primeiras telas, base do servidor backend e banco de dados.
@@ -18,6 +19,9 @@ O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas 
 <br>
 
 ### O que foi entregue
+O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui](https://youtu.be/no3dPzF96Jo).  
+Ele mostra visualmente o que foi feito das documentações, telas, design e backend, e o que está planejado para o próximo ciclo de entrega.
+
 A seguir está o burndown da sprint 1.  
 Ele demonstra a evolução das tarefas ao longo dos dias. Assim como a relação entre o esforço real de cada dia e o planejado.  
 No início da sprint, foi definido um esforço total de 194. E para cada dia, uma média de 16 pontos esperados.
@@ -39,7 +43,7 @@ Lista do que foi entregue:
 ### Itens concluídos e pendentes
 Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portanto, todas as tarefas foram *concluídas*.
 
-É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1/views/1).
+É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1).
 
 <details>
 
@@ -52,7 +56,7 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | :------- | :--------------------------------------------------------------- | :------------- | :--------- | :------ |
 | **BD01** | Modelar banco de dados                                           | Darcy          | BDR        | 2       |
 | **BD02** | Criar banco de dados                                             | Mariana        | BDR        | 2       |
-| **BD03** | Criar conexão do banco ao backend                                | kauã           | BDR        | 5       |
+| **BD03** | Criar conexão do banco ao backend                                | Kauã           | BDR        | 5       |
 | **DD01** | Definir identidade visual (cores, fontes e logo)                 | All            | DD         | 3       |
 | **DD02** | Desenvolver logo do projeto                                      | Júlia          | DD         | 3       |
 | **DD03** | Desenvolver logo da equipe                                       | Júlia          | DD         | 3       |
@@ -70,8 +74,8 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | **DD15** | Tela de comparação - Mobile                                      | Kauã           | DD         | 2       |
 | **DD16** | Tela 404 - Desktop                                               | Mariana        | DD         | 2       |
 | **DD17** | Tela 404 - Mobile                                                | Mariana        | DD         | 1       |
-| **DD18** | Tela Landing Page - Desktop                                      | kauã           | DD         | 3       |
-| **DD19** | Tela Landing Page - Mobile                                       | kauã           | DD         | 2       |
+| **DD18** | Tela Landing Page - Desktop                                      | Kauã           | DD         | 3       |
+| **DD19** | Tela Landing Page - Mobile                                       | Kauã           | DD         | 2       |
 | **DD20** | Definir avisos (loading, avisos, erros)                          | Mariana        | DD         | 3       |
 | **DW01** | Criar estrutura do projeto frontend                              | Lorenzo        | DW II      | 5       |
 | **DW02** | Implementar tela principal                                       | Lorenzo        | DW II      | 13      |
@@ -90,7 +94,7 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | **ES11** | Conteinizar o projeto                                            | Júlia          | ESW II     | 3       |
 | **ES12** | Criar Diagrama de Classes                                        | Mariana        | ESW II     | 8       |
 | **TP01** | Criar estrutura do backend em módulos (controllers, services...) | Lorenzo        | TP I       | 3       |
-| **TP02** | Configurar servidor HTTP e variáveis de ambiente                 | kauã           | TP I       | 2       |
+| **TP02** | Configurar servidor HTTP e variáveis de ambiente                 | Kauã           | TP I       | 2       |
 | **TP03** | Consultar /services                                              | Darcy          | TP I       | 2       |
 | **TP04** | Consultar /metrics/{id_servico}                                  | Darcy          | TP I       | 5       |
 | **TP05** | Implementar cálculo de CO₂e                                      | Darcy          | TP I       | 3       |
@@ -109,6 +113,47 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 Durante a sprint, foi desenvolvido um relatório descrevendo o que foi feito em cada dia de trabalho para cada integrante, e outras informações adicionais.
 
 Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-1.md)
+
+<br>
+
+### Sprint Review
+A Sprint Review é um dos eventos do Scrum em que é apresentado o trabalho desenvolvido durate a sprint para o cliente.  
+Ela foi realizada dia **19/10/2026**.  
+
+O feedback geral do cliente foi muito bom. Foi elogiado sobre o processo e o produto final. Também foram apontados alguns erros de código e inconsistências que serão abordadas durante a 2° sprint.
+
+Aqui serão mostrados os pontos que foram apontados pelo cliente e pelo professor:
+- Dados placeholder usados ao invés dos dados reais -> planejamos usar completamente os dados reais apenas a partir da 2° sprint. O único uso deles seria no `MetricsCalculator`, para definir os cálculos para o KWh e o CO2e.
+- Senhas armazenadas e devolvidas em texto puro -> foi definido no Product Backlog que isso será feito na 2° sprint, a tela de Login e a rota era apenas para testar a tela e aconectividade do banco de dados.
+- Queries SQL com sintaxe errada, funções não utilizadas e arquivos duplicados -> foi abordado logo no dia seguinte da Sprint Review.
+- Algumas consultas usam tabela e colunas erradas -> Isso provavelmente são alguns traços de versões anteriores, decidi deixar aqui como um lembrete de qualquer forma.
+- Tipar as variáveis e funções corretamente (tirar uso excessivo de any) -> será abordado na 2° sprint.
+- Colocar entrega na branch main -> foi feito logo após a Sprint Review, com o produto pronto. 
+
+<br>
+
+### Sprint Retrospective
+Este é um evento da metodologia Scrum que permite que a equipe se junte e dialogue sobre o processo, sem focar no produto. Seguimos um formato para falar o que não deu certo, o que deu certo, e o que podemos fazer para melhorar. Garantindo que levamos tudo o que foi discutido em consideração para ter um processo (e consequentemente, um produto) muito melhor.  
+Essa reunião aconteceu dia **20 de outubro**. Esses foram os pontos levantados:
+
+#### 1 - O que não deu certo 
+- Vários pull requests levavam tempo demais para ser fechados, o que levava em atrasos nas outras tarefas, pois dependiam de tarefas que já eram para estar concluídas, e virava uma bola de neve, atrasando o design, implementação de telas e backend.
+- Falta de comunicação dos pull requests. Quando alguém criava um pull request ou aprovava um, até a pessoa esperada notar isso, demorava muito, e também atrasava a completar outras tarefas.
+- Houve muito perfeccionismo nas tarefas, especificamente de design. Em teoria é algo bom ter tarefas muito bem desenvolvidas, mas para o design não é necessário deixar tudo perfeito logo na primeira sprint, pois com certeza ainda haverá muitas mudanças até o final do projeto.
+
+#### 2 - O que deu certo
+- Todos foram muito dedicados, mesmo em tarefas que eram difíceis de ser feitas, todos tentavam se empenhar o máximo possível.
+- O design ficou mais harmonioso do que planejado inicialmente.
+- O time foi muito unido, então sempre alguém podia ajudar o outro em alguma tarefa que tinha dificuldade, ajudando a acelerar na entrega e no aprendizado.
+- Produto no final da sprint ficou como planejávamos, e conseguimos concluir todas as tarefas a tempo por conta da organização.
+
+#### 3 - Como podemos melhorar
+- Se comunicar por outros meios (como WhatsApp, Discord ou pessoalmente) no momento que for feito um Pull Request ou ter sido avaliado um. Isso fará com quem tiver feito o pull request ou as pessoas que revisam ele notarem mais rápido, e agilizar no processo de aprová-lo.
+- Mudar formato da daily, para todos compartilharem o que foi feito no dia anterior, o que estão fazendo e o que irão fazer, proporcionando mais comunicação entre a equipe, e noção do andamento do projeto.
+- Utilizar mais o Kanban, pois é uma ferramenta que ainda pode ser muito explorada.
+- Canal de bug reports no Discord para reportar bugs e erros encontrados durante testes, para facilitar todos a corrigirem os erros, e planejar quando irão arrumá-los.
+- Estimar prazo de finalização das tarefas sempre que alguma for iniciada, para ter uma noção de quando as tarefas dependentes dela serão feitas, e agilizar mais o processo.
+- Testar a aplicação no tempo ocioso de trabalho. Isso ajuda a encontrar bugs mais efetivamente e sempre garantir que a aplicação sempre está funcionando como deveria (sem contar os testes automatizados que serão criados, pois eles só cobrem parte).
 
 <br>
 
