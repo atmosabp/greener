@@ -5,7 +5,7 @@ export function logout(navigate: NavigateFunction) {
     sessionStorage.removeItem("token");
 
     // Remove os dados do usuário
-    sessionStorage.removeItem("user");
+    localStorage.removeItem("user");
 
     // Redireciona para o login, substituindo a página atual no histórico
     navigate("/", { replace: true });

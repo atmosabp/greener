@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface AuthTokenPayload extends JwtPayload {
     id: number;
+    name: string;
     isAdm: boolean;
 }
 

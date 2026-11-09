@@ -15,10 +15,6 @@ router.post("/login", loginController);
 router.get("/me", authenticateToken, currentUserController);
 
 /*
-========================================
-TESTES DE ENDPOINTS - AUTENTICAÇÃO
-========================================
-
 LOGIN:
 POST http://localhost:3002/auth/login
 

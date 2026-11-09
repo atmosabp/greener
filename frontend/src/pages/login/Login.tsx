@@ -9,10 +9,8 @@ import treesMobile from "../../assets/footer-mobile.png";
 import LoginForm from "../../components/loginForm/LoginForm";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../../components/themeToggle/ThemeToggle";
-import type { ToastProps } from "../../types/toast";
 
 export default function Login() {
-  const [toast, setToast] = useState<ToastProps | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
@@ -48,7 +46,9 @@ export default function Login() {
       <main className="login">
         <img src={logoFull} alt="Logo Greener" className="logo" />
         <span>Faça login com seu e-mail corporativo.</span>
+
         <LoginForm />
+
         <div className="info-txt">
           <div className="safe-warning">
             <ShieldCheck fill="var(--primary-dark)" />

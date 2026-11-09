@@ -5,7 +5,6 @@ import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
 import Loading from "../../components/loading/Loading";
-import Toast from "../../components/toast/Toast";
 
 export type ServiceStatus = "active" | "incomplete" | "inactive";
 
@@ -126,11 +125,6 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   <p className="services-empty">
                     Nenhum serviço foi encontrado.
                   </p>
-                  <Toast
-                    icon="error"
-                    title="Erro"
-                    message="Não foi possível carregar os serviços"
-                  />
                 </>
               ) : (
                 services.map((service, index) => {

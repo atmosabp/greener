@@ -33,15 +33,19 @@ import ServiceCard from './components/ServiceCard';
 import './Comparison.css';
 import Loading from '../../components/loading/Loading';
 
-interface ComparisonProps {
-  userName?: string;
-  onLogout?: () => void;
-}
-
-export default function Comparison({
-  userName = 'Júlia',
-}: ComparisonProps) {
+export default function Comparison() {
   const [period, setPeriod] = useState('today');
+
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
 
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);

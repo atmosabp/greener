@@ -37,13 +37,18 @@ const USERS_URL = `http://localhost:${import.meta.env.VITE_PORT}/users`;
 
 // Representa os erros que podem acontecer durante uma requisição.
 class RequestError extends Error {
+  public type: "network" | "http" = "http";
+  public status?: number = 0;
+
   constructor(
-    public type: "network" | "http",
+    type: "network" | "http",
     message: string,
-    public status?: number,
+    status?: number,
   ) {
     super(message);
     this.name = "RequestError";
+    this.type = type;
+    this.status = status;
   }
 }
 
@@ -206,6 +211,17 @@ function EmptyState() {
 }
 
 export default function Admin() {
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   const [users, setUsers] = useState<User[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastState | null>(null);
@@ -219,8 +235,6 @@ export default function Admin() {
     window.matchMedia("(max-width: 480px)").matches ? 5 : 10,
   );
   const [page, setPage] = useState(1);
-
-  const userName = "Beatriz"; // TODO: vir da autenticação
 
   const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
   const currentPage = Math.min(page, totalPages);
