@@ -1,5 +1,6 @@
 ## Sprint 1 - GreenER
-Esta sprint ocorreu entre os dias 20/11/2026 e 09/11/2026. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 15 dias.
+
+Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
 
 ### Objetivo da sprint
 O objetivo geral dessa sprint era implementar todas as telas do site, como a tela principal e o dashboard, desenvolver o sistema de guardar métricas dos serviços no banco de dados e implementar sistema de segurança.  
@@ -17,7 +18,7 @@ Aqui está cada objetivo em mais detalhes:
 <br>
 
 ### O que foi entregue
-O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui (ATUALIZAR LINK)](https://youtu.be/no3dPzF96Jo).  
+O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui](https://youtu.be/JRwsLX7Vka0).  
 Ele mostra visualmente o que foi feito durante a sprint das telas e backend, e o que está planejado para o próximo ciclo de entrega.
 
 A seguir está o burndown da sprint 2.  
@@ -46,66 +47,52 @@ Não houve itens pendentes nessa sprint. Tudo o que foi realmente planejado foi 
 <summary>
 
 ### Sprint Backlog
+
 </summary>
 
-| ID       | Descrição                                                        | Autor          | Disciplina | Esforço |
-| :------- | :--------------------------------------------------------------- | :------------- | :--------- | :------ |
-| **BD04** | Criar estrutura para armazenar histórico das coletas                                           | Darcy          | BDR        | 8       |
-| **DW05** | Implementar validação de login (conexão front com back)                                             | Lorenzo        | BDR        | 3       |
-| **BD03** | Criar conexão do banco ao backend                                | kauã           | BDR        | 5       |
-| **DD01** | Definir identidade visual (cores, fontes e logo)                 | All            | DD         | 3       |
-| **DD02** | Desenvolver logo do projeto                                      | Júlia          | DD         | 3       |
-| **DD03** | Desenvolver logo da equipe                                       | Júlia          | DD         | 3       |
-| **DD04** | Tela de cadastro - Desktop                                       | Beatriz        | DD         | 3       |
-| **DD05** | Tela de cadastro - Mobile                                        | Beatriz        | DD         | 1       |
-| **DD06** | Tela de login - Desktop                                          | Júlia          | DD         | 5       |
-| **DD07** | Tela de login - Mobile                                           | Júlia          | DD         | 1       |
-| **DD08** | Tela principal - Desktop                                         | Lorenzo        | DD         | 8       |
-| **DD09** | Tela principal - Mobile                                          | Lorenzo        | DD         | 2       |
-| **DD10** | Tela dashboard - Desktop                                         | Beatriz        | DD         | 5       |
-| **DD11** | Tela dashboard - Mobile                                          | Beatriz        | DD         | 2       |
-| **DD12** | Tela de ranking - Desktop                                        | Mariana        | DD         | 5       |
-| **DD13** | Tela de ranking - Mobile                                         | Mariana        | DD         | 3       |
-| **DD14** | Tela de comparação - Desktop                                     | Kauã           | DD         | 3       |
-| **DD15** | Tela de comparação - Mobile                                      | Kauã           | DD         | 2       |
-| **DD16** | Tela 404 - Desktop                                               | Mariana        | DD         | 2       |
-| **DD17** | Tela 404 - Mobile                                                | Mariana        | DD         | 1       |
-| **DD18** | Tela Landing Page - Desktop                                      | kauã           | DD         | 3       |
-| **DD19** | Tela Landing Page - Mobile                                       | kauã           | DD         | 2       |
-| **DD20** | Definir avisos (loading, avisos, erros)                          | Mariana        | DD         | 3       |
-| **DW01** | Criar estrutura do projeto frontend                              | Lorenzo        | DW II      | 5       |
-| **DW02** | Implementar tela principal                                       | Lorenzo        | DW II      | 13      |
-| **DW03** | Implementar tela de login                                        | Beatriz        | DW II      | 5       |
-| **DW04** | Implementar landing page                                         | Beatriz        | DW II      | 3       |
-| **ES01** | Criar e manter Product Backlog                                   | Beatriz        | ESW II     | 3       |
-| **ES02** | Criar Sprint Backlog referente a 1° sprint                       | All            | ESW II     | 5       |
-| **ES03** | Criar vídeo referente a 1° sprint                                | All            | ESW II     | 8       |
-| **ES04** | Criar relatório da 1° sprint                                     | Júlia          | ESW II     | 5       |
-| **ES05** | Criar e manter Burn da 1° sprint                                 | Júlia          | ESW II     | 2       |
-| **ES06** | Criar e manter README.md                                         | Júlia          | ESW II     | 3       |
-| **ES07** | Desenvolver User Story + critérios de aceitação                  | Kauã           | ESW II     | 2       |
-| **ES08** | Criar DoD                                                        | Lorenzo        | ESW II     | 5       |
-| **ES09** | Criar Diagrama de Caso de Uso                                    | Darcy          | ESW II     | 5       |
-| **ES10** | Criar Diagrama de Sequência                                      | Darcy          | ESW II     | 8       |
-| **ES11** | Conteinizar o projeto                                            | Júlia          | ESW II     | 3       |
-| **ES12** | Criar Diagrama de Classes                                        | Mariana        | ESW II     | 8       |
-| **TP01** | Criar estrutura do backend em módulos (controllers, services...) | Lorenzo        | TP I       | 3       |
-| **TP02** | Configurar servidor HTTP e variáveis de ambiente                 | kauã           | TP I       | 2       |
-| **TP03** | Consultar /services                                              | Darcy          | TP I       | 2       |
-| **TP04** | Consultar /metrics/{id_servico}                                  | Darcy          | TP I       | 5       |
-| **TP05** | Implementar cálculo de CO₂e                                      | Darcy          | TP I       | 3       |
-| **TP06** | Consultar Carbon Intensity API                                   | Kauã           | TP I       | 5       |
-| **TP07** | Calcular consumo total                                           | Kauã           | TP I       | 8       |
-| **TP08** | Calcular emissão total                                           | Darcy          | TP I       | 5       |
-| **TP09** | Calcular serviços ativos e indisponíveis                         | Darcy          | TP I       | 5       |
-| **TP10** | Criar endpoints                                                  | Mariana        | TP I       | 2       |
-| **TP11** | Implementar testes                                               | Júlia, Mariana | TP I       | 5       |
+| ID       | Descrição                                                            | Autor   | Disciplina | Esforço |
+| :------- | :------------------------------------------------------------------- | :------ | :--------- | :------ |
+| **BD04** | Criar estrutura para armazenar histórico das coletas         | Darcy   | BDR        | 8       |
+| **DW05** | Implementar validação de login (conexão front com back)     | Lorenzo | DW II        | 3       |
+| **DW05** | Implementar tratamento de erros no cadastro (conexão front com back) | Lorenzo | DW II        | 3       |
+| **DW05** | Implementar tratamento de erros no login (conexão front com back)    | Beatriz | DW II        | 3       |
+| **DW06** | Implementar logout         | Lorenzo | DW II        | 2       |
+| **DW07** | Implementar dashboard       | Beatriz    | DW II        | 5       |
+| **DW07** | Conectar backend das APIs na dashboard       | Júlia | DW II        | 3       |
+| **DW08** | Implementar atualização dos dados na tela principal (conexão front com back)            | Júlia    | DW II        | 5       |
+| **DW09** | Implementar estados de loading e erro (geral - conexão front com back)        | Júlia    | DW II        | 3       |
+| **DW09** | Implementar estados de loading e erro (geral - frontend)                  | Beatriz    | DW II        | 3      |
+| **DW10** | Implementar tela de ranking         | Lorenzo    | DW II        | 5       |
+| **DW10** | Conectar backend na tela de ranking      | Darcy    | DW II        | 5       |
+| **DW11** | Implementar tela de comparação     | Lorenzo    | DW II        | 8       |
+| **DW11** | Conectar backend na tela de comparação        | Kauã    | DW II        | 8       |
+| **DW12** | Implementar tela de cadastro/admin  | Beatriz    | DW II        | 5       |
+| **DW12** | Conectar backend na tela de cadastro/admin   | Lorenzo  | DW II   | 5       |
+| **ES06** | Manter README.md    | Júlia    | ESW II      | 1       |
+| **ES13** | Criar Sprint Backlog referente a 2° sprint  | Todos    | ESW II   | 5       |
+| **ES14** | Criar vídeo referente a 2° sprint   | Todos    | ESW II        | 8       |
+| **ES16** | Criar e manter burndown da 2° sprint     | Júlia    | ESW II        | 2       |
+| **ES17** | Documentar endpoints desenvolvidos pela equipe     | Mariana    | ESW II        | 3       |
+| **ES17** | Documentar orientações para configurar o acesso às APIs auxiliares      | Darcy    | ESW II        | 2       |
+| **ES17** | Desenvolver README da pasta `frontend/`  | Kauã    | ESW II  | 2   |
+| **ES17** | Desenvolver README da pasta `backend/`  | Kauã    | ESW II        | 3       |
+| **ES17** | Desenvolver README da pasta `database/`  | Mariana    | ESW II        | 1       |
+| **TP12** | Implementar autenticação com JWT      | Lorenzo    | TP I        | 3      |
+| **TP13** | Detectar alterações na lista de serviços   | Mariana    | TP I    | 5     |
+| **TP14** | Detectar serviços sem métricas    | Mariana    | TP I        | 3       |
+| **TP15** | Persistir métricas coletadas no banco de dados     | Darcy    | TP I  | 2  |
+| **TP16** | Criar mecanismo de coleta periódica   | Darcy    | TP I        | 5       |
+| **TP17** | Tratar coordenadas ausentes  | Kauã    | TP I        | 5       |
+| **TP18** | Criar mais endpoints   | Mariana    | TP I        | 3    |
+| **TP19** | Continuar testes de implementação (endpoints)     | Júlia e Mariana    | TP I        | 8  |
+| **TP20** | Criar testes automatizados (GitHub Actions)   | Júlia e Mariana    | TP I        | 5       |
 
 </details>
 
 <br>
 
 ### Verificações realizadas
+
 Durante a sprint, foi desenvolvido um relatório descrevendo o que foi feito em cada dia de trabalho para cada integrante, e outras informações adicionais.
 
 Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-2.md)

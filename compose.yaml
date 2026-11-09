@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: 'America/Sao_Paulo'
+      PGTZ: 'America/Sao_Paulo'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -17,8 +19,11 @@ services:
       retries: 10
       start_period: 10s
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      target: development #ambiente de desenvolvimento (development) e de produção (runtime)
     container_name: greener-backend
+    command: npm run dev
     ports:
       - "${PORT}:${PORT}"
     environment:
@@ -28,6 +33,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}
+      ADMIN_NAME: ${ADMIN_NAME}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_WATCH_USE_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
+      TZ: America/Sao_Paulo
     depends_on:
       database:
         condition: service_healthy
@@ -37,16 +50,26 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
   frontend:
     build: ./frontend
     container_name: greener-frontend
+    command: npm run dev -- --host 0.0.0.0
     ports:
-      - "${FRONT_PORT}:80"
+      - "${FRONT_PORT}:5173"
     environment:
+      TZ: America/Sao_Paulo
+      VITE_PORT: ${VITE_PORT}
       BACKEND_PORT: ${PORT}
     depends_on:
       backend:
         condition: service_healthy
+    stdin_open: true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules/
 
 volumes:
   postgres_data:
