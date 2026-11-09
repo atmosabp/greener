@@ -22,8 +22,9 @@ export type FormProps = {
   title: string;
   fields: FieldConfig[];
   submitLabel: string;
-  onSubmit: (values: FormValues) => void;
-  initialValues?: FormValues; // usado na alteração
-  onClose?: () => void; // se informado, mostra o X e fecha ao clicar fora / Esc
-  children?: ReactNode; // conteúdo extra (ex: "Esqueci minha senha")
+  onSubmit: (values: FormValues) => void | Promise<void>;
+  initialValues?: FormValues;
+  onClose?: () => void;
+  children?: ReactNode;
+  isSubmitting?: boolean;
 };

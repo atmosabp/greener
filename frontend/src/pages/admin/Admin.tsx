@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import {
   Check,
@@ -25,43 +26,92 @@ interface User {
 }
 
 interface ToastState {
-  id: number; // muda a cada toast, para o React recriar o componente
+  id: number;
   icon: ToastIcon;
   title: string;
   message?: string;
 }
 
-// rotas de usuários do back (ver docs/endpoints.md)
+// Rotas de usuários do back.
 const USERS_URL = `http://localhost:${import.meta.env.VITE_PORT}/users`;
 
-// faz o fetch e, se o back responder erro, lança a mensagem que ele mandou
-async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const result = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-    },
-    ...options,
-  });
+// Representa os erros que podem acontecer durante uma requisição.
+class RequestError extends Error {
+  public type: "network" | "http" = "http";
+  public status?: number = 0;
+
+  constructor(
+    type: "network" | "http",
+    message: string,
+    status?: number,
+  ) {
+    super(message);
+    this.name = "RequestError";
+    this.type = type;
+    this.status = status;
+  }
+}
+
+// Faz requisições ao backend e identifica erros de conexão e HTTP.
+async function request<T>(
+  url: string,
+  options?: RequestInit,
+): Promise<T> {
+  let result: Response;
+
+  try {
+    result = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+      ...options,
+    });
+  } catch {
+    throw new RequestError(
+      "network",
+      "Não foi possível conectar ao servidor. Verifique sua conexão.",
+    );
+  }
+
   const data = await result.json().catch(() => null);
 
   if (!result.ok) {
-    throw new Error(data?.message || "Não foi possível falar com o servidor.");
+    const statusMessages: Record<number, string> = {
+      400: "Verifique os dados informados.",
+      401: "Sua sessão expirou. Faça login novamente.",
+      403: "Você não tem permissão para realizar esta ação.",
+      409: "Já existe um usuário com esse e-mail.",
+      429: "Aguarde alguns minutos antes de tentar novamente.",
+      500: "Ocorreu um erro interno no servidor.",
+      502: "O servidor está temporariamente indisponível.",
+      503: "O servidor está temporariamente indisponível.",
+      504: "O servidor demorou para responder. Tente novamente.",
+    };
+
+    const message =
+      typeof data?.message === "string"
+        ? data.message
+        : statusMessages[result.status] ||
+        "Não foi possível concluir a operação. Tente novamente.";
+
+    throw new RequestError("http", message, result.status);
   }
+
   return data as T;
 }
 
-// pega a mensagem de um erro de forma segura para o TypeScript
+// Extrai a mensagem de um erro de forma segura para o TypeScript.
 const errorMessage = (e: unknown) =>
   e instanceof Error ? e.message : undefined;
 
-// opções do seletor "Mostrando X por página"
+// Opções do seletor "Mostrando X por página".
 const PAGE_SIZES = [5, 10, 15, 20, 50];
 
-// completa com zeros à esquerda: pad(7) -> "007", pad(5, 2) -> "05"
+// Completa com zeros à esquerda.
 const pad = (n: number, size = 3) => String(n).padStart(size, "0");
 
-// escolhe a saudação de acordo com a hora do dia
+// Escolhe a saudação de acordo com a hora do dia.
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 12) return "Bom dia";
@@ -69,8 +119,7 @@ function getGreeting() {
   return "Boa noite";
 }
 
-// devolve uma cópia do Set com o id adicionado (ou removido, se já estava).
-// Precisa ser uma cópia porque o React só re-renderiza se o objeto for novo.
+// Devolve uma cópia do Set com o id adicionado ou removido.
 function toggle(set: Set<number>, id: number) {
   const next = new Set(set);
   if (next.has(id)) next.delete(id);
@@ -85,9 +134,7 @@ interface CheckboxProps {
   label: string;
 }
 
-// Checkbox customizado: o input de verdade fica invisível por cima e o span
-// desenha a caixinha. O "indeterminate" é o traço do cabeçalho quando só
-// alguns itens estão marcados. Ele só pode ser definido via JS, por isso o ref.
+// Checkbox customizado.
 function Checkbox({ checked, indeterminate = false, onChange }: CheckboxProps) {
   return (
     <span className="check">
@@ -112,7 +159,7 @@ interface ActionProps {
   onClick: () => void;
 }
 
-// botão de lápis (usado na tabela e na lista mobile)
+// Botão de edição.
 function EditButton({ disabled, onClick }: ActionProps) {
   return (
     <button
@@ -126,7 +173,7 @@ function EditButton({ disabled, onClick }: ActionProps) {
   );
 }
 
-// botão de lixeira de uma linha só (usado na tabela e na lista mobile)
+// Botão de exclusão.
 function DeleteButton({ disabled, onClick }: ActionProps) {
   return (
     <button
@@ -140,7 +187,7 @@ function DeleteButton({ disabled, onClick }: ActionProps) {
   );
 }
 
-// aparece quando não há nenhum usuário para mostrar
+// Aparece quando não há nenhum usuário para mostrar.
 function EmptyState() {
   return (
     <div className="empty">
@@ -164,21 +211,30 @@ function EmptyState() {
 }
 
 export default function Admin() {
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   const [users, setUsers] = useState<User[]>([]);
-  const [saving, setSaving] = useState<boolean>(false); // evita enviar duas vezes
+  const [saving, setSaving] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
-  const [selected, setSelected] = useState<Set<number>>(new Set()); // ids marcados
-  const [openRows, setOpenRows] = useState<Set<number>>(new Set()); // linhas abertas no mobile
-  const [openCadModal, setOpenCadModal] = useState<boolean>(false); // abre o modal de cadastro
-  const [editingUser, setEditingUser] = useState<User | null>(null); // usuário no modal de alterar
-  const [deleteIds, setDeleteIds] = useState<number[] | null>(null); // ids aguardando confirmação
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [openRows, setOpenRows] = useState<Set<number>>(new Set());
+  const [openCadModal, setOpenCadModal] = useState<boolean>(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [deleteIds, setDeleteIds] = useState<number[] | null>(null);
   const [pageSize, setPageSize] = useState(() =>
     window.matchMedia("(max-width: 480px)").matches ? 5 : 10,
   );
   const [page, setPage] = useState(1);
-
-  const userName = "Beatriz"; // TODO: vir da autenticação
 
   const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -191,7 +247,7 @@ export default function Admin() {
     pageUsers.length > 0 && pageUsers.every((u) => selected.has(u.id));
   const someOnPageSelected = pageUsers.some((u) => selected.has(u.id));
 
-  // checkbox do cabeçalho: marca ou desmarca todos os usuários da página atual
+  // Marca ou desmarca todos os usuários da página atual.
   const toggleSelectAll = () => {
     const next = new Set(selected);
     for (const u of pageUsers) {
@@ -204,10 +260,10 @@ export default function Admin() {
   const showToast = (icon: ToastIcon, title: string, message?: string) =>
     setToast({ id: Date.now(), icon, title, message });
 
-  // useCallback para o Toast não reiniciar o timer a cada render
+  // Evita que o Toast reinicie o timer a cada render.
   const closeToast = useCallback(() => setToast(null), []);
 
-  // busca a lista de usuários no back
+  // Busca a lista de usuários no backend.
   async function getUsers(): Promise<void> {
     try {
       const data = await request<User[] | null>(`${USERS_URL}/get-users`);
@@ -217,7 +273,7 @@ export default function Admin() {
     }
   }
 
-  // carrega a lista ao abrir a tela
+  // Carrega a lista ao abrir a tela.
   useEffect(() => {
     const fetchData = async () => {
       await getUsers();
@@ -235,13 +291,15 @@ export default function Admin() {
     setEditingUser(user);
   };
 
-  // abre o aviso de confirmação antes de deletar
+  // Abre o aviso de confirmação antes de deletar.
   const deleteUsers = (ids: number[]) => {
     setDeleteIds(ids);
   };
 
+  // Cadastra um novo usuário.
   async function createUser(values: FormValues): Promise<void> {
     if (saving) return;
+
     setSaving(true);
 
     try {
@@ -254,25 +312,107 @@ export default function Admin() {
           isAdm: false,
         }),
       });
+
       setOpenCadModal(false);
+
       showToast(
         "success",
         "Usuário cadastrado",
         `${values.name.trim()} já pode acessar a plataforma.`,
       );
+
       await getUsers();
     } catch (e) {
-      showToast("error", "Erro ao cadastrar", errorMessage(e));
+      if (e instanceof RequestError) {
+        // Falha de conexão.
+        if (e.type === "network") {
+          showToast(
+            "error",
+            "Falha na conexão",
+            "Não foi possível conectar ao servidor. Verifique sua conexão.",
+          );
+          return;
+        }
+
+        // Erros retornados pelo backend.
+        switch (e.status) {
+          case 400:
+            showToast(
+              "error",
+              "Dados incorretos",
+              e.message || "Verifique os dados informados.",
+            );
+            break;
+
+          case 401:
+            showToast(
+              "error",
+              "Sessão expirada",
+              "Sua sessão expirou. Faça login novamente.",
+            );
+            break;
+
+          case 403:
+            showToast(
+              "error",
+              "Acesso negado",
+              "Você não tem permissão para cadastrar usuários.",
+            );
+            break;
+
+          case 409:
+            showToast(
+              "error",
+              "E-mail já cadastrado",
+              e.message || "Já existe um usuário com esse e-mail.",
+            );
+            break;
+
+          case 429:
+            showToast(
+              "error",
+              "Muitas tentativas",
+              "Aguarde alguns minutos antes de tentar novamente.",
+            );
+            break;
+
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            showToast(
+              "error",
+              "Servidor indisponível",
+              "Tente novamente mais tarde.",
+            );
+            break;
+
+          default:
+            showToast(
+              "error",
+              "Erro ao cadastrar",
+              e.message || "Não foi possível cadastrar o usuário.",
+            );
+            break;
+        }
+      } else {
+        showToast(
+          "error",
+          "Erro ao cadastrar",
+          errorMessage(e) || "Ocorreu um erro inesperado. Tente novamente.",
+        );
+      }
     } finally {
       setSaving(false);
     }
   }
 
+  // Altera os dados de um usuário.
   async function updateUser(values: FormValues): Promise<void> {
     if (!editingUser || saving) return;
     setSaving(true);
 
-    // a senha só vai se a pessoa preencheu (vazio = manter a atual)
+    // Senha vazia significa manter a senha atual.
     const body: Record<string, string> = {
       name: values.name.trim(),
       email: values.email.trim(),
@@ -294,13 +434,14 @@ export default function Admin() {
     }
   }
 
+  // Confirma a exclusão dos usuários selecionados.
   async function confirmDelete(): Promise<void> {
     if (!deleteIds || saving) return;
     const ids = deleteIds;
     setDeleteIds(null);
     setSaving(true);
 
-    // o back deleta um por vez, então dispara todos juntos
+    // O backend deleta um por vez, então dispara todos juntos.
     const results = await Promise.allSettled(
       ids.map((id) => request(`${USERS_URL}/${id}`, { method: "DELETE" })),
     );
@@ -336,10 +477,14 @@ export default function Admin() {
         />
       )}
 
-      {/* Aqui está a lógica de aparecer os modais em cada ação */}
+      {/* Modais de cada ação. */}
 
       {openCadModal && (
-        <CadForm onSave={createUser} onClose={() => setOpenCadModal(false)} />
+        <CadForm
+          onSave={createUser}
+          onClose={() => setOpenCadModal(false)}
+          isSubmitting={saving}
+        />
       )}
 
       {editingUser && (
@@ -395,8 +540,7 @@ export default function Admin() {
             </div>
           </div>
 
-          {/* tabela (desktop) */}
-          {/* <div className="table-card table-card-desktop"> */}
+          {/* Tabela (desktop). */}
           <table className="table">
             <colgroup>
               <col style={{ width: "10%" }} />
@@ -444,7 +588,9 @@ export default function Admin() {
                         <div className="cell-id">
                           <Checkbox
                             checked={isSelected}
-                            onChange={() => setSelected(toggle(selected, u.id))}
+                            onChange={() =>
+                              setSelected(toggle(selected, u.id))
+                            }
                             label={`Selecionar ${u.name}`}
                           />
                           <span>{pad(u.id)}</span>
@@ -472,9 +618,8 @@ export default function Admin() {
               )}
             </tbody>
           </table>
-          {/* </div> */}
 
-          {/* lista expansível (mobile) */}
+          {/* Lista expansível (mobile). */}
           <div className="m-card">
             {pageUsers.length === 0 ? (
               <EmptyState />
@@ -497,13 +642,15 @@ export default function Admin() {
                           <ChevronDown />
                         </button>
 
-                        {/* tocar no nome seleciona o usuário */}
+                        {/* Tocar no nome seleciona o usuário. */}
                         <label className="m-label">
                           <input
                             type="checkbox"
                             className="checkbox-user"
                             checked={isSelected}
-                            onChange={() => setSelected(toggle(selected, u.id))}
+                            onChange={() =>
+                              setSelected(toggle(selected, u.id))
+                            }
                           />
                           <span className="m-key">Nome</span>
                           <span className="m-val">{u.name}</span>
@@ -544,7 +691,7 @@ export default function Admin() {
             )}
           </div>
 
-          {/* paginação */}
+          {/* Paginação. */}
           <div className="table-footer">
             <label className="per-page">
               <span>Mostrando</span>
@@ -576,10 +723,11 @@ export default function Admin() {
               >
                 <ChevronLeft />
               </button>
-              {/* o key faz o React recriar o elemento e repetir a animação a cada página */}
+
               <span className="pager-count" key={currentPage}>
                 {currentPage}/{totalPages}
               </span>
+
               <button
                 type="button"
                 className="pager-btn pager-btn-next"

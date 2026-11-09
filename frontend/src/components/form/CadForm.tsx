@@ -1,6 +1,16 @@
 import Form from "./Form";
-import { compose, email, matches, minLength, required } from "./Validators";
-import type { FieldConfig, FormValues } from "../../types/form";
+import {
+  compose,
+  email,
+  matches,
+  minLength,
+  required,
+} from "./Validators";
+
+import type {
+  FieldConfig,
+  FormValues,
+} from "../../types/form";
 
 const fields: FieldConfig[] = [
   {
@@ -28,24 +38,33 @@ const fields: FieldConfig[] = [
     label: "Confirmar senha",
     type: "password",
     placeholder: "Repita sua senha...",
-    validate: compose(required, matches("password", "As senhas não coincidem*")),
+    validate: compose(
+      required,
+      matches("password", "As senhas não coincidem*")
+    ),
   },
 ];
 
 type CadFormProps = {
-  onSave?: (values: FormValues) => void; // quem usa o form envia para o back
+  onSave?: (values: FormValues) => void | Promise<void>;
   onClose?: () => void;
+  isSubmitting?: boolean;
 };
 
-export default function CadForm({ onSave, onClose }: CadFormProps) {
+export default function CadForm({
+  onSave,
+  onClose,
+  isSubmitting = false,
+}: CadFormProps) {
   return (
     <Form
       title="Cadastrar usuário"
       fields={fields}
       submitLabel="Cadastrar"
       onClose={onClose}
-      onSubmit={(values) => {
-        onSave?.(values);
+      isSubmitting={isSubmitting}
+      onSubmit={async (values) => {
+        await onSave?.(values);
       }}
     />
   );

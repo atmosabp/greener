@@ -32,6 +32,17 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 export default function Dashboard() {
   const { serviceId } = useParams();
 
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -220,7 +231,7 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>Bom dia, &lt;nome usu&aacute;rio&gt;.</h1>
+            <h1>Bom dia, {userName}.</h1>
             {/* backend: nome do usuário */}
             <p>
               Analise os dados do serviço <strong>{serviceMetrics.name}</strong>

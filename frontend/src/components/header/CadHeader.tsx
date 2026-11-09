@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { HeaderLink } from "../../types/header";
 import Header from "./Header";
 import Warning from "../warning/Warning";
@@ -17,6 +17,17 @@ export default function CadHeader() {
     logout(navigate);
   };
 
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   return (
     <>
       <Header
@@ -26,7 +37,7 @@ export default function CadHeader() {
             Sair
           </button>
         }
-        message={<span>Olá, &lt;nome&gt;!</span>}
+        message={<span>Olá, {userName}!</span>}
       />
       {showWarning && (
         <Warning

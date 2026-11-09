@@ -9,9 +9,7 @@ import "./LoginForm.css";
 
 const port = import.meta.env.VITE_PORT;
 
-
 export default function LoginForm() {
-  // Estados
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -84,9 +82,6 @@ export default function LoginForm() {
         throw new Error("INVALID_RESPONSE");
       }
 
-      console.log("Status:", response.status);
-      console.log("Resposta do servidor:", data);
-
       // Tratamento dos erros HTTP
       if (!response.ok) {
         setApiError(data.message || "Não foi possível realizar o login.");
@@ -99,7 +94,7 @@ export default function LoginForm() {
       }
 
       sessionStorage.setItem("token", data.token);
-      sessionStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       navigate("/home");
 

@@ -1,3 +1,4 @@
+
 import { Eye, EyeClosed, X } from "lucide-react";
 import "./Form.css";
 import { useEffect, useState, type FormEvent } from "react";
@@ -11,11 +12,15 @@ export default function Form({
   initialValues = {},
   onClose,
   children,
+  isSubmitting = false,
 }: FormProps) {
   // Começa com "" em todos os campos, sobrescrevendo com initialValues
   const [values, setValues] = useState<FormValues>(() =>
-    Object.fromEntries(fields.map((f) => [f.name, initialValues[f.name] ?? ""])),
+    Object.fromEntries(
+      fields.map((f) => [f.name, initialValues[f.name] ?? ""])
+    )
   );
+
   const [errors, setErrors] = useState<FormErrors>({});
   // Qual campo de senha está com o olho pressionado
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -26,47 +31,65 @@ export default function Form({
   // Fecha o modal com a tecla Esc
   useEffect(() => {
     if (!onClose) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !isSubmitting) {
+        onClose();
+      }
     };
+
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [onClose, isSubmitting]);
 
   const handleChange = (name: string, value: string) => {
     setValues((p) => ({ ...p, [name]: value }));
-    if (errors[name]) setErrors((p) => ({ ...p, [name]: undefined }));
+
+    if (errors[name]) {
+      setErrors((p) => ({ ...p, [name]: undefined }));
+    }
   };
 
   const handleBlur = (name: string) => {
     const field = fields.find((f) => f.name === name);
+
     setErrors((p) => ({
       ...p,
       [name]: field?.validate?.(values[name], values),
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // Valida e envia o formulário
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     const newErrors: FormErrors = {};
+
     for (const f of fields) {
       newErrors[f.name] = f.validate?.(values[f.name], values);
     }
+
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(Boolean)) return;
 
-    onSubmit(values);
+    await onSubmit(values);
   };
 
   return (
     <div
       className="form"
-      // mousedown (e não click) evita fechar ao selecionar texto e soltar fora
-      // target === currentTarget: só fecha se clicou no fundo, não dentro do form
+      // Impede fechar o modal durante o envio
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose?.();
+        if (
+          e.target === e.currentTarget &&
+          !isSubmitting
+        ) {
+          onClose?.();
+        }
       }}
     >
       <form
@@ -83,10 +106,12 @@ export default function Form({
             className="btn-close"
             aria-label="Fechar"
             onClick={onClose}
+            disabled={isSubmitting}
           >
             <X className="close" size={28} />
           </button>
         )}
+
         <h4>{title}</h4>
 
         {fields.map((f) => {
@@ -97,10 +122,15 @@ export default function Form({
 
           const input = (
             <input
-              type={isPassword && visible[f.name] ? "text" : (f.type ?? "text")}
+              type={
+                isPassword && visible[f.name]
+                  ? "text"
+                  : f.type ?? "text"
+              }
               id={f.name}
               placeholder={f.placeholder}
               value={values[f.name]}
+              disabled={isSubmitting}
               onChange={(e) => handleChange(f.name, e.target.value)}
               onBlur={() => handleBlur(f.name)}
               className={error ? "input-error" : ""}
@@ -112,12 +142,19 @@ export default function Form({
           return (
             <div className="form-field" key={f.name}>
               <div className="label-row">
-                <label htmlFor={f.name} title={isRequired ? "Campo obrigatório" : undefined}>
+                <label
+                  htmlFor={f.name}
+                  title={isRequired ? "Campo obrigatório" : undefined}
+                >
                   {f.label}
                   {showStar && "*"}
                 </label>
+
                 {error && (
-                  <span id={`${f.name}-error`} className="error-msg">
+                  <span
+                    id={`${f.name}-error`}
+                    className="error-msg"
+                  >
                     {error}
                   </span>
                 )}
@@ -126,10 +163,12 @@ export default function Form({
               {isPassword ? (
                 <div className="password-input">
                   {input}
+
                   <button
                     type="button"
                     className="btn-eye"
                     aria-label="Segure para mostrar a senha"
+                    disabled={isSubmitting}
                     onMouseDown={() => setVisibility(f.name, true)}
                     onMouseUp={() => setVisibility(f.name, false)}
                     onMouseLeave={() => setVisibility(f.name, false)}
@@ -149,8 +188,12 @@ export default function Form({
         {children}
 
         <div className="form-link">
-          <button type="submit" className="btn-login">
-            {submitLabel}
+          <button
+            type="submit"
+            className="btn-login"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Salvando..." : submitLabel}
           </button>
         </div>
       </form>
