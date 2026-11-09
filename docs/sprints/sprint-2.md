@@ -1,4 +1,4 @@
-## Sprint 1 - GreenER
+## Sprint 2 - GreenER
 
 Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
 
