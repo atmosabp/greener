@@ -155,7 +155,7 @@
 }
 
 .globe-service-card__location {
-    font-size: 10px;
+    font-size: 0.8rem;
     line-height: 1.5;
 
     opacity: 0.75;
@@ -192,7 +192,7 @@
     gap: 4px;
 
     min-width: 0;
-    font-size: 10px;
+    font-size: 0.8rem;
 
     overflow-wrap: anywhere;
 }
@@ -202,7 +202,7 @@
 }
 
 .globe-service-card__metric strong {
-    font-size: 12px;
+    font-size: 0.9rem;
     font-weight: 600;
 }
 

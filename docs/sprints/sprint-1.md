@@ -1,4 +1,5 @@
 ## Sprint 1 - GreenER
+Esta sprint ocorreu entre os dias **28/09/2026** e **19/10/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 15 dias.
 
 ### Objetivo da sprint
 O objetivo geral dessa sprint era entregar todos os designs iniciais, diagramas UML, implementação das primeiras telas, base do servidor backend e banco de dados.
@@ -42,7 +43,7 @@ Lista do que foi entregue:
 ### Itens concluídos e pendentes
 Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portanto, todas as tarefas foram *concluídas*.
 
-É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1/views/1).
+É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/1).
 
 <details>
 
@@ -55,7 +56,7 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | :------- | :--------------------------------------------------------------- | :------------- | :--------- | :------ |
 | **BD01** | Modelar banco de dados                                           | Darcy          | BDR        | 2       |
 | **BD02** | Criar banco de dados                                             | Mariana        | BDR        | 2       |
-| **BD03** | Criar conexão do banco ao backend                                | kauã           | BDR        | 5       |
+| **BD03** | Criar conexão do banco ao backend                                | Kauã           | BDR        | 5       |
 | **DD01** | Definir identidade visual (cores, fontes e logo)                 | All            | DD         | 3       |
 | **DD02** | Desenvolver logo do projeto                                      | Júlia          | DD         | 3       |
 | **DD03** | Desenvolver logo da equipe                                       | Júlia          | DD         | 3       |
@@ -73,8 +74,8 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | **DD15** | Tela de comparação - Mobile                                      | Kauã           | DD         | 2       |
 | **DD16** | Tela 404 - Desktop                                               | Mariana        | DD         | 2       |
 | **DD17** | Tela 404 - Mobile                                                | Mariana        | DD         | 1       |
-| **DD18** | Tela Landing Page - Desktop                                      | kauã           | DD         | 3       |
-| **DD19** | Tela Landing Page - Mobile                                       | kauã           | DD         | 2       |
+| **DD18** | Tela Landing Page - Desktop                                      | Kauã           | DD         | 3       |
+| **DD19** | Tela Landing Page - Mobile                                       | Kauã           | DD         | 2       |
 | **DD20** | Definir avisos (loading, avisos, erros)                          | Mariana        | DD         | 3       |
 | **DW01** | Criar estrutura do projeto frontend                              | Lorenzo        | DW II      | 5       |
 | **DW02** | Implementar tela principal                                       | Lorenzo        | DW II      | 13      |
@@ -93,7 +94,7 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 | **ES11** | Conteinizar o projeto                                            | Júlia          | ESW II     | 3       |
 | **ES12** | Criar Diagrama de Classes                                        | Mariana        | ESW II     | 8       |
 | **TP01** | Criar estrutura do backend em módulos (controllers, services...) | Lorenzo        | TP I       | 3       |
-| **TP02** | Configurar servidor HTTP e variáveis de ambiente                 | kauã           | TP I       | 2       |
+| **TP02** | Configurar servidor HTTP e variáveis de ambiente                 | Kauã           | TP I       | 2       |
 | **TP03** | Consultar /services                                              | Darcy          | TP I       | 2       |
 | **TP04** | Consultar /metrics/{id_servico}                                  | Darcy          | TP I       | 5       |
 | **TP05** | Implementar cálculo de CO₂e                                      | Darcy          | TP I       | 3       |
@@ -112,6 +113,22 @@ Não houve nenhuma tarefa pendente que foi determinada no Sprint Backlog, portan
 Durante a sprint, foi desenvolvido um relatório descrevendo o que foi feito em cada dia de trabalho para cada integrante, e outras informações adicionais.
 
 Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-1.md)
+
+<br>
+
+### Sprint Review
+A Sprint Review é um dos eventos do Scrum em que é apresentado o trabalho desenvolvido durate a sprint para o cliente.  
+Ela foi realizada dia **19/10/2026**.  
+
+O feedback geral do cliente foi muito bom. Foi elogiado sobre o processo e o produto final. Também foram apontados alguns erros de código e inconsistências que serão abordadas durante a 2° sprint.
+
+Aqui serão mostrados os pontos que foram apontados pelo cliente e pelo professor:
+- Dados placeholder usados ao invés dos dados reais -> planejamos usar completamente os dados reais apenas a partir da 2° sprint. O único uso deles seria no `MetricsCalculator`, para definir os cálculos para o KWh e o CO2e.
+- Senhas armazenadas e devolvidas em texto puro -> foi definido no Product Backlog que isso será feito na 2° sprint, a tela de Login e a rota era apenas para testar a tela e aconectividade do banco de dados.
+- Queries SQL com sintaxe errada, funções não utilizadas e arquivos duplicados -> foi abordado logo no dia seguinte da Sprint Review.
+- Algumas consultas usam tabela e colunas erradas -> Isso provavelmente são alguns traços de versões anteriores, decidi deixar aqui como um lembrete de qualquer forma.
+- Tipar as variáveis e funções corretamente (tirar uso excessivo de any) -> será abordado na 2° sprint.
+- Colocar entrega na branch main -> foi feito logo após a Sprint Review, com o produto pronto. 
 
 <br>
 

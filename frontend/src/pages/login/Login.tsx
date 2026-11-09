@@ -34,7 +34,7 @@ export default function Login() {
             <ChevronLeft />
             <span>Voltar ao início</span>
           </Link>
-          <ThemeToggle/>
+          <ThemeToggle />
         </div>
         <a href="/" className="brand" aria-label="Greener">
           <img className="brand-logo" src={logo} alt="" />
@@ -46,7 +46,9 @@ export default function Login() {
       <main className="login">
         <img src={logoFull} alt="Logo Greener" className="logo" />
         <span>Faça login com seu e-mail corporativo.</span>
+
         <LoginForm />
+
         <div className="info-txt">
           <div className="safe-warning">
             <ShieldCheck fill="var(--primary-dark)" />
