@@ -8,10 +8,10 @@ import { authenticateToken } from "../../middlewares/middleware";
 
 export const router = Router();
 
-// Login - http://localhost:3000/auth/login
+// Login - http://localhost:PORT/auth/login
 router.post("/login", loginController);
 
-// Verificar sessão - http://localhost:3000/auth/me
+// Verificar sessão - http://localhost:PORT/auth/me
 router.get("/me", authenticateToken, currentUserController);
 
 /*

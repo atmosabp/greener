@@ -19,7 +19,7 @@ create table if not exists minute_data(
 	id serial primary key,
 	co2e float,
 	kwh float,
-	date_pull timestamp with time zone default current_timestamp,
+	date_pull timestamp with time zone default date_trunc('minute',current_timestamp at time zone '+06'),
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
@@ -33,8 +33,8 @@ create table if not exists hour_data(
 -- decidir entre serial e guid
 	id serial primary key, 
 	co2e float,
-	date_pull timestamp with time zone default current_timestamp,
 	kwh float,
+	date_pull timestamp with time zone default current_timestamp,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
@@ -48,8 +48,8 @@ create table if not exists day_data(
 -- decidir entre serial e guid
 	id serial primary key, 
 	co2e float,
-	date_pull timestamp with time zone default current_timestamp,
 	kwh float,
+	date_pull timestamp with time zone default current_timestamp,
 	cpu_percentage float,
 	memory_gb float,
 	disk_gb float,
@@ -197,7 +197,6 @@ return new;
 end;
 $BODY$;
 
-
 DROP TRIGGER IF EXISTS minutes_to_hours ON minute_data;
 
 CREATE TRIGGER minutes_to_hours
@@ -205,16 +204,12 @@ AFTER INSERT ON minute_data
 FOR EACH ROW
 EXECUTE FUNCTION minutes_to_hours_func();
 
-
-
 DROP TRIGGER IF EXISTS hours_to_days ON hour_data;
 
 CREATE TRIGGER hours_to_days
 AFTER INSERT ON hour_data
 FOR EACH ROW
 EXECUTE FUNCTION hours_to_days_func();
-
-
 
 DROP TRIGGER IF EXISTS days_to_months ON day_data;
 

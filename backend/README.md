@@ -100,7 +100,7 @@ O backend lê o arquivo `.env` que fica na **raiz do projeto** (e não dentro de
 
 | Variável | Descrição |
 | -------- | --------- |
-| `PORT` | Porta do backend (se não for definida fora do Docker, o servidor usa `3000`) |
+| `PORT` | Porta do backend |
 | `FRONT_PORT` | Porta do frontend |
 | `ENVIRONMENT` | Ambiente de execução (ex.: `dev`) |
 | `POSTGRES_HOST` | Com Docker: `greener-database`. Sem Docker: `localhost` |

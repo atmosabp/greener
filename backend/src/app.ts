@@ -3,8 +3,6 @@ import cors from "cors";
 
 import { router } from "./modules";
 
-const FRONT_PORT = Number(process.env.FRONT_PORT ?? 8080);
-
 export const app = express();
 
 app.use(express.json());
@@ -26,7 +24,7 @@ app.use(cors({
   credentials: true
 }));
 
-// localhost:3000/health
+// localhost:PORT/health
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
