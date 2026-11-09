@@ -1,25 +1,44 @@
-## Sprint 1 - GreenER
+## Sprint 2 - GreenER
 
 Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
 
 ### Objetivo da sprint
+O objetivo geral dessa sprint era implementar todas as telas do site, como a tela principal e o dashboard, desenvolver o sistema de guardar métricas dos serviços no banco de dados e implementar sistema de segurança.  
 
-[descrever objetivo da sprint aqui]
+Aqui está cada objetivo em mais detalhes:
+
+- **Implementação e integração de telas** -> Implementar 3 telas no site: landing page, login e tela principal. Como essas são as primeiras telas que o usuário acessa, demos prioridade a elas nessa sprint.  
+
+- **Servidor backend** -> Desenvolver um servidor backend funcional, que tenha quase todas as partes necessárias para o projeto inteiro: rotas, funções para pegar dados da API, autenticação com JWT e criptografia de senhas. 
+
+- **Sistema de coleta de histórico** -> Desenvolver o sistema de coleta de histórico no servidor, para guardar no banco de dados o histórico de métricas de todos os serviços. Também desenvolver os triggers para garantir um desempenho maior na coleta de dados, separando-os em tabelas de minutos, horas, dias e meses.
+
+- **Testes** -> Desenvolver os testes de endpoints restantes, de acordo com o possível e necessário, pois pode haver alguns que dependem de implementações da 3° sprint.
 
 <br>
 
 ### O que foi entregue
+O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui](https://youtu.be/JRwsLX7Vka0).  
+Ele mostra visualmente o que foi feito durante a sprint das telas e backend, e o que está planejado para o próximo ciclo de entrega.
 
-[descrever o que foi entregue aqui]
-[vídeo]
-[burndown]
-[lista do que foi entregue]
+A seguir está o burndown da sprint 2.  
+Ele demonstra a evolução das tarefas ao longo dos dias. Assim como a relação entre o esforço real de cada dia e o planejado.  
+No início da sprint, foi definido um esforço total de 140 pontos. E para cada dia, uma média de 11 pontos esperados.
+
+![Burndown da sprint 2](burndown-sprint-2.png)
+
+<br>
+
+Lista do que foi entregue:
+- [ ✔ ] Implementação de todas as telas planejadas, e integração delas com o backend (servidor que liga os dados da API).
+- [ ✔ ] Autenticação de usuários por meio de JWT e criptografia de senhas para segurança
+- [ ✔ ] Banco de dados aprimorado com o sistema de triggers para melhorar desempenho do histórico
+- [ ✔ ] Todos os testes de implementação viáveis no escopo atual
 
 <br>
 
 ### Itens concluídos e pendentes
-
-[descrever se houve ou não tarefas pendentes]
+Não houve itens pendentes nessa sprint. Tudo o que foi realmente planejado foi concluído.
 
 É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/3).
 
@@ -81,20 +100,9 @@ Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/
 <br>
 
 ### Sprint Retrospective
+Este é um evento da metodologia Scrum que permite que a equipe se junte e dialogue sobre o processo, sem focar no produto.
 
-[colocar info aqui]
-
-#### 1 - O que não deu certo
-
-[colocar info aqui]
-
-#### 2 - O que deu certo
-
-[colocar info aqui]
-
-#### 3 - Como podemos melhorar
-
-[colocar info aqui]
+Como é feito apenas após o encerramento da Sprint Review, ainda não foi adicionado aqui.
 
 <br>
 
