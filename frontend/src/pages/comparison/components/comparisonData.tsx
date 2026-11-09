@@ -1,8 +1,3 @@
-
-/* ------------------------------------------------------------------ */
-/* Tipos                                                               */
-/* ------------------------------------------------------------------ */
-
 export type MetricKey =
     | 'consumo'
     | 'emissao'
@@ -38,11 +33,7 @@ interface ApiService {
     };
 }
 
-/* ------------------------------------------------------------------ */
-/* Busca no backend                                                    */
-/* ------------------------------------------------------------------ */
-
-const API_URL = import.meta.env.VITE_PORT || 3000;
+const port: number = import.meta.env.VITE_PORT || 3000;
 
 function toService(apiService: ApiService): Service {
     const metrics = apiService.metrics ?? {};
@@ -70,7 +61,7 @@ function toService(apiService: ApiService): Service {
 }
 
 export async function fetchServices(): Promise<Service[]> {
-    const result = await fetch(`http://localhost:${API_URL}/collections/all-service-data`);
+    const result = await fetch(`http://localhost:${port}/collections/all-service-data`);
 
     if (!result.ok) {
         throw new Error('Não foi possível buscar os dados dos serviços.');
@@ -80,10 +71,6 @@ export async function fetchServices(): Promise<Service[]> {
 
     return (data ?? []).map(toService);
 }
-
-/* ------------------------------------------------------------------ */
-/* Formatação                                                          */
-/* ------------------------------------------------------------------ */
 
 const UNITS: Record<MetricKey, string> = {
     consumo: ' kWh',
@@ -111,10 +98,6 @@ export function formatMetric(key: MetricKey, value?: number) {
 
     return `${formatNumber(value)}${UNITS[key]}`;
 }
-
-/* ------------------------------------------------------------------ */
-/* Médias e comparação                                                 */
-/* ------------------------------------------------------------------ */
 
 const METRIC_KEYS: MetricKey[] = [
     'consumo',
@@ -161,10 +144,6 @@ export function calculateDelta(value?: number, base?: number) {
     return ((value - base) / base) * 100;
 }
 
-/* ------------------------------------------------------------------ */
-/* Intensidade de carbono                                              */
-/* ------------------------------------------------------------------ */
-
 export function carbonLevel(intensity?: number) {
     if (intensity === undefined) return { label: 'Indisponível', bar: '0%' };
 
@@ -175,10 +154,6 @@ export function carbonLevel(intensity?: number) {
     if (intensity < 200) return { label: 'Médio', bar };
     return { label: 'Alto', bar };
 }
-
-/* ------------------------------------------------------------------ */
-/* Períodos                                                            */
-/* ------------------------------------------------------------------ */
 
 export const PERIODS = [
     { value: 'today', label: 'Hoje' },

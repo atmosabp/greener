@@ -4,6 +4,8 @@ import AppHeader from "../../components/header/AppHeader";
 import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
+import Loading from "../../components/loading/Loading";
+import Toast from "../../components/toast/Toast";
 
 export type ServiceStatus = "active" | "incomplete" | "inactive";
 
@@ -50,7 +52,6 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
 
-  // TODO: lista de serviços com base nos serviços reais da API
   const [services, setServices] = useState<Service[]>([]);
 
   async function updateServices() {
@@ -95,6 +96,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
   return (
     <div className="homepage">
+      <Loading data={services} />
       <AppHeader />
 
       <main className="homepage-main">
@@ -120,7 +122,16 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
             <div className="services-list">
               {services.length === 0 ? (
-                <p className="services-empty">Nenhum serviço foi encontrado.</p>
+                <>
+                  <p className="services-empty">
+                    Nenhum serviço foi encontrado.
+                  </p>
+                  <Toast
+                    icon="error"
+                    title="Erro"
+                    message="Não foi possível carregar os serviços"
+                  />
+                </>
               ) : (
                 services.map((service, index) => {
                   const isSelected = selectedService === service.id;

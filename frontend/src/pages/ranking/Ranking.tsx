@@ -15,6 +15,7 @@ import {
 } from "./components/rankingData";
 
 import "./Ranking.css";
+import Loading from "../../components/loading/Loading";
 
 export default function Ranking() {
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
@@ -65,7 +66,6 @@ export default function Ranking() {
     }
 
     setLastUpdate(new Date());
-
 
     sortRanking(formatedData)
     // setInitialServices(
@@ -129,6 +129,7 @@ export default function Ranking() {
 
   return (
     <div className="ranking-page">
+      <Loading data={initialServices} />
       <AppHeader />
 
       <main className="ranking-main">
