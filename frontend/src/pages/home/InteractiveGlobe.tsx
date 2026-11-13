@@ -187,23 +187,20 @@ export default function InteractiveGlobe({
         [globeData, selectedServiceId]
     );
 
+    // Para a rotação quando o mouse entra no globo.
     const handleMouseEnter = () => {
-        if (
-            visualization === "services" &&
-            globeRef.current
-        ) {
-            globeRef.current.controls().autoRotate = false;
-        }
+        if (!globeRef.current) return;
+
+        globeRef.current.controls().autoRotate = false;
     };
 
+    // Retoma a rotação quando o mouse sai do globo.
+    // Mantém o globo parado enquanto houver um serviço selecionado.
     const handleMouseLeave = () => {
-        if (
-            visualization === "services" &&
-            globeRef.current
-        ) {
-            globeRef.current.controls().autoRotate =
-                !selectedServiceId;
-        }
+        if (!globeRef.current) return;
+
+        globeRef.current.controls().autoRotate =
+            !selectedServiceId;
     };
 
     // Fecha o cartão quando o usuário clica fora do globo.
@@ -349,10 +346,19 @@ export default function InteractiveGlobe({
                 </>
             ) : (
                 <GlobeEmissions
+                    globeRef={globeRef}
                     width={dimensions.width}
                     height={dimensions.height}
                     mode={mode}
                     datasets={emissionDatasets}
+                    selectedPoint={
+                        selectedPoint
+                            ? {
+                                lat: selectedPoint.lat,
+                                lng: selectedPoint.lng,
+                            }
+                            : null
+                    }
                 />
             )}
         </div>
