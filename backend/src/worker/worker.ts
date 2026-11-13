@@ -36,6 +36,7 @@ async function fetchServices() {
 
 async function fetchMetricsAddHistory(serviceId: string) {
   try {
+    
     const result = await fetch(
       `http://localhost:${connection.ports}/collections/add-history`,
       {
@@ -44,6 +45,7 @@ async function fetchMetricsAddHistory(serviceId: string) {
         body: JSON.stringify({ serviceId: serviceId }),
       },
     );
+    console.log(result)
   } catch (e: any) {
     console.error(e.message);
   }
