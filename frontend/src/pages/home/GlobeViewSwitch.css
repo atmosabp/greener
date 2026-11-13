@@ -1,0 +1,41 @@
+
+.globe-view-switch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--panel, rgba(128, 128, 128, 0.12));
+}
+
+.globe-view-switch button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 13px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.globe-view-switch button:hover {
+    background: rgba(128, 128, 128, 0.12);
+}
+
+.globe-view-switch button.active {
+    background: var(--primary);
+    color: white;
+}
+
+.globe-view-switch button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}

@@ -297,3 +297,26 @@
         transition: none;
     }
 }
+
+
+
+
+.emissions-globe {
+    overflow: hidden;
+}
+
+.emissions-empty {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--panel, rgba(30, 30, 30, 0.85));
+    color: var(--text);
+    font-size: 0.8rem;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+    white-space: nowrap;
+}

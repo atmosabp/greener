@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AppHeader from "../../components/header/AppHeader";
@@ -15,8 +16,8 @@ export interface Service {
     | {
         city?: string;
         country?: string;
-        latitude?: number | undefined;
-        longitude?: number | undefined;
+        latitude?: number;
+        longitude?: number;
         region?: string;
         region_code?: string;
       }
@@ -27,8 +28,8 @@ export interface Service {
     memory_gb?: number;
     disk_gb?: number;
     network_gb?: number;
-    co2e?: number | undefined;
-    kwh?: number | undefined;
+    co2e?: number;
+    kwh?: number;
   };
   status: ServiceStatus;
 }
@@ -39,6 +40,7 @@ interface HomepageProps {
 }
 
 type VisualizationMode = "globe" | "map";
+type GlobeVisualization = "services" | "emissions";
 
 const statusLabels: Record<ServiceStatus, string> = {
   active: "Ativo",
@@ -48,50 +50,59 @@ const statusLabels: Record<ServiceStatus, string> = {
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
   const [mode, setMode] = useState<VisualizationMode>("globe");
+
+  const [globeVisualization, setGlobeVisualization] =
+    useState<GlobeVisualization>("services");
+
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
 
   const [services, setServices] = useState<Service[]>([]);
 
   async function updateServices() {
-    const result = await fetch(
-      `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
-    );
-    const data: Service[] = await result.json();
-    setTimeUpdated(new Date().toLocaleString());
-    setServices(data);
+    try {
+      const result = await fetch(
+        `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
+      );
+
+      if (!result.ok) {
+        throw new Error("Não foi possível buscar os serviços.");
+      }
+
+      const data: Service[] = await result.json();
+
+      setTimeUpdated(new Date().toLocaleString());
+      setServices(data);
+    } catch (error) {
+      console.error("Erro ao atualizar serviços:", error);
+    }
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      await updateServices();
-    };
+    updateServices();
 
-    fetchData();
+    const refreshInterval = localStorage.getItem("refresh_interval");
 
-    const fetchTimer = setInterval(
-      () => {
-        fetchData();
-      },
-      localStorage.getItem("refresh_interval")
-        ? Number(localStorage.getItem("refresh_interval")) * 1000
-        : updateTime * 1000,
-    );
+    const interval = refreshInterval
+      ? Number(refreshInterval) * 1000
+      : updateTime * 1000;
+
+    const fetchTimer = setInterval(updateServices, interval);
 
     return () => clearInterval(fetchTimer);
   }, []);
 
-  const activeCount = services
-    ? services.filter((service) => service.status === "active").length
-    : 0;
+  const activeCount = services.filter(
+    (service) => service.status === "active",
+  ).length;
 
-  const incompleteCount = services
-    ? services.filter((service) => service.status === "incomplete").length
-    : 0;
+  const incompleteCount = services.filter(
+    (service) => service.status === "incomplete",
+  ).length;
 
-  const inactiveCount = services
-    ? services.filter((service) => service.status === "inactive").length
-    : 0;
+  const inactiveCount = services.filter(
+    (service) => service.status === "inactive",
+  ).length;
 
   return (
     <div className="homepage">
@@ -121,11 +132,9 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
             <div className="services-list">
               {services.length === 0 ? (
-                <>
-                  <p className="services-empty">
-                    Nenhum serviço foi encontrado.
-                  </p>
-                </>
+                <p className="services-empty">
+                  Nenhum serviço foi encontrado.
+                </p>
               ) : (
                 services.map((service, index) => {
                   const isSelected = selectedService === service.id;
@@ -236,30 +245,64 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                 <strong>{timeUpdated || "-"}</strong>
               </div>
 
-              <div
-                className="view-switch"
-                role="group"
-                aria-label="Tipo de visualização"
-              >
-                <button
-                  type="button"
-                  className={mode === "globe" ? "active" : ""}
-                  onClick={() => setMode("globe")}
-                  aria-pressed={mode === "globe"}
+              <div className="visualization-controls">
+                <div
+                  className="view-switch"
+                  role="group"
+                  aria-label="Tipo de visualização"
                 >
-                  <span aria-hidden="true">◎</span>
-                  Globo
-                </button>
+                  <button
+                    type="button"
+                    className={mode === "globe" ? "active" : ""}
+                    onClick={() => setMode("globe")}
+                    aria-pressed={mode === "globe"}
+                  >
+                    <span aria-hidden="true">◎</span>
+                    Globo
+                  </button>
 
-                <button
-                  type="button"
-                  className={mode === "map" ? "active" : ""}
-                  onClick={() => setMode("map")}
-                  aria-pressed={mode === "map"}
-                >
-                  <span aria-hidden="true">▦</span>
-                  Mapa
-                </button>
+                  <button
+                    type="button"
+                    className={mode === "map" ? "active" : ""}
+                    onClick={() => setMode("map")}
+                    aria-pressed={mode === "map"}
+                  >
+                    <span aria-hidden="true">▦</span>
+                    Mapa
+                  </button>
+                </div>
+
+                {mode === "globe" && (
+                  <div
+                    className="globe-view-switch"
+                    role="group"
+                    aria-label="Visualização do globo"
+                  >
+                    <button
+                      type="button"
+                      className={
+                        globeVisualization === "services" ? "active" : ""
+                      }
+                      onClick={() => setGlobeVisualization("services")}
+                      aria-pressed={globeVisualization === "services"}
+                    >
+                      <span aria-hidden="true">◎</span>
+                      Serviços
+                    </button>
+
+                    <button
+                      type="button"
+                      className={
+                        globeVisualization === "emissions" ? "active" : ""
+                      }
+                      onClick={() => setGlobeVisualization("emissions")}
+                      aria-pressed={globeVisualization === "emissions"}
+                    >
+                      <span aria-hidden="true">◉</span>
+                      Emissões
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -269,6 +312,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   services={services}
                   selectedServiceId={selectedService}
                   onSelectService={setSelectedService}
+                  visualization={globeVisualization}
                 />
               ) : (
                 <MapVisualization
@@ -286,7 +330,9 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
               <p>
                 {mode === "globe"
-                  ? "Gire o globo e selecione os pontos para explorar cada operação."
+                  ? globeVisualization === "services"
+                    ? "Gire o globo e selecione os pontos para explorar cada operação."
+                    : "Visualize a concentração de emissões de CO₂e nas regiões monitoradas."
                   : "Explore o mapa, aproxime as regiões e selecione um ponto para ver seus dados."}
               </p>
 
