@@ -14,10 +14,14 @@ import {
 export async function addMinuteHistory(serviceId: string) {
   const client = await pool.connect();
 
-  const collectionIntervalSeconds = await reqInterval(serviceId);
-  const carbonIntensity = await reqCarbonValue(serviceId);
-  const renewablePercent = await reqRenewablePercent(serviceId);
-  const metricsEnergy = await reqMetrics(serviceId);
+  const [collectionIntervalSeconds,carbonIntensity,renewablePercent,metricsEnergy] =
+    await Promise.all([
+      reqInterval(serviceId),
+      reqCarbonValue(serviceId),
+      reqRenewablePercent(serviceId),
+      reqMetrics(serviceId)
+    ])
+  
 
   const metricsCalculator = new MetricsCalculator({
     collection_interval_seconds: collectionIntervalSeconds,
@@ -147,7 +151,7 @@ async function insertMonthHistory(datePull: any) {
 // ==========================================
 
 export async function findHistory() {
-  const result = await pool.query(`SELECT * FROM minute_data`);
+  const result = await pool.query(`SELECT * FROM hour_data where service_id = 'billing-api'`);
 
   return result.rows || [];
 }
