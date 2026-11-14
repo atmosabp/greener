@@ -1,6 +1,6 @@
 ## Sprint 3 - GreenER
 
-Esta sprint ocorreu entre os dias **09/11/2026** e **23/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 9 dias.
+Esta sprint ocorreu entre os dias **10/11/2026** e **23/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 9 dias.
 
 ### Objetivo da sprint
 Como a maioria das funcionalidades do projeto foram implementadas, o que resta é principalmente: melhorar o desempenho, padronizar visualmente as telas e corrigir bugs que restam.
@@ -60,7 +60,7 @@ Lista do que foi entregue:
 | **BU012** | Padronizar erros de input para Toast | Kauã | DW II | 2 |
 | **BU013** | Tratar e padronizar mensagens de erro do backend | Júlia | DW II | 3 |
 | **BU014** | Arrumar toast atrás de scrim | Kauã | DW II | 2 |
-| **BU015** | Adicionar tooltips e aria-label  em componentes | Darcy | DW II | 3 |
+| **BU015** | Adicionar tooltips e aria-label em componentes | Darcy | DW II | 3 |
 | **BU016** | Padronizar greetings | Kauã | DW II | 2 |
 | **ES06** | Manter README.md | Júlia | ESW II | 1 |
 | **ES17** | Finalizar a documentação técnica | Kauã | ESW II | 1 |
@@ -77,7 +77,7 @@ Lista do que foi entregue:
 
 Durante a sprint, foi desenvolvido um relatório descrevendo o que foi feito em cada dia de trabalho para cada integrante, e outras informações adicionais.
 
-Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-2.md)
+Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/atmosabp/greener/blob/develop/docs/relatorios/relatorio-sprint-3.md)
 
 <br>
 

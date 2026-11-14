@@ -1,6 +1,6 @@
 ## Sprint 2 - GreenER
 
-Esta sprint ocorreu entre os dias **20/10/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
+Esta sprint ocorreu entre os dias **21/10/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
 
 ### Objetivo da sprint
 O objetivo geral dessa sprint era implementar todas as telas do site, como a tela principal e o dashboard, desenvolver o sistema de guardar métricas dos serviços no banco de dados e implementar sistema de segurança.  
