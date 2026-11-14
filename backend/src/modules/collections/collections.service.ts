@@ -4,10 +4,12 @@ import {
 } from "../../integrations/carbon-api";
 import {
   reqInterval,
-  reqMetrics
+  reqMetricsCPU,
+  reqMetricsDisk,
+  reqMetricsMemory,
+  reqMetricsNetwork,
 } from "../../integrations/metrics-api";
 import { reqServices } from "../../integrations/services-api";
-import { MetricsData } from "../../types/metrics-types";
 import { ServiceTypes } from "../../types/services-types";
 import { MetricsCalculator } from "../metrics-calculator";
 import {
@@ -38,33 +40,35 @@ export async function addHistory(serviceId: string) {
 }
 
 export async function getServiceMetrics(serviceId: string) {
-  let 
+  let cpu,
+    memory,
     collectionIntervalSeconds,
     carbonIntensity,
     renewablePercent,
+    disk,
+    network,
     kwh,
     co2e: number | undefined = undefined;
-  let metricsEnergy : MetricsData | undefined = undefined
   let service: ServiceTypes | undefined = undefined;
 
   try {
     service = (await reqServices()).find((value) => value.id == serviceId);
-    const [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
-    await Promise.all([
-      reqInterval(serviceId),
-      reqCarbonValue(serviceId),
-      reqRenewablePercent(serviceId),
-    ])
 
-    metricsEnergy = await reqMetrics(serviceId);
-    
+    cpu = await reqMetricsCPU(serviceId);
+    memory = await reqMetricsMemory(serviceId);
+    collectionIntervalSeconds = await reqInterval(serviceId);
+    carbonIntensity = await reqCarbonValue(serviceId);
+    renewablePercent = await reqRenewablePercent(serviceId);
+    disk = await reqMetricsDisk(serviceId);
+    network = await reqMetricsNetwork(serviceId);
+
     const metricsCalculator = new MetricsCalculator({
       collection_interval_seconds: collectionIntervalSeconds,
       metrics: {
-        cpu_percent: metricsEnergy?.cpu_percent,
-        memory_gb: metricsEnergy?.memory_gb,
-        disk_gb: metricsEnergy?.disk_gb,
-        network_gb: metricsEnergy?.network_gb,
+        cpu_percent: cpu,
+        memory_gb: memory,
+        disk_gb: disk,
+        network_gb: network,
       },
       carbon_intensity_gco2e_per_kwh: carbonIntensity,
       renewable_share_percent: renewablePercent,
@@ -77,10 +81,10 @@ export async function getServiceMetrics(serviceId: string) {
   }
 
   const metrics = {
-    cpu_percent: metricsEnergy?.cpu_percent,
-    memory_gb: metricsEnergy?.memory_gb,
-    disk_gb: metricsEnergy?.disk_gb,
-    network_gb: metricsEnergy?.network_gb,
+    cpu_percent: cpu,
+    memory_gb: memory,
+    disk_gb: disk,
+    network_gb: network,
     co2e: co2e,
     kwh: kwh,
     renewable_percent: renewablePercent,
@@ -113,31 +117,34 @@ export async function getAllServicesMetrics() {
         const id = service.id!;
 
         try {
-          const [metricsEnergy, interval, carbon, renewable] =
+          const [cpu, memory, interval, carbon, renewable, disk, network] =
             await Promise.all([
-              reqMetrics(id),
+              reqMetricsCPU(id),
+              reqMetricsMemory(id),
               reqInterval(id),
               reqCarbonValue(id),
-              reqRenewablePercent(id)
+              reqRenewablePercent(id),
+              reqMetricsDisk(id),
+              reqMetricsNetwork(id),
             ]);
 
           const calc = new MetricsCalculator({
             collection_interval_seconds: interval,
             metrics: {
-              cpu_percent: metricsEnergy?.cpu_percent,
-              memory_gb: metricsEnergy?.memory_gb,
-              disk_gb: metricsEnergy?.disk_gb,
-              network_gb: metricsEnergy?.network_gb,
+              cpu_percent: cpu,
+              memory_gb: memory,
+              disk_gb: disk,
+              network_gb: network,
             },
             carbon_intensity_gco2e_per_kwh: carbon,
             renewable_share_percent: renewable,
           });
 
           service.metrics = {
-            cpu_percent: metricsEnergy?.cpu_percent,
-            memory_gb: metricsEnergy?.memory_gb,
-            disk_gb: metricsEnergy?.disk_gb,
-            network_gb: metricsEnergy?.network_gb,
+            cpu_percent: cpu,
+            memory_gb: memory,
+            disk_gb: disk,
+            network_gb: network,
             co2e: calc.calculateCO2e() || undefined,
             kwh: calc.calculateKWh() || undefined,
           };

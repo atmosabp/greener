@@ -28,94 +28,90 @@ export class MetricsCalculator {
     }
   }
 
-  calculateKWh(): number | null{
+  calculateKWh(): number {
     if (this.KWh) return this.KWh;
-    let result = null
     if (
-      this.metrics.metrics?.cpu_percent ||
-      this.metrics.metrics?.memory_gb ||
-      this.metrics.metrics?.disk_gb ||
-      this.metrics.metrics?.network_gb
+      !this.metrics.metrics?.cpu_percent ||
+      !this.metrics.metrics?.memory_gb ||
+      !this.metrics.metrics?.disk_gb ||
+      !this.metrics.metrics?.network_gb
     ) {
-        this.W =
-        this.metrics.metrics?.cpu_percent! +
-        this.metrics.metrics?.memory_gb! +
-        this.metrics.metrics?.disk_gb! +
-        this.metrics.metrics?.network_gb!;
-
-      this.KWh =
-        (this.W * (this.metrics.collection_interval_seconds! / 3600)) / 1000;
-
-      return this.KWh
+      PassThrough
+      console.log("Métricas insuficientes para cálculo do KWh.");
     }
-    
+    this.W =
+      this.metrics.metrics?.cpu_percent! +
+      this.metrics.metrics?.memory_gb! +
+      this.metrics.metrics?.disk_gb! +
+      this.metrics.metrics?.network_gb!;
 
-    return result;
+    this.KWh =
+      (this.W * (this.metrics.collection_interval_seconds! / 3600)) / 1000;
+
+    return this.KWh;
   }
 
   calculateCO2e() {
     if (this.CO2e) {
       return this.CO2e;
     }
-    let result = null
-    let Kwhconf: number | null= this.KWh ?? this.calculateKWh();
+    let Kwhconf: number = this.KWh ?? this.calculateKWh();
 
-    if (Kwhconf || this.metrics.carbon_intensity_gco2e_per_kwh) {
-      this.CO2e = Kwhconf! * this.metrics.carbon_intensity_gco2e_per_kwh!;
-      result = this.CO2e
+    if (!Kwhconf || !this.metrics.carbon_intensity_gco2e_per_kwh) {
+      console.log("Métricas insuficientes para cálculo do CO2e.");
     }
-    return result;
+
+    this.CO2e = Kwhconf * this.metrics.carbon_intensity_gco2e_per_kwh!;
+
+    return this.CO2e;
   }
 
   calculateIntensity() {
-    let result = null
-    if (this.CO2e || this.KWh) {
-      result = this.CO2e! / this.KWh!
+    if (!this.CO2e || !this.KWh) {
+      throw new Error("Métricas insuficientes para cálculo.");
     }
-    return result;
+    return this.CO2e / this.KWh;
   }
 
   calculateTotalEmission(tempo_horas: number) {
-    let result = null
-    if (this.CO2e) {
-      result = this.CO2e * tempo_horas
+    if (!this.CO2e) {
+      throw new Error("Métricas insuficientes para cálculo.");
     }
-    return result;
+    return this.CO2e * tempo_horas;
   }
 
   calculateTotalUsage(tempo_horas: number) {
-    let result = null
-    if (this.KWh) {
-      result = this.KWh * tempo_horas;
+    if (!this.KWh) {
+      throw new Error("Métricas insuficientes para cálculo.");
     }
-    return result
+    return this.KWh * tempo_horas;
   }
 
   calculateInterval() {
     if (this.metrics.collection_interval_seconds) {
       return this.metrics.collection_interval_seconds;
     }
-    let result = null
-    let Kwhconf: number | null = this.KWh ?? this.calculateKWh();
-    if (this.KWh || this.W) {
-      this.W =
-        this.metrics.metrics?.cpu_percent! +
-        this.metrics.metrics?.memory_gb! +
-        this.metrics.metrics?.disk_gb! +
-        this.metrics.metrics?.network_gb!;
+    let Kwhconf: number = this.KWh ?? this.calculateKWh();
+    if (!this.KWh || !this.W) {
+      throw new Error("Métricas insuficientes para cálculo.");
+    }
 
-      this.metrics.collection_interval_seconds = (this.KWh! * this.W) / 1000;
-      result = this.metrics.collection_interval_seconds;
-    }  
-    return result
+    this.W =
+      this.metrics.metrics?.cpu_percent! +
+      this.metrics.metrics?.memory_gb! +
+      this.metrics.metrics?.disk_gb! +
+      this.metrics.metrics?.network_gb!;
+
+    this.metrics.collection_interval_seconds = (this.KWh * this.W) / 1000;
+
+    return this.metrics.collection_interval_seconds;
   }
 
   getRenewablePercent() {
-    let result = null;
-    if (this.metrics.renewable_share_percent) {
-      result = this.metrics.renewable_share_percent;
+    if (!this.metrics.renewable_share_percent) {
+      throw new Error("Métricas insuficientes para cálculo.");
     }
-    return result
+    return this.metrics.renewable_share_percent;
   }
 
   getMetrics() {
