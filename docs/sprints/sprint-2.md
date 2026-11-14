@@ -1,6 +1,6 @@
 ## Sprint 2 - GreenER
 
-Esta sprint ocorreu entre os dias **20/11/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
+Esta sprint ocorreu entre os dias **20/10/2026** e **09/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 16 dias.
 
 ### Objetivo da sprint
 O objetivo geral dessa sprint era implementar todas as telas do site, como a tela principal e o dashboard, desenvolver o sistema de guardar métricas dos serviços no banco de dados e implementar sistema de segurança.  
@@ -99,10 +99,43 @@ Aqui está o link para o relatório da sprint: [clique aqui](https://github.com/
 
 <br>
 
-### Sprint Retrospective
-Este é um evento da metodologia Scrum que permite que a equipe se junte e dialogue sobre o processo, sem focar no produto.
+### Sprint Review
+A Sprint Review é um dos eventos do Scrum em que é apresentado o trabalho desenvolvido durate a sprint para o cliente.  
+Ela foi realizada dia **09/11/2026**.  
 
-Como é feito apenas após o encerramento da Sprint Review, ainda não foi adicionado aqui.
+***Ainda não foi retornado o feedback completo do cliente e do professor responsável. Essa seção será adicionada quando possível.***
+
+<br>
+
+### Sprint Retrospective
+Este é um evento da metodologia Scrum que permite que a equipe se junte e dialogue sobre o processo, sem focar no produto.  
+Seguimos um formato para falar o que não deu certo, o que deu certo, e o que podemos fazer para melhorar. Garantindo que levamos tudo o que foi discutido em consideração para ter um processo (e consequentemente, um produto) muito melhor.  
+Essa reunião aconteceu dia **10 de novembro**. Esses foram os pontos levantados:
+
+#### 1 - O que não deu certo 
+- Ainda levou bastante tempo para alguns Pull Requests serem aprovados, mas houv uma melhora em comparação à última sprint
+- Alguns membros sentiram falta de mais dailies, em especial nos dias que não são designados para o projeto, para todos entenderem o que cada um fez e como está o andamento
+- Comunicação ainda pode melhorar
+- Falta detalhamento na descrição das tarefas no Kanban, para ajudar um desenvolvedor rapidamente entender o que é para ser feito
+- Correria fora da faculdade, onde o tempo para desenvolver o trabalho era reduzido por motivos externos 
+- O Kanban não foi visto tão frequentemente, o que atrasava na geração de relatórios para o Scrum Master e na atualização do burndown
+
+#### 2 - O que deu certo
+- Comunicação melhorou muito em comparação à outra sprint
+- Daily mais dinâmica por conta das melhorias feitas
+- Pull Requests demoraram menos para ser aprovados, por todos avisarem a sua criação por meio de outros canais de comunicação
+- O projeto foi testado mais frequentemente, e os bugs foram documentados para ajudar futuramente a resolvê-los
+- Melhor divisão de tarefas
+- Toda a equipe muito esforçada e com vontade de aprender para conseguir desenvolver sua task
+
+#### 3 - Como podemos melhorar
+- Definir melhor a descrição da task/DoD ao abrir issue
+- Ver Pull Requests mais frequentemente, mesmo que não faça parte do que você está mais acostumado a fazer
+- Comunicar sempre quando for iniciar uma task, para evitar divergências e atrasos não esperados
+- Ver Kanban e atualizar andamento das tasks sempre que for possível
+- Tentar fazer dailies além dos dias designados no burndown e no relatório
+- Segmentar mais as tarefas, caso possível
+- Administrar melhor o tempo produtivo e respeitar o tempo dos outros integrantes
 
 <br>
 
