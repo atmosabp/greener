@@ -423,6 +423,19 @@ O formato do DoD foi alterado para detalhar mais sobre cada requisito e as taref
     - Manter a consistência visual com o Design System.
     - Validar o funcionamento, a responsividade e o desempenho após as alterações.
 
+- FE08 -> Tela 404
+**Responsável:** -
+    - Desenvolver a interface da tela 404 conforme o design definido
+    - Desenvolver responsividade para celulares
+    - Desenvolver responsividade para tablets
+    - Disponibilizar botão para navegar de volta
+    - Garantir consistência com o Design System
+    - Implementar tratamento para rotas inexistentes no backend
+    - Retornar o status HTTP 404 para endpoints não encontrados
+    - Retornar a tela anterior quando clicado no botão "voltar"
+    - Garantir compatibilidade com o frontend
+    - Validar o comportamento com rotas inexistentes
+
 - BU01 -> Alterar esquema de cores
 **Responsável:** Beatriz
     - Corrigir todos os bugs que foram notificados pelos desenvolvedores
