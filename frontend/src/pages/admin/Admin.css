@@ -23,9 +23,13 @@
 
 .admin {
     flex: 1;
-    margin-top: 70px;
-    padding: 30px;
+    margin-top: 100px;
+    padding: 0 30px 0 30px;
+    height: 100%;
+    align-items: start;
+    justify-content: left;
 }
+
 
 /* esconde o checkbox da lista mobile, mas ele continua acessível */
 .checkbox-user {
