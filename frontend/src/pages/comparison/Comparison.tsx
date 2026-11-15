@@ -145,19 +145,6 @@ export default function Comparison() {
       return next;
     });
   };
-  // const toggleSelected = (id: string) => {
-  //   setSelected((previous) => {
-  //     const next = new Set(previous);
-
-  //     if (next.has(id)) {
-  //       next.delete(id);
-  //     } else {
-  //       next.add(id);
-  //     }
-
-  //     return next;
-  //   });
-  // };
 
   /* Marcar ou remover a referência de um cartão. */
   const toggleReference = (id: string) => {
