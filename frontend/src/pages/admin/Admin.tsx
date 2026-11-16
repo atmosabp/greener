@@ -513,7 +513,7 @@ export default function Admin() {
       <main className="admin">
         <div className="start-section">
           <h1>
-            {getGreeting()}, s{userName}.
+            {getGreeting()}, {userName}.
           </h1>
           <p>Crie, altere e exclua usuários de acesso restrito.</p>
         </div>
