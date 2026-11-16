@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type CSSProperties } from "react";
 import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
+import "../ranking/Ranking.css";
 import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
+import type { RankingPeriod } from "../ranking/components/rankingData";
+import useRankingCalendar from "../ranking/components/useRankingCalendar";
+import RankingCalendar from "../ranking/components/rankingCalendar";
 // import { Oval } from "react-loader-spinner";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
@@ -31,6 +35,9 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 
 export default function Dashboard() {
   const { serviceId } = useParams();
+  const [period, setPeriod] = useState<RankingPeriod>("now");
+
+  const calendar = useRankingCalendar();
 
   const [userName, _setUserName] = useState<string>(() => {
     const storedUser = localStorage.getItem("user");
@@ -73,6 +80,14 @@ export default function Dashboard() {
 
     // Insirir lógica aqui
   }
+
+  function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
+      const nextPeriod = event.target.value as RankingPeriod;
+  
+      setPeriod(nextPeriod);
+      calendar.openCalendar(nextPeriod);
+    }
+  
 
   function handleFilterChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const selectedFilter = event.target.value;
@@ -266,7 +281,24 @@ export default function Dashboard() {
                   </select>
                 </div>
 
-                <div className="btn-date">
+                <div className="ranking-period">
+                <label htmlFor="ranking-period-select">
+                  Ver ranking por período:
+                </label>
+
+                <select
+                  id="ranking-period-select"
+                  value={period}
+                  onChange={handlePeriodChange}
+                >
+                  <option value="now">Agora</option>
+                  <option value="today">Hoje</option>
+                  <option value="month">Esse mês</option>
+                  <option value="year">Esse ano</option>
+                  <option value="other-years">Outros anos</option>
+                </select>
+              </div>
+                {/* <div className="btn-date">
                   <select
                     name="date"
                     id="date-select"
@@ -276,7 +308,7 @@ export default function Dashboard() {
                     <option value="today">Hoje</option>
                     <option value="custom">Escolher data</option>
                   </select>
-                </div>
+                </div> */}
               </div>
             ) : (
               <>
@@ -299,7 +331,26 @@ export default function Dashboard() {
                   </select>
                 </div>
 
-                <div className="btn-date">
+                <div className="ranking-period">
+                <label htmlFor="ranking-period-select">
+                  Ver ranking por período:
+                </label>
+
+                <select
+                  id="ranking-period-select"
+                  value={period}
+                  onChange={handlePeriodChange}
+                >
+                  <option value="now">Agora</option>
+                  <option value="today">Hoje</option>
+                  <option value="month">Esse mês</option>
+                  <option value="year">Esse ano</option>
+                  <option value="other-years">Outros anos</option>
+                </select>
+              </div>  
+
+                  
+                {/* <div className="btn-date">
                   <select
                     name="date"
                     id="date-select"
@@ -309,7 +360,7 @@ export default function Dashboard() {
                     <option value="today">Hoje</option>
                     <option value="custom">Escolher data</option>
                   </select>
-                </div>
+                </div> */}
               </>
             )}
           </div>
@@ -561,6 +612,27 @@ export default function Dashboard() {
       >
         <ArrowIcon className="icon-up" />
       </button>
+      {calendar.calendarOpen && (
+              <RankingCalendar
+                period={period}
+                selectedHour={calendar.selectedHour}
+                selectedDay={calendar.selectedDay}
+                selectedMonth={calendar.selectedMonth}
+                selectedYear={calendar.selectedYear}
+                viewMonth={calendar.viewMonth}
+                viewYear={calendar.viewYear}
+                currentYear={calendar.currentYear}
+                currentMonth={calendar.currentMonth}
+                currentDay={calendar.currentDay}
+                calendarDays={calendar.calendarDays}
+                onClose={calendar.closeCalendar}
+                onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+                onConfirmDay={calendar.confirmDay}
+                onConfirmMonth={calendar.confirmMonth}
+                onConfirmYear={calendar.confirmYear}
+                onConfirmHour={calendar.confirmHour}
+              />
+            )}
     </div>
   );
 }

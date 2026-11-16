@@ -17,6 +17,8 @@ import {
 import "./Ranking.css";
 import Loading from "../../components/loading/Loading";
 
+
+
 export default function Ranking() {
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -42,6 +44,34 @@ export default function Ranking() {
   async function handleRefresh() {
     setLastUpdate(new Date());
     await fetchServices();
+  }
+
+  async function fetchHistory(periodType:string, datePull:Date){
+    var formatedData: RankingService[] = [];
+
+    const port: number = import.meta.env.VITE_PORT || 3000;
+
+    const result = await fetch(
+      `http://localhost:${port}/collections/all-service-history`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+      }
+    );
+    const data = await result.json();
+
+    for (let service of data) {
+      formatedData.push({
+        id: service.id,
+        name: service.name,
+        energy: service.metrics.kwh,
+        co2e: service.metrics.co2e,
+      });
+    }
+    setLastUpdate(new Date());
+
+    sortRanking(formatedData)
   }
 
   async function fetchServices() {
@@ -330,6 +360,7 @@ export default function Ranking() {
           onConfirmMonth={calendar.confirmMonth}
           onConfirmYear={calendar.confirmYear}
           onConfirmHour={calendar.confirmHour}
+          handleFetch={fetchHistory}
         />
       )}
     </div>

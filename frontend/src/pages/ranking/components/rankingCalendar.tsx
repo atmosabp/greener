@@ -26,6 +26,7 @@ type RankingCalendarProps = {
     onConfirmMonth: (month: number) => void;
     onConfirmYear: (year: number) => void;
     onConfirmHour: (hour: number) => void;
+    handleFetch:(periodType:string,datePull:Date) => void;
 };
 
 export default function RankingCalendar({
@@ -46,6 +47,7 @@ export default function RankingCalendar({
     onConfirmMonth,
     onConfirmYear,
     onConfirmHour,
+    handleFetch
 }: RankingCalendarProps) {
     const [draftDay, setDraftDay] = useState(selectedDay);
     const [draftHour, setDraftHour] = useState(selectedHour);
