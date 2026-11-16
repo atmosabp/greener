@@ -1,4 +1,5 @@
 import { useState, useEffect, type ChangeEvent } from "react";
+import { FiExternalLink } from "react-icons/fi";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -16,6 +17,9 @@ import {
 
 import "./Ranking.css";
 import Loading from "../../components/loading/Loading";
+import { port } from "../../utils/connection";
+import { Link } from "react-router-dom";
+import type { ServiceType } from "../../types/service";
 
 export default function Ranking() {
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
@@ -50,40 +54,36 @@ export default function Ranking() {
 
     var formatedData: RankingService[] = [];
 
-    const port: number = import.meta.env.VITE_PORT || 3000;
-
     const result = await fetch(
       `http://localhost:${port}/collections/all-service-data`,
     );
-    const data = await result.json();
+    const data: ServiceType[] = await result.json();
 
     for (let service of data) {
       formatedData.push({
         id: service.id,
         name: service.name,
-        energy: service.metrics.kwh,
-        co2e: service.metrics.co2e,
+        energy:
+          service.metrics && service.metrics.kwh
+            ? service.metrics.kwh
+            : undefined,
+        co2e:
+          service.metrics && service.metrics.co2e
+            ? service.metrics.co2e
+            : undefined,
+        status: service.status,
       });
     }
 
     setLastUpdate(new Date());
 
     sortRanking(formatedData);
-    // setInitialServices(
-    //   formatedData.sort((a, b) =>
-    //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
-    //   ),
-    // );
   }
 
   async function handleParamChange(param: RankingMetric) {
     setMetric(param);
     metricUsed = param;
     sortRanking(initialServices);
-  }
-
-  function timeout(delay: number) {
-    return new Promise((res) => setTimeout(res, delay));
   }
 
   function sortRanking(data: RankingService[]) {
@@ -93,17 +93,17 @@ export default function Ranking() {
         const xKey = key(a.energy),
           yKey = key(b.energy);
         if (typeof xKey === "undefined") {
-          return typeof yKey === "undefined" ? 0 : 1;
+          return typeof yKey === "string" ? 0 : 1;
         } else {
-          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+          return typeof yKey === "string" ? -1 : yKey! - xKey!;
         }
       } else {
         const xKey = key(a.co2e),
           yKey = key(b.co2e);
         if (typeof xKey === "undefined") {
-          return typeof yKey === "undefined" ? 0 : 1;
+          return typeof yKey === "string" ? 0 : 1;
         } else {
-          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+          return typeof yKey === "string" ? -1 : yKey! - xKey!;
         }
       }
     });
@@ -294,18 +294,44 @@ export default function Ranking() {
                           </span>
                         </td>
 
-                        <td className="ranking-service-name">{service.name}</td>
-
-                        <td>
-                          {numberFormatter.format(service.energy) != "NaN"
-                            ? numberFormatter.format(service.energy) + " kWh"
-                            : "Indisponível"}{" "}
+                        <td className="ranking-service-name">
+                          {service.status == "active" ? (
+                            <Link
+                              className="service-link-text"
+                              to={`dashboard/${service.id}`}
+                            >
+                              {service.name}
+                              <FiExternalLink className="redirect-link-icon" />
+                            </Link>
+                          ) : (
+                            <>{service.name}</>
+                          )}
                         </td>
 
                         <td>
-                          {numberFormatter.format(service.co2e) != "NaN"
-                            ? numberFormatter.format(service.co2e) + " kg CO₂e"
-                            : "Indisponível"}{" "}
+                          {service.energy ? (
+                            <>
+                              {numberFormatter.format(service.energy) != "NaN"
+                                ? numberFormatter.format(service.energy) +
+                                  " kWh"
+                                : "Indisponível"}{" "}
+                            </>
+                          ) : (
+                            "Indisponível"
+                          )}
+                        </td>
+
+                        <td>
+                          {service.co2e ? (
+                            <>
+                              {numberFormatter.format(service.co2e) != "NaN"
+                                ? numberFormatter.format(service.co2e) +
+                                  " kg CO₂e"
+                                : "Indisponível"}{" "}
+                            </>
+                          ) : (
+                            "Indisponível"
+                          )}
                         </td>
                       </tr>
                     ))

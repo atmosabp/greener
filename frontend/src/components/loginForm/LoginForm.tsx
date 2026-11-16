@@ -6,8 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Toast from "../toast/Toast";
 
 import "./LoginForm.css";
-
-const port = import.meta.env.VITE_PORT;
+import { port } from "../../utils/connection";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);

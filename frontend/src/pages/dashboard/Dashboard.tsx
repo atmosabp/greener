@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
+import { port } from "../../utils/connection";
 // import { Oval } from "react-loader-spinner";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
@@ -110,7 +111,7 @@ export default function Dashboard() {
 
     try {
       const result = await fetch(
-        `http://localhost:${import.meta.env.VITE_PORT}/collections/service-metrics/${serviceId}`,
+        `http://localhost:${port}/collections/service-metrics/${serviceId}`,
       );
       const data = await result.json();
       setTimeUpdated(new Date().toLocaleString());
@@ -123,7 +124,7 @@ export default function Dashboard() {
   async function getServiceList(): Promise<void> {
     try {
       const result = await fetch(
-        `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
+        `http://localhost:${port}/collections/all-service-data`,
       );
       const data: ServicesType[] = await result.json();
       let serviceNames: {
