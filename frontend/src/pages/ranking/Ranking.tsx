@@ -26,6 +26,7 @@ export default function Ranking() {
   const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
 
+  var metricUsed: RankingMetric = "energy";
   const calendar = useRankingCalendar();
 
   function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -76,7 +77,7 @@ export default function Ranking() {
 
   async function fetchServices() {
     setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
-    
+
     var formatedData: RankingService[] = [];
 
     const port: number = import.meta.env.VITE_PORT || 3000;
@@ -97,7 +98,7 @@ export default function Ranking() {
 
     setLastUpdate(new Date());
 
-    sortRanking(formatedData)
+    sortRanking(formatedData);
     // setInitialServices(
     //   formatedData.sort((a, b) =>
     //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
@@ -105,32 +106,39 @@ export default function Ranking() {
     // );
   }
 
-  function handleParamChange(param:RankingMetric){
+  async function handleParamChange(param: RankingMetric) {
     setMetric(param);
-    sortRanking(initialServices)
+    metricUsed = param;
+    sortRanking(initialServices);
   }
 
-  function sortRanking(data:RankingService[]){
-    var key: (x: undefined | number) => undefined | number = x => x
-    setInitialServices(
-      data.sort((a, b) => {
-        if(metric === "energy"){
-          const xKey = key(a.energy), yKey = key(b.energy);
-          if(typeof xKey === 'undefined') {
-              return typeof yKey === 'string' ? 0 : 1;
-          } else {
-              return typeof yKey === 'string' ? -1 : yKey! - xKey!;
-          }
-        }else{
-          const xKey = key(a.co2e), yKey = key(b.co2e);
-          if(typeof xKey === 'undefined') {
-              return typeof yKey === 'string' ? 0 : 1;
-          } else {
-              return typeof yKey === 'string' ? -1 : yKey! - xKey!;
-          }
-        } 
-  }),
-    );
+  function timeout(delay: number) {
+    return new Promise((res) => setTimeout(res, delay));
+  }
+
+  function sortRanking(data: RankingService[]) {
+    var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
+    let dataHolder = data.sort((a, b) => {
+      if (metricUsed === "energy") {
+        const xKey = key(a.energy),
+          yKey = key(b.energy);
+        if (typeof xKey === "undefined") {
+          return typeof yKey === "undefined" ? 0 : 1;
+        } else {
+          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+        }
+      } else {
+        const xKey = key(a.co2e),
+          yKey = key(b.co2e);
+        if (typeof xKey === "undefined") {
+          return typeof yKey === "undefined" ? 0 : 1;
+        } else {
+          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+        }
+      }
+    });
+
+    setInitialServices(dataHolder);
   }
 
   const periodLabel: Record<RankingPeriod, string> = {
@@ -201,7 +209,9 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "energy"}
-                    onClick={() => {handleParamChange("energy")}}
+                    onClick={() => {
+                      handleParamChange("energy");
+                    }}
                   >
                     Consumo energético
                   </button>
@@ -214,7 +224,9 @@ export default function Ranking() {
                         : "ranking-metric-button"
                     }
                     aria-pressed={metric === "co2e"}
-                    onClick={() => {handleParamChange("co2e")}}
+                    onClick={() => {
+                      handleParamChange("co2e");
+                    }}
                   >
                     Emissão de CO₂e
                   </button>
@@ -316,13 +328,13 @@ export default function Ranking() {
 
                         <td>
                           {numberFormatter.format(service.energy) != "NaN"
-                            ? numberFormatter.format(service.energy)+" kWh"
+                            ? numberFormatter.format(service.energy) + " kWh"
                             : "Indisponível"}{" "}
                         </td>
 
                         <td>
                           {numberFormatter.format(service.co2e) != "NaN"
-                            ? (numberFormatter.format(service.co2e)+" kg CO₂e")
+                            ? numberFormatter.format(service.co2e) + " kg CO₂e"
                             : "Indisponível"}{" "}
                         </td>
                       </tr>
@@ -334,7 +346,10 @@ export default function Ranking() {
 
           <div className="ranking-table-caption">
             <span>Período selecionado: {periodLabel[period]}</span>
-            <span>{initialServices ? initialServices.length : 0} serviços encontrados</span>
+            <span>
+              {initialServices ? initialServices.length : 0} serviços
+              encontrados
+            </span>
           </div>
         </section>
       </main>

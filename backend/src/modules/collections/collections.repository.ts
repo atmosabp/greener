@@ -1,12 +1,6 @@
 import { pool } from "../../db/connections";
 import { MetricsCalculator } from "../metrics-calculator";
-import {
-  reqInterval,
-  reqMetricsCPU,
-  reqMetricsDisk,
-  reqMetricsMemory,
-  reqMetricsNetwork,
-} from "../../integrations/metrics-api";
+import { reqInterval, reqMetrics } from "../../integrations/metrics-api";
 import {
   reqCarbonValue,
   reqRenewablePercent,
@@ -20,27 +14,26 @@ import {
 export async function addMinuteHistory(serviceId: string) {
   const client = await pool.connect();
 
-  const collectionIntervalSeconds = await reqInterval(serviceId);
-  const carbonIntensity = await reqCarbonValue(serviceId);
-  const renewablePercent = await reqRenewablePercent(serviceId);
-  const cpu = await reqMetricsCPU(serviceId);
-  const memory = await reqMetricsMemory(serviceId);
-  const disk = await reqMetricsDisk(serviceId);
-  const network = await reqMetricsNetwork(serviceId);
+  const [collectionIntervalSeconds,carbonIntensity,renewablePercent,metricsEnergy] =
+    await Promise.all([
+      reqInterval(serviceId),
+      reqCarbonValue(serviceId),
+      reqRenewablePercent(serviceId),
+      reqMetrics(serviceId)
+    ])
+  
 
   const metricsCalculator = new MetricsCalculator({
     collection_interval_seconds: collectionIntervalSeconds,
     metrics: {
-      cpu_percent: cpu,
-      memory_gb: memory,
-      disk_gb: disk,
-      network_gb: network,
+      cpu_percent: metricsEnergy?.cpu_percent,
+      memory_gb: metricsEnergy?.memory_gb,
+      disk_gb: metricsEnergy?.disk_gb,
+      network_gb: metricsEnergy?.network_gb,
     },
     carbon_intensity_gco2e_per_kwh: carbonIntensity,
     renewable_share_percent: renewablePercent,
   });
-
-  const metrics = { cpu, memory, disk, network, renewablePercent };
 
   const kwh = metricsCalculator.calculateKWh();
   const co2e = metricsCalculator.calculateCO2e();
@@ -50,7 +43,8 @@ export async function addMinuteHistory(serviceId: string) {
     const result = await insertMinuteHistory(
       client,
       serviceId,
-      metrics,
+      metricsEnergy,
+      renewablePercent,
       kwh,
       co2e,
     );
@@ -59,6 +53,7 @@ export async function addMinuteHistory(serviceId: string) {
     return result;
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
+    console.log(error);
     throw new Error(error.message || "Não foi possível registrar o histórico.");
   } finally {
     await client.release();
@@ -97,28 +92,25 @@ async function insertMinuteHistory(
   client: any,
   serviceId: string,
   metrics: any,
-  kwh: number,
-  co2e: number,
+  renewable_percent: number | undefined,
+  kwh: number | null,
+  co2e: number | null,
 ) {
   const result = await client.query(
     `INSERT INTO minute_data ( service_id, cpu_percentage, disk_gb, memory_gb, network_gb, kwh, co2e, renewable_percent)
         VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING id, date_pull, service_id, cpu_percentage, disk_gb, memory_gb, network_gb, kwh, co2e, renewable_percent`,
+        ($1, $2, $3, $4, $5, $6, $7, $8)`,
     [
       serviceId,
-      Number(metrics.cpu) ? Number(metrics.cpu) : "null",
-      Number(metrics.disk) ? Number(metrics.disk) : "null",
-      Number(metrics.memory) ? Number(metrics.memory) : "null",
-      Number(metrics.network) ? Number(metrics.network) : "null",
-      kwh ? kwh : "null",
-      co2e ? co2e : "null",
-      Number(metrics.renewablePercent)
-        ? Number(metrics.renewablePercent)
-        : "null",
+      Number(metrics.cpu_percent) ? Number(metrics.cpu_percent) : null,
+      Number(metrics.disk_gb) ? Number(metrics.disk_gb) : null,
+      Number(metrics.memory_gb) ? Number(metrics.memory_gb) : null,
+      Number(metrics.network_gb) ? Number(metrics.network_gb) : null,
+      kwh ? kwh : null,
+      co2e ? co2e : null,
+      Number(renewable_percent) ? Number(renewable_percent) : null,
     ],
   );
-
   return result.rows[0] || null;
 }
 
@@ -158,11 +150,8 @@ async function insertMonthHistory(datePull: any) {
 
 // ==========================================
 
-// Função de TESTE, para poder visualizar o resultado do worker.
 export async function findHistory() {
-  const result = await pool.query(
-    `SELECT * FROM minute_data where service_id = 'billing-api'`,
-  );
+  const result = await pool.query(`SELECT * FROM hour_data where service_id = 'billing-api'`);
 
   return result.rows || [];
 }

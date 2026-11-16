@@ -41,7 +41,7 @@ export default function Header({
       {/* Tablet: barra fixa sempre visível - Celular: só o botão (fixo no canto) */}
       <div className="tablet-bar">
         <Link to="/home">
-          <img src={logo} alt="Logo Greener" className="trigger-logo" />]
+          <img src={logo} alt="Logo Greener" className="trigger-logo" />
         </Link>
 
         <div className="trigger-btns">

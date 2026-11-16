@@ -25,7 +25,7 @@ Após a aprovação, será feito o merge do pull request, para no fim, a branch 
 - **fix(escopo)**: o que foi consertado - correção de bugs
 - **docs**: o que foi feito - apenas para documentação
 - **style(escopo)**: o que foi feito - mudanças no estilo do projeto, nada de código funcional
-- **refactor(escopo)**: o que foi "limpo" - serve para uma "limpeza de código", apenas reescreve ele, sem necessariamente adicionar algo, apena
+- **refactor(escopo)**: o que foi "limpo" - serve para uma "limpeza de código", apenas reescreve ele, sem necessariamente adicionar algo
 - **test(escopo)**: teste que foi feito - para os testes do Jest e automatizados
 
 O escopo é que parte do sistema foi ajustado (login, cadastro, home, questionário, footer, etc - não é necessariamente só um
