@@ -654,6 +654,10 @@
 /* Responsivo */
 
 @media (max-width: 480px) {
+    .admin {
+        margin-top: 3rem;
+    }
+
     .table {
         display: none;
     }
