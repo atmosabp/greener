@@ -650,7 +650,7 @@
 /* Responsivo */
 
 @media (max-width: 480px) {
-    .table-card-desktop {
+    .table {
         display: none;
     }
 
