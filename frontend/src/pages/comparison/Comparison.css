@@ -23,12 +23,18 @@
         color var(--theme-transition);
 }
 
-[data-theme="light"] {
+[data-theme="light"][data-palette="green"] {
+    --reference-border: #198359;
+}
+[data-theme="light"][data-palette="blue"] {
     --reference-border: #195383;
 }
 
-[data-theme="dark"] {
-    --reference-border: #cbdbed;
+[data-theme="dark"][data-palette="green"] {
+    --reference-border: #dff5de;
+}
+[data-theme="dark"][data-palette="blue"] {
+    --reference-border: #dfeaf6;
 }
 
 .cmp-comparison *,
@@ -614,7 +620,7 @@
     flex: 0 0 auto;
     min-height: 13.4375rem;
     padding: 3.875rem 1.125rem 1.125rem 3.625rem;
-    border: 0.18rem solid transparent;
+    border: 0.2rem solid transparent;
     border-radius: 1.375rem;
     background: var(--panel);
     color: var(--ink);

@@ -59,7 +59,7 @@ export default function ServiceCard({
     <article
       className={`cmp-service ${isReference ? "cmp-service--reference" : ""}`}
     >
-      <h3 className="cmp-service__name">{service.status == "active" ? <Link className="cmp-service-link" to={`dashboard/${service.id}`}>{service.name}<FiExternalLink className="redirect-link-icon"/></Link> : <>{service.name}</>}</h3>
+      <h3 className="cmp-service__name">{service.status == "active" ? <Link className="cmp-service-link" to={`/dashboard/${service.id}`}>{service.name}<FiExternalLink className="redirect-link-icon"/></Link> : <>{service.name}</>}</h3>
 
       {isReference ? 
       <span

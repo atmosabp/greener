@@ -298,7 +298,7 @@ export default function Ranking() {
                           {service.status == "active" ? (
                             <Link
                               className="service-link-text"
-                              to={`dashboard/${service.id}`}
+                              to={`/dashboard/${service.id}`}
                             >
                               {service.name}
                               <FiExternalLink className="redirect-link-icon" />
