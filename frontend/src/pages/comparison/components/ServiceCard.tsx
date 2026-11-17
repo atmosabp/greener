@@ -1,6 +1,6 @@
 import type { CompareTarget } from "./comparisonData";
 import { calculateDelta, formatMetric } from "./comparisonData";
-import { FiExternalLink } from "react-icons/fi";
+import { ExternalLink } from "lucide-react";
 
 import {
   CarbonCard,
@@ -53,25 +53,39 @@ export default function ServiceCard({
 
   /* Diferença em relação à base (referência ou média). */
   const delta = (key: keyof MetricsType) =>
-    baseMetrics && metrics ? calculateDelta(metrics[key], baseMetrics[key]) : undefined;
+    baseMetrics && metrics
+      ? calculateDelta(metrics[key], baseMetrics[key])
+      : undefined;
 
   return (
     <article
       className={`cmp-service ${isReference ? "cmp-service--reference" : ""}`}
     >
-      <h3 className="cmp-service__name">{service.status == "active" ? <Link className="cmp-service-link" to={`/dashboard/${service.id}`}>{service.name}<FiExternalLink className="redirect-link-icon"/></Link> : <>{service.name}</>}</h3>
+      <h3 className="cmp-service__name">
+        {service.status == "active" ? (
+          <Link className="cmp-service-link" to={`/dashboard/${service.id}`}>
+            {service.name}
+            <ExternalLink className="redirect-link-icon" />
+          </Link>
+        ) : (
+          <>{service.name}</>
+        )}
+      </h3>
 
-      {isReference ? 
-      <span
-        className={`cmp-service__star ${
-          isReference ? "cmp-service__star--active" : ""
-        }`}
-        title={isReference ? "Serviço de referência" : "Marcar como referência"}
-      >
-        <StarIcon filled={isReference} size={38} />
-      </span>
-      : <></>
-      }
+      {isReference ? (
+        <span
+          className={`cmp-service__star ${
+            isReference ? "cmp-service__star--active" : ""
+          }`}
+          title={
+            isReference ? "Serviço de referência" : "Marcar como referência"
+          }
+        >
+          <StarIcon filled={isReference} size={38} />
+        </span>
+      ) : (
+        <></>
+      )}
 
       <div className="cmp-service__actions">
         {isReference ? (
@@ -159,34 +173,48 @@ export default function ServiceCard({
         <div className="cmp-tiles">
           <MetricTile
             label="Rede"
-            value={formatMetric("network_gb", metrics ? metrics.network_gb : undefined)}
+            value={formatMetric(
+              "network_gb",
+              metrics ? metrics.network_gb : undefined,
+            )}
             delta={delta("network_gb")}
             unavailable={metrics && metrics.network_gb === undefined}
           />
 
           <MetricTile
             label="CPU"
-            value={formatMetric("cpu_percent", metrics ? metrics.cpu_percent : undefined)}
+            value={formatMetric(
+              "cpu_percent",
+              metrics ? metrics.cpu_percent : undefined,
+            )}
             delta={delta("cpu_percent")}
             unavailable={metrics && metrics.cpu_percent === undefined}
           />
 
           <MetricTile
             label="Armazenamento"
-            value={formatMetric("disk_gb", metrics ? metrics.disk_gb : undefined)}
+            value={formatMetric(
+              "disk_gb",
+              metrics ? metrics.disk_gb : undefined,
+            )}
             delta={delta("disk_gb")}
             unavailable={metrics && metrics.disk_gb === undefined}
           />
 
           <MetricTile
             label="Memória"
-            value={formatMetric("memory_gb", metrics ? metrics.memory_gb : undefined)}
+            value={formatMetric(
+              "memory_gb",
+              metrics ? metrics.memory_gb : undefined,
+            )}
             delta={delta("memory_gb")}
             unavailable={metrics && metrics.memory_gb === undefined}
           />
         </div>
 
-        <CarbonCard intensity={metrics ? metrics.carbon_intensity : undefined} />
+        <CarbonCard
+          intensity={metrics ? metrics.carbon_intensity : undefined}
+        />
       </div>
     </article>
   );

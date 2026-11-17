@@ -1,5 +1,5 @@
 import { useState, useEffect, type ChangeEvent } from "react";
-import { FiExternalLink } from "react-icons/fi";
+import { ExternalLink } from "lucide-react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -301,7 +301,7 @@ export default function Ranking() {
                               to={`/dashboard/${service.id}`}
                             >
                               {service.name}
-                              <FiExternalLink className="redirect-link-icon" />
+                              <ExternalLink className="redirect-link-icon" />
                             </Link>
                           ) : (
                             <>{service.name}</>
