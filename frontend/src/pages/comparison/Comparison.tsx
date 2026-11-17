@@ -127,11 +127,16 @@ export default function Comparison() {
   };
 
   /* Selecionar ou desmarcar serviços. */
-  const toggleSelected = (id: string) => {
+  const MIN_SERVICES = 2;
+
+    const toggleSelected = (id: string) => {
     setSelected((previous) => {
       const next = new Set(previous);
 
       if (next.has(id)) {
+        // não deixa ficar com menos de MIN_SERVICES
+        if (previous.size <= MIN_SERVICES) return previous;
+
         next.delete(id);
       } else {
         next.add(id);
@@ -183,7 +188,7 @@ export default function Comparison() {
             </h1>
 
             <p className="cmp-intro__sub">
-              Comparação de serviços
+              Selecione dois ou mais serviços para comparar suas métricas.
             </p>
 
             <Popover
@@ -412,4 +417,4 @@ export default function Comparison() {
       </footer>
     </div>
   );
-}
+};
