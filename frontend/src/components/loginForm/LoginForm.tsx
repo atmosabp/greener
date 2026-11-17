@@ -3,28 +3,27 @@ import "./LoginForm.css";
 import { useState } from "react";
 import { type ErrorsLogin } from "../../types/login";
 import { useNavigate } from "react-router-dom";
-import Toast from "../toast/Toast";
+import { useToast } from "../../hooks/useToast";
 
 import "./LoginForm.css";
-
-const port = import.meta.env.VITE_PORT;
+import { port } from "../../utils/connection";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<ErrorsLogin>({});
-  const [apiError, setApiError] = useState("");
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   // Validação do e-mail
   const validateEmail = (value: string) => {
-    if (!value.trim()) return "Este campo é obrigatório*";
+    if (!value.trim()) return "Este campo é obrigatório";
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return "Digite um e-mail válido*";
+      return "Digite um e-mail válido";
     }
 
     return undefined;
@@ -32,7 +31,7 @@ export default function LoginForm() {
 
   // Validação da senha
   const validatePassword = (value: string) => {
-    if (!value) return "Este campo é obrigatório*";
+    if (!value) return "Este campo é obrigatório";
 
     return undefined;
   };
@@ -50,10 +49,11 @@ export default function LoginForm() {
     };
 
     setErrors(newErrors);
-    setApiError("");
 
-    if (newErrors.email || newErrors.password) {
-      return <Toast icon="error" title="Dados obrigatórios" message="Preencha corretamente todos os campos para continuar." />;
+    const firstError = newErrors.email ?? newErrors.password;
+    if (firstError) {
+      showToast("error", "Informações incorretas", firstError);
+      return;
     }
 
     try {
@@ -84,7 +84,7 @@ export default function LoginForm() {
 
       // Tratamento dos erros HTTP
       if (!response.ok) {
-        setApiError(data.message || "Não foi possível realizar o login.");
+        showToast("error", "Erro", data.message || "Não foi possível realizar o login.");
         return;
       }
 
@@ -97,11 +97,9 @@ export default function LoginForm() {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       navigate("/home");
-
-      navigate("/home");
     } catch (error: any) {
       console.error("Erro ao realizar login:", error);
-      setApiError(error.message);
+      showToast("error", "Erro", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -116,17 +114,6 @@ export default function LoginForm() {
           <label htmlFor="email" title="Campo obrigatório">
             E-mail*
           </label>
-          {errors.email && (
-              <span id="email-error" className="error-msg">
-                {errors.email}
-              </span>
-            ) && (
-              <Toast
-                icon="error"
-                title="Informações incorretas"
-                message={errors.email}
-              />
-            )}
         </div>
 
         <input
@@ -159,17 +146,6 @@ export default function LoginForm() {
           <label htmlFor="password" title="Campo obrigatório">
             Senha*
           </label>
-          {errors.password && (
-              <span id="password-error" className="error-msg">
-                {errors.password}
-              </span>
-            ) && (
-              <Toast
-                icon="error"
-                title="Informações incorretas"
-                message={errors.password}
-              />
-            )}
         </div>
 
         <div className="password-input">
@@ -221,18 +197,6 @@ export default function LoginForm() {
 
       {/* Botão de login */}
       <div className="form-link">
-        {apiError && (
-            <p className="error-msg" role="alert">
-              {apiError}
-            </p>
-          ) && (
-            <Toast
-              icon="error"
-              title="Erro"
-              message={apiError}
-            />
-          )}
-
         <button type="submit" className="btn-login" disabled={isLoading}>
           {isLoading ? "Entrando..." : "Entrar"}
         </button>

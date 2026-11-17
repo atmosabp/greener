@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -12,11 +12,11 @@ import {
 import CadHeader from "../../components/header/CadHeader";
 import CadForm from "../../components/form/CadForm";
 import AltForm from "../../components/form/AltForm";
-import Toast from "../../components/toast/Toast";
+import { useToast } from "../../hooks/useToast";
 import Warning from "../../components/warning/Warning";
 import type { FormValues } from "../../types/form";
-import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
+import { port } from "../../utils/connection";
 
 interface User {
   id: number;
@@ -25,15 +25,8 @@ interface User {
   is_adm?: boolean;
 }
 
-interface ToastState {
-  id: number;
-  icon: ToastIcon;
-  title: string;
-  message?: string;
-}
-
 // Rotas de usuários do back.
-const USERS_URL = `http://localhost:${import.meta.env.VITE_PORT}/users`;
+const USERS_URL = `http://localhost:${port}/users`;
 
 // Representa os erros que podem acontecer durante uma requisição.
 class RequestError extends Error {
@@ -224,7 +217,7 @@ export default function Admin() {
 
   const [users, setUsers] = useState<User[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
-  const [toast, setToast] = useState<ToastState | null>(null);
+  const { showToast } = useToast();
 
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [openRows, setOpenRows] = useState<Set<number>>(new Set());
@@ -256,12 +249,6 @@ export default function Admin() {
     }
     setSelected(next);
   };
-
-  const showToast = (icon: ToastIcon, title: string, message?: string) =>
-    setToast({ id: Date.now(), icon, title, message });
-
-  // Evita que o Toast reinicie o timer a cada render.
-  const closeToast = useCallback(() => setToast(null), []);
 
   // Busca a lista de usuários no backend.
   async function getUsers(): Promise<void> {
@@ -467,16 +454,6 @@ export default function Admin() {
 
   return (
     <div className="admin-page">
-      {toast && (
-        <Toast
-          key={toast.id}
-          icon={toast.icon}
-          title={toast.title}
-          message={toast.message}
-          onClose={closeToast}
-        />
-      )}
-
       {/* Modais de cada ação. */}
 
       {openCadModal && (
