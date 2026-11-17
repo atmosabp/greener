@@ -24,12 +24,6 @@ import {
 } from "./collections.repository";
 
 export async function addHistory(serviceId: string) {
-  // TODO: fazer com que pegue todos os serviços da lista da API auxiliar, colocar em um json
-  // e depois colocar como segundo parâmetro da função abaixo.
-
-  // Provavelmente fazer um for loop que a cada serviço no json
-  // chame essa função.
-
   const result = await addMinuteHistory(serviceId);
 
   if (!result) return null;
@@ -49,7 +43,7 @@ export async function getServiceMetrics(serviceId: string) {
 
   try {
     service = (await reqServices()).find((value) => value.id == serviceId);
-    const [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
+    [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
     await Promise.all([
       reqInterval(serviceId),
       reqCarbonValue(serviceId),
