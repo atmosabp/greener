@@ -31,7 +31,6 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import InteractiveGlobe from "./pages/home/InteractiveGlobe";
 
 // Cards de passos da missão (teste para ver se isso torna o código mais organizado/fácil de manter)
 const steps = [
