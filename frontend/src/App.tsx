@@ -202,7 +202,9 @@ function useScrollProgress(
       if (el) {
         const rect = el.getBoundingClientRect();
         const p = (window.innerHeight * 0.9 - rect.top) / rect.height;
-        el.style.setProperty("--line", String(Math.min(1, Math.max(0, p))));
+        const current = Number(el.style.getPropertyValue("--line")) || 0;
+        const progress = Math.min(1, Math.max(current, p));
+        el.style.setProperty("--line", String(progress));
       }
     };
 

@@ -1124,8 +1124,8 @@
 .contact-icons a {
     display: grid;
     place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 50%;
     background: var(--text);
     color: var(--background);
@@ -1133,8 +1133,8 @@
 }
 
 .contact-icons a svg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 .contact-icons a:hover {
@@ -1293,8 +1293,21 @@
     padding: clamp(2rem, 4vw, 3rem);
     overflow: hidden;
     border-radius: 1.875rem;
-    background: var(--text);
-    color: var(--background);
+}
+
+[data-theme="light"] .overview-strip {
+    background: var(--background);
+    color: var(--text);
+}
+
+[data-theme="dark"] .overview-strip {
+    background: var(--shadow);
+    color: var(--text);
+}
+
+[data-theme="dark"][data-palette="blue"]  .overview-strip {
+    background: var(--background);
+    color: var(--text);
 }
 
 .strip-water {
@@ -1303,7 +1316,7 @@
     bottom: 0;
     left: 0;
     height: 70%;
-    background: color-mix(in srgb, var(--theme-secondary) 35%, transparent);
+    background: color-mix(in srgb, var(--theme-secondary) 75%, transparent);
 }
 
 .strip-water::before {
