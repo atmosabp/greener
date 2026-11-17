@@ -1,7 +1,6 @@
+import { useEffect, useState } from "react";
 
-import { useEffect, useState } from 'react';
-
-import AppHeader from '../../components/header/AppHeader';
+import AppHeader from "../../components/header/AppHeader";
 
 import {
   calculateAverages,
@@ -10,13 +9,13 @@ import {
   formatMetric,
   formatNumber,
   PERIODS,
-} from './components/comparisonData';
+} from "./components/comparisonData";
 
 import type {
   Service,
   CompareTarget,
   Metrics,
-} from './components/comparisonData';
+} from "./components/comparisonData";
 
 import {
   Chevron,
@@ -26,15 +25,18 @@ import {
   Popover,
   SelectPill,
   StarIcon,
-} from './components/ComparisonComponents';
+} from "./components/ComparisonComponents";
 
-import ServiceCard from './components/ServiceCard';
+import ServiceCard from "./components/ServiceCard";
 
-import './Comparison.css';
-import Loading from '../../components/loading/Loading';
+import "./Comparison.css";
+import {
+  CmpAveragesSkeleton,
+  ComparisonServicesSkeleton,
+} from "./ComparisonSkeleton";
 
 export default function Comparison() {
-  const [period, setPeriod] = useState('today');
+  const [period, setPeriod] = useState("today");
 
   const [userName, _setUserName] = useState<string>(() => {
     const storedUser = localStorage.getItem("user");
@@ -53,15 +55,13 @@ export default function Comparison() {
 
   const [order, setOrder] = useState<string[]>([]);
 
-  const [selected, setSelected] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
 
   const [referenceId, setReferenceId] = useState<string | null>(null);
 
-  const [compareMap, setCompareMap] = useState<
-    Record<string, CompareTarget>
-  >({});
+  const [compareMap, setCompareMap] = useState<Record<string, CompareTarget>>(
+    {},
+  );
 
   /* Buscar os serviços e suas métricas no backend. */
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function Comparison() {
         setError(
           error instanceof Error
             ? error.message
-            : 'Não foi possível carregar os serviços. Tente novamente mais tarde.',
+            : "Não foi possível carregar os serviços. Tente novamente mais tarde.",
         );
       })
       .finally(() => {
@@ -103,11 +103,11 @@ export default function Comparison() {
 
   /* Médias dos serviços selecionados e escala dos medidores. */
   const averages = calculateAverages(visible);
-  const maxConsumo = calculateMax(visible, 'consumo');
-  const maxEmissao = calculateMax(visible, 'emissao');
+  const maxConsumo = calculateMax(visible, "consumo");
+  const maxEmissao = calculateMax(visible, "emissao");
 
   const gaugeFill = (value?: number, max?: number) =>
-    value === undefined || !max ? '0' : String((value / max) * 100);
+    value === undefined || !max ? "0" : String((value / max) * 100);
 
   const referenceService = services.find(
     (service) => service.id === referenceId,
@@ -117,9 +117,9 @@ export default function Comparison() {
   const baseMetricsFor = (service: Service): Metrics | undefined => {
     if (service.id === referenceId) return undefined;
 
-    const target = compareMap[service.id] ?? 'reference';
+    const target = compareMap[service.id] ?? "reference";
 
-    if (target === 'reference' && referenceService) {
+    if (target === "reference" && referenceService) {
       return referenceService.metrics;
     }
 
@@ -148,9 +148,7 @@ export default function Comparison() {
 
   /* Mover um cartão para cima ou para baixo. */
   const move = (id: string, direction: -1 | 1) => {
-    const visibleIndex = visible.findIndex(
-      (service) => service.id === id,
-    );
+    const visibleIndex = visible.findIndex((service) => service.id === id);
 
     const neighbor = visible[visibleIndex + direction];
 
@@ -172,7 +170,6 @@ export default function Comparison() {
 
   return (
     <div className="cmp-comparison">
-      <Loading data={services} />
       <AppHeader />
 
       <main className="cmp-page">
@@ -182,16 +179,15 @@ export default function Comparison() {
               {greeting()}, {userName}.
             </h1>
 
-            <p className="cmp-intro__sub">
-              Comparação de serviços
-            </p>
+            <p className="cmp-intro__sub">Comparação de serviços</p>
 
             <Popover
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className="cmp-pill-outline"
+                  className={`cmp-pill-outline ${loading ? "blocked" : ""}`}
                   aria-expanded={open}
+                  disabled={loading}
                   onClick={toggle}
                 >
                   Serviços selecionados
@@ -207,9 +203,7 @@ export default function Comparison() {
                         <input
                           type="checkbox"
                           checked={selected.has(service.id)}
-                          onChange={() =>
-                            toggleSelected(service.id)
-                          }
+                          onChange={() => toggleSelected(service.id)}
                         />
                         {service.name}
                       </label>
@@ -226,6 +220,7 @@ export default function Comparison() {
             value={period}
             onChange={setPeriod}
             options={PERIODS}
+            disabled={loading}
           />
         </section>
 
@@ -233,86 +228,72 @@ export default function Comparison() {
         {/* Médias dos indicadores                                     */}
         {/* ---------------------------------------------------------- */}
 
-        <section
-          className="cmp-averages"
-          aria-labelledby="avg-title"
-        >
-          <h2
-            id="avg-title"
-            className="cmp-averages__title"
-          >
-            Média indicadores
-          </h2>
+        {loading ? (
+          <CmpAveragesSkeleton />
+        ) : (
+          <section className="cmp-averages" aria-labelledby="avg-title">
+            <h2 id="avg-title" className="cmp-averages__title">
+              Média indicadores
+            </h2>
 
-          <button
-            type="button"
-            className="cmp-averages__help"
-            aria-label="Ajuda sobre os indicadores"
-            title="Média dos serviços selecionados"
-          >
-            <HelpIcon />
-          </button>
+            <button
+              type="button"
+              className="cmp-averages__help"
+              aria-label="Ajuda sobre os indicadores"
+              title="Média dos serviços selecionados"
+            >
+              <HelpIcon />
+            </button>
 
-          <div className="cmp-averages__content">
-            <div className="cmp-averages__tiles">
-              <div className="cmp-avg-tile">
-                <span>Rede</span>
-                <strong>
-                  {formatMetric('rede', averages.rede)}
-                </strong>
+            <div className="cmp-averages__content">
+              <div className="cmp-averages__tiles">
+                <div className="cmp-avg-tile">
+                  <span>Rede</span>
+                  <strong>{formatMetric("rede", averages.rede)}</strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>CPU</span>
+                  <strong>{formatMetric("cpu", averages.cpu)}</strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>Armazenamento</span>
+                  <strong>
+                    {formatMetric("armazenamento", averages.armazenamento)}
+                  </strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>Memória</span>
+                  <strong>{formatMetric("memoria", averages.memoria)}</strong>
+                </div>
               </div>
 
-              <div className="cmp-avg-tile">
-                <span>CPU</span>
-                <strong>
-                  {formatMetric('cpu', averages.cpu)}
-                </strong>
-              </div>
+              <Gauge
+                title="Consumo energético"
+                value={formatMetric("consumo", averages.consumo)}
+                unit=""
+                fill={gaugeFill(averages.consumo, maxConsumo)}
+                max={formatNumber(maxConsumo)}
+              />
 
-              <div className="cmp-avg-tile">
-                <span>Armazenamento</span>
-                <strong>
-                  {formatMetric(
-                    'armazenamento',
-                    averages.armazenamento,
-                  )}
-                </strong>
-              </div>
-
-              <div className="cmp-avg-tile">
-                <span>Memória</span>
-                <strong>
-                  {formatMetric('memoria', averages.memoria)}
-                </strong>
-              </div>
+              <Gauge
+                title="Emissão de CO₂e"
+                value={formatMetric("emissao", averages.emissao)}
+                unit=""
+                fill={gaugeFill(averages.emissao, maxEmissao)}
+                max={formatNumber(maxEmissao)}
+              />
             </div>
-
-            <Gauge
-              title="Consumo energético"
-              value={formatMetric('consumo', averages.consumo)}
-              unit=""
-              fill={gaugeFill(averages.consumo, maxConsumo)}
-              max={formatNumber(maxConsumo)}
-            />
-
-            <Gauge
-              title="Emissão de CO₂e"
-              value={formatMetric('emissao', averages.emissao)}
-              unit=""
-              fill={gaugeFill(averages.emissao, maxEmissao)}
-              max={formatNumber(maxEmissao)}
-            />
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* ---------------------------------------------------------- */}
         {/* Serviços                                                    */}
         {/* ---------------------------------------------------------- */}
 
-        <section
-          className="cmp-services"
-          aria-labelledby="services-title"
-        >
+        <section className="cmp-services" aria-labelledby="services-title">
           <div className="cmp-services__head">
             <h2 id="services-title">Serviços</h2>
 
@@ -322,9 +303,10 @@ export default function Comparison() {
                 trigger={({ open, toggle }) => (
                   <button
                     type="button"
-                    className="cmp-chip cmp-chip--wide"
+                    className={`cmp-chip cmp-chip--wide ${loading ? "blocked" : ""}`}
                     aria-expanded={open}
                     onClick={toggle}
+                    disabled={loading}
                   >
                     Escolher serviço referência
                     <StarIcon size={24} />
@@ -338,9 +320,7 @@ export default function Comparison() {
                         <button
                           type="button"
                           className={
-                            service.id === referenceId
-                              ? 'cmp-is-active'
-                              : ''
+                            service.id === referenceId ? "cmp-is-active" : ""
                           }
                           onClick={() => {
                             setReferenceId(service.id);
@@ -358,58 +338,41 @@ export default function Comparison() {
           </div>
 
           <div className="cmp-services__scroll">
-            {loading && (
-              <p className="cmp-empty">Carregando serviços...</p>
+            {/* {!loading && error && <p className="cmp-empty">{error}</p>} */}
+            {loading ? (
+              <ComparisonServicesSkeleton quantity={8} />
+            ) : (
+              <>
+                {visible.map((service, index) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    rank={index + 1}
+                    isFirst={index === 0}
+                    isLast={index === visible.length - 1}
+                    isReference={service.id === referenceId}
+                    compareWith={compareMap[service.id] ?? "reference"}
+                    hasReference={
+                      referenceId !== null && referenceId !== service.id
+                    }
+                    baseMetrics={baseMetricsFor(service)}
+                    onMove={(direction) => move(service.id, direction)}
+                    onToggleReference={() => toggleReference(service.id)}
+                    onCompareChange={(target) =>
+                      setCompareMap((previous) => ({
+                        ...previous,
+                        [service.id]: target,
+                      }))
+                    }
+                  />
+                ))}
+              </>
             )}
-
-            {!loading && error && (
-              <p className="cmp-empty">{error}</p>
-            )}
-
-            {!loading && !error && visible.length === 0 && (
-              <p className="cmp-empty">
-                Nenhum serviço selecionado. Escolha ao menos um em
-                “Serviços selecionados”.
-              </p>
-            )}
-
-            {visible.map((service, index) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                rank={index + 1}
-                isFirst={index === 0}
-                isLast={index === visible.length - 1}
-                isReference={service.id === referenceId}
-                compareWith={
-                  compareMap[service.id] ?? 'reference'
-                }
-                hasReference={
-                  referenceId !== null &&
-                  referenceId !== service.id
-                }
-                baseMetrics={baseMetricsFor(service)}
-                onMove={(direction) =>
-                  move(service.id, direction)
-                }
-                onToggleReference={() =>
-                  toggleReference(service.id)
-                }
-                onCompareChange={(target) =>
-                  setCompareMap((previous) => ({
-                    ...previous,
-                    [service.id]: target,
-                  }))
-                }
-              />
-            ))}
           </div>
         </section>
       </main>
 
-      <footer className="cmp-footer">
-        Desenvolvido por Atmos © 2026
-      </footer>
+      <footer className="cmp-footer">Desenvolvido por Atmos © 2026</footer>
     </div>
   );
 }

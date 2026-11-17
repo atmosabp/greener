@@ -1,6 +1,6 @@
 .skeleton {
   display: block;
-  background-color: var(--skeleton-base, rgba(128, 128, 128, 0.15));
+  background-color: var(--skeleton-base, rgba(128, 128, 128, 0.15)) !important;
   border-radius: var(--skeleton-radius, 6px);
   position: relative;
   overflow: hidden;

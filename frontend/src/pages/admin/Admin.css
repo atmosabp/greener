@@ -138,13 +138,13 @@
     transform: scale(0.96);
 }
 
-/* .btn-add:hover:not(:disabled) svg {
+ .btn-add:hover:not(:disabled) svg {
     transform: rotate(90deg) scale(1.1);
-} */
+}
 
-/* .btn-delete:hover:not(:disabled) svg {
+.btn-delete:hover:not(:disabled) svg {
     animation: wiggle 0.5s ease-in-out;
-} */
+} 
 
 .btn:disabled {
     background: var(--btn-disabled);
@@ -203,7 +203,7 @@
 .check input:checked+.check-box {
     background: var(--primary);
     border-color: var(--primary-dark);
-    /* animation: pop 0.3s ease-in-out; */
+    animation: pop 0.3s ease-in-out;
 }
 
 .check input:checked+.check-box svg path {
@@ -324,13 +324,13 @@
     transform: scale(1.12);
 }
 
-/* .icon-btn-edit:hover:not(:disabled) svg {
+.icon-btn-edit:hover:not(:disabled) svg {
     transform: rotate(-14deg);
 }
 
 .icon-btn-delete:hover:not(:disabled) svg {
     animation: wiggle 0.5s ease-in-out;
-} */
+} 
 
 .icon-btn:active:not(:disabled) {
     transform: scale(0.92);
@@ -419,9 +419,9 @@
     height: 22px;
 }
 
-/* .m-item.is-open .m-toggle {
+.m-item.is-open .m-toggle {
     transform: rotate(180deg);
-} */
+} 
 
 .m-label,
 .m-row {
@@ -534,7 +534,7 @@
     margin-bottom: 8px;
     color: var(--primary-dark);
     transform-origin: 50% 100%;
-    /* animation: sway 3.6s ease-in-out infinite; */
+    animation: sway 3.6s ease-in-out infinite;
 }
 
 /* Paginação */
@@ -637,7 +637,7 @@
     background: var(--complementary);
     text-align: center;
     font-variant-numeric: tabular-nums;
-    /* animation: tick 0.3s ease-in-out; */
+    animation: tick 0.3s ease-in-out;
 }
 
 .admin-footer {
@@ -696,7 +696,7 @@
 }
 
 /* Keyframes -> NÃO SEI SE VAI FICAR, TESTANDO ANIMAÇÕES PARA O PROJETO -> TIREI PARA MANTER A PADRONIZAÇÂO MAS QUERO IMPLEMENAR*/
-/*
+
 @keyframes wiggle {
     0%,
     100% {
@@ -752,5 +752,3 @@
         transform: rotate(4deg);
     }
 }
-
-*/

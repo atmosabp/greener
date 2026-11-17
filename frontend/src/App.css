@@ -62,6 +62,7 @@
     width: 100%;
     min-height: min(42rem, calc(100svh - 7rem));
     background: url("./assets/banner-img.png") center / cover no-repeat;
+    background-color: var(--primary-darker);
     border-radius: 1.875rem;
     color: var(--background);
     overflow: hidden;

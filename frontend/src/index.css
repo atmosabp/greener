@@ -193,16 +193,19 @@ body {
   outline-offset: 2px;
 }
 
-.blocked {
-  cursor: not-allowed !important;
-}
 
+/* Estado bloqueado durante loading */
+.blocked,
 *:disabled {
-  background-color: #cccccc;
-  color: #666666;
-  cursor: not-allowed;
+  cursor: not-allowed !important;
+  opacity: 0.55;
+  user-select: none;
 }
 
-*:disabled:hover {
-  background-color: #cccccc; /* Mantém a cor do disabled */
+/* Evita alterações visuais no hover */
+*:disabled:hover,
+.blocked:hover {
+  filter: none;
+  transform: none;
+  box-shadow: inherit;
 }

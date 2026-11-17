@@ -196,7 +196,11 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   Ativos
                   <strong>
                     {showSkeleton ? (
-                      <Skeleton width={18} height="0.9rem" style={inlineSkeleton} />
+                      <Skeleton
+                        width={18}
+                        height="0.9rem"
+                        style={inlineSkeleton}
+                      />
                     ) : (
                       activeCount
                     )}
@@ -208,7 +212,11 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   Incompletos
                   <strong>
                     {showSkeleton ? (
-                      <Skeleton width={18} height="0.9rem" style={inlineSkeleton} />
+                      <Skeleton
+                        width={18}
+                        height="0.9rem"
+                        style={inlineSkeleton}
+                      />
                     ) : (
                       incompleteCount
                     )}
@@ -220,7 +228,11 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   Inativos
                   <strong>
                     {showSkeleton ? (
-                      <Skeleton width={18} height="0.9rem" style={inlineSkeleton} />
+                      <Skeleton
+                        width={18}
+                        height="0.9rem"
+                        style={inlineSkeleton}
+                      />
                     ) : (
                       inactiveCount
                     )}
@@ -271,7 +283,11 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
               <div className="last-update">
                 <span>Última atualização:</span>
-                <strong>{timeUpdated || "-"}</strong>
+                {showSkeleton ? (
+                  <Skeleton width="10rem" height="1rem" />
+                ) : (
+                  <strong>{timeUpdated || "-"}</strong>
+                )}
               </div>
 
               <div

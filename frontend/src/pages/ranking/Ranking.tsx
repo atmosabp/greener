@@ -15,9 +15,9 @@ import {
 } from "./components/rankingData";
 
 import "./Ranking.css";
-import Loading from "../../components/loading/Loading";
 import { RankingTableSkeletonRows } from "./RankingSkeleton";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
 
 export default function Ranking() {
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
@@ -216,7 +216,7 @@ export default function Ranking() {
 
               <select
                 id="ranking-update-select"
-                className={`btn btn-add ${showSkeleton ? "blocked" : ""}`}
+                className={`${showSkeleton ? "blocked" : ""}`}
                 value={Number(updateInterval)}
                 onChange={(event) =>
                   handleUpdateIntervalChange(Number(event.target.value))
@@ -233,13 +233,20 @@ export default function Ranking() {
             </div>
 
             <div className="ranking-toolbar-info">
-              <span className="ranking-last-update">
-                Última atualização: {formattedLastUpdate}
-              </span>
+              {showSkeleton ? (
+                <p>
+                  <Skeleton width="10rem" height="1rem" />
+                </p>
+              ) : (
+                <span className="ranking-last-update">
+                  Última atualização: {formattedLastUpdate}
+                </span>
+              )}
 
               <button
+                id="ranking-update-select"
+                className={`ranking-refresh-button ${showSkeleton ? "blocked" : ""}`}
                 type="button"
-                className="ranking-refresh-button"
                 onClick={handleRefresh}
                 aria-label="Atualizar horário da última atualização"
                 title="Atualizar"
@@ -287,7 +294,7 @@ export default function Ranking() {
 
               <tbody>
                 {showSkeleton ? (
-                  <RankingTableSkeletonRows rows={5} />
+                  <RankingTableSkeletonRows rows={8} />
                 ) : (
                   <>
                     {initialServices
@@ -332,11 +339,23 @@ export default function Ranking() {
           </div>
 
           <div className="ranking-table-caption">
-            <span>Período selecionado: {periodLabel[period]}</span>
-            <span>
-              {initialServices ? initialServices.length : 0} serviços
-              encontrados
-            </span>
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>Período selecionado: {periodLabel[period]}</span>
+            )}
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>
+                {initialServices ? initialServices.length : 0} serviços
+                encontrados
+              </span>
+            )}
           </div>
         </section>
       </main>

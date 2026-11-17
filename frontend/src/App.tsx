@@ -133,6 +133,7 @@ export default function App() {
               src={aboutPic}
               className="about-img"
               alt="Dashboard do GreenER em um notebook"
+              loading="lazy"
             />
           </div>
           <div className="info-toast">
@@ -235,6 +236,7 @@ export default function App() {
             src={PlantPic}
             className="success-img"
             alt="Broto crescendo em solo fértil"
+            loading="lazy"
           />
         </section>
 
