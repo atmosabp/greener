@@ -157,8 +157,10 @@ export default function Ranking() {
 
                 <select
                   id="ranking-period-select"
+                  className={showSkeleton ? "blocked" : ""}
                   value={period}
                   onChange={handlePeriodChange}
+                  disabled={showSkeleton}
                 >
                   <option value="now">Agora</option>
                   <option value="today">Hoje</option>
@@ -174,30 +176,32 @@ export default function Ranking() {
                 <div className="ranking-classification-buttons">
                   <button
                     type="button"
-                    className={
+                    className={`${showSkeleton ? "blocked " : ""}${
                       metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }`}
                     aria-pressed={metric === "energy"}
                     onClick={() => {
                       handleParamChange("energy");
                     }}
+                    disabled={showSkeleton}
                   >
                     Consumo energético
                   </button>
 
                   <button
                     type="button"
-                    className={
-                      metric === "co2e"
+                    className={`${showSkeleton ? "blocked " : ""}${
+                      metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }`}
                     aria-pressed={metric === "co2e"}
                     onClick={() => {
                       handleParamChange("co2e");
                     }}
+                    disabled={showSkeleton}
                   >
                     Emissão de CO₂e
                   </button>
@@ -212,10 +216,12 @@ export default function Ranking() {
 
               <select
                 id="ranking-update-select"
+                className={`btn btn-add ${showSkeleton ? "blocked" : ""}`}
                 value={Number(updateInterval)}
                 onChange={(event) =>
                   handleUpdateIntervalChange(Number(event.target.value))
                 }
+                disabled={showSkeleton}
               >
                 <option value={5}>05s</option>
                 <option value={10}>10s</option>

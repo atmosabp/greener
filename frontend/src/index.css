@@ -12,14 +12,20 @@
 [data-theme="light"] {
 
   /* Base */
-  --background: #F9EEDC;                       /* cor do fundo */
-  --background-transparent: #38322e40;         /* scrim / overlay */
-  --complementary: #ECDEC7;                    /* superfície: cards, inputs.. */
+  --background: #F9EEDC;
+  /* cor do fundo */
+  --background-transparent: #38322e40;
+  /* scrim / overlay */
+  --complementary: #ECDEC7;
+  /* superfície: cards, inputs.. */
 
   /* Texto */
-  --text: #38322E;                             /* cor do texto */
-  --text-muted: #877a71;                        /* texto placeholder  */
-  --text-inverse: #F9EEDC;                     /* texto sobre fundo escuro */
+  --text: #38322E;
+  /* cor do texto */
+  --text-muted: #877a71;
+  /* texto placeholder  */
+  --text-inverse: #F9EEDC;
+  /* texto sobre fundo escuro */
 
   /* Secundária */
   --secondary: #AB876E;
@@ -31,13 +37,18 @@
   --banner-shadow: rgba(56, 50, 46, 0.15);
 
   /* Status */
-  --error: #AA4F3E;                            /* Cor para erros: toast, warnings.. */
-  --success: #73915F;                          /* Cor para sucesso: toast, warnings.. */
-  --warning: #e3d26f;                          /* Cor para avisos: warnings.. */
+  --error: #AA4F3E;
+  /* Cor para erros: toast, warnings.. */
+  --success: #73915F;
+  /* Cor para sucesso: toast, warnings.. */
+  --warning: #e3d26f;
+  /* Cor para avisos: warnings.. */
 
   /* Amostras do seletor de paleta */
-  --theme-primary: #99C47C;                    /* verde */
-  --theme-secondary: #7CA2C4;                  /* azul */
+  --theme-primary: #99C47C;
+  /* verde */
+  --theme-secondary: #7CA2C4;
+  /* azul */
 }
 
 
@@ -48,7 +59,8 @@
 
   /* Texto */
   --text: #F9EEDC;
-  --text-muted: #aea49c;                        /* texto placeholder  */
+  --text-muted: #aea49c;
+  /* texto placeholder  */
   --text-inverse: #1A1F1C;
 
   /* Secundária */
@@ -61,13 +73,18 @@
   --banner-shadow: rgba(0, 0, 0, 0.3);
 
   /* Status */
-  --error: #E05252;                            /* Cor para erros: toast, warnings.. */
-  --success: #6BAA75;                          /* Cor para sucesso: toast, warnings.. */
-  --warning: #ead76c;                          /* Cor para avisos: warnings.. */
+  --error: #E05252;
+  /* Cor para erros: toast, warnings.. */
+  --success: #6BAA75;
+  /* Cor para sucesso: toast, warnings.. */
+  --warning: #ead76c;
+  /* Cor para avisos: warnings.. */
 
   /* Amostras do seletor de paleta */
-  --theme-primary: #669546;                    /* verde */
-  --theme-secondary: #4A7092;                  /* azul */
+  --theme-primary: #669546;
+  /* verde */
+  --theme-secondary: #4A7092;
+  /* azul */
 }
 
 
@@ -174,4 +191,18 @@ body {
 *:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+.blocked {
+  cursor: not-allowed !important;
+}
+
+*:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+*:disabled:hover {
+  background-color: #cccccc; /* Mantém a cor do disabled */
 }

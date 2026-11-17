@@ -15,7 +15,10 @@ import Toast from "../../components/toast/Toast";
 import Warning from "../../components/warning/Warning";
 import { Skeleton } from "../../components/skeleton/Skeleton.tsx";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
-import { AdminMobileSkeleton, AdminTableSkeletonRows } from "./AdminSkeleton.tsx";
+import {
+  AdminMobileSkeleton,
+  AdminTableSkeletonRows,
+} from "./AdminSkeleton.tsx";
 import type { FormValues } from "../../types/form";
 import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
@@ -42,11 +45,7 @@ class RequestError extends Error {
   public type: "network" | "http" = "http";
   public status?: number = 0;
 
-  constructor(
-    type: "network" | "http",
-    message: string,
-    status?: number,
-  ) {
+  constructor(type: "network" | "http", message: string, status?: number) {
     super(message);
     this.name = "RequestError";
     this.type = type;
@@ -55,10 +54,7 @@ class RequestError extends Error {
 }
 
 // Faz requisições ao backend e identifica erros de conexão e HTTP.
-async function request<T>(
-  url: string,
-  options?: RequestInit,
-): Promise<T> {
+async function request<T>(url: string, options?: RequestInit): Promise<T> {
   let result: Response;
 
   try {
@@ -95,7 +91,7 @@ async function request<T>(
       typeof data?.message === "string"
         ? data.message
         : statusMessages[result.status] ||
-        "Não foi possível concluir a operação. Tente novamente.";
+          "Não foi possível concluir a operação. Tente novamente.";
 
     throw new RequestError("http", message, result.status);
   }
@@ -526,7 +522,11 @@ export default function Admin() {
               <div className="total">
                 <span>Total de usuários:</span>
                 <strong>
-                  {showSkeleton ? <Skeleton width={28} height="1rem" /> : users.length}
+                  {showSkeleton ? (
+                    <Skeleton width={28} height="1rem" />
+                  ) : (
+                    users.length
+                  )}
                 </strong>
               </div>
 
@@ -540,7 +540,12 @@ export default function Admin() {
                 <span className="btn-label">Deletar</span>
               </button>
 
-              <button type="button" className="btn btn-add" onClick={addUser}>
+              <button
+                type="button"
+                className={`btn btn-add ${showSkeleton ? "blocked" : ""}`}
+                disabled={showSkeleton}
+                onClick={addUser}
+              >
                 <Plus />
                 <span className="btn-label">Adicionar</span>
               </button>
@@ -597,9 +602,7 @@ export default function Admin() {
                         <div className="cell-id">
                           <Checkbox
                             checked={isSelected}
-                            onChange={() =>
-                              setSelected(toggle(selected, u.id))
-                            }
+                            onChange={() => setSelected(toggle(selected, u.id))}
                             label={`Selecionar ${u.name}`}
                           />
                           <span>{pad(u.id)}</span>
@@ -659,9 +662,7 @@ export default function Admin() {
                             type="checkbox"
                             className="checkbox-user"
                             checked={isSelected}
-                            onChange={() =>
-                              setSelected(toggle(selected, u.id))
-                            }
+                            onChange={() => setSelected(toggle(selected, u.id))}
                           />
                           <span className="m-key">Nome</span>
                           <span className="m-val">{u.name}</span>
