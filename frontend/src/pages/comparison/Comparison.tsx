@@ -188,7 +188,7 @@ export default function Comparison() {
             </h1>
 
             <p className="cmp-intro__sub">
-              Comparação de serviços
+              Selecione dois ou mais serviços para comparar suas métricas.
             </p>
 
             <Popover
