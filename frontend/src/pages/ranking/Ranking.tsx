@@ -148,12 +148,60 @@ export default function Ranking() {
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
-            <div className="ranking-filters">
-              <div className="ranking-period">
-                <label htmlFor="ranking-period-select">
-                  Ver ranking por período:
-                </label>
+            <div className="ranking-classification">
+              <span>Classificar por:</span>
 
+              <div className="ranking-classification-buttons">
+                <button
+                  type="button"
+                  className={
+                    metric === "energy"
+                      ? "ranking-metric-button is-active"
+                      : "ranking-metric-button"
+                  }
+                  aria-pressed={metric === "energy"}
+                  onClick={() => handleParamChange("energy")}
+                >
+                  Consumo energético
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    metric === "co2e"
+                      ? "ranking-metric-button is-active"
+                      : "ranking-metric-button"
+                  }
+                  aria-pressed={metric === "co2e"}
+                  onClick={() => handleParamChange("co2e")}
+                >
+                  Emissão de CO₂e
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="ranking-toolbar">
+            <div className="ranking-toolbar-buttons">
+              <div className="ranking-update">
+                <label htmlFor="ranking-update-select">Atualizações:</label>
+
+                <select
+                  id="ranking-update-select"
+                  value={Number(updateInterval)}
+                  onChange={(event) =>
+                    handleUpdateIntervalChange(Number(event.target.value))
+                  }
+                >
+                  <option value={5}>05s</option>
+                  <option value={10}>10s</option>
+                  <option value={15}>15s</option>
+                  <option value={30}>30s</option>
+                  <option value={60}>60s</option>
+                  <option value={120}>120s</option>
+                </select>
+              </div>
+              <div className="ranking-period">
                 <select
                   id="ranking-period-select"
                   value={period}
@@ -166,63 +214,6 @@ export default function Ranking() {
                   <option value="other-years">Outros anos</option>
                 </select>
               </div>
-
-              <div className="ranking-classification">
-                <span>Classificar por:</span>
-
-                <div className="ranking-classification-buttons">
-                  <button
-                    type="button"
-                    className={
-                      metric === "energy"
-                        ? "ranking-metric-button is-active"
-                        : "ranking-metric-button"
-                    }
-                    aria-pressed={metric === "energy"}
-                    onClick={() => {
-                      handleParamChange("energy");
-                    }}
-                  >
-                    Consumo energético
-                  </button>
-
-                  <button
-                    type="button"
-                    className={
-                      metric === "co2e"
-                        ? "ranking-metric-button is-active"
-                        : "ranking-metric-button"
-                    }
-                    aria-pressed={metric === "co2e"}
-                    onClick={() => {
-                      handleParamChange("co2e");
-                    }}
-                  >
-                    Emissão de CO₂e
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="ranking-toolbar">
-            <div className="ranking-update">
-              <label htmlFor="ranking-update-select">Atualizações:</label>
-
-              <select
-                id="ranking-update-select"
-                value={Number(updateInterval)}
-                onChange={(event) =>
-                  handleUpdateIntervalChange(Number(event.target.value))
-                }
-              >
-                <option value={5}>05s</option>
-                <option value={10}>10s</option>
-                <option value={15}>15s</option>
-                <option value={30}>30s</option>
-                <option value={60}>60s</option>
-                <option value={120}>120s</option>
-              </select>
             </div>
 
             <div className="ranking-toolbar-info">
@@ -268,6 +259,7 @@ export default function Ranking() {
             aria-label="Tabela de ranking. Role para ver todos os serviços."
             tabIndex={0}
           >
+            <div className="table-border">
             <table className="ranking-table">
               <thead>
                 <tr>
@@ -312,6 +304,7 @@ export default function Ranking() {
                   : "não foi possível pegar os serviços"}
               </tbody>
             </table>
+            </div>
           </div>
 
           <div className="ranking-table-caption">

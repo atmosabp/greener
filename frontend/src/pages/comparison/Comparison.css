@@ -136,7 +136,7 @@
     padding: 0.5rem 0.75rem 0;
 }
 
-.cmp-intro > div:first-child {
+.cmp-intro>div:first-child {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -296,7 +296,7 @@
     scrollbar-color: var(--moss) var(--bg);
 }
 
-.cmp-menu li + li {
+.cmp-menu li+li {
     margin-top: 0.1875rem;
 }
 
@@ -388,9 +388,7 @@
 .cmp-averages__content {
     display: grid;
     grid-template-columns:
-        minmax(0, 1.65fr)
-        minmax(0, 0.9fr)
-        minmax(0, 0.9fr);
+        minmax(0, 1.65fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
     align-items: stretch;
     gap: 1.125rem;
 }
@@ -578,7 +576,9 @@
 
 .cmp-services__scroll {
     scrollbar-width: thin;
-    scrollbar-color: var(--moss-dark) var(--lime);
+    scrollbar-color: var(--moss-dark) color-mix(in srgb,
+            var(--background) 70%,
+            var(--primary-light));
 }
 
 .cmp-services__scroll::-webkit-scrollbar {
@@ -699,10 +699,7 @@
 .cmp-service__body {
     display: grid;
     grid-template-columns:
-        minmax(0, 0.95fr)
-        minmax(0, 0.95fr)
-        minmax(0, 1fr)
-        minmax(0, 1.25fr);
+        minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 1fr) minmax(0, 1.25fr);
     gap: 0.75rem;
     height: 8.125rem;
 }
@@ -1113,6 +1110,7 @@
 /* ---------- Acessibilidade ---------- */
 
 @media (prefers-reduced-motion: reduce) {
+
     .cmp-comparison *,
     .cmp-comparison *::before,
     .cmp-comparison *::after {

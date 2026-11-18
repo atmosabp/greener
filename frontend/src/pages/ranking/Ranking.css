@@ -50,8 +50,9 @@
 
 .ranking-intro {
     width: 100%;
-    display: grid;
-    grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr);
+    display: flex;
+    /* grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr); */
+    justify-content: space-between;
     align-items: center;
     gap: 1.5rem;
 }
@@ -78,36 +79,40 @@
     line-height: 1.45;
 }
 
-.ranking-filters {
-    width: 100%;
-    min-width: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr);
-    align-items: stretch;
-    gap: 3rem;
-}
 
-.ranking-period,
+
 .ranking-classification {
-    width: 100%;
-    min-width: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
     gap: 0.6rem;
-    padding: 0.5rem 1.1rem;
-    border-radius: 1.15rem;
+    padding: 0rem 0rem 0rem 1rem;
+    border-radius: 999px;
     background-color: var(--primary-light);
     color: var(--on-primary-light);
 }
 
-.ranking-period label,
+[data-theme="dark"] .ranking-update {
+    background-color: var(--primary-dark);
+    color: var(--on-primary-darker);
+}
+
+
+
 .ranking-classification>span {
     display: block;
     text-align: center;
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.25;
+}
+
+.ranking-period {
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 
@@ -122,21 +127,26 @@
     border: 0;
     outline: none;
     border-radius: 999px;
-    background-color: var(--primary-dark);
-    background-image:
-        linear-gradient(45deg, transparent 50%, currentColor 50%),
-        linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-color: var(--text);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position:
-        calc(100% - 1.3rem) 50%,
-        calc(100% - 0.95rem) 50%;
-    background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
-    color: var(--on-primary-dark);
+    background-position: right 1rem center;
+    background-size: 1rem;
+    color: var(--background);
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
 }
+
+[data-theme="dark"] .ranking-page select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .ranking-page select {
+    background-color: var(--primary-light);
+}
+
 
 .ranking-page select option {
     background-color: var(--background);
@@ -151,11 +161,11 @@
 
 .ranking-period select {
     width: 100%;
-    height: 2.3rem;
+    height: 2.65rem;
     padding: 0 2.5rem 0 0.85rem;
     font-size: 1rem;
-    text-align: center;
-    text-align-last: center;
+    text-align: left;
+    text-align-last: left;
 }
 
 .ranking-period .ranking-year-select {
@@ -168,11 +178,32 @@
 /* =========================================
    CLASSIFICAÇÃO
 ========================================= */
-
 .ranking-classification-buttons {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.6rem;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    padding: 0;
+    border-radius: 999px;
+    background-color: var(--primary-dark);
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* Cápsula deslizante */
+.ranking-classification-buttons::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 50%;
+    border-radius: 999px;
+    background-color: var(--text);
+    transform: translateX(0);
+    transition: transform 300ms linear;
+}
+
+.ranking-classification-buttons:has(.ranking-metric-button:nth-child(2).is-active)::before {
+    transform: translateX(100%);
 }
 
 .ranking-metric-button {
@@ -181,32 +212,27 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.45rem 0.65rem;
-    border: 0.1rem solid transparent;
-    border-radius: 0.9rem;
-    background-color: var(--primary-dark);
-    color: var(--on-primary-dark);
+    padding: 0.45rem 0.85rem;
+    border: none;
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--on-primary-darker);
     font: inherit;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 400;
     line-height: 1.15;
     text-align: center;
+    white-space: nowrap;
     cursor: pointer;
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease;
-}
-
-.ranking-metric-button:hover {
-    filter: brightness(1.06);
+    transition: color 0.3s linear font-weight 0.3s linear;
 }
 
 .ranking-metric-button.is-active {
-    background-color: var(--primary-darker);
-    border-color: var(--on-primary-darker);
-    color: var(--on-primary-darker);
+    background-color: transparent;
+    color: var(--background);
+    font-weight: 600;
 }
+
 
 
 /* =========================================
@@ -220,6 +246,12 @@
     margin-top: 1rem;
     gap: 1rem;
     flex-shrink: 0;
+}
+
+.ranking-toolbar-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
 
 .ranking-update {
@@ -320,6 +352,12 @@
     background-color: var(--primary-light);
 }
 
+.table-border{
+    border: 2px solid var(--primary-light);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
 .ranking-table {
     width: 100%;
     min-width: 44rem;
@@ -412,7 +450,6 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.85rem;
-    border-top: 0.08rem solid var(--ranking-border);
     background-color: var(--background);
     color: var(--ranking-muted);
     font-size: 0.75rem;
@@ -718,11 +755,6 @@
         gap: 1rem;
     }
 
-    .ranking-filters {
-        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-        gap: 0.85rem;
-    }
-
     .ranking-period,
     .ranking-classification {
         min-width: 0;
@@ -769,11 +801,6 @@
 
     .ranking-heading p {
         font-size: 0.9rem;
-    }
-
-    .ranking-filters {
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
     }
 
     .ranking-period,
