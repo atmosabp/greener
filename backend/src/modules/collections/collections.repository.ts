@@ -168,6 +168,7 @@ export async function findMonthHistory(datePull: Date) {
   if (differenceInMonths(Date(), datePull) < 2) {
     result = await pool.query(
       `select 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -176,7 +177,8 @@ export async function findMonthHistory(datePull: Date) {
           AVG(network_gb) as network_gb,
           AVG(renewable_percent) as renewable_percent
           from day_data 
-          where date_pull <= date_trunc('month',current_timestamp)`,
+          where date_pull <= date_trunc('month',current_timestamp)
+          group by service_id`,
     );
   } else {
     result = await pool.query(
@@ -184,7 +186,7 @@ export async function findMonthHistory(datePull: Date) {
       [datePull],
     );
   }
-  return result.rows[0] || null;
+  return result.rows || null;
 }
 
 export async function findServiceMonthHistory(
@@ -222,6 +224,7 @@ export async function findDayHistory(datePull: Date) {
   if (differenceInDays(Date(), datePull) < 2) {
     result = await pool.query(
       `select 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -230,7 +233,8 @@ export async function findDayHistory(datePull: Date) {
           AVG(network_gb) as network_gb,
           AVG(renewable_percent) as renewable_percent
           from hour_data 
-          where date_pull <= date_trunc('day',current_timestamp)`,
+          where date_pull <= date_trunc('day',current_timestamp)
+          group by service_id`,
     );
   } else {
     result = await pool.query(
@@ -238,7 +242,7 @@ export async function findDayHistory(datePull: Date) {
       [datePull],
     );
   }
-  return result.rows[0] || null;
+  return result.rows || null;
 }
 
 export async function findServiceDayHistory(datePull: Date, serviceId: string) {
@@ -264,7 +268,7 @@ export async function findServiceDayHistory(datePull: Date, serviceId: string) {
       [serviceId, datePull],
     );
   }
-  return result.rows[0] || null;
+  return result.rows || null;
 }
 
 export async function findHourHistory(datePull: Date) {
@@ -272,6 +276,7 @@ export async function findHourHistory(datePull: Date) {
   if (differenceInHours(Date(), datePull) < 2) {
     result = await pool.query(
       `select 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -280,15 +285,19 @@ export async function findHourHistory(datePull: Date) {
           AVG(network_gb) as network_gb,
           AVG(renewable_percent) as renewable_percent
           from minute_data 
-          where date_pull <= date_trunc('hour',current_timestamp)`,
+          where date_pull <= date_trunc('hour',current_timestamp)
+          group by service_id`,
     );
+    console.log("vala")
   } else {
     result = await pool.query(
       `SELECT * FROM hour_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 minutes'`,
       [datePull],
     );
+    console.log("vela")
   }
-  return result.rows[0] || null;
+  console.log(result, "aaaa")
+  return result.rows || null;
 }
 
 export async function findMinuteHistory(datePull: Date) {
@@ -296,6 +305,7 @@ export async function findMinuteHistory(datePull: Date) {
   if (differenceInHours(Date(), datePull) < 2) {
     result = await pool.query(
       `select 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -304,7 +314,8 @@ export async function findMinuteHistory(datePull: Date) {
           AVG(network_gb) as network_gb,
           AVG(renewable_percent) as renewable_percent
           from minute_data 
-          where date_pull <= date_trunc('hour',current_timestamp)`,
+          where date_pull <= date_trunc('hour',current_timestamp)
+          group by service_id`,
     );
   } else {
     result = await pool.query(
@@ -312,7 +323,7 @@ export async function findMinuteHistory(datePull: Date) {
       [datePull],
     );
   }
-  return result.rows[0] || null;
+  return result.rows || null;
 }
 
 export async function findServiceHourHistory(

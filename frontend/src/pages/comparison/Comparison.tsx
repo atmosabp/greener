@@ -28,13 +28,19 @@ import {
   StarIcon,
 } from './components/ComparisonComponents';
 
+import "../ranking/Ranking.css";
+
 import ServiceCard from './components/ServiceCard';
 
 import './Comparison.css';
 import Loading from '../../components/loading/Loading';
+import type { RankingPeriod, RankingService } from '../ranking/components/rankingData';
+import useRankingCalendar from '../ranking/components/useRankingCalendar';
+import RankingCalendar from '../ranking/components/rankingCalendar';
 
 export default function Comparison() {
-  const [period, setPeriod] = useState('today');
+  const [period, setPeriod] = useState<RankingPeriod>("now");
+
 
   const [userName, _setUserName] = useState<string>(() => {
     const storedUser = localStorage.getItem("user");
@@ -50,7 +56,9 @@ export default function Comparison() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [historyMessage, setHistoryMessage] = useState("");
 
+  
   const [order, setOrder] = useState<string[]>([]);
 
   const [selected, setSelected] = useState<Set<string>>(
@@ -63,8 +71,57 @@ export default function Comparison() {
     Record<string, CompareTarget>
   >({});
 
-  /* Buscar os serviços e suas métricas no backend. */
-  useEffect(() => {
+  const calendar = useRankingCalendar();
+
+  async function fetchHistory(periodType:string, datePull:Date){
+      try{
+        var formatedData: RankingService[] = [];
+  
+        const port: number = import.meta.env.VITE_PORT || 3000;
+  
+        const result = await fetch(
+          `http://localhost:${port}/collections/all-service-history`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+          }
+        );
+        const data = await result.json();
+        // console.log(datePull)
+        // console.log(data, "aaaaaaaa")
+        if(data.length > 0){
+          for (let service of data) {
+            formatedData.push({
+              id: service.id,
+              name: service.id,
+              energy: service.kwh,
+              co2e: service.co2e,
+            });
+          }
+          // setLastUpdate(datePull);
+          setHistoryMessage("Você está vendo dados do passado ")
+        }else{
+          // handleRefresh()
+          setHistoryMessage("Período escolhido não possui dados ")
+        }
+      }catch(e:any){
+        console.log("AAAAAAAAAAAAAAAAA")
+        console.log(e.message)
+      }
+      
+    }
+
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
+    if (nextPeriod == "now") {
+      setHistoryMessage("");
+    } 
+
+    setPeriod(nextPeriod);
+    calendar.openCalendar(nextPeriod);
+  }
+
+  async function handleRefresh(){
     let ignore = false;
 
     fetchServices()
@@ -93,6 +150,11 @@ export default function Comparison() {
     return () => {
       ignore = true;
     };
+  }
+
+  /* Buscar os serviços e suas métricas no backend. */
+  useEffect(() => {
+    handleRefresh()
   }, []);
 
   /* Serviços selecionados na ordem atual. */
@@ -220,13 +282,33 @@ export default function Comparison() {
             </Popover>
           </div>
 
-          <SelectPill
+          {/* <SelectPill
             variant="dark"
             label="Período"
             value={period}
             onChange={setPeriod}
             options={PERIODS}
-          />
+          /> */}
+          <span className={`cmp-select `}>
+            <div className="ranking-period">
+              <label htmlFor="ranking-period-select">
+                Período
+              </label>
+
+              <select
+                id="ranking-period-select"
+                value={period}
+                onChange={(event) =>
+                  handlePeriodChange(event.target.value as RankingPeriod)
+                }
+              >
+                <option value="now">Agora</option>
+                <option value="today">Hoje</option>
+                <option value="month">Esse mês</option>
+                <option value="year">Esse ano</option>
+              </select>
+            </div>
+          </span>
         </section>
 
         {/* ---------------------------------------------------------- */}
@@ -405,6 +487,29 @@ export default function Comparison() {
             ))}
           </div>
         </section>
+        {calendar.calendarOpen && (
+                <RankingCalendar
+                  period={period}
+                  selectedHour={calendar.selectedHour}
+                  selectedDay={calendar.selectedDay}
+                  selectedMonth={calendar.selectedMonth}
+                  selectedYear={calendar.selectedYear}
+                  viewMonth={calendar.viewMonth}
+                  viewYear={calendar.viewYear}
+                  currentYear={calendar.currentYear}
+                  currentMonth={calendar.currentMonth}
+                  currentDay={calendar.currentDay}
+                  calendarDays={calendar.calendarDays}
+                  onClose={calendar.closeCalendar}
+                  onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+                  onConfirmDay={calendar.confirmDay}
+                  onConfirmMonth={calendar.confirmMonth}
+                  onConfirmYear={calendar.confirmYear}
+                  onConfirmHour={calendar.confirmHour}
+                  handleFetch={fetchHistory}
+                  handleCancel={handleRefresh}
+                />
+              )}
       </main>
 
       <footer className="cmp-footer">

@@ -8,6 +8,8 @@ import {
     type RankingPeriod,
 } from "./rankingData";
 
+
+
 type RankingCalendarProps = {
     period: RankingPeriod;
     selectedHour: number;
@@ -27,6 +29,7 @@ type RankingCalendarProps = {
     onConfirmYear: (year: number) => void;
     onConfirmHour: (hour: number) => void;
     handleFetch:(periodType:string,datePull:Date) => void;
+    handleCancel:()=>void;
 };
 
 export default function RankingCalendar({
@@ -47,32 +50,35 @@ export default function RankingCalendar({
     onConfirmMonth,
     onConfirmYear,
     onConfirmHour,
-    handleFetch
+    handleFetch,
+    handleCancel
 }: RankingCalendarProps) {
     const [draftDay, setDraftDay] = useState(selectedDay);
     const [draftHour, setDraftHour] = useState(selectedHour);
     const [draftMonth, setDraftMonth] = useState(selectedMonth);
-    const [draftYear, setDraftYear] = useState(selectedYear);
-
+    const oppeningDate = new Date() // pega a data atual da abertura da pagina
     const handleConfirm = () => {
+        let date = new Date()
         if (period === "today") {
+            handleFetch("hour", new Date(date.getFullYear(), date.getMonth(), date.getDate(), draftHour))
             onConfirmHour(draftHour);
         } else if (period === "month") {
+            handleFetch("day", new Date(date.getFullYear(), date.getMonth(), draftDay))
             onConfirmDay(draftDay);
         } else if (period === "year") {
+            handleFetch("month", new Date(date.getFullYear(), draftMonth))
             onConfirmMonth(draftMonth);
-        } else if (period === "other-years") {
-            onConfirmYear(draftYear);
-        }
+        } 
     };
 
     return (
         <div
             className="ranking-calendar-overlay"
             onMouseDown={(event) => {
-                if (event.target === event.currentTarget) {
-                    onClose();
-                }
+                // if (event.target === event.currentTarget) {
+                    
+                //     onClose();
+                // }
             }}
         >
             <section
@@ -84,7 +90,10 @@ export default function RankingCalendar({
                 <button
                     type="button"
                     className="ranking-calendar-close"
-                    onClick={onClose}
+                    onClick={()=>{
+                        onClose();
+                        handleCancel();
+                    }}
                     aria-label="Fechar calendário"
                 >
                     ×
@@ -100,27 +109,27 @@ export default function RankingCalendar({
                 {period === "month" && (
                     <>
                         <div className="ranking-calendar-navigation">
-                            <button
+                            {/* <button
                                 type="button"
                                 onClick={() => onChangeMonth(-1)}
                                 aria-label="Mês anterior"
-                                disabled
+                                
                             >
                                 ‹
-                            </button>
+                            </button> */}
 
                             <strong>
                                 {monthNames[currentMonth]} {currentYear}
                             </strong>
 
-                            <button
+                            {/* <button
                                 type="button"
                                 onClick={() => onChangeMonth(1)}
                                 aria-label="Próximo mês"
-                                disabled
+                                
                             >
                                 ›
-                            </button>
+                            </button> */}
                         </div>
 
                         <div className="ranking-calendar-panel">
@@ -170,6 +179,7 @@ export default function RankingCalendar({
                                     className={
                                         draftHour === hour ? "is-selected" : ""
                                     }
+                                    disabled = {(hour>oppeningDate.getHours())}
                                     onClick={() => setDraftHour(hour)}
                                 >
                                     {String(hour).padStart(2, "0")}:00
@@ -189,7 +199,9 @@ export default function RankingCalendar({
                                     className={
                                         draftMonth === index ? "is-selected" : ""
                                     }
-                                    onClick={() => setDraftMonth(index)}
+                                    onClick={() => setDraftMonth(index)
+                                    }
+                                    disabled = {(index>oppeningDate.getMonth())}
                                 >
                                     {month}
                                 </button>
@@ -198,24 +210,6 @@ export default function RankingCalendar({
                     </div>
                 )}
 
-                {period === "other-years" && (
-                    <div className="ranking-calendar-panel">
-                        <div className="ranking-calendar-options ranking-calendar-year-options">
-                            {availableYears.map((year) => (
-                                <button
-                                    type="button"
-                                    key={year}
-                                    className={
-                                        draftYear === year ? "is-selected" : ""
-                                    }
-                                    onClick={() => setDraftYear(year)}
-                                >
-                                    {year}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
 
                 <button
                     type="button"

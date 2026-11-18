@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type ChangeEvent, type CSSProperties } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type CSSProperties,
+} from "react";
 import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
 import "../ranking/Ranking.css";
@@ -7,9 +13,12 @@ import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
-import type { RankingPeriod } from "../ranking/components/rankingData";
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
 import RankingCalendar from "../ranking/components/rankingCalendar";
+import {
+  type RankingPeriod
+
+} from "../ranking/components/rankingData";
 // import { Oval } from "react-loader-spinner";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
@@ -36,6 +45,10 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 export default function Dashboard() {
   const { serviceId } = useParams();
   const [period, setPeriod] = useState<RankingPeriod>("now");
+
+  //variáveis como ref para se atualizar entre os Timeouts (pois estava dando erro)
+  const historyActivatedRef = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const calendar = useRankingCalendar();
 
@@ -74,20 +87,29 @@ export default function Dashboard() {
   /* Calendário para selecionar data */
   const [filter, setFilter] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [historyMessage, setHistoryMessage] = useState("");
+
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
+    if (nextPeriod == "now") {
+      historyActivatedRef.current = false;
+      setHistoryMessage("");
+    } else {
+      historyActivatedRef.current = true;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+
+    setPeriod(nextPeriod);
+    calendar.openCalendar(nextPeriod);
+  }
 
   function handleDateSelect(date: string): void {
     console.log("Data:", date);
 
     // Insirir lógica aqui
   }
-
-  function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
-      const nextPeriod = event.target.value as RankingPeriod;
-  
-      setPeriod(nextPeriod);
-      calendar.openCalendar(nextPeriod);
-    }
-  
 
   function handleFilterChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const selectedFilter = event.target.value;
@@ -120,6 +142,45 @@ export default function Dashboard() {
   >([]);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
 
+  async function fetchHistory(periodType: string, datePull: Date) {
+    try {
+      const port: number = import.meta.env.VITE_PORT || 3000;
+
+      const result = await fetch(
+        `http://localhost:${port}/collections/service-history/${serviceId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+        },
+      );
+      const data = await result.json();
+      if(data){
+        console.log(data);
+        setServiceMetrics({
+          id: serviceMetrics.id,
+          name: serviceMetrics.name,
+          status: serviceMetrics.status,
+          location: serviceMetrics.location,
+          metrics: {
+            cpu_percent: data.cpu_percentage,
+            memory_gb: data.memory_gb,
+            disk_gb: data.disk_gb,
+            network_gb: data.network_gb,
+            co2e: data.co2e,
+            kwh: data.kwh,
+            renewable_percent: Math.floor(data.renewable_percent),
+            carbon_intensity: data.co2e / data.kwh,
+          },
+        });
+        setHistoryMessage("Você está vendo dados do passado ")
+      }else{
+        updateMetrics()
+        setHistoryMessage("Período escolhido não possui dados ")
+      }
+    } catch (e: any) {}
+  }
+
   async function getServiceMetrics() {
     setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
 
@@ -132,6 +193,10 @@ export default function Dashboard() {
       setServiceMetrics(data);
     } catch (e: any) {
       console.log(e.message);
+    }
+
+    if (!historyActivatedRef.current) {
+      timerRef.current = setTimeout(getServiceMetrics, updateInterval * 1000);
     }
   }
 
@@ -157,6 +222,9 @@ export default function Dashboard() {
     } catch (e: any) {
       console.log(e.message);
     }
+    if (!historyActivatedRef.current) {
+      timerRef.current = setTimeout(getServiceList, updateInterval * 1000);
+    }
   }
 
   function changeInterval(newTime: number): void {
@@ -166,25 +234,31 @@ export default function Dashboard() {
   }
 
   async function updateMetrics(): Promise<void> {
-    await getServiceMetrics();
-    await getServiceList();
+    setHistoryMessage("");
+    setPeriod("now");
+    historyActivatedRef.current = false
+    getServiceList();
+    getServiceMetrics();
   }
 
   // useEffect para atualizar de acordo com o intervalo
   useEffect(() => {
-    updateMetrics();
-    const fetchData = async () => {
-      await updateMetrics();
-    };
-    const fetchTimer = setInterval(
-      fetchData,
-      (localStorage.getItem("refresh_interval")
-        ? Number(localStorage.getItem("refresh_interval"))
-        : updateInterval) * 1000,
-    );
+    // updateMetrics();
+    // const fetchData = async () => {
+    //   await updateMetrics();
+    // };
+    // const fetchTimer = setInterval(
+    //   fetchData,
+    //   (localStorage.getItem("refresh_interval")
+    //     ? Number(localStorage.getItem("refresh_interval"))
+    //     : updateInterval) * 1000,
+    // );
 
-    return () => clearInterval(fetchTimer);
-  }, []);
+    // return () => clearInterval(fetchTimer);
+    if (!historyActivatedRef.current) {
+      updateMetrics();
+    }
+  }, [historyActivatedRef.current]);
 
   function createServiceList() {
     let serviceItemList = [];
@@ -192,7 +266,7 @@ export default function Dashboard() {
       let serviceActive = i.status == "inactive" ? true : false;
 
       serviceItemList.push(
-        <li>
+        <li key={i.id}>
           <Link
             to={`/dashboard/${i.id}`}
             reloadDocument
@@ -256,7 +330,12 @@ export default function Dashboard() {
 
           <div className="btns">
             <span className="last-update">
-              Última atualização: {timeUpdated || "-"}
+              <strong>{historyMessage}</strong>&nbsp; &nbsp;
+              {historyActivatedRef.current ? (
+                <></>
+              ) : (
+                <>Última atualização: {timeUpdated || "-"}</>
+              )}
             </span>
             {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
 
@@ -282,22 +361,23 @@ export default function Dashboard() {
                 </div>
 
                 <div className="ranking-period">
-                <label htmlFor="ranking-period-select">
-                  Ver ranking por período:
-                </label>
+                  <label htmlFor="ranking-period-select">
+                    Período
+                  </label>
 
-                <select
-                  id="ranking-period-select"
-                  value={period}
-                  onChange={handlePeriodChange}
-                >
-                  <option value="now">Agora</option>
-                  <option value="today">Hoje</option>
-                  <option value="month">Esse mês</option>
-                  <option value="year">Esse ano</option>
-                  <option value="other-years">Outros anos</option>
-                </select>
-              </div>
+                  <select
+                    id="ranking-period-select"
+                    value={period}
+                    onChange={(event) =>
+                      handlePeriodChange(event.target.value as RankingPeriod)
+                    }
+                  >
+                    <option value="now">Agora</option>
+                    <option value="today">Hoje</option>
+                    <option value="month">Esse mês</option>
+                    <option value="year">Esse ano</option>
+                  </select>
+                </div>
                 {/* <div className="btn-date">
                   <select
                     name="date"
@@ -332,24 +412,24 @@ export default function Dashboard() {
                 </div>
 
                 <div className="ranking-period">
-                <label htmlFor="ranking-period-select">
-                  Ver ranking por período:
-                </label>
+                  <label htmlFor="ranking-period-select">
+                    Ver dados por período:
+                  </label>
 
-                <select
-                  id="ranking-period-select"
-                  value={period}
-                  onChange={handlePeriodChange}
-                >
-                  <option value="now">Agora</option>
-                  <option value="today">Hoje</option>
-                  <option value="month">Esse mês</option>
-                  <option value="year">Esse ano</option>
-                  <option value="other-years">Outros anos</option>
-                </select>
-              </div>  
+                  <select
+                    id="ranking-period-select"
+                    value={period}
+                    onChange={(event) =>
+                      handlePeriodChange(event.target.value as RankingPeriod)
+                    }
+                  >
+                    <option value="now">Agora</option>
+                    <option value="today">Hoje</option>
+                    <option value="month">Esse mês</option>
+                    <option value="year">Esse ano</option>
+                  </select>
+                </div>
 
-                  
                 {/* <div className="btn-date">
                   <select
                     name="date"
@@ -579,9 +659,7 @@ export default function Dashboard() {
                 aria-labelledby="others-title"
               >
                 <h3 id="others-title">Outros serviços</h3>
-                <ul>
-                  {createServiceList()}
-                </ul>
+                <ul>{createServiceList()}</ul>
               </aside>
             </div>
           ) : (
@@ -589,7 +667,11 @@ export default function Dashboard() {
               O serviço está inativo.
               <br />
               Volte à tela principal e selecione outro serviço.
-              <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." />
+              <Toast
+                icon="error"
+                title="Erro"
+                message="Erro ao carregar métricas do serviço. O serviço pode estar inativo."
+              />
             </div>
           )}
         </div>
@@ -613,26 +695,28 @@ export default function Dashboard() {
         <ArrowIcon className="icon-up" />
       </button>
       {calendar.calendarOpen && (
-              <RankingCalendar
-                period={period}
-                selectedHour={calendar.selectedHour}
-                selectedDay={calendar.selectedDay}
-                selectedMonth={calendar.selectedMonth}
-                selectedYear={calendar.selectedYear}
-                viewMonth={calendar.viewMonth}
-                viewYear={calendar.viewYear}
-                currentYear={calendar.currentYear}
-                currentMonth={calendar.currentMonth}
-                currentDay={calendar.currentDay}
-                calendarDays={calendar.calendarDays}
-                onClose={calendar.closeCalendar}
-                onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
-                onConfirmDay={calendar.confirmDay}
-                onConfirmMonth={calendar.confirmMonth}
-                onConfirmYear={calendar.confirmYear}
-                onConfirmHour={calendar.confirmHour}
-              />
-            )}
+        <RankingCalendar
+          period={period}
+          selectedHour={calendar.selectedHour}
+          selectedDay={calendar.selectedDay}
+          selectedMonth={calendar.selectedMonth}
+          selectedYear={calendar.selectedYear}
+          viewMonth={calendar.viewMonth}
+          viewYear={calendar.viewYear}
+          currentYear={calendar.currentYear}
+          currentMonth={calendar.currentMonth}
+          currentDay={calendar.currentDay}
+          calendarDays={calendar.calendarDays}
+          onClose={calendar.closeCalendar}
+          onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+          onConfirmDay={calendar.confirmDay}
+          onConfirmMonth={calendar.confirmMonth}
+          onConfirmYear={calendar.confirmYear}
+          onConfirmHour={calendar.confirmHour}
+          handleFetch={fetchHistory}
+          handleCancel={updateMetrics}
+        />
+      )}
     </div>
   );
 }

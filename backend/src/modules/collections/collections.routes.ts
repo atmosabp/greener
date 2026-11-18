@@ -28,7 +28,7 @@ router.get("/all-service-data", getAllServicesDataController);
 
 // Tota para retornar histórico de um serviço
 // POST localhost:PORT/collections/service-history/:id
-router.post("/service-history", findServiceHistoryController);
+router.post("/service-history/:id", findServiceHistoryController);
 
 // Tota para retornar histórico de todos os serviços (ranking)
 // POST localhost:PORT/collections/all-service-history

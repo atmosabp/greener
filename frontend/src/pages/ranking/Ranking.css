@@ -503,10 +503,12 @@
 }
 
 .ranking-calendar-navigation {
-    display: grid;
+    display: flex;
     grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    width: 100%;
 }
 
 .ranking-calendar-navigation strong {
@@ -628,6 +630,12 @@
 
 .ranking-calendar-month-options {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ranking-calendar-hour-options:hover:disabled {
+    cursor: not-allowed;
+
+
 }
 
 .ranking-calendar-year-options {

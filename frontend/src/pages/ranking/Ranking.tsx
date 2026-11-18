@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, type ChangeEvent, useRef } from "react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -25,54 +25,84 @@ export default function Ranking() {
   const [metric, setMetric] = useState<RankingMetric>("energy");
   const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
+  const [historyMessage,setHistoryMessage] = useState("")
 
+  //variáveis como ref para se atualizar entre os Timeouts (pois estava dando erro)
+  const historyActivatedRef = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   var metricUsed: RankingMetric = "energy";
   const calendar = useRankingCalendar();
 
-  function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
-    const nextPeriod = event.target.value as RankingPeriod;
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
+    if(nextPeriod == "now"){
+      historyActivatedRef.current = false;
+      setHistoryMessage("")
+      
+    } else {
+      historyActivatedRef.current = true;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
 
     setPeriod(nextPeriod);
     calendar.openCalendar(nextPeriod);
   }
 
-  function handleUpdateIntervalChange(new_time: number) {
-    setUpdateInterval(new_time);
-    localStorage.setItem("refresh_interval", String(new_time));
+  function handleUpdateIntervalChange(newTime: number) {
+    setUpdateInterval(newTime);
+    localStorage.setItem("refresh_interval", String(newTime));
     window.location.reload();
   }
 
   async function handleRefresh() {
+    setHistoryMessage("")
+    setPeriod("now")
     setLastUpdate(new Date());
+    historyActivatedRef.current = false;
     await fetchServices();
   }
 
   async function fetchHistory(periodType:string, datePull:Date){
-    var formatedData: RankingService[] = [];
+    try{
+      var formatedData: RankingService[] = [];
 
-    const port: number = import.meta.env.VITE_PORT || 3000;
+      const port: number = import.meta.env.VITE_PORT || 3000;
 
-    const result = await fetch(
-      `http://localhost:${port}/collections/all-service-history`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+      const result = await fetch(
+        `http://localhost:${port}/collections/all-service-history`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+        }
+      );
+      const data = await result.json();
+      // console.log(datePull)
+      // console.log(data, "aaaaaaaa")
+      if(data.length > 0){
+        for (let service of data) {
+          formatedData.push({
+            id: service.id,
+            name: service.id,
+            energy: service.kwh,
+            co2e: service.co2e,
+          });
+        }
+        setLastUpdate(datePull);
+        setHistoryMessage("Você está vendo dados do passado ")
+
+        sortRanking(formatedData)
+      }else{
+        handleRefresh()
+        setHistoryMessage("Período escolhido não possui dados ")
       }
-    );
-    const data = await result.json();
-
-    for (let service of data) {
-      formatedData.push({
-        id: service.id,
-        name: service.name,
-        energy: service.metrics.kwh,
-        co2e: service.metrics.co2e,
-      });
+    }catch(e:any){
+      console.log("AAAAAAAAAAAAAAAAA")
+      console.log(e.message)
     }
-    setLastUpdate(new Date());
-
-    sortRanking(formatedData)
+    
   }
 
   async function fetchServices() {
@@ -90,7 +120,7 @@ export default function Ranking() {
     for (let service of data) {
       formatedData.push({
         id: service.id,
-        name: service.name,
+        name: service.id,
         energy: service.metrics.kwh,
         co2e: service.metrics.co2e,
       });
@@ -99,11 +129,11 @@ export default function Ranking() {
     setLastUpdate(new Date());
 
     sortRanking(formatedData);
-    // setInitialServices(
-    //   formatedData.sort((a, b) =>
-    //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
-    //   ),
-    // );
+
+    //caso o histórico não esteja ativado, chama outro timer
+    if (!historyActivatedRef.current) {
+      timerRef.current = setTimeout(fetchServices, updateInterval * 1000);
+    }
   }
 
   async function handleParamChange(param: RankingMetric) {
@@ -117,6 +147,7 @@ export default function Ranking() {
   }
 
   function sortRanking(data: RankingService[]) {
+    console.log(data)
     var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
     let dataHolder = data.sort((a, b) => {
       if (metricUsed === "energy") {
@@ -154,16 +185,12 @@ export default function Ranking() {
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   useEffect(() => {
-    fetchServices();
-    const fetchTimer = setInterval(
-      fetchServices,
-      (localStorage.getItem("refresh_interval")
-        ? Number(localStorage.getItem("refresh_interval"))
-        : updateInterval) * 1000,
-    );
+    if (!historyActivatedRef.current) {
+      fetchServices();
+    }
+  }, [historyActivatedRef.current]);
 
-    return () => clearInterval(fetchTimer);
-  }, []);
+
 
   return (
     <div className="ranking-page">
@@ -187,13 +214,12 @@ export default function Ranking() {
                 <select
                   id="ranking-period-select"
                   value={period}
-                  onChange={handlePeriodChange}
+                  onChange={(event) => handlePeriodChange(event.target.value as RankingPeriod)}
                 >
                   <option value="now">Agora</option>
                   <option value="today">Hoje</option>
                   <option value="month">Esse mês</option>
                   <option value="year">Esse ano</option>
-                  <option value="other-years">Outros anos</option>
                 </select>
               </div>
 
@@ -257,7 +283,10 @@ export default function Ranking() {
 
             <div className="ranking-toolbar-info">
               <span className="ranking-last-update">
-                Última atualização: {formattedLastUpdate}
+                <strong>{historyMessage}</strong>&nbsp; &nbsp;   
+                {historyActivatedRef.current ? 
+                <></>:
+                <>Última atualização: {formattedLastUpdate}</>}
               </span>
 
               <button
@@ -376,6 +405,7 @@ export default function Ranking() {
           onConfirmYear={calendar.confirmYear}
           onConfirmHour={calendar.confirmHour}
           handleFetch={fetchHistory}
+          handleCancel={handleRefresh}
         />
       )}
     </div>

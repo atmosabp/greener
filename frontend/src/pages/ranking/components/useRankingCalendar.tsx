@@ -72,6 +72,7 @@ export default function useRankingCalendar() {
   }
 // acho que eu vou fazer essa funcao receber uma funcão que vai vir da pagina e vai fazer as mudanças dentro do conteudo dela
   function confirmDay(day: number) {
+    
     setSelectedDay(day);
     setSelectedMonth(viewMonth);
     setSelectedYear(viewYear);
