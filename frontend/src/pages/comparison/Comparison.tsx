@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 
 import AppHeader from '../../components/header/AppHeader';
@@ -8,14 +7,11 @@ import {
   calculateMax,
   fetchServices,
   formatMetric,
-  formatNumber,
-  PERIODS,
+  formatNumber
 } from './components/comparisonData';
 
 import type {
-  Service,
-  CompareTarget,
-  Metrics,
+  CompareTarget
 } from './components/comparisonData';
 
 import {
@@ -24,7 +20,6 @@ import {
   greeting,
   HelpIcon,
   Popover,
-  SelectPill,
   StarIcon,
 } from './components/ComparisonComponents';
 
@@ -37,6 +32,7 @@ import Loading from '../../components/loading/Loading';
 import type { RankingPeriod, RankingService } from '../ranking/components/rankingData';
 import useRankingCalendar from '../ranking/components/useRankingCalendar';
 import RankingCalendar from '../ranking/components/rankingCalendar';
+import type { MetricsType, ServiceType } from '../../types/service';
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -53,7 +49,7 @@ export default function Comparison() {
     }
   });
 
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [historyMessage, setHistoryMessage] = useState("");
@@ -154,12 +150,12 @@ export default function Comparison() {
   const visible = order
     .filter((id) => selected.has(id))
     .map((id) => services.find((service) => service.id === id))
-    .filter((service): service is Service => service !== undefined);
+    .filter((service): service is ServiceType => service !== undefined);
 
   /* Médias dos serviços selecionados e escala dos medidores. */
   const averages = calculateAverages(visible);
-  const maxConsumo = calculateMax(visible, 'consumo');
-  const maxEmissao = calculateMax(visible, 'emissao');
+  const maxConsumo = calculateMax(visible, 'kwh');
+  const maxEmissao = calculateMax(visible, 'co2e');
 
   const gaugeFill = (value?: number, max?: number) =>
     value === undefined || !max ? '0' : String((value / max) * 100);
@@ -169,7 +165,7 @@ export default function Comparison() {
   );
 
   /* Base de comparação de cada cartão: referência ou média. */
-  const baseMetricsFor = (service: Service): Metrics | undefined => {
+  const baseMetricsFor = (service: ServiceType): MetricsType | undefined => {
     if (service.id === referenceId) return undefined;
 
     const target = compareMap[service.id] ?? 'reference';
@@ -182,11 +178,16 @@ export default function Comparison() {
   };
 
   /* Selecionar ou desmarcar serviços. */
-  const toggleSelected = (id: string) => {
+  const MIN_SERVICES = 2;
+
+    const toggleSelected = (id: string) => {
     setSelected((previous) => {
       const next = new Set(previous);
 
       if (next.has(id)) {
+        // não deixa ficar com menos de MIN_SERVICES
+        if (previous.size <= MIN_SERVICES) return previous;
+
         next.delete(id);
       } else {
         next.add(id);
@@ -238,7 +239,7 @@ export default function Comparison() {
             </h1>
 
             <p className="cmp-intro__sub">
-              Comparação de serviços
+              Selecione dois ou mais serviços para comparar suas métricas.
             </p>
 
             <Popover
@@ -333,14 +334,14 @@ export default function Comparison() {
               <div className="cmp-avg-tile">
                 <span>Rede</span>
                 <strong>
-                  {formatMetric('rede', averages.rede)}
+                  {formatMetric('network_gb', averages.network_gb)}
                 </strong>
               </div>
 
               <div className="cmp-avg-tile">
                 <span>CPU</span>
                 <strong>
-                  {formatMetric('cpu', averages.cpu)}
+                  {formatMetric('cpu_percent', averages.cpu_percent)}
                 </strong>
               </div>
 
@@ -348,8 +349,8 @@ export default function Comparison() {
                 <span>Armazenamento</span>
                 <strong>
                   {formatMetric(
-                    'armazenamento',
-                    averages.armazenamento,
+                    'disk_gb',
+                    averages.disk_gb,
                   )}
                 </strong>
               </div>
@@ -357,24 +358,24 @@ export default function Comparison() {
               <div className="cmp-avg-tile">
                 <span>Memória</span>
                 <strong>
-                  {formatMetric('memoria', averages.memoria)}
+                  {formatMetric('memory_gb', averages.memory_gb)}
                 </strong>
               </div>
             </div>
 
             <Gauge
               title="Consumo energético"
-              value={formatMetric('consumo', averages.consumo)}
+              value={formatMetric('kwh', averages.kwh)}
               unit=""
-              fill={gaugeFill(averages.consumo, maxConsumo)}
+              fill={gaugeFill(averages.kwh, maxConsumo)}
               max={formatNumber(maxConsumo)}
             />
 
             <Gauge
               title="Emissão de CO₂e"
-              value={formatMetric('emissao', averages.emissao)}
+              value={formatMetric('co2e', averages.co2e)}
               unit=""
-              fill={gaugeFill(averages.emissao, maxEmissao)}
+              fill={gaugeFill(averages.co2e, maxEmissao)}
               max={formatNumber(maxEmissao)}
             />
           </div>
@@ -448,6 +449,8 @@ export default function Comparison() {
               </p>
             )}
 
+            {/* Aqui é gerado o card de cada serviço */}
+
             {visible.map((service, index) => (
               <ServiceCard
                 key={service.id}
@@ -510,4 +513,4 @@ export default function Comparison() {
       </footer>
     </div>
   );
-}
+};

@@ -12,14 +12,20 @@
 [data-theme="light"] {
 
   /* Base */
-  --background: #F9EEDC;                       /* cor do fundo */
-  --background-transparent: #38322e40;         /* scrim / overlay */
-  --complementary: #ECDEC7;                    /* superfície: cards, inputs.. */
+  --background: #F9EEDC;
+  /* cor do fundo */
+  --background-transparent: #38322e40;
+  /* scrim / overlay */
+  --complementary: #ECDEC7;
+  /* superfície: cards, inputs.. */
 
   /* Texto */
-  --text: #38322E;                             /* cor do texto */
-  --text-muted: #877a71;                        /* texto placeholder  */
-  --text-inverse: #F9EEDC;                     /* texto sobre fundo escuro */
+  --text: #38322E;
+  /* cor do texto */
+  --text-muted: #877a71;
+  /* texto placeholder  */
+  --text-inverse: #F9EEDC;
+  /* texto sobre fundo escuro */
 
   /* Secundária */
   --secondary: #AB876E;
@@ -31,13 +37,18 @@
   --banner-shadow: rgba(56, 50, 46, 0.15);
 
   /* Status */
-  --error: #AA4F3E;                            /* Cor para erros: toast, warnings.. */
-  --success: #73915F;                          /* Cor para sucesso: toast, warnings.. */
-  --warning: #e3d26f;                          /* Cor para avisos: warnings.. */
+  --error: #AA4F3E;
+  /* Cor para erros: toast, warnings.. */
+  --success: #73915F;
+  /* Cor para sucesso: toast, warnings.. */
+  --warning: #e3d26f;
+  /* Cor para avisos: warnings.. */
 
   /* Amostras do seletor de paleta */
-  --theme-primary: #99C47C;                    /* verde */
-  --theme-secondary: #7CA2C4;                  /* azul */
+  --theme-primary: #99C47C;
+  /* verde */
+  --theme-secondary: #7CA2C4;
+  /* azul */
 }
 
 
@@ -48,7 +59,8 @@
 
   /* Texto */
   --text: #F9EEDC;
-  --text-muted: #aea49c;                        /* texto placeholder  */
+  --text-muted: #aea49c;
+  /* texto placeholder  */
   --text-inverse: #1A1F1C;
 
   /* Secundária */
@@ -61,13 +73,18 @@
   --banner-shadow: rgba(0, 0, 0, 0.3);
 
   /* Status */
-  --error: #E05252;                            /* Cor para erros: toast, warnings.. */
-  --success: #6BAA75;                          /* Cor para sucesso: toast, warnings.. */
-  --warning: #ead76c;                          /* Cor para avisos: warnings.. */
+  --error: #E05252;
+  /* Cor para erros: toast, warnings.. */
+  --success: #6BAA75;
+  /* Cor para sucesso: toast, warnings.. */
+  --warning: #ead76c;
+  /* Cor para avisos: warnings.. */
 
   /* Amostras do seletor de paleta */
-  --theme-primary: #669546;                    /* verde */
-  --theme-secondary: #4A7092;                  /* azul */
+  --theme-primary: #669546;
+  /* verde */
+  --theme-secondary: #4A7092;
+  /* azul */
 }
 
 
@@ -87,6 +104,8 @@
   --primary-darker: #547757;
   --on-primary: #38322E;
   --focus-ring: #547757;
+
+  --link-icon-color: #1d833d;
 }
 
 /* Claro + azul */
@@ -97,6 +116,8 @@
   --primary-darker: #355068;
   --on-primary: #38322E;
   --focus-ring: #355068;
+
+  --link-icon-color: #1d6e83;
 }
 
 /* Escuro + verde (fallback do dark sem data-palette) */
@@ -106,13 +127,14 @@
   --background-transparent: rgba(26, 31, 28, 0.5);
   --complementary: #1F2521;
 
-
   --primary: #6F8E5A;
   --primary-light: #8BB078;
   --primary-dark: #506B42;
   --primary-darker: #425535;
   --on-primary: #1A1F1C;
   --focus-ring: #8BB078;
+
+  --link-icon-color: #7fd190;
 }
 
 /* Escuro + azul */
@@ -121,13 +143,14 @@
   --background-transparent: rgba(38, 46, 48, 0.5);
   --complementary: #1D2223;
 
-
   --primary: #506F8A;
   --primary-light: #6A8FAF;
   --primary-dark: #3F5A72;
   --primary-darker: #2E4152;
   --on-primary: #F9EEDC;
   --focus-ring: #6A8FAF;
+
+  --link-icon-color: #76c1bc;
 }
 
 
@@ -136,7 +159,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 html {
@@ -152,6 +174,7 @@ body {
   background-color: var(--background);
   scroll-behavior: smooth;
 }
+
 
 #root {
   width: 100%;
@@ -174,4 +197,24 @@ body {
 *:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+body,
+div,
+button,
+a,
+p,
+h1,
+h2,
+span,
+main,
+section,
+aside,
+input {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    text-shadow 0.3s ease;
 }

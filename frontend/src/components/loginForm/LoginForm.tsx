@@ -6,8 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Toast from "../toast/Toast";
 
 import "./LoginForm.css";
-
-const port = import.meta.env.VITE_PORT;
+import { port } from "../../utils/connection";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -93,12 +92,17 @@ export default function LoginForm() {
         throw new Error("INVALID_RESPONSE");
       }
 
-      sessionStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      navigate("/home");
-
-      navigate("/home");
+      if(data?.token && data?.user && data?.user.isAdm){
+        sessionStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+  
+        navigate("/admin");
+      }else{
+         sessionStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+  
+        navigate("/home");
+      }
     } catch (error: any) {
       console.error("Erro ao realizar login:", error);
       setApiError(error.message);

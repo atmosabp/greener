@@ -527,6 +527,7 @@ ul{
 .dashboard-page footer {
     text-align: center;
     padding: 15px;
+    margin-top: auto;
 }
 
 .dashboard-page footer span {

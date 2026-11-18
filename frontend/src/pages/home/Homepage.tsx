@@ -5,33 +5,8 @@ import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
 import Loading from "../../components/loading/Loading";
-
-export type ServiceStatus = "active" | "incomplete" | "inactive";
-
-export interface Service {
-  id: string;
-  name: string;
-  location:
-    | {
-        city?: string;
-        country?: string;
-        latitude?: number | undefined;
-        longitude?: number | undefined;
-        region?: string;
-        region_code?: string;
-      }
-    | undefined;
-  metrics_path?: string;
-  metrics?: {
-    cpu_percent?: number;
-    memory_gb?: number;
-    disk_gb?: number;
-    network_gb?: number;
-    co2e?: number | undefined;
-    kwh?: number | undefined;
-  };
-  status: ServiceStatus;
-}
+import { port } from "../../utils/connection";
+import type { ServiceStatus, ServiceType } from "../../types/service";
 
 interface HomepageProps {
   lastUpdated?: string;
@@ -51,13 +26,13 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
 
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<ServiceType[]>([]);
 
   async function updateServices() {
     const result = await fetch(
-      `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
+      `http://localhost:${port}/collections/all-service-data`,
     );
-    const data: Service[] = await result.json();
+    const data: ServiceType[] = await result.json();
     setTimeUpdated(new Date().toLocaleString());
     setServices(data);
   }

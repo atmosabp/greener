@@ -1,4 +1,5 @@
-import { useState, useEffect, type ChangeEvent, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { ExternalLink } from "lucide-react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -16,10 +17,26 @@ import {
 
 import "./Ranking.css";
 import Loading from "../../components/loading/Loading";
+import { port } from "../../utils/connection";
+import { Link } from "react-router-dom";
+import type { ServiceType } from "../../types/service";
+import { greeting } from "../comparison/components/ComparisonComponents";
 
 
 
 export default function Ranking() {
+
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
@@ -88,6 +105,7 @@ export default function Ranking() {
             name: service.id,
             energy: service.kwh,
             co2e: service.co2e,
+            status: service.status
           });
         }
         setLastUpdate(datePull);
@@ -110,19 +128,24 @@ export default function Ranking() {
 
     var formatedData: RankingService[] = [];
 
-    const port: number = import.meta.env.VITE_PORT || 3000;
-
     const result = await fetch(
       `http://localhost:${port}/collections/all-service-data`,
     );
-    const data = await result.json();
+    const data: ServiceType[] = await result.json();
 
     for (let service of data) {
       formatedData.push({
         id: service.id,
-        name: service.id,
-        energy: service.metrics.kwh,
-        co2e: service.metrics.co2e,
+        name: service.name,
+        energy:
+          service.metrics && service.metrics.kwh
+            ? service.metrics.kwh
+            : undefined,
+        co2e:
+          service.metrics && service.metrics.co2e
+            ? service.metrics.co2e
+            : undefined,
+        status: service.status,
       });
     }
 
@@ -142,10 +165,6 @@ export default function Ranking() {
     sortRanking(initialServices);
   }
 
-  function timeout(delay: number) {
-    return new Promise((res) => setTimeout(res, delay));
-  }
-
   function sortRanking(data: RankingService[]) {
     console.log(data)
     var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
@@ -154,17 +173,17 @@ export default function Ranking() {
         const xKey = key(a.energy),
           yKey = key(b.energy);
         if (typeof xKey === "undefined") {
-          return typeof yKey === "undefined" ? 0 : 1;
+          return typeof yKey === "string" ? 0 : 1;
         } else {
-          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+          return typeof yKey === "string" ? -1 : yKey! - xKey!;
         }
       } else {
         const xKey = key(a.co2e),
           yKey = key(b.co2e);
         if (typeof xKey === "undefined") {
-          return typeof yKey === "undefined" ? 0 : 1;
+          return typeof yKey === "string" ? 0 : 1;
         } else {
-          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+          return typeof yKey === "string" ? -1 : yKey! - xKey!;
         }
       }
     });
@@ -175,9 +194,8 @@ export default function Ranking() {
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
     today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
-    month: `${calendar.selectedDay} de ${
-      monthNames[calendar.selectedMonth]
-    } de ${calendar.selectedYear}`,
+    month: `${calendar.selectedDay} de ${monthNames[calendar.selectedMonth]
+      } de ${calendar.selectedYear}`,
     year: `${monthNames[calendar.selectedMonth]} de ${calendar.selectedYear}`,
     "other-years": String(calendar.selectedYear),
   };
@@ -201,7 +219,9 @@ export default function Ranking() {
         <div className="ranking-intro-box">
           <section className="ranking-intro">
             <div className="ranking-heading">
-              <h1>Ranking</h1>
+              <h1>
+                {greeting()}, {userName}.
+              </h1>
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
@@ -340,34 +360,60 @@ export default function Ranking() {
               <tbody>
                 {initialServices
                   ? initialServices.map((service, index) => (
-                      <tr key={service.id}>
-                        <td>
-                          <span
-                            className={
-                              index < 3
-                                ? `ranking-position ranking-position--${index + 1}`
-                                : "ranking-position"
-                            }
+                    <tr key={service.id}>
+                      <td>
+                        <span
+                          className={
+                            index < 3
+                              ? `ranking-position ranking-position--${index + 1}`
+                              : "ranking-position"
+                          }
+                        >
+                          #{index + 1}
+                        </span>
+                      </td>
+
+                      <td className="ranking-service-name">
+                        {service.status == "active" ? (
+                          <Link
+                            className="service-link-text"
+                            to={`/dashboard/${service.id}`}
                           >
-                            #{index + 1}
-                          </span>
-                        </td>
+                            {service.name}
+                            <ExternalLink className="redirect-link-icon" />
+                          </Link>
+                        ) : (
+                          <>{service.name}</>
+                        )}
+                      </td>
 
-                        <td className="ranking-service-name">{service.name}</td>
+                      <td>
+                        {service.energy ? (
+                          <>
+                            {numberFormatter.format(service.energy) != "NaN"
+                              ? numberFormatter.format(service.energy) +
+                              " kWh"
+                              : "Indisponível"}{" "}
+                          </>
+                        ) : (
+                          "Indisponível"
+                        )}
+                      </td>
 
-                        <td>
-                          {numberFormatter.format(service.energy) != "NaN"
-                            ? numberFormatter.format(service.energy) + " kWh"
-                            : "Indisponível"}{" "}
-                        </td>
-
-                        <td>
-                          {numberFormatter.format(service.co2e) != "NaN"
-                            ? numberFormatter.format(service.co2e) + " kg CO₂e"
-                            : "Indisponível"}{" "}
-                        </td>
-                      </tr>
-                    ))
+                      <td>
+                        {service.co2e ? (
+                          <>
+                            {numberFormatter.format(service.co2e) != "NaN"
+                              ? numberFormatter.format(service.co2e) +
+                              " kg CO₂e"
+                              : "Indisponível"}{" "}
+                          </>
+                        ) : (
+                          "Indisponível"
+                        )}
+                      </td>
+                    </tr>
+                  ))
                   : "não foi possível pegar os serviços"}
               </tbody>
             </table>
