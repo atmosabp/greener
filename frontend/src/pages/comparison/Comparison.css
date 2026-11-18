@@ -367,7 +367,7 @@
     transform: translateX(-50%);
     border-radius: 0 0 1.125rem 1.125rem;
     background: var(--moss);
-    color: var(--bg);
+    color: var(--on-primary-dark);
     font-size: 1.5625rem;
     font-weight: 500;
     text-align: center;
@@ -556,7 +556,7 @@
     border: 0;
     border-radius: 1.125rem;
     background: var(--moss);
-    color: var(--bg);
+    color: var(--on-primary-dark);
     font: inherit;
     text-align: center;
 }
@@ -715,7 +715,7 @@
     padding: 0.625rem;
     border-radius: 0.9375rem;
     background: var(--moss);
-    color: var(--bg);
+    color: var(--on-primary-dark);
 }
 
 .cmp-energy__label {
@@ -752,7 +752,7 @@
     padding: 0.4375rem;
     border-radius: 0.875rem;
     background: var(--lime);
-    color: var(--ink);
+    color: var(--on-primary-light);
 }
 
 .cmp-tile__label {
@@ -850,6 +850,7 @@
 .cmp-carbon__dot--mid {
     left: 51%;
     background: var(--lime);
+    color: var(--on-primary-light);
 }
 
 .cmp-carbon__dot--high {

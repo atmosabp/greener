@@ -178,14 +178,9 @@ body {
 }
 
 
-[data-theme="light"] ::selection {
+::selection {
   background-color: var(--primary-dark);
-  color: var(--background);
-}
-
-[data-theme="dark"] ::selection {
-  background-color: var(--primary-dark);
-  color: var(--text);
+  color: var(--on-primary-dark);
 }
 
 *:focus-visible {
@@ -211,4 +206,38 @@ input {
     border-color 0.3s ease,
     box-shadow 0.3s ease,
     text-shadow 0.3s ease;
+}
+
+/*
+  =-=-=-=-=-=
+  3) CONTRASTE AUTOMÁTICO
+  =-=-=-=-=-=
+  O ThemeToggle calcula --on-primary, --on-primary-light, --on-primary-dark e --on-primary-darker
+  (texto claro ou escuro, conforme a cor de fundo). Os valores abaixo são só fallback.
+*/
+:root {
+  --on-primary-light: #38322E;
+  --on-primary-dark: #F9EEDC;
+  --on-primary-darker: #F9EEDC;
+}
+
+/* Utilitários: fundo + texto sempre em par */
+.bg-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.bg-primary-light {
+  background-color: var(--primary-light);
+  color: var(--on-primary-light);
+}
+
+.bg-primary-dark {
+  background-color: var(--primary-dark);
+  color: var(--on-primary-dark);
+}
+
+.bg-primary-darker {
+  background-color: var(--primary-darker);
+  color: var(--on-primary-darker);
 }

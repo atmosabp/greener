@@ -1,4 +1,3 @@
-
 /* =========================================
    RANKING — ESTRUTURA PRINCIPAL
 ========================================= */
@@ -7,11 +6,9 @@
     --ranking-border: var(--primary-light);
     --ranking-row-alt: var(--background);
     --ranking-row-main: var(--complementary);
-    --ranking-muted: color-mix(
-        in srgb,
-        var(--text) 55%,
-        var(--background)
-    );
+    --ranking-muted: color-mix(in srgb,
+            var(--text) 55%,
+            var(--background));
 
     min-height: 100vh;
     min-height: 100dvh;
@@ -101,11 +98,11 @@
     padding: 0.5rem 1.1rem;
     border-radius: 1.15rem;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
 }
 
 .ranking-period label,
-.ranking-classification > span {
+.ranking-classification>span {
     display: block;
     text-align: center;
     font-size: 1rem;
@@ -126,19 +123,19 @@
     outline: none;
     border-radius: 999px;
     background-color: var(--primary-dark);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+    background-image:
+        linear-gradient(45deg, transparent 50%, currentColor 50%),
+        linear-gradient(135deg, currentColor 50%, transparent 50%);
     background-repeat: no-repeat;
-    background-position: right 0.85rem center;
-    background-size: 0.95rem;
-    color: var(--background);
+    background-position:
+        calc(100% - 1.3rem) 50%,
+        calc(100% - 0.95rem) 50%;
+    background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+    color: var(--on-primary-dark);
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-}
-
-[data-theme="dark"] .ranking-page select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 
 .ranking-page select option {
@@ -164,12 +161,7 @@
 .ranking-period .ranking-year-select {
     border: 0.08rem solid var(--primary-dark);
     background-color: var(--background);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
     color: var(--text);
-}
-
-[data-theme="dark"] .ranking-period .ranking-year-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 
 
@@ -193,7 +185,7 @@
     border: 0.1rem solid transparent;
     border-radius: 0.9rem;
     background-color: var(--primary-dark);
-    color: var(--background);
+    color: var(--on-primary-dark);
     font: inherit;
     font-size: 0.9rem;
     font-weight: 600;
@@ -211,10 +203,9 @@
 }
 
 .ranking-metric-button.is-active {
-    background-color:var(--primary-darker);
-    border-color: #ECDEC7;
-    color: #ECDEC7;
-
+    background-color: var(--primary-darker);
+    border-color: var(--on-primary-darker);
+    color: var(--on-primary-darker);
 }
 
 
@@ -238,7 +229,7 @@
     padding-left: 1rem;
     border-radius: 999px;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     font-size: 1rem;
     font-weight: 500;
     white-space: nowrap;
@@ -273,7 +264,7 @@
     border: 0;
     border-radius: 50%;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -351,7 +342,7 @@
     height: 2rem;
     padding: 0.45rem 0.6rem;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     font-size: 1.3rem;
     font-weight: 600;
     line-height: 1.2;
@@ -381,7 +372,7 @@
     overflow-wrap: anywhere;
 }
 
-.ranking-table td + td {
+.ranking-table td+td {
     border-left: 0.1rem solid var(--ranking-border);
 }
 
@@ -455,14 +446,12 @@
     gap: 1rem;
     padding: 2rem;
     overflow-y: auto;
-    border: 1px solid color-mix(
-        in srgb,
-        var(--text) 8%,
-        transparent
-    );
+    border: 1px solid color-mix(in srgb,
+            var(--text) 8%,
+            transparent);
     border-radius: 1.8rem;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 25%);
     animation: ranking-calendar-appear 0.16s ease-out;
 }
@@ -479,18 +468,16 @@
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: var(--text);
+    color: var(--on-primary-light);
     font-size: 1.8rem;
     line-height: 1;
     cursor: pointer;
 }
 
 .ranking-calendar-close:hover {
-    background-color: color-mix(
-        in srgb,
-        var(--text) 10%,
-        transparent
-    );
+    background-color: color-mix(in srgb,
+            var(--text) 10%,
+            transparent);
 }
 
 .ranking-calendar-modal h2 {
@@ -550,7 +537,7 @@
     align-items: center;
 }
 
-.ranking-calendar-days > span:not(.ranking-calendar-empty) {
+.ranking-calendar-days>span:not(.ranking-calendar-empty) {
     display: grid;
     place-items: center;
     min-height: 1.8rem;
@@ -559,7 +546,7 @@
     font-weight: 600;
 }
 
-.ranking-calendar-days > button {
+.ranking-calendar-days>button {
     aspect-ratio: 1;
     min-width: 0;
     display: grid;
@@ -568,7 +555,7 @@
     border: 0;
     border-radius: 50%;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     font: inherit;
     font-size: 0.9rem;
     cursor: pointer;
@@ -577,19 +564,19 @@
         color 0.15s ease;
 }
 
-.ranking-calendar-days > button:hover:not(:disabled) {
+.ranking-calendar-days>button:hover:not(:disabled) {
     filter: brightness(0.94);
 }
 
-.ranking-calendar-days > button:disabled {
+.ranking-calendar-days>button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.ranking-calendar-days > button.is-selected,
-.ranking-calendar-options > button.is-selected {
+.ranking-calendar-days>button.is-selected,
+.ranking-calendar-options>button.is-selected {
     background-color: var(--primary-dark);
-    color: var(--background);
+    color: var(--on-primary-dark);
     font-weight: 700;
 }
 
@@ -602,14 +589,14 @@
     gap: 0.55rem;
 }
 
-.ranking-calendar-options > button {
+.ranking-calendar-options>button {
     min-width: 0;
     min-height: 2.5rem;
     padding: 0.55rem 0.65rem;
     border: 1px solid transparent;
     border-radius: 999px;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     font: inherit;
     font-size: 0.9rem;
     cursor: pointer;
@@ -618,7 +605,7 @@
         color 0.15s ease;
 }
 
-.ranking-calendar-options > button:hover {
+.ranking-calendar-options>button:hover {
     filter: brightness(0.94);
 }
 
@@ -644,7 +631,7 @@
     border: 0;
     border-radius: 999px;
     background-color: var(--primary-dark);
-    color: var(--background);
+    color: var(--on-primary-dark);
     font: inherit;
     font-size: 0.9rem;
     font-weight: 600;
@@ -677,7 +664,7 @@
     flex-shrink: 0;
     margin-top: auto;
     padding: 0.8rem 1rem 0.9rem;
-    color: #b28b72;
+    color: var(--text-muted);
     font-size: 0.8rem;
     text-align: center;
 }
@@ -798,7 +785,7 @@
     }
 
     .ranking-period label,
-    .ranking-classification > span {
+    .ranking-classification>span {
         font-size: 0.9rem;
     }
 
@@ -911,7 +898,7 @@
         gap: 0.25rem;
     }
 
-    .ranking-calendar-days > button {
+    .ranking-calendar-days>button {
         font-size: 0.8rem;
     }
 
@@ -924,7 +911,7 @@
         gap: 0.4rem;
     }
 
-    .ranking-calendar-options > button {
+    .ranking-calendar-options>button {
         min-height: 2.3rem;
         padding: 0.45rem 0.3rem;
         font-size: 0.8rem;
@@ -941,13 +928,3 @@
 /* =========================================
    ACESSIBILIDADE
 ========================================= */
-
-@media (prefers-reduced-motion: reduce) {
-    .ranking-page *,
-    .ranking-page *::before,
-    .ranking-page *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-    }
-}
