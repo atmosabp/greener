@@ -1,41 +1,21 @@
+import type { ServiceType } from "../../../types/service";
+import { port } from "../../../utils/connection";
+
 export type MetricKey =
-    | 'consumo'
-    | 'emissao'
-    | 'rede'
-    | 'cpu'
-    | 'armazenamento'
-    | 'memoria'
-    | 'intensidade';
+    | 'cpu_percent'
+    | 'memory_gb'
+    | 'disk_gb'
+    | 'network_gb'
+    | 'co2e'
+    | 'kwh'
+    | 'carbon_intensity';
 
 /* Valores numéricos; ausentes quando o backend não conseguiu coletar. */
 export type Metrics = Partial<Record<MetricKey, number>>;
 
-export interface Service {
-    id: string;
-    name: string;
-    metrics: Metrics;
-}
-
 export type CompareTarget = 'reference' | 'average';
 
-/* Formato retornado pela rota /collections/all-service-data. */
-interface ApiService {
-    id: string;
-    name: string;
-    metrics?: {
-        cpu_percent?: number;
-        memory_gb?: number;
-        disk_gb?: number;
-        network_gb?: number;
-        co2e?: number;
-        kwh?: number;
-        carbon_intensity?: number;
-    };
-}
-
-const port: number = import.meta.env.VITE_PORT || 3000;
-
-function toService(apiService: ApiService): Service {
+function toService(apiService: ServiceType): ServiceType {
     const metrics = apiService.metrics ?? {};
 
     /* Usa a intensidade enviada pelo backend ou calcula pelo CO₂e / kWh. */
@@ -49,37 +29,38 @@ function toService(apiService: ApiService): Service {
         id: apiService.id,
         name: apiService.name,
         metrics: {
-            consumo: metrics.kwh,
-            emissao: metrics.co2e,
-            rede: metrics.network_gb,
-            cpu: metrics.cpu_percent,
-            armazenamento: metrics.disk_gb,
-            memoria: metrics.memory_gb,
-            intensidade,
+            kwh: Number(metrics.kwh),
+            co2e: Number(metrics.co2e),
+            network_gb: Number(metrics.network_gb),
+            cpu_percent: Number(metrics.cpu_percent),
+            disk_gb: Number(metrics.disk_gb),
+            memory_gb: Number(metrics.memory_gb),
+            carbon_intensity: intensidade
         },
+        status: "active"
     };
 }
 
-export async function fetchServices(): Promise<Service[]> {
+export async function fetchServices(): Promise<ServiceType[]> {
     const result = await fetch(`http://localhost:${port}/collections/all-service-data`);
 
     if (!result.ok) {
         throw new Error('Não foi possível buscar os dados dos serviços.');
     }
 
-    const data: ApiService[] = await result.json();
+    const data: ServiceType[] = await result.json();
 
     return (data ?? []).map(toService);
 }
 
 const UNITS: Record<MetricKey, string> = {
-    consumo: ' kWh',
-    emissao: ' g CO₂e',
-    rede: 'GB',
-    cpu: '%',
-    armazenamento: 'GB',
-    memoria: 'GB',
-    intensidade: '',
+    kwh: ' kWh',
+    co2e: ' g CO₂e',
+    network_gb: 'GB',
+    cpu_percent: '%',
+    disk_gb: 'GB',
+    memory_gb: 'GB',
+    carbon_intensity: '',
 };
 
 export function formatNumber(value: number) {
@@ -100,22 +81,23 @@ export function formatMetric(key: MetricKey, value?: number) {
 }
 
 const METRIC_KEYS: MetricKey[] = [
-    'consumo',
-    'emissao',
-    'rede',
-    'cpu',
-    'armazenamento',
-    'memoria',
-    'intensidade',
+    'cpu_percent',
+    'kwh',
+    'co2e',
+    'carbon_intensity',
+    'disk_gb',
+    'memory_gb',
+    'network_gb'
 ];
 
 /* Média de cada métrica, ignorando serviços sem o valor. */
-export function calculateAverages(services: Service[]): Metrics {
+export function calculateAverages(services: ServiceType[]): Metrics {
     const averages: Metrics = {};
 
     for (const key of METRIC_KEYS) {
-        const values = services
-            .map((service) => service.metrics[key])
+        let values;
+        values = services
+            .map((service) => service.metrics && service.metrics[key])
             .filter((value): value is number => value !== undefined);
 
         if (values.length > 0) {
@@ -128,9 +110,9 @@ export function calculateAverages(services: Service[]): Metrics {
 }
 
 /* Maior valor de uma métrica entre os serviços (escala dos medidores). */
-export function calculateMax(services: Service[], key: MetricKey) {
+export function calculateMax(services: ServiceType[], key: MetricKey) {
     return services.reduce(
-        (max, service) => Math.max(max, service.metrics[key] ?? 0),
+        (max, service) => Math.max(max, ((service.metrics ? service.metrics[key] : undefined) ?? 0)),
         0,
     );
 }

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import type { Service } from "./Homepage";
+import type { ServiceType } from "../../types/service";
 
-const mapStatusColors: Record<Service["status"], string> = {
+const mapStatusColors: Record<ServiceType["status"], string> = {
   active: "#91bd79",
   incomplete: "#e0d344",
   inactive: "#df7779",
@@ -9,7 +9,7 @@ const mapStatusColors: Record<Service["status"], string> = {
 
 interface ServiceCardProps {
   viewType?: string;
-  selectedServicePoint: Service;
+  selectedServicePoint: ServiceType;
   onSelectService: (id: string | null) => void;
 }
 

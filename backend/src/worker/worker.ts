@@ -45,7 +45,6 @@ async function fetchMetricsAddHistory(serviceId: string) {
         body: JSON.stringify({ serviceId: serviceId }),
       },
     );
-    console.log(result)
   } catch (e: any) {
     console.error(e.message);
   }
