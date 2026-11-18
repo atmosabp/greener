@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -27,16 +27,14 @@ export default function Ranking() {
   var metricUsed: RankingMetric = "energy";
   const calendar = useRankingCalendar();
 
-  function handlePeriodChange(event: ChangeEvent<HTMLSelectElement>) {
-    const nextPeriod = event.target.value as RankingPeriod;
-
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
     setPeriod(nextPeriod);
     calendar.openCalendar(nextPeriod);
   }
 
-  function handleUpdateIntervalChange(new_time: number) {
-    setUpdateInterval(new_time);
-    localStorage.setItem("refresh_interval", String(new_time));
+  function handleUpdateIntervalChange(newTime: number) {
+    setUpdateInterval(newTime);
+    localStorage.setItem("refresh_interval", String(newTime));
     window.location.reload();
   }
 
@@ -69,21 +67,12 @@ export default function Ranking() {
     setLastUpdate(new Date());
 
     sortRanking(formatedData);
-    // setInitialServices(
-    //   formatedData.sort((a, b) =>
-    //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
-    //   ),
-    // );
   }
 
   async function handleParamChange(param: RankingMetric) {
     setMetric(param);
     metricUsed = param;
     sortRanking(initialServices);
-  }
-
-  function timeout(delay: number) {
-    return new Promise((res) => setTimeout(res, delay));
   }
 
   function sortRanking(data: RankingService[]) {
@@ -123,17 +112,11 @@ export default function Ranking() {
 
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
-  useEffect(() => {
-    fetchServices();
-    const fetchTimer = setInterval(
-      fetchServices,
-      (localStorage.getItem("refresh_interval")
-        ? Number(localStorage.getItem("refresh_interval"))
-        : updateInterval) * 1000,
-    );
-
-    return () => clearInterval(fetchTimer);
-  }, []);
+  // useEffect(() => {
+  //   if (!historyActivatedRef.current) {
+  //     fetchServices();
+  //   }
+  // }, [historyActivatedRef.current]);
 
   return (
     <div className="ranking-page">
@@ -157,7 +140,7 @@ export default function Ranking() {
                 <select
                   id="ranking-period-select"
                   value={period}
-                  onChange={handlePeriodChange}
+                  onChange={(event) => handlePeriodChange(event.target.value as RankingPeriod)}
                 >
                   <option value="now">Agora</option>
                   <option value="today">Hoje</option>
