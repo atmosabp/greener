@@ -92,12 +92,17 @@ export default function LoginForm() {
         throw new Error("INVALID_RESPONSE");
       }
 
-      sessionStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      navigate("/home");
-
-      navigate("/home");
+      if(data?.token && data?.user && data?.user.isAdm){
+        sessionStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+  
+        navigate("/admin");
+      }else{
+         sessionStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+  
+        navigate("/home");
+      }
     } catch (error: any) {
       console.error("Erro ao realizar login:", error);
       setApiError(error.message);

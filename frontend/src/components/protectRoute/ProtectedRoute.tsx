@@ -80,6 +80,7 @@ export default function ProtectedRoute({
         }
 
         setStatus("authenticated");
+
       } catch (error: any) {
         if (error instanceof Error && error.name === "AbortError") {
           return;
