@@ -20,8 +20,21 @@ import Loading from "../../components/loading/Loading";
 import { port } from "../../utils/connection";
 import { Link } from "react-router-dom";
 import type { ServiceType } from "../../types/service";
+import { greeting } from "../comparison/components/ComparisonComponents";
 
 export default function Ranking() {
+
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
@@ -114,9 +127,8 @@ export default function Ranking() {
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
     today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
-    month: `${calendar.selectedDay} de ${
-      monthNames[calendar.selectedMonth]
-    } de ${calendar.selectedYear}`,
+    month: `${calendar.selectedDay} de ${monthNames[calendar.selectedMonth]
+      } de ${calendar.selectedYear}`,
     year: `${monthNames[calendar.selectedMonth]} de ${calendar.selectedYear}`,
     "other-years": String(calendar.selectedYear),
   };
@@ -144,7 +156,9 @@ export default function Ranking() {
         <div className="ranking-intro-box">
           <section className="ranking-intro">
             <div className="ranking-heading">
-              <h1>Ranking</h1>
+              <h1>
+                {greeting()}, {userName}.
+              </h1>
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
@@ -281,60 +295,60 @@ export default function Ranking() {
               <tbody>
                 {initialServices
                   ? initialServices.map((service, index) => (
-                      <tr key={service.id}>
-                        <td>
-                          <span
-                            className={
-                              index < 3
-                                ? `ranking-position ranking-position--${index + 1}`
-                                : "ranking-position"
-                            }
+                    <tr key={service.id}>
+                      <td>
+                        <span
+                          className={
+                            index < 3
+                              ? `ranking-position ranking-position--${index + 1}`
+                              : "ranking-position"
+                          }
+                        >
+                          #{index + 1}
+                        </span>
+                      </td>
+
+                      <td className="ranking-service-name">
+                        {service.status == "active" ? (
+                          <Link
+                            className="service-link-text"
+                            to={`/dashboard/${service.id}`}
                           >
-                            #{index + 1}
-                          </span>
-                        </td>
+                            {service.name}
+                            <ExternalLink className="redirect-link-icon" />
+                          </Link>
+                        ) : (
+                          <>{service.name}</>
+                        )}
+                      </td>
 
-                        <td className="ranking-service-name">
-                          {service.status == "active" ? (
-                            <Link
-                              className="service-link-text"
-                              to={`/dashboard/${service.id}`}
-                            >
-                              {service.name}
-                              <ExternalLink className="redirect-link-icon" />
-                            </Link>
-                          ) : (
-                            <>{service.name}</>
-                          )}
-                        </td>
+                      <td>
+                        {service.energy ? (
+                          <>
+                            {numberFormatter.format(service.energy) != "NaN"
+                              ? numberFormatter.format(service.energy) +
+                              " kWh"
+                              : "Indisponível"}{" "}
+                          </>
+                        ) : (
+                          "Indisponível"
+                        )}
+                      </td>
 
-                        <td>
-                          {service.energy ? (
-                            <>
-                              {numberFormatter.format(service.energy) != "NaN"
-                                ? numberFormatter.format(service.energy) +
-                                  " kWh"
-                                : "Indisponível"}{" "}
-                            </>
-                          ) : (
-                            "Indisponível"
-                          )}
-                        </td>
-
-                        <td>
-                          {service.co2e ? (
-                            <>
-                              {numberFormatter.format(service.co2e) != "NaN"
-                                ? numberFormatter.format(service.co2e) +
-                                  " kg CO₂e"
-                                : "Indisponível"}{" "}
-                            </>
-                          ) : (
-                            "Indisponível"
-                          )}
-                        </td>
-                      </tr>
-                    ))
+                      <td>
+                        {service.co2e ? (
+                          <>
+                            {numberFormatter.format(service.co2e) != "NaN"
+                              ? numberFormatter.format(service.co2e) +
+                              " kg CO₂e"
+                              : "Indisponível"}{" "}
+                          </>
+                        ) : (
+                          "Indisponível"
+                        )}
+                      </td>
+                    </tr>
+                  ))
                   : "não foi possível pegar os serviços"}
               </tbody>
             </table>

@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import { port } from "../../utils/connection";
+import { greeting } from "../comparison/components/ComparisonComponents";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -230,8 +231,9 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>Bom dia, {userName}.</h1>
-            {/* backend: nome do usuário */}
+              <h1>
+                {greeting()}, {userName}.
+              </h1>
             <p>
               Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
               .{/* backend: nome do serviço */}
