@@ -75,7 +75,6 @@ export default function Comparison() {
 
   async function fetchHistory(periodType:string, datePull:Date){
       try{
-        var formatedData: RankingService[] = [];
   
         const port: number = import.meta.env.VITE_PORT || 3000;
   
@@ -87,22 +86,21 @@ export default function Comparison() {
             body: JSON.stringify({ periodType: periodType, datePull: datePull }),
           }
         );
-        const data = await result.json();
+        const data: any[] = await result.json();
         // console.log(datePull)
         // console.log(data, "aaaaaaaa")
         if(data.length > 0){
-          for (let service of data) {
-            formatedData.push({
-              id: service.id,
-              name: service.id,
-              energy: service.kwh,
-              co2e: service.co2e,
-            });
-          }
+            setHistoryMessage("Você está vendo dados do passado ")
+            setServices(data);
+            setOrder(data.map((service) => service.id));
+            setSelected(new Set(data.map((service) => service.id)));
+            setReferenceId(data[0]?.id ?? null);
+            setError(null);
+            setLoading(false);
+          
           // setLastUpdate(datePull);
-          setHistoryMessage("Você está vendo dados do passado ")
         }else{
-          // handleRefresh()
+          handleRefresh()
           setHistoryMessage("Período escolhido não possui dados ")
         }
       }catch(e:any){
@@ -114,6 +112,7 @@ export default function Comparison() {
 
   function handlePeriodChange(nextPeriod: RankingPeriod) {
     if (nextPeriod == "now") {
+      handleRefresh()
       setHistoryMessage("");
     } 
 
@@ -122,12 +121,11 @@ export default function Comparison() {
   }
 
   async function handleRefresh(){
-    let ignore = false;
+  
 
     fetchServices()
       .then((data) => {
-        if (ignore) return;
-
+        console.log(data)
         setServices(data);
         setOrder(data.map((service) => service.id));
         setSelected(new Set(data.map((service) => service.id)));
@@ -135,8 +133,6 @@ export default function Comparison() {
         setError(null);
       })
       .catch((error: unknown) => {
-        if (ignore) return;
-
         setError(
           error instanceof Error
             ? error.message
@@ -144,12 +140,9 @@ export default function Comparison() {
         );
       })
       .finally(() => {
-        if (!ignore) setLoading(false);
+        setLoading(false);
       });
 
-    return () => {
-      ignore = true;
-    };
   }
 
   /* Buscar os serviços e suas métricas no backend. */

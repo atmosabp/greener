@@ -61,6 +61,7 @@ function toService(apiService: ApiService): Service {
 }
 
 export async function fetchServices(): Promise<Service[]> {
+    console.log("aaa")
     const result = await fetch(`http://localhost:${port}/collections/all-service-data`);
 
     if (!result.ok) {
