@@ -199,6 +199,23 @@ body {
   outline-offset: 2px;
 }
 
+
+/* Estado bloqueado durante loading */
+.blocked,
+*:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.55;
+  user-select: none;
+}
+
+/* Evita alterações visuais no hover */
+*:disabled:hover,
+.blocked:hover {
+  filter: none;
+  transform: none;
+  box-shadow: inherit;
+}
+
 body,
 div,
 button,

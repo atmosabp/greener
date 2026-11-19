@@ -101,9 +101,9 @@ export default function ProtectedRoute({
     return () => controller.abort();
   }, [requireAdmin]);
 
-  if (status === "loading") {
-    return <p>Verificando autenticação...</p>;
-  }
+  // if (status === "loading") {
+  //   return <p>Verificando autenticação...</p>;
+  // }
 
   if (status === "unauthenticated") {
     return <Navigate to="/login" state={{ from: location }} replace />;
