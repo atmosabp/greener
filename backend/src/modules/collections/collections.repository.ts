@@ -14,14 +14,17 @@ import {
 export async function addMinuteHistory(serviceId: string) {
   const client = await pool.connect();
 
-  const [collectionIntervalSeconds,carbonIntensity,renewablePercent,metricsEnergy] =
-    await Promise.all([
-      reqInterval(serviceId),
-      reqCarbonValue(serviceId),
-      reqRenewablePercent(serviceId),
-      reqMetrics(serviceId)
-    ])
-  
+  const [
+    collectionIntervalSeconds,
+    carbonIntensity,
+    renewablePercent,
+    metricsEnergy,
+  ] = await Promise.all([
+    reqInterval(serviceId),
+    reqCarbonValue(serviceId),
+    reqRenewablePercent(serviceId),
+    reqMetrics(serviceId),
+  ]);
 
   const metricsCalculator = new MetricsCalculator({
     collection_interval_seconds: collectionIntervalSeconds,
@@ -53,7 +56,7 @@ export async function addMinuteHistory(serviceId: string) {
     return result;
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
-    // console.log(error);
+
     throw new Error(error.message || "Não foi possível registrar o histórico.");
   } finally {
     await client.release();
@@ -151,7 +154,9 @@ async function insertMonthHistory(datePull: any) {
 // ==========================================
 
 export async function findHistory() {
-  const result = await pool.query(`SELECT * FROM hour_data where service_id = 'billing-api'`);
+  const result = await pool.query(
+    `SELECT * FROM hour_data where service_id = 'billing-api'`,
+  );
 
   return result.rows || [];
 }
@@ -368,9 +373,7 @@ export async function findHourHistory(datePull: Date) {
           group by name, service_id`,
       [datePull],
     );
-    console.log("vela")
   }
-  console.log(result, "aaaa")
   return result.rows || null;
 }
 

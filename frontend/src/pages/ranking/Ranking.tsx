@@ -22,10 +22,7 @@ import { Link } from "react-router-dom";
 import type { ServiceType } from "../../types/service";
 import { greeting } from "../comparison/components/ComparisonComponents";
 
-
-
 export default function Ranking() {
-
   const [userName, _setUserName] = useState<string>(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) return "usuário";
@@ -42,7 +39,7 @@ export default function Ranking() {
   const [metric, setMetric] = useState<RankingMetric>("energy");
   const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
-  const [historyMessage,setHistoryMessage] = useState("")
+  const [historyMessage, setHistoryMessage] = useState("");
 
   //variáveis como ref para se atualizar entre os Timeouts (pois estava dando erro)
   const historyActivatedRef = useRef(false);
@@ -51,10 +48,9 @@ export default function Ranking() {
   const calendar = useRankingCalendar();
 
   function handlePeriodChange(nextPeriod: RankingPeriod) {
-    if(nextPeriod == "now"){
+    if (nextPeriod == "now") {
       historyActivatedRef.current = false;
-      setHistoryMessage("")
-      
+      setHistoryMessage("");
     } else {
       historyActivatedRef.current = true;
       if (timerRef.current) {
@@ -74,15 +70,15 @@ export default function Ranking() {
   }
 
   async function handleRefresh() {
-    setHistoryMessage("")
-    setPeriod("now")
+    setHistoryMessage("");
+    setPeriod("now");
     setLastUpdate(new Date());
     historyActivatedRef.current = false;
     await fetchServices();
   }
 
-  async function fetchHistory(periodType:string, datePull:Date){
-    try{
+  async function fetchHistory(periodType: string, datePull: Date) {
+    try {
       var formatedData: RankingService[] = [];
 
       const port: number = import.meta.env.VITE_PORT || 3000;
@@ -93,34 +89,31 @@ export default function Ranking() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ periodType: periodType, datePull: datePull }),
-        }
+        },
       );
       const data = await result.json();
-      // console.log(datePull)
-      // console.log(data, "aaaaaaaa")
-      if(data.length > 0){
+
+      if (data.length > 0) {
         for (let service of data) {
           formatedData.push({
             id: service.id,
             name: service.name,
             energy: service.kwh,
             co2e: service.co2e,
-            status: "active"
+            status: "active",
           });
         }
         setLastUpdate(datePull);
-        setHistoryMessage("Você está vendo dados do passado ")
+        setHistoryMessage("Você está vendo dados do passado ");
 
-        sortRanking(formatedData)
-      }else{
-        handleRefresh()
-        setHistoryMessage("Período escolhido não possui dados ")
+        sortRanking(formatedData);
+      } else {
+        handleRefresh();
+        setHistoryMessage("Período escolhido não possui dados ");
       }
-    }catch(e:any){
-      console.log("AAAAAAAAAAAAAAAAA")
-      console.log(e.message)
+    } catch (e: any) {
+      console.log(e.message);
     }
-    
   }
 
   async function fetchServices() {
@@ -166,7 +159,6 @@ export default function Ranking() {
   }
 
   function sortRanking(data: RankingService[]) {
-    console.log(data)
     var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
     let dataHolder = data.sort((a, b) => {
       if (metricUsed === "energy") {
@@ -194,8 +186,9 @@ export default function Ranking() {
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
     today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
-    month: `${calendar.selectedDay} de ${monthNames[calendar.selectedMonth]
-      } de ${calendar.selectedYear}`,
+    month: `${calendar.selectedDay} de ${
+      monthNames[calendar.selectedMonth]
+    } de ${calendar.selectedYear}`,
     year: `${monthNames[calendar.selectedMonth]} de ${calendar.selectedYear}`,
     "other-years": String(calendar.selectedYear),
   };
@@ -207,8 +200,6 @@ export default function Ranking() {
       fetchServices();
     }
   }, [historyActivatedRef.current]);
-
-
 
   return (
     <div className="ranking-page">
@@ -234,7 +225,9 @@ export default function Ranking() {
                 <select
                   id="ranking-period-select"
                   value={period}
-                  onChange={(event) => handlePeriodChange(event.target.value as RankingPeriod)}
+                  onChange={(event) =>
+                    handlePeriodChange(event.target.value as RankingPeriod)
+                  }
                 >
                   <option value="now">Agora</option>
                   <option value="today">Hoje</option>
@@ -303,10 +296,12 @@ export default function Ranking() {
 
             <div className="ranking-toolbar-info">
               <span className="ranking-last-update">
-                <strong>{historyMessage}</strong>&nbsp; &nbsp;   
-                {historyActivatedRef.current ? 
-                <></>:
-                <>Última atualização: {formattedLastUpdate}</>}
+                <strong>{historyMessage}</strong>&nbsp; &nbsp;
+                {historyActivatedRef.current ? (
+                  <></>
+                ) : (
+                  <>Última atualização: {formattedLastUpdate}</>
+                )}
               </span>
 
               <button
@@ -360,60 +355,60 @@ export default function Ranking() {
               <tbody>
                 {initialServices
                   ? initialServices.map((service, index) => (
-                    <tr key={service.id}>
-                      <td>
-                        <span
-                          className={
-                            index < 3
-                              ? `ranking-position ranking-position--${index + 1}`
-                              : "ranking-position"
-                          }
-                        >
-                          #{index + 1}
-                        </span>
-                      </td>
-
-                      <td className="ranking-service-name">
-                        {service.status == "active" ? (
-                          <Link
-                            className="service-link-text"
-                            to={`/dashboard/${service.id}`}
+                      <tr key={service.id}>
+                        <td>
+                          <span
+                            className={
+                              index < 3
+                                ? `ranking-position ranking-position--${index + 1}`
+                                : "ranking-position"
+                            }
                           >
-                            {service.name}
-                            <ExternalLink className="redirect-link-icon" />
-                          </Link>
-                        ) : (
-                          <>{service.name}</>
-                        )}
-                      </td>
+                            #{index + 1}
+                          </span>
+                        </td>
 
-                      <td>
-                        {service.energy ? (
-                          <>
-                            {numberFormatter.format(service.energy) != "NaN"
-                              ? numberFormatter.format(service.energy) +
-                              " kWh"
-                              : "Indisponível"}{" "}
-                          </>
-                        ) : (
-                          "Indisponível"
-                        )}
-                      </td>
+                        <td className="ranking-service-name">
+                          {service.status == "active" ? (
+                            <Link
+                              className="service-link-text"
+                              to={`/dashboard/${service.id}`}
+                            >
+                              {service.name}
+                              <ExternalLink className="redirect-link-icon" />
+                            </Link>
+                          ) : (
+                            <>{service.name}</>
+                          )}
+                        </td>
 
-                      <td>
-                        {service.co2e ? (
-                          <>
-                            {numberFormatter.format(service.co2e) != "NaN"
-                              ? numberFormatter.format(service.co2e) +
-                              " kg CO₂e"
-                              : "Indisponível"}{" "}
-                          </>
-                        ) : (
-                          "Indisponível"
-                        )}
-                      </td>
-                    </tr>
-                  ))
+                        <td>
+                          {service.energy ? (
+                            <>
+                              {numberFormatter.format(service.energy) != "NaN"
+                                ? numberFormatter.format(service.energy) +
+                                  " kWh"
+                                : "Indisponível"}{" "}
+                            </>
+                          ) : (
+                            "Indisponível"
+                          )}
+                        </td>
+
+                        <td>
+                          {service.co2e ? (
+                            <>
+                              {numberFormatter.format(service.co2e) != "NaN"
+                                ? numberFormatter.format(service.co2e) +
+                                  " kg CO₂e"
+                                : "Indisponível"}{" "}
+                            </>
+                          ) : (
+                            "Indisponível"
+                          )}
+                        </td>
+                      </tr>
+                    ))
                   : "não foi possível pegar os serviços"}
               </tbody>
             </table>

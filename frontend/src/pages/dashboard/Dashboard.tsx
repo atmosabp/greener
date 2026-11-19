@@ -14,10 +14,7 @@ import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
 import RankingCalendar from "../ranking/components/rankingCalendar";
-import {
-  type RankingPeriod
-
-} from "../ranking/components/rankingData";
+import { type RankingPeriod } from "../ranking/components/rankingData";
 // import { Oval } from "react-loader-spinner";
 import { port } from "../../utils/connection";
 import { greeting } from "../comparison/components/ComparisonComponents";
@@ -156,8 +153,7 @@ export default function Dashboard() {
         },
       );
       const data = await result.json();
-      if(data){
-        console.log(data);
+      if (data) {
         setServiceMetrics({
           id: serviceMetrics.id,
           name: serviceMetrics.name,
@@ -174,10 +170,10 @@ export default function Dashboard() {
             carbon_intensity: data.co2e / data.kwh,
           },
         });
-        setHistoryMessage("Você está vendo dados do passado ")
-      }else{
-        updateMetrics()
-        setHistoryMessage("Período escolhido não possui dados ")
+        setHistoryMessage("Você está vendo dados do passado ");
+      } else {
+        updateMetrics();
+        setHistoryMessage("Período escolhido não possui dados ");
       }
     } catch (e: any) {}
   }
@@ -237,7 +233,7 @@ export default function Dashboard() {
   async function updateMetrics(): Promise<void> {
     setHistoryMessage("");
     setPeriod("now");
-    historyActivatedRef.current = false
+    historyActivatedRef.current = false;
     getServiceList();
     getServiceMetrics();
   }
@@ -321,9 +317,9 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-              <h1>
-                {greeting()}, {userName}.
-              </h1>
+            <h1>
+              {greeting()}, {userName}.
+            </h1>
             <p>
               Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
               .{/* backend: nome do serviço */}
@@ -363,9 +359,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="ranking-period">
-                  <label htmlFor="ranking-period-select">
-                    Período
-                  </label>
+                  <label htmlFor="ranking-period-select">Período</label>
 
                   <select
                     id="ranking-period-select"
@@ -702,7 +696,8 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              O serviço está inativo, e não é possível recolher as suas métricas no momento.
+              O serviço está inativo, e não é possível recolher as suas métricas
+              no momento.
               <br />
               Volte à tela principal e selecione outro serviço.
               {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}
