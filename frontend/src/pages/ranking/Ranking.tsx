@@ -23,6 +23,7 @@ import type { ServiceType } from "../../types/service";
 import { greeting } from "../comparison/components/ComparisonComponents";
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
+import Loading from "../../components/loading/Loading";
 
 export default function Ranking() {
   const [userName, _setUserName] = useState<string>(() => {
@@ -183,7 +184,7 @@ export default function Ranking() {
 
   return (
     <div className="ranking-page">
-      {/* <Loading data={initialServices} /> */}
+      {showSkeleton && <Loading />}
       <AppHeader />
 
       <main className="ranking-main">
