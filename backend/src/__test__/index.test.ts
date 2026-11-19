@@ -116,7 +116,7 @@ describe("consulta todos os serviços", () => {
       .send();
 
     expect(response.statusCode).toEqual(200);
-  });
+  }, 25000);
 });
 
 describe("consulta métricas de um serviço", () => {

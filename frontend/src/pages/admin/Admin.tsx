@@ -19,6 +19,7 @@ import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
 import { port } from "../../utils/connection";
 import Greeting from "../../components/greetings/Greeting";
+import { NavLink } from "react-router-dom";
 
 interface User {
   id: number;
@@ -112,14 +113,6 @@ const PAGE_SIZES = [5, 10, 15, 20, 50];
 
 // Completa com zeros à esquerda.
 const pad = (n: number, size = 3) => String(n).padStart(size, "0");
-
-// Escolhe a saudação de acordo com a hora do dia.
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Bom dia";
-  if (hour < 18) return "Boa tarde";
-  return "Boa noite";
-}
 
 // Devolve uma cópia do Set com o id adicionado ou removido.
 function toggle(set: Set<number>, id: number) {
@@ -497,6 +490,13 @@ export default function Admin() {
       <CadHeader />
 
       <main className="admin">
+        <NavLink
+          to={"/home"}
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          ← Voltar para tela principal
+        </NavLink>
+        
         <div className="start-section">
           <Greeting />
           <p>Crie, altere e exclua usuários de acesso restrito.</p>

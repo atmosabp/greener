@@ -18,12 +18,17 @@ export default function Header({
     () => window.matchMedia(compact_query).matches,
   );
 
-  const [isUserAdmin, _setIsUserAdmin] = useState<boolean>(() => {
+  const [_isUserAdmin, _setIsUserAdmin] = useState<boolean>(() => {
     const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
+    if (!storedUser) return false;
     try {
       const parsedUser = JSON.parse(storedUser);
-      return parsedUser.isAdm || false;
+
+      //caso o usuário não seja administrador, adiciona um link para a página de cadastro
+      if (parsedUser.isAdm) {
+        links[links.length] = { to: "/admin", label: "Gerenciamento" };
+      }
+      return parsedUser.isAdm;
     } catch (e: any) {
       return false;
     }
@@ -106,19 +111,6 @@ export default function Header({
                 {link.label}
               </a>
             ),
-          )}
-
-          {isUserAdmin ? (
-            <NavLink
-              key={"/admin"}
-              to={"/admin"}
-              onClick={closeMenu}
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              {"Administração"}
-            </NavLink>
-          ) : (
-            <></>
           )}
         </nav>
         <div className="menu-btns">
