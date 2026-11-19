@@ -14,6 +14,7 @@ import {
 
 import { port } from "../../utils/connection";
 import type { ServiceStatus, ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 
 interface HomepageProps {
   lastUpdated?: string;
@@ -86,6 +87,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
   return (
     <div className="homepage">
+      {showSkeleton && <Loading/>}
       <AppHeader />
 
       <main className="homepage-main">

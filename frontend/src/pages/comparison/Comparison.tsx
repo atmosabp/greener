@@ -34,6 +34,7 @@ import {
 import "./Comparison.css";
 
 import type { MetricsType, ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 
 export default function Comparison() {
   const [period, setPeriod] = useState("today");
@@ -175,6 +176,7 @@ export default function Comparison() {
 
   return (
     <div className="cmp-comparison">
+      {loading && <Loading/>}
       <AppHeader />
 
       <main className="cmp-page">

@@ -23,6 +23,7 @@ import type { FormValues } from "../../types/form";
 import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
 import { port } from "../../utils/connection";
+import Loading from "../../components/loading/Loading.tsx";
 
 interface User {
   id: number;
@@ -469,6 +470,7 @@ export default function Admin() {
 
   return (
     <div className="admin-page">
+      {showSkeleton && <Loading/>}
       {toast && (
         <Toast
           key={toast.id}

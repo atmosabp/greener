@@ -12,6 +12,7 @@ import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton"
 
 import { port } from "../../utils/connection";
 import { greeting } from "../comparison/components/ComparisonComponents";
+import Loading from "../../components/loading/Loading";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -242,6 +243,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-page">
+      {showSkeleton && <Loading/>}
       <AppHeader />
 
       <main className="dashboard">
