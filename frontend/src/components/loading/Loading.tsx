@@ -7,7 +7,6 @@ export default function Loading() {
       <img src={loadAnimation} alt="Carregando..." />
 
       <div className="loading-bar">
-        <div className="loading-progress" />
       </div>
     </div>
   );
