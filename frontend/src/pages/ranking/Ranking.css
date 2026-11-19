@@ -646,6 +646,11 @@
         color 0.15s ease;
 }
 
+.ranking-calendar-options > button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .ranking-calendar-options > button:hover {
     filter: brightness(0.94);
 }
