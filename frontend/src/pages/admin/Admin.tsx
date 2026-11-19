@@ -11,7 +11,7 @@ import {
 import CadHeader from "../../components/header/CadHeader";
 import CadForm from "../../components/form/CadForm";
 import AltForm from "../../components/form/AltForm";
-import Toast from "../../components/toast/Toast";
+import { useToast } from "../../hooks/useToast";
 import Warning from "../../components/warning/Warning";
 import { Skeleton } from "../../components/skeleton/Skeleton.tsx";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
@@ -20,22 +20,15 @@ import {
   AdminTableSkeletonRows,
 } from "./AdminSkeleton.tsx";
 import type { FormValues } from "../../types/form";
-import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
 import { port } from "../../utils/connection";
+import type { ToastState } from "../../providers/ToastProvider.tsx";
 
 interface User {
   id: number;
   name: string;
   email: string;
   is_adm?: boolean;
-}
-
-interface ToastState {
-  id: number;
-  icon: ToastIcon;
-  title: string;
-  message?: string;
 }
 
 // Rotas de usuários do back.
@@ -223,6 +216,7 @@ export default function Admin() {
 
   const [users, setUsers] = useState<User[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
+  const { showToast } = useToast();
   // Só a carga inicial mostra skeleton -> recarregar após criar/editar/deletar não.
   const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
   const showSkeleton = useSkeleton(loadingUsers);
@@ -258,12 +252,6 @@ export default function Admin() {
     }
     setSelected(next);
   };
-
-  const showToast = (icon: ToastIcon, title: string, message?: string) =>
-    setToast({ id: Date.now(), icon, title, message });
-
-  // Evita que o Toast reinicie o timer a cada render.
-  const closeToast = useCallback(() => setToast(null), []);
 
   // Busca a lista de usuários no backend.
   async function getUsers(): Promise<void> {
@@ -469,16 +457,6 @@ export default function Admin() {
 
   return (
     <div className="admin-page">
-      {toast && (
-        <Toast
-          key={toast.id}
-          icon={toast.icon}
-          title={toast.title}
-          message={toast.message}
-          onClose={closeToast}
-        />
-      )}
-
       {/* Modais de cada ação. */}
 
       {openCadModal && (
