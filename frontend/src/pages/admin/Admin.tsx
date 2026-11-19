@@ -18,6 +18,7 @@ import type { FormValues } from "../../types/form";
 import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
 import { port } from "../../utils/connection";
+import Greeting from "../../components/greetings/Greeting";
 
 interface User {
   id: number;
@@ -212,17 +213,6 @@ function EmptyState() {
 }
 
 export default function Admin() {
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
-
   const [users, setUsers] = useState<User[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastState | null>(null);
@@ -508,9 +498,7 @@ export default function Admin() {
 
       <main className="admin">
         <div className="start-section">
-          <h1>
-            {getGreeting()}, {userName}.
-          </h1>
+          <Greeting />
           <p>Crie, altere e exclua usuários de acesso restrito.</p>
         </div>
 

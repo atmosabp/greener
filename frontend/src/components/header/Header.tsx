@@ -18,6 +18,17 @@ export default function Header({
     () => window.matchMedia(compact_query).matches,
   );
 
+  const [isUserAdmin, _setIsUserAdmin] = useState<boolean>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.isAdm || false;
+    } catch (e: any) {
+      return false;
+    }
+  });
+
   useEffect(() => {
     const mediaQuery = window.matchMedia(compact_query);
 
@@ -95,6 +106,19 @@ export default function Header({
                 {link.label}
               </a>
             ),
+          )}
+
+          {isUserAdmin ? (
+            <NavLink
+              key={"/admin"}
+              to={"/admin"}
+              onClick={closeMenu}
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              {"Administração"}
+            </NavLink>
+          ) : (
+            <></>
           )}
         </nav>
         <div className="menu-btns">

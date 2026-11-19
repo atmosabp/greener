@@ -6,7 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import { port } from "../../utils/connection";
-import { greeting } from "../comparison/components/ComparisonComponents";
+import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -31,17 +31,6 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 
 export default function Dashboard() {
   const { serviceId } = useParams();
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -231,9 +220,7 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-              <h1>
-                {greeting()}, {userName}.
-              </h1>
+            <Greeting />
             <p>
               Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
               .{/* backend: nome do serviço */}
@@ -570,7 +557,8 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              O serviço está inativo, e não é possível recolher as suas métricas no momento.
+              O serviço está inativo, e não é possível recolher as suas métricas
+              no momento.
               <br />
               Volte à tela principal e selecione outro serviço.
               {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}

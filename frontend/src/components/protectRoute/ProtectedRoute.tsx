@@ -102,26 +102,10 @@ export default function ProtectedRoute({
   }, [requireAdmin]);
 
   if (status === "loading") {
-    return <p>Verificando autenticação...</p>;
   }
 
   if (status === "unauthenticated") {
     return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  if (status === "forbidden") {
-    return <Navigate to="/home" replace />;
-  }
-
-  if (status === "error") {
-    return (
-      <div>
-        <p>Não foi possível verificar sua sessão.</p>
-        <button onClick={() => window.location.reload()}>
-          Tentar novamente
-        </button>
-      </div>
-    );
   }
 
   return <Outlet />;
