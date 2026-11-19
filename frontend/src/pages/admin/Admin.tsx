@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -14,9 +13,16 @@ import CadForm from "../../components/form/CadForm";
 import AltForm from "../../components/form/AltForm";
 import { useToast } from "../../hooks/useToast";
 import Warning from "../../components/warning/Warning";
+import { Skeleton } from "../../components/skeleton/Skeleton.tsx";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import {
+  AdminMobileSkeleton,
+  AdminTableSkeletonRows,
+} from "./AdminSkeleton.tsx";
 import type { FormValues } from "../../types/form";
 import "./Admin.css";
 import { port } from "../../utils/connection";
+import type { ToastState } from "../../providers/ToastProvider.tsx";
 
 interface User {
   id: number;
@@ -33,11 +39,7 @@ class RequestError extends Error {
   public type: "network" | "http" = "http";
   public status?: number = 0;
 
-  constructor(
-    type: "network" | "http",
-    message: string,
-    status?: number,
-  ) {
+  constructor(type: "network" | "http", message: string, status?: number) {
     super(message);
     this.name = "RequestError";
     this.type = type;
@@ -46,10 +48,7 @@ class RequestError extends Error {
 }
 
 // Faz requisições ao backend e identifica erros de conexão e HTTP.
-async function request<T>(
-  url: string,
-  options?: RequestInit,
-): Promise<T> {
+async function request<T>(url: string, options?: RequestInit): Promise<T> {
   let result: Response;
 
   try {
@@ -86,7 +85,7 @@ async function request<T>(
       typeof data?.message === "string"
         ? data.message
         : statusMessages[result.status] ||
-        "Não foi possível concluir a operação. Tente novamente.";
+          "Não foi possível concluir a operação. Tente novamente.";
 
     throw new RequestError("http", message, result.status);
   }
@@ -218,6 +217,10 @@ export default function Admin() {
   const [users, setUsers] = useState<User[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
   const { showToast } = useToast();
+  // Só a carga inicial mostra skeleton -> recarregar após criar/editar/deletar não.
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
+  const showSkeleton = useSkeleton(loadingUsers);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [openRows, setOpenRows] = useState<Set<number>>(new Set());
@@ -264,10 +267,10 @@ export default function Admin() {
   useEffect(() => {
     const fetchData = async () => {
       await getUsers();
+      setLoadingUsers(false);
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addUser = () => {
@@ -490,14 +493,20 @@ export default function Admin() {
           <p>Crie, altere e exclua usuários de acesso restrito.</p>
         </div>
 
-        <section className="users">
+        <section className="users" aria-busy={showSkeleton}>
           <div className="toolbar">
             <h2 id="users-title">Usuários</h2>
 
             <div className="toolbar-btns">
               <div className="total">
                 <span>Total de usuários:</span>
-                <strong>{users.length}</strong>
+                <strong>
+                  {showSkeleton ? (
+                    <Skeleton width={28} height="1rem" />
+                  ) : (
+                    users.length
+                  )}
+                </strong>
               </div>
 
               <button
@@ -510,7 +519,12 @@ export default function Admin() {
                 <span className="btn-label">Deletar</span>
               </button>
 
-              <button type="button" className="btn btn-add" onClick={addUser}>
+              <button
+                type="button"
+                className={`btn btn-add ${showSkeleton ? "blocked" : ""}`}
+                disabled={showSkeleton}
+                onClick={addUser}
+              >
                 <Plus />
                 <span className="btn-label">Adicionar</span>
               </button>
@@ -547,7 +561,9 @@ export default function Admin() {
             </thead>
 
             <tbody>
-              {pageUsers.length === 0 ? (
+              {showSkeleton ? (
+                <AdminTableSkeletonRows rows={5} />
+              ) : pageUsers.length === 0 ? (
                 <tr className="table-empty">
                   <td colSpan={5}>
                     <EmptyState />
@@ -565,9 +581,7 @@ export default function Admin() {
                         <div className="cell-id">
                           <Checkbox
                             checked={isSelected}
-                            onChange={() =>
-                              setSelected(toggle(selected, u.id))
-                            }
+                            onChange={() => setSelected(toggle(selected, u.id))}
                             label={`Selecionar ${u.name}`}
                           />
                           <span>{pad(u.id)}</span>
@@ -598,7 +612,9 @@ export default function Admin() {
 
           {/* Lista expansível (mobile). */}
           <div className="m-card">
-            {pageUsers.length === 0 ? (
+            {showSkeleton ? (
+              <AdminMobileSkeleton rows={5} />
+            ) : pageUsers.length === 0 ? (
               <EmptyState />
             ) : (
               <ul className="m-list">
@@ -625,9 +641,7 @@ export default function Admin() {
                             type="checkbox"
                             className="checkbox-user"
                             checked={isSelected}
-                            onChange={() =>
-                              setSelected(toggle(selected, u.id))
-                            }
+                            onChange={() => setSelected(toggle(selected, u.id))}
                           />
                           <span className="m-key">Nome</span>
                           <span className="m-val">{u.name}</span>
@@ -701,9 +715,13 @@ export default function Admin() {
                 <ChevronLeft />
               </button>
 
-              <span className="pager-count" key={currentPage}>
-                {currentPage}/{totalPages}
-              </span>
+              {showSkeleton ? (
+                <Skeleton width={46} height={30} radius={8} />
+              ) : (
+                <span className="pager-count" key={currentPage}>
+                  {currentPage}/{totalPages}
+                </span>
+              )}
 
               <button
                 type="button"

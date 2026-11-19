@@ -15,14 +15,33 @@ import {
 } from "./components/rankingData";
 
 import "./Ranking.css";
-import Loading from "../../components/loading/Loading";
+import { RankingTableSkeletonRows } from "./RankingSkeleton";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
+import { port } from "../../utils/connection";
+import type { ServiceType } from "../../types/service";
+import { greeting } from "../comparison/components/ComparisonComponents";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 export default function Ranking() {
+  const [userName, _setUserName] = useState<string>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return "usuário";
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.name || "usuário";
+    } catch (e) {
+      return "usuário";
+    }
+  });
+
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
   const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
+  const [timeUpdated, setTimeUpdated] = useState<string>("");
 
   var metricUsed: RankingMetric = "energy";
   const calendar = useRankingCalendar();
@@ -50,30 +69,32 @@ export default function Ranking() {
 
     var formatedData: RankingService[] = [];
 
-    const port: number = import.meta.env.VITE_PORT || 3000;
-
     const result = await fetch(
       `http://localhost:${port}/collections/all-service-data`,
     );
-    const data = await result.json();
+    const data: ServiceType[] = await result.json();
+
+    setTimeUpdated(new Date().toLocaleString());
 
     for (let service of data) {
       formatedData.push({
         id: service.id,
         name: service.name,
-        energy: service.metrics.kwh,
-        co2e: service.metrics.co2e,
+        energy:
+          service.metrics && service.metrics.kwh
+            ? service.metrics.kwh
+            : undefined,
+        co2e:
+          service.metrics && service.metrics.co2e
+            ? service.metrics.co2e
+            : undefined,
+        status: service.status,
       });
     }
 
     setLastUpdate(new Date());
 
     sortRanking(formatedData);
-    // setInitialServices(
-    //   formatedData.sort((a, b) =>
-    //     metric === "energy" ? b.energy - a.energy : b.co2e - a.co2e,
-    //   ),
-    // );
   }
 
   async function handleParamChange(param: RankingMetric) {
@@ -82,28 +103,46 @@ export default function Ranking() {
     sortRanking(initialServices);
   }
 
-  function timeout(delay: number) {
-    return new Promise((res) => setTimeout(res, delay));
-  }
-
   function sortRanking(data: RankingService[]) {
+    var key: (x: undefined | number) => undefined | number = (x) => x;
+    setInitialServices(
+      data.sort((a, b) => {
+        if (metric === "energy") {
+          const xKey = key(a.energy),
+            yKey = key(b.energy);
+          if (typeof xKey === "undefined") {
+            return typeof yKey === "string" ? 0 : 1;
+          } else {
+            return typeof yKey === "string" ? -1 : yKey! - xKey!;
+          }
+        } else {
+          const xKey = key(a.co2e),
+            yKey = key(b.co2e);
+          if (typeof xKey === "undefined") {
+            return typeof yKey === "string" ? 0 : 1;
+          } else {
+            return typeof yKey === "string" ? -1 : yKey! - xKey!;
+          }
+        }
+      }),
+    );
     var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
     let dataHolder = data.sort((a, b) => {
       if (metricUsed === "energy") {
         const xKey = key(a.energy),
           yKey = key(b.energy);
         if (typeof xKey === "undefined") {
-          return typeof yKey === "undefined" ? 0 : 1;
+          return typeof yKey === "string" ? 0 : 1;
         } else {
-          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+          return typeof yKey === "string" ? -1 : yKey! - xKey!;
         }
       } else {
         const xKey = key(a.co2e),
           yKey = key(b.co2e);
         if (typeof xKey === "undefined") {
-          return typeof yKey === "undefined" ? 0 : 1;
+          return typeof yKey === "string" ? 0 : 1;
         } else {
-          return typeof yKey === "undefined" ? -1 : yKey! - xKey!;
+          return typeof yKey === "string" ? -1 : yKey! - xKey!;
         }
       }
     });
@@ -135,16 +174,25 @@ export default function Ranking() {
     return () => clearInterval(fetchTimer);
   }, []);
 
+  const [gaveUp, setGaveUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 15000);
+    return () => clearTimeout(t);
+  }, []);
+  const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
+
   return (
     <div className="ranking-page">
-      <Loading data={initialServices} />
+      {/* <Loading data={initialServices} /> */}
       <AppHeader />
 
       <main className="ranking-main">
         <div className="ranking-intro-box">
           <section className="ranking-intro">
             <div className="ranking-heading">
-              <h1>Ranking</h1>
+              <h1>
+                {greeting()}, {userName}.
+              </h1>
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
@@ -156,8 +204,10 @@ export default function Ranking() {
 
                 <select
                   id="ranking-period-select"
+                  className={showSkeleton ? "blocked" : ""}
                   value={period}
                   onChange={handlePeriodChange}
+                  disabled={showSkeleton}
                 >
                   <option value="now">Agora</option>
                   <option value="today">Hoje</option>
@@ -173,30 +223,32 @@ export default function Ranking() {
                 <div className="ranking-classification-buttons">
                   <button
                     type="button"
-                    className={
+                    className={`${showSkeleton ? "blocked " : ""}${
                       metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }`}
                     aria-pressed={metric === "energy"}
                     onClick={() => {
                       handleParamChange("energy");
                     }}
+                    disabled={showSkeleton}
                   >
                     Consumo energético
                   </button>
 
                   <button
                     type="button"
-                    className={
-                      metric === "co2e"
+                    className={`${showSkeleton ? "blocked " : ""}${
+                      metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }`}
                     aria-pressed={metric === "co2e"}
                     onClick={() => {
                       handleParamChange("co2e");
                     }}
+                    disabled={showSkeleton}
                   >
                     Emissão de CO₂e
                   </button>
@@ -211,10 +263,12 @@ export default function Ranking() {
 
               <select
                 id="ranking-update-select"
+                className={`${showSkeleton ? "blocked" : ""}`}
                 value={Number(updateInterval)}
                 onChange={(event) =>
                   handleUpdateIntervalChange(Number(event.target.value))
                 }
+                disabled={showSkeleton}
               >
                 <option value={5}>05s</option>
                 <option value={10}>10s</option>
@@ -226,13 +280,20 @@ export default function Ranking() {
             </div>
 
             <div className="ranking-toolbar-info">
-              <span className="ranking-last-update">
-                Última atualização: {formattedLastUpdate}
-              </span>
+              {showSkeleton ? (
+                <p>
+                  <Skeleton width="10rem" height="1rem" />
+                </p>
+              ) : (
+                <span className="ranking-last-update">
+                  Última atualização: {formattedLastUpdate}
+                </span>
+              )}
 
               <button
+                id="ranking-update-select"
+                className={`ranking-refresh-button ${showSkeleton ? "blocked" : ""}`}
                 type="button"
-                className="ranking-refresh-button"
                 onClick={handleRefresh}
                 aria-label="Atualizar horário da última atualização"
                 title="Atualizar"
@@ -279,42 +340,92 @@ export default function Ranking() {
               </thead>
 
               <tbody>
-                {initialServices
-                  ? initialServices.map((service, index) => (
-                      <tr key={service.id}>
-                        <td>
-                          <span
-                            className={
-                              index < 3
-                                ? `ranking-position ranking-position--${index + 1}`
-                                : "ranking-position"
-                            }
-                          >
-                            #{index + 1}
-                          </span>
-                        </td>
+                {showSkeleton ? (
+                  <RankingTableSkeletonRows rows={8} />
+                ) : (
+                  <>
+                    {initialServices
+                      ? initialServices.map((service, index) => (
+                          <tr key={service.id}>
+                            <td>
+                              <span
+                                className={
+                                  index < 3
+                                    ? `ranking-position ranking-position--${index + 1}`
+                                    : "ranking-position"
+                                }
+                              >
+                                #{index + 1}
+                              </span>
+                            </td>
 
-                        <td className="ranking-service-name">{service.name}</td>
+                            <td className="ranking-service-name">
+                              {service.status == "active" ? (
+                                <Link
+                                  className="service-link-text"
+                                  to={`/dashboard/${service.id}`}
+                                >
+                                  {service.name}
+                                  <ExternalLink className="redirect-link-icon" />
+                                </Link>
+                              ) : (
+                                <>{service.name}</>
+                              )}
+                            </td>
 
-                        <td>
-                          {numberFormatter.format(service.energy) != "NaN"
-                            ? numberFormatter.format(service.energy) + " kWh"
-                            : "Indisponível"}{" "}
-                        </td>
+                            <td>
+                              {service.energy ? (
+                                <>
+                                  {numberFormatter.format(service.energy) !=
+                                  "NaN"
+                                    ? numberFormatter.format(service.energy) +
+                                      " kWh"
+                                    : "Indisponível"}{" "}
+                                </>
+                              ) : (
+                                "Indisponível"
+                              )}
+                            </td>
 
-                        <td>
-                          {numberFormatter.format(service.co2e) != "NaN"
-                            ? numberFormatter.format(service.co2e) + " kg CO₂e"
-                            : "Indisponível"}{" "}
-                        </td>
-                      </tr>
-                    ))
-                  : "não foi possível pegar os serviços"}
+                            <td>
+                              {service.co2e ? (
+                                <>
+                                  {numberFormatter.format(service.co2e) != "NaN"
+                                    ? numberFormatter.format(service.co2e) +
+                                      " kg CO₂e"
+                                    : "Indisponível"}{" "}
+                                </>
+                              ) : (
+                                "Indisponível"
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      : "não foi possível pegar os serviços"}
+                  </>
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="ranking-table-caption">
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>Período selecionado: {periodLabel[period]}</span>
+            )}
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>
+                {initialServices ? initialServices.length : 0} serviços
+                encontrados
+              </span>
+            )}
             <span>Período selecionado: {periodLabel[period]}</span>
             <span>
               {initialServices ? initialServices.length : 0} serviços

@@ -6,18 +6,16 @@ type ThemeProviderProps = {
   children: ReactNode;
 };
 
-export default function ThemeProvider({
-  children,
-}: ThemeProviderProps) {
-  const [mode, setMode] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem("theme-mode");
-    return saved === "dark" ? "dark" : "light";
-  });
-
-  const [palette, setPalette] = useState<ThemeColor>(() => {
-    const saved = localStorage.getItem("theme-palette");
-    return saved === "blue" ? "blue" : "green";
-  });
+export default function ThemeProvider({ children }: ThemeProviderProps) {
+  const [mode, setMode] = useState<"light" | "dark">(
+    () =>
+      (document.documentElement.getAttribute("data-theme") as
+        | "light"
+        | "dark") ?? "light",
+  );
+  const [palette, setPalette] = useState(
+    () => document.documentElement.getAttribute("data-palette") ?? "green",
+  );
 
   function changeMode(mode: ThemeMode) {
     setMode(mode);

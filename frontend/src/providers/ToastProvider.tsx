@@ -3,7 +3,7 @@ import Toast from "../components/toast/Toast";
 import { ToastContext, type ShowToast } from "../contexts/ToastContext";
 import type { ToastIcon } from "../types/toast";
 
-type ToastState = {
+export type ToastState = {
   id: number;
   icon: ToastIcon;
   title: string;

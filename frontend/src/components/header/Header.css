@@ -2,7 +2,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 1005;
     display: flex;
     width: 100%;
     height: 70px;
@@ -234,7 +234,7 @@ RESPONSIVIDADE
         padding: 0 24px;
         background-color: var(--background);
         border-bottom: 2px solid var(--text);
-        z-index: 1000;
+        z-index: 1005;
     }
 
     .trigger-logo {
