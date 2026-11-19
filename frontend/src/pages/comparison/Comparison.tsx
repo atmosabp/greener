@@ -1,6 +1,8 @@
+
 import { useEffect, useState } from 'react';
 
 import AppHeader from '../../components/header/AppHeader';
+import Loading from '../../components/loading/Loading';
 
 import {
   calculateAverages,
@@ -12,36 +14,43 @@ import {
 } from './components/comparisonData';
 
 import type {
-  CompareTarget
+  CompareTarget,
 } from './components/comparisonData';
 
 import {
-  Chevron,
   Gauge,
   greeting,
   HelpIcon,
-  Popover,
-  SelectPill,
-  StarIcon,
 } from './components/ComparisonComponents';
+
+import {
+  MultiSelect,
+  Select,
+  DropdownMenu,
+} from '../../components/dropdown';
 
 import ServiceCard from './components/ServiceCard';
 
 import './Comparison.css';
-import Loading from '../../components/loading/Loading';
-import type { MetricsType, ServiceType } from '../../types/service';
+
+import type {
+  MetricsType,
+  ServiceType,
+} from '../../types/service';
 
 export default function Comparison() {
   const [period, setPeriod] = useState('today');
 
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
+  const [userName] = useState<string>(() => {
+    const storedUser = localStorage.getItem('user');
+
+    if (!storedUser) return 'usuário';
+
     try {
       const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
+      return parsedUser.name || 'usuário';
+    } catch {
+      return 'usuário';
     }
   });
 
@@ -99,6 +108,22 @@ export default function Comparison() {
     .map((id) => services.find((service) => service.id === id))
     .filter((service): service is ServiceType => service !== undefined);
 
+  /* Opções dos dropdowns. */
+  const serviceOptions = services.map((service) => ({
+    label: service.name,
+    value: service.id,
+  }));
+
+  const referenceOptions = visible.map((service) => ({
+    label: service.name,
+    value: service.id,
+  }));
+
+  const periodOptions = PERIODS.map((option) => ({
+    label: option.label,
+    value: option.value,
+  }));
+
   /* Médias dos serviços selecionados e escala dos medidores. */
   const averages = calculateAverages(visible);
   const maxConsumo = calculateMax(visible, 'kwh');
@@ -112,7 +137,9 @@ export default function Comparison() {
   );
 
   /* Base de comparação de cada cartão: referência ou média. */
-  const baseMetricsFor = (service: ServiceType): MetricsType | undefined => {
+  const baseMetricsFor = (
+    service: ServiceType,
+  ): MetricsType | undefined => {
     if (service.id === referenceId) return undefined;
 
     const target = compareMap[service.id] ?? 'reference';
@@ -127,21 +154,10 @@ export default function Comparison() {
   /* Selecionar ou desmarcar serviços. */
   const MIN_SERVICES = 2;
 
-    const toggleSelected = (id: string) => {
-    setSelected((previous) => {
-      const next = new Set(previous);
+  const handleSelectedChange = (values: string[]) => {
+    if (values.length < MIN_SERVICES) return;
 
-      if (next.has(id)) {
-        // não deixa ficar com menos de MIN_SERVICES
-        if (previous.size <= MIN_SERVICES) return previous;
-
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-
-      return next;
-    });
+    setSelected(new Set(values));
   };
 
   /* Marcar ou remover a referência de um cartão. */
@@ -189,53 +205,26 @@ export default function Comparison() {
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
 
-            <Popover
-              trigger={({ open, toggle }) => (
-                <button
-                  type="button"
-                  className="cmp-pill-outline"
-                  aria-expanded={open}
-                  onClick={toggle}
-                >
-                  Serviços selecionados
-                  <Chevron size={22} />
-                </button>
-              )}
-            >
-              {() => (
-                <ul className="cmp-menu">
-                  {services.map((service) => (
-                    <li key={service.id}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selected.has(service.id)}
-                          onChange={() =>
-                            toggleSelected(service.id)
-                          }
-                        />
-                        {service.name}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Popover>
+            <div className="cmp-selection-dropdown">
+              <MultiSelect
+                value={Array.from(selected)}
+                onChange={handleSelectedChange}
+                options={serviceOptions}
+                placeholder="Serviços selecionados"
+                emptyLabel="Nenhum serviço selecionado"
+              />
+            </div>
           </div>
 
-          <SelectPill
-            variant="dark"
-            label="Período"
+          <Select
             value={period}
             onChange={setPeriod}
-            options={PERIODS}
+            options={periodOptions}
+            variant="dark"
           />
         </section>
 
-        {/* ---------------------------------------------------------- */}
-        {/* Médias dos indicadores                                     */}
-        {/* ---------------------------------------------------------- */}
-
+        {/* Médias dos indicadores */}
         <section
           className="cmp-averages"
           aria-labelledby="avg-title"
@@ -275,10 +264,7 @@ export default function Comparison() {
               <div className="cmp-avg-tile">
                 <span>Armazenamento</span>
                 <strong>
-                  {formatMetric(
-                    'disk_gb',
-                    averages.disk_gb,
-                  )}
+                  {formatMetric('disk_gb', averages.disk_gb)}
                 </strong>
               </div>
 
@@ -308,10 +294,7 @@ export default function Comparison() {
           </div>
         </section>
 
-        {/* ---------------------------------------------------------- */}
-        {/* Serviços                                                    */}
-        {/* ---------------------------------------------------------- */}
-
+        {/* Serviços */}
         <section
           className="cmp-services"
           aria-labelledby="services-title"
@@ -320,43 +303,14 @@ export default function Comparison() {
             <h2 id="services-title">Serviços</h2>
 
             <div className="cmp-services__tools">
-              <Popover
-                align="right"
-                trigger={({ open, toggle }) => (
-                  <button
-                    type="button"
-                    className="cmp-chip cmp-chip--wide"
-                    aria-expanded={open}
-                    onClick={toggle}
-                  >
-                    Escolher serviço referência
-                    <StarIcon size={24} />
-                  </button>
-                )}
-              >
-                {(close) => (
-                  <ul className="cmp-menu">
-                    {visible.map((service) => (
-                      <li key={service.id}>
-                        <button
-                          type="button"
-                          className={
-                            service.id === referenceId
-                              ? 'cmp-is-active'
-                              : ''
-                          }
-                          onClick={() => {
-                            setReferenceId(service.id);
-                            close();
-                          }}
-                        >
-                          {service.name}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Popover>
+              <div className="cmp-reference-dropdown">
+                <DropdownMenu
+                  value={referenceId ?? ''}
+                  onChange={setReferenceId}
+                  options={referenceOptions}
+                  placeholder="Escolher serviço referência"
+                />
+              </div>
             </div>
           </div>
 
@@ -375,8 +329,6 @@ export default function Comparison() {
                 “Serviços selecionados”.
               </p>
             )}
-
-            {/* Aqui é gerado o card de cada serviço */}
 
             {visible.map((service, index) => (
               <ServiceCard
@@ -417,4 +369,4 @@ export default function Comparison() {
       </footer>
     </div>
   );
-};
+}

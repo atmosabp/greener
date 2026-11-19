@@ -1,0 +1,287 @@
+
+/* ==========================================================
+   GREENR — DROPDOWN
+   Identidade visual original da aplicação
+========================================================== */
+
+.gr-dropdown {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    font-family: inherit;
+}
+
+.gr-dropdown-label {
+    margin-bottom: 7px;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ---------- Seletor ---------- */
+
+.gr-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 40px;
+    padding: 0 2.75rem 0 1.25rem;
+
+    border: none;
+    border-radius: 999px;
+
+    background-color: var(--text);
+    color: var(--background);
+
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 400;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.gr-dropdown-trigger:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.gr-dropdown-trigger:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+.gr-dropdown-trigger:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.gr-dropdown-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gr-dropdown-chevron {
+    flex-shrink: 0;
+    color: var(--background);
+    transition: transform 0.2s ease;
+}
+
+.gr-dropdown-chevron.is-open {
+    transform: rotate(180deg);
+}
+
+/* ---------- Painel ---------- */
+
+.gr-dropdown-panel {
+    position: absolute;
+    z-index: 1000;
+    top: calc(100% + 8px);
+    left: 0;
+
+    width: 100%;
+    max-height: 260px;
+    overflow-y: auto;
+
+    padding: 8px;
+
+    border: 1px solid color-mix(
+        in srgb,
+        var(--text) 15%,
+        transparent
+    );
+
+    border-radius: 16px;
+
+    background-color: var(--complementary);
+    color: var(--text);
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+
+    animation: gr-dropdown-enter 0.16s ease;
+}
+
+@keyframes gr-dropdown-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- Opções ---------- */
+
+.gr-dropdown-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    width: 100%;
+    min-height: 36px;
+    padding: 8px 12px;
+
+    border: none;
+    border-radius: 999px;
+
+    background: transparent;
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 0.95rem;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.gr-dropdown-option:hover:not(:disabled) {
+    background-color: color-mix(
+        in srgb,
+        var(--primary-light) 65%,
+        transparent
+    );
+}
+
+.gr-dropdown-option.is-selected {
+    background-color: var(--primary-light);
+    font-weight: 600;
+}
+
+.gr-dropdown-option:disabled,
+.gr-dropdown-option.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.gr-dropdown-option:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+
+/* ---------- MultiSelect ---------- */
+
+.gr-dropdown-multi-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 4px;
+}
+
+.gr-dropdown-checkbox-option {
+    justify-content: flex-start;
+    cursor: pointer;
+}
+
+.gr-dropdown-checkbox-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gr-dropdown-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 17px;
+    height: 17px;
+
+    border: 1px solid var(--text);
+    border-radius: 4px;
+
+    color: var(--background);
+}
+
+.gr-dropdown-checkbox-option.is-selected .gr-dropdown-check {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.gr-dropdown-checkbox-option input:focus-visible + .gr-dropdown-check {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.gr-dropdown-empty {
+    display: block;
+    padding: 10px;
+
+    color: var(--text);
+    opacity: 0.65;
+
+    font-size: 0.85rem;
+}
+
+/* ---------- Variantes ---------- */
+
+.gr-dropdown-dark {
+    --dropdown-background: var(--text);
+    --dropdown-panel: var(--complementary);
+    --dropdown-text: var(--text);
+}
+
+.gr-dropdown-green {
+    --dropdown-background: var(--primary);
+    --dropdown-panel: var(--background);
+    --dropdown-text: var(--text);
+}
+
+/* ---------- Scroll ---------- */
+
+.gr-dropdown-panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-light) transparent;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: var(--primary-light);
+}
+
+.gr-dropdown-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ---------- Responsividade ---------- */
+
+@media (max-width: 600px) {
+    .gr-dropdown-trigger {
+        min-height: 38px;
+        padding: 0 2.5rem 0 1rem;
+        font-size: 0.95rem;
+    }
+
+    .gr-dropdown-option {
+        min-height: 38px;
+        font-size: 0.88rem;
+    }
+
+    .gr-dropdown-panel {
+        max-height: 220px;
+    }
+}
