@@ -30,6 +30,7 @@ import ServiceCard from './components/ServiceCard';
 import './Comparison.css';
 import Loading from '../../components/loading/Loading';
 import type { MetricsType, ServiceType } from '../../types/service';
+import Tooltip from '../../components/tooltip/tooltip';
 
 export default function Comparison() {
   const [period, setPeriod] = useState('today');
@@ -253,7 +254,7 @@ export default function Comparison() {
             aria-label="Ajuda sobre os indicadores"
             title="Média dos serviços selecionados"
           >
-            <HelpIcon />
+            <Tooltip text={"Média das métricas dos \n servicos selecionadas"} />  
           </button>
 
           <div className="cmp-averages__content">

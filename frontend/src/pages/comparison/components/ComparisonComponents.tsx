@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { carbonLevel, formatNumber } from './comparisonData';
+import Tooltip from '../../../components/tooltip/tooltip';
 
 /* ------------------------------------------------------------------ */
 /* Saudação                                                            */
@@ -268,8 +269,10 @@ export function Gauge({
 
     return (
         <div className="cmp-gauge-card">
+        
+         
             <h3 className="cmp-gauge-card__title">{title}</h3>
-
+            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} /> 
             <svg
                 className="cmp-gauge"
                 viewBox="0 0 160 82"
@@ -417,6 +420,9 @@ export function EnergyTile({
 
     return (
         <div className="cmp-energy" title={deltaTitle(delta)}>
+            {rounded !== undefined && rounded !== 0 && (
+                <Tooltip text={"Quantidade que o seriço se distancia \n da referencia (média ou serviço marcado)"} />
+            )}
             <span className="cmp-energy__label">
                 {label}
 

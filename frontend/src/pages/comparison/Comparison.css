@@ -387,8 +387,8 @@
 
 .cmp-averages__help {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
+    top: 1.5rem;
+    right: 2.4rem;
     display: grid;
     place-items: center;
     padding: 0;
@@ -443,6 +443,7 @@
 }
 
 .cmp-gauge-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -737,6 +738,7 @@
 }
 
 .cmp-energy {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
