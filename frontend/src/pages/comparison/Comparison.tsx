@@ -30,10 +30,9 @@ import Loading from "../../components/loading/Loading";
 import {
   timeFormatter,
   type RankingPeriod,
-  type RankingService,
 } from "../ranking/components/rankingData";
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
-import RankingCalendar from "../ranking/components/rankingCalendar";
+import RankingCalendar from "../ranking/components/RankingCalendar";
 import type { MetricsType, ServiceType } from "../../types/service";
 
 export default function Comparison() {
@@ -315,6 +314,13 @@ export default function Comparison() {
                 onChange={(event) =>
                   handlePeriodChange(event.target.value as RankingPeriod)
                 }
+                onClick={(event) => {
+                  const currentValue = event.currentTarget
+                    .value as RankingPeriod;
+                  if (currentValue === period) {
+                    handlePeriodChange(currentValue);
+                  }
+                }}
               >
                 <option value="now">Agora</option>
                 <option value="today">Hoje</option>

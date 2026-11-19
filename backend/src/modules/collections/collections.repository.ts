@@ -117,42 +117,6 @@ async function insertMinuteHistory(
   return result.rows[0] || null;
 }
 
-// Funções que ainda serão feitas ==========
-
-export async function addHourHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM hour_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-async function insertHourHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM hour_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-export async function addMonthHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM month_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-async function insertMonthHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM month_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-// ==========================================
-
 export async function findHistory() {
   const result = await pool.query(
     `SELECT * FROM hour_data where service_id = 'billing-api'`,
@@ -173,7 +137,7 @@ export async function findMonthHistory(datePull: Date) {
   if (differenceInMonths(Date(), datePull) < 2) {
     result = await pool.query(
       `select name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -189,7 +153,7 @@ export async function findMonthHistory(datePull: Date) {
   } else {
     result = await pool.query(
       `SELECT name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -215,7 +179,7 @@ export async function findServiceMonthHistory(
   if (differenceInMonths(Date(), datePull) < 2) {
     result = await pool.query(
       `select name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -234,7 +198,7 @@ export async function findServiceMonthHistory(
     result = await pool.query(
       `SELECT 
           name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -254,12 +218,11 @@ export async function findServiceMonthHistory(
 }
 
 export async function findDayHistory(datePull: Date) {
-  //preciso de um if que detecta de o date pull é um mes antes do atual
   var result;
   if (differenceInDays(Date(), datePull) < 2) {
     result = await pool.query(
       `select name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -275,7 +238,7 @@ export async function findDayHistory(datePull: Date) {
   } else {
     result = await pool.query(
       `SELECT name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -299,7 +262,7 @@ export async function findServiceDayHistory(datePull: Date, serviceId: string) {
     result = await pool.query(
       `select
           name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -317,7 +280,7 @@ export async function findServiceDayHistory(datePull: Date, serviceId: string) {
   } else {
     result = await pool.query(
       `SELECT name,
-          service_id as id 
+          service_id as id,
           AVG(co2e) as co2e,
           AVG(kwh) as kwh,
           AVG(cpu_percentage) as cpu_percentage,
@@ -328,7 +291,7 @@ export async function findServiceDayHistory(datePull: Date, serviceId: string) {
           FROM day_data 
           inner join services as s on service_id = s.id
           WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '1 day' 
-          group by service_id
+          group by name, service_id
           limit 1`,
       [serviceId, datePull],
     );
@@ -466,14 +429,6 @@ export async function findServiceHourHistory(
 
   return result.rows[0] || null;
 }
-
-// export async function findMinuteHistory(datePull: Date) {
-//   const result = await pool.query(
-//     `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
-//     [serviceId, datePull],
-//   );
-//   return result.rows[0] || null;
-// }
 
 export async function findServiceMinuteHistory(
   datePull: number,

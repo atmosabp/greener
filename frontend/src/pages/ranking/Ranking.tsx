@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react";
 
 import AppHeader from "../../components/header/AppHeader";
 
-import RankingCalendar from "./components/rankingCalendar";
+import RankingCalendar from "./components/RankingCalendar";
 import useRankingCalendar from "./components/useRankingCalendar";
 
 import {
@@ -21,6 +21,7 @@ import { port } from "../../utils/connection";
 import { Link } from "react-router-dom";
 import type { ServiceType } from "../../types/service";
 import { greeting } from "../comparison/components/ComparisonComponents";
+import Toast from "../../components/toast/Toast";
 
 export default function Ranking() {
   const [userName, _setUserName] = useState<string>(() => {
@@ -91,6 +92,7 @@ export default function Ranking() {
           body: JSON.stringify({ periodType: periodType, datePull: datePull }),
         },
       );
+
       const data = await result.json();
 
       if (data.length > 0) {
@@ -109,10 +111,13 @@ export default function Ranking() {
         sortRanking(formatedData);
       } else {
         handleRefresh();
+        <Toast icon="error" title="Histórico" message="Não há dados para o período selecionado." />
         setHistoryMessage("Período escolhido não possui dados ");
       }
     } catch (e: any) {
-      console.log(e.message);
+      console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
+      <Toast icon="error" title="Histórico" message="Não há dados para o período selecionado." />
+      setHistoryMessage("Período escolhido não possui dados ");
     }
   }
 
@@ -225,6 +230,13 @@ export default function Ranking() {
                 <select
                   id="ranking-period-select"
                   value={period}
+                  onClick={(event) => {
+                    const currentValue = event.currentTarget
+                      .value as RankingPeriod;
+                    if (currentValue === period) {
+                      handlePeriodChange(currentValue);
+                    }
+                  }}
                   onChange={(event) =>
                     handlePeriodChange(event.target.value as RankingPeriod)
                   }

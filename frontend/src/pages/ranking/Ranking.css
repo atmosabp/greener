@@ -153,6 +153,7 @@
 }
 
 .ranking-period select {
+    display: flex;
     width: 100%;
     height: 2.3rem;
     padding: 0 2.5rem 0 0.85rem;
@@ -462,7 +463,7 @@
 .ranking-calendar-overlay {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 1010;
     display: flex;
     justify-content: center;
     align-items: center;

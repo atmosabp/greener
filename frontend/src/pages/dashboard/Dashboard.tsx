@@ -1,23 +1,18 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type CSSProperties,
-} from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
 import "../ranking/Ranking.css";
-import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
-import RankingCalendar from "../ranking/components/rankingCalendar";
+
+import RankingCalendar from "../ranking/components/RankingCalendar";
+
 import { type RankingPeriod } from "../ranking/components/rankingData";
-// import { Oval } from "react-loader-spinner";
 import { port } from "../../utils/connection";
 import { greeting } from "../comparison/components/ComparisonComponents";
+import Toast from "../../components/toast/Toast";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -82,9 +77,7 @@ export default function Dashboard() {
     track.scrollBy({ left: direction * step, behavior: "smooth" });
   };
 
-  /* Calendário para selecionar data */
-  const [filter, setFilter] = useState("");
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  //lógica do histórico e calendário
   const [historyMessage, setHistoryMessage] = useState("");
 
   function handlePeriodChange(nextPeriod: RankingPeriod) {
@@ -101,19 +94,6 @@ export default function Dashboard() {
 
     setPeriod(nextPeriod);
     calendar.openCalendar(nextPeriod);
-  }
-
-  function handleDateSelect(date: string): void {
-    console.log("Data:", date);
-
-    // Insirir lógica aqui
-  }
-
-  function handleFilterChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const selectedFilter = event.target.value;
-
-    setFilter(selectedFilter);
-    setIsCalendarOpen(selectedFilter === "custom");
   }
 
   const compact_query = "(max-width: 1024px)";
@@ -142,8 +122,6 @@ export default function Dashboard() {
 
   async function fetchHistory(periodType: string, datePull: Date) {
     try {
-      const port: number = import.meta.env.VITE_PORT || 3000;
-
       const result = await fetch(
         `http://localhost:${port}/collections/service-history/${serviceId}`,
         {
@@ -152,8 +130,10 @@ export default function Dashboard() {
           body: JSON.stringify({ periodType: periodType, datePull: datePull }),
         },
       );
+
       const data = await result.json();
-      if (data) {
+
+      if (data && data.length > 0) {
         setServiceMetrics({
           id: serviceMetrics.id,
           name: serviceMetrics.name,
@@ -170,12 +150,25 @@ export default function Dashboard() {
             carbon_intensity: data.co2e / data.kwh,
           },
         });
+
         setHistoryMessage("Você está vendo dados do passado ");
       } else {
-        updateMetrics();
         setHistoryMessage("Período escolhido não possui dados ");
+        <Toast
+          icon="error"
+          title="Histórico"
+          message="Não há dados para o período selecionado."
+        />;
       }
-    } catch (e: any) {}
+    } catch (e: any) {
+      console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
+      <Toast
+        icon="error"
+        title="Histórico"
+        message="Não há dados para o período selecionado."
+      />;
+      setHistoryMessage("Período escolhido não possui dados ");
+    }
   }
 
   async function getServiceMetrics() {
@@ -234,27 +227,16 @@ export default function Dashboard() {
     setHistoryMessage("");
     setPeriod("now");
     historyActivatedRef.current = false;
-    getServiceList();
-    getServiceMetrics();
+    await getServiceList();
+    await getServiceMetrics();
   }
 
-  // useEffect para atualizar de acordo com o intervalo
+  //useEffect para rodar na inicialização e iniciar o refresh de dados
   useEffect(() => {
-    // updateMetrics();
-    // const fetchData = async () => {
-    //   await updateMetrics();
-    // };
-    // const fetchTimer = setInterval(
-    //   fetchData,
-    //   (localStorage.getItem("refresh_interval")
-    //     ? Number(localStorage.getItem("refresh_interval"))
-    //     : updateInterval) * 1000,
-    // );
-
-    // return () => clearInterval(fetchTimer);
     if (!historyActivatedRef.current) {
       updateMetrics();
     }
+    <Toast icon="error" title="oie" />
   }, [historyActivatedRef.current]);
 
   function createServiceList() {
@@ -321,8 +303,8 @@ export default function Dashboard() {
               {greeting()}, {userName}.
             </h1>
             <p>
-              Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
-              .{/* backend: nome do serviço */}
+              Analise os dados do serviço{" "}
+              <strong>{serviceMetrics.name}.</strong>
             </p>
           </div>
 
@@ -367,6 +349,13 @@ export default function Dashboard() {
                     onChange={(event) =>
                       handlePeriodChange(event.target.value as RankingPeriod)
                     }
+                    onClick={(event) => {
+                      const currentValue = event.currentTarget
+                        .value as RankingPeriod;
+                      if (currentValue === period) {
+                        handlePeriodChange(currentValue);
+                      }
+                    }}
                   >
                     <option value="now">Agora</option>
                     <option value="today">Hoje</option>
@@ -374,17 +363,6 @@ export default function Dashboard() {
                     <option value="year">Esse ano</option>
                   </select>
                 </div>
-                {/* <div className="btn-date">
-                  <select
-                    name="date"
-                    id="date-select"
-                    value={filter}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="today">Hoje</option>
-                    <option value="custom">Escolher data</option>
-                  </select>
-                </div> */}
               </div>
             ) : (
               <>
@@ -425,18 +403,6 @@ export default function Dashboard() {
                     <option value="year">Esse ano</option>
                   </select>
                 </div>
-
-                {/* <div className="btn-date">
-                  <select
-                    name="date"
-                    id="date-select"
-                    value={filter}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="today">Hoje</option>
-                    <option value="custom">Escolher data</option>
-                  </select>
-                </div> */}
               </>
             )}
           </div>
@@ -457,7 +423,6 @@ export default function Dashboard() {
                     data-status="active"
                     aria-hidden="true"
                   />
-                  {/* backend: data-status = "active" | "warning" | "inactive" */}
                   <p>
                     {serviceMetrics &&
                     serviceMetrics.status &&
@@ -704,16 +669,11 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-        {isCalendarOpen && (
-          <Calendar
-            onSelect={handleDateSelect}
-            onClose={() => setIsCalendarOpen(false)}
-          />
-        )}
       </main>
       <footer>
         <span>Desenvolvido por Atmos &copy; {year}</span>
       </footer>
+
       {/* mobile: botão voltar ao topo */}
       <button
         type="button"
@@ -723,6 +683,8 @@ export default function Dashboard() {
       >
         <ArrowIcon className="icon-up" />
       </button>
+
+      {/* calendário do histórico */}
       {calendar.calendarOpen && (
         <RankingCalendar
           period={period}

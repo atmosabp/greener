@@ -38,8 +38,7 @@ export default function useRankingCalendar() {
       setCalendarOpen(false);
       return;
     }
-
-    // Sempre abre no período atual.
+    
     setViewMonth(currentMonth);
     setViewYear(currentYear);
     setCalendarOpen(true);
