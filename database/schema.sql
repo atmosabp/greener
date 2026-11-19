@@ -117,8 +117,10 @@ begin
 			new.service_id,
 			new.date_pull :: timestamp - interval '120 minutes'
 		);
-		select AVG(renewable_percent) from minute_data 
-			where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';
+		
+		-- select AVG(renewable_percent) from minute_data 
+		-- 	where service_id = new.service_id and date_pull between new.date_pull :: timestamp - interval '120 minutes' and new.date_pull :: timestamp - interval '60 minutes';
+		
 		delete from minute_data 
 		where service_id = new.service_id
 		and date_pull <= new.date_pull :: timestamp - interval '60 minutes';

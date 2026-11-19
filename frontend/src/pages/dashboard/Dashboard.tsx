@@ -4,11 +4,14 @@ import "./Dashboard.css";
 import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
-import Toast from "../../components/toast/Toast";
+
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
-// import { Oval } from "react-loader-spinner";
+
+
+import { port } from "../../utils/connection";
+import { greeting } from "../comparison/components/ComparisonComponents";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -112,7 +115,7 @@ export default function Dashboard() {
 
     try {
       const result = await fetch(
-        `http://localhost:${import.meta.env.VITE_PORT}/collections/service-metrics/${serviceId}`,
+        `http://localhost:${port}/collections/service-metrics/${serviceId}`,
       );
       const data = await result.json();
       setTimeUpdated(new Date().toLocaleString());
@@ -125,7 +128,7 @@ export default function Dashboard() {
   async function getServiceList(): Promise<void> {
     try {
       const result = await fetch(
-        `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
+        `http://localhost:${port}/collections/all-service-data`,
       );
       const data: ServicesType[] = await result.json();
       let serviceNames: {
@@ -244,7 +247,8 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>Bom dia, {userName}.</h1>
+            <h1>{greeting()}, {userName}.</h1>
+            
             {showSkeleton ? (
               <p>
                 <Skeleton width="15rem" height="1rem" />
@@ -388,20 +392,35 @@ export default function Dashboard() {
               <section className="metric-card metric-card--data metric-energy">
                 <p>Consumo energético</p>
                 <h4>
-                  {serviceMetrics.metrics?.kwh.toLocaleString("pt-BR", {
-                    maximumSignificantDigits: 4,
-                  })}{" "}
-                  kWh
+                  {serviceMetrics.metrics?.memory_gb ? (
+                    <>
+                      {serviceMetrics.metrics?.memory_gb.toLocaleString(
+                        "pt-BR",
+                        {
+                          maximumSignificantDigits: 4,
+                        },
+                      )}{" "}
+                      kWh
+                    </>
+                  ) : (
+                    <>Indisponível</>
+                  )}
                 </h4>
               </section>
 
               <section className="metric-card metric-card--data metric-co2">
                 <p>Emissão de CO₂e</p>
                 <h4>
-                  {serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
-                    maximumSignificantDigits: 6,
-                  })}{" "}
-                  CO₂e
+                  {serviceMetrics.metrics?.co2e ? (
+                    <>
+                      {serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
+                        maximumSignificantDigits: 4,
+                      })}{" "}
+                      CO₂e
+                    </>
+                  ) : (
+                    <>Indisponível</>
+                  )}
                 </h4>
               </section>
 
@@ -456,13 +475,19 @@ export default function Dashboard() {
                     <p>Memória</p>
                     <span className="metric-counter">2/4</span>
                     <h4>
-                      {serviceMetrics.metrics?.memory_gb.toLocaleString(
-                        "pt-BR",
-                        {
-                          maximumSignificantDigits: 4,
-                        },
-                      )}{" "}
-                      GB
+                      {serviceMetrics.metrics?.memory_gb ? (
+                        <>
+                          {serviceMetrics.metrics?.memory_gb.toLocaleString(
+                            "pt-BR",
+                            {
+                              maximumSignificantDigits: 4,
+                            },
+                          )}{" "}
+                          GB
+                        </>
+                      ) : (
+                        <>Indisponível</>
+                      )}
                     </h4>
                   </section>
 
@@ -470,10 +495,19 @@ export default function Dashboard() {
                     <p>Armazenamento</p>
                     <span className="metric-counter">3/4</span>
                     <h4>
-                      {serviceMetrics.metrics?.disk_gb.toLocaleString("pt-BR", {
-                        maximumSignificantDigits: 4,
-                      })}{" "}
-                      GB
+                      {serviceMetrics.metrics?.disk_gb ? (
+                        <>
+                          {serviceMetrics.metrics?.disk_gb.toLocaleString(
+                            "pt-BR",
+                            {
+                              maximumSignificantDigits: 4,
+                            },
+                          )}{" "}
+                          GB
+                        </>
+                      ) : (
+                        <>Indisponível</>
+                      )}
                     </h4>
                   </section>
 
@@ -481,13 +515,19 @@ export default function Dashboard() {
                     <p>Rede</p>
                     <span className="metric-counter">4/4</span>
                     <h4>
-                      {serviceMetrics.metrics?.network_gb.toLocaleString(
-                        "pt-BR",
-                        {
-                          maximumSignificantDigits: 4,
-                        },
-                      )}{" "}
-                      GB
+                      {serviceMetrics.metrics?.network_gb ? (
+                        <>
+                          {serviceMetrics.metrics?.network_gb.toLocaleString(
+                            "pt-BR",
+                            {
+                              maximumSignificantDigits: 4,
+                            },
+                          )}{" "}
+                          GB
+                        </>
+                      ) : (
+                        <>Indisponível</>
+                      )}
                     </h4>
                   </section>
                 </div>
@@ -568,14 +608,10 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              O serviço está inativo.
+              O serviço está inativo, e não é possível recolher as suas métricas no momento.
               <br />
               Volte à tela principal e selecione outro serviço.
-              <Toast
-                icon="error"
-                title="Erro"
-                message="Erro ao carregar métricas do serviço. O serviço pode estar inativo."
-              />
+              {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}
             </div>
           )}
         </div>

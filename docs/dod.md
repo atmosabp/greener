@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[DoD Sprint 1](#sprint-1) - [DoD Sprint 2](#sprint-2)
+[DoD Sprint 1](#sprint-1) - [DoD Sprint 2](#sprint-2) - [DoD Sprint 3](#sprint-3)
 
 </div>
 
@@ -362,6 +362,206 @@ O formato do DoD foi alterado para detalhar mais sobre cada requisito e as taref
     - Execução dos testes pode ser realizada por um comando documentado.
     - Falhas nos testes são identificadas e não ignoradas indevidamente.
     - Suíte executada e problemas encontrados registrados ou corrigidos.
+
+<br>
+
+---
+
+<br>
+
+### Sprint 3
+- FE01 -> Transformar serviços das telas de Ranking e Comparação em componentes clicáveis
+**Responsável:** Júlia
+    -  Ao clicar em um serviço, o usuário deve ser redirecionado para a Dashboard correspondente
+    - As informações exibidas devem corresponder ao serviço selecionado
+    - A navegação deve funcionar corretamente, sem erros ou comportamentos inesperados
+
+- FE02 -> Adicionar framework de dropdown para personalização
+**Responsável:** Lorenzo
+    -  Implementar um componente de Dropdown reutilizável.
+    - Permitir a personalização de estilos conforme o design system.
+    - Garantir consistência visual com os demais componentes do sistema
+    - Garantir responsividade e funcionamento adequado das opções e interações
+    - Validar a integração do componente nas telas que utilizam Dropdown. (Dashboard, Ranking e Comparação)
+
+- FE03 -> Skeleton
+**Responsável:** Beatriz
+    - Implementar componentes Skeleton reutilizáveis
+    - Garantir que os Skeletons correspondam à estrutura visual dos conteúdos que serão carregados
+    - Aplicar os componentes nas telas necessárias
+    - Garantir consistência com o Design System e responsividade
+    - Validar a exibição e remoção dos Skeletons após o carregamento dos dados
+
+- FE04 -> Fazer animação de loading
+**Responsável:** Júlia
+    -  Desenvolver uma ilustração animada para o estado de Loading
+    - Garantir que a animação tenha movimento fluido e contínuo
+    - Garantir consistência visual com o Design System
+
+- FE05 -> Integrar histórico com as telas
+**Responsável:** Darcy
+    - Integrar a funcionalidade de Histórico nas telas previstas
+    - Exibir os registros correspondentes a cada contexto
+    - Garantir que as informações sejam apresentadas corretamente e estejam atualizadas
+
+- FE06 -> Refatoração do backend em classes
+**Responsável:** Mariana
+    - Criar interfaces para definir os contratos das camadas
+    - Implementar as classes em Controller, Service e Repository
+    - Aplicar injeção de dependências entre as camadas
+    - Garantir a separação de responsabilidades e o baixo acoplamento
+    - Preservar as funcionalidades e regras de negócio existentes
+    - Validar a integração entre as camadas e o funcionamento geral do sistema
+
+- FE07 -> Tela principal
+**Responsável:** Lorenzo
+    - Analisar as funcionalidades atuais do Globo e do Mapa.
+    - Implementar novas funcionalidades nos componentes.
+    - Melhorar a usabilidade e a experiência de interação.
+    - Otimizar o desempenho e o tempo de carregamento.
+    - Garantir a integração correta com os demais elementos da tela principal.
+    - Manter a consistência visual com o Design System.
+    - Validar o funcionamento, a responsividade e o desempenho após as alterações.
+
+- FE08 -> Tela 404
+**Responsável:** -
+    - Desenvolver a interface da tela 404 conforme o design definido
+    - Desenvolver responsividade para celulares
+    - Desenvolver responsividade para tablets
+    - Disponibilizar botão para navegar de volta
+    - Garantir consistência com o Design System
+    - Implementar tratamento para rotas inexistentes no backend
+    - Retornar o status HTTP 404 para endpoints não encontrados
+    - Retornar a tela anterior quando clicado no botão "voltar"
+    - Garantir compatibilidade com o frontend
+    - Validar o comportamento com rotas inexistentes
+
+- BU01 -> Alterar esquema de cores
+**Responsável:** Beatriz
+    - Corrigir todos os bugs que foram notificados pelos desenvolvedores
+    - Seguir o padrão de design do projeto e das telas que foi definido
+    - Garantir visual dos formatos responsivos
+
+- BU02 -> Adicionar botão de atualizar serviços na hora
+**Responsável:** Darcy
+    - As seguintes telas: Tela Principal, Dashboard e Ranking devem ter o botão desenvolvido
+    - O botão está funcional, e apresenta uma mensagem de carregamento de requisição, para o UX
+
+- BU03 -> Card de serviço do globo sobrepõe header
+**Responsável:** Mariana
+    - Em todos os formatos e responsividades de tela o problema não deve existir
+    - Não haver gerado outros problemas em relação ao card ou outros componentes da Tela Principal
+
+- BU04 -> Refatorar header
+**Responsável:** Kauã
+    - Header possui mais animações
+    - Botão de sair tem indicador visual quando tem hover (além do cursor mudar)
+    - Logo do GreenER tem efeito de hover aparente
+
+- BU05 -> Arruamr header no login
+**Responsável:** Mariana
+    - Erro visual de sobreposição formulário arrumado para qualquer tamanho, formato e responsividade de tela
+
+- BU06 -> Melhorar desempenho das requisições
+**Responsável:** Darcy
+    - Desempenho das requisições da aplicação têm melhora aparente OU não possuem tempos de esperas longos demais no geral (descontar erros da API externa).
+    - Todos os endpoints e telas citados foram revisados e alterados para melhoria.
+
+- BU07 -> Não permitir usuário selecionar menos de 2 serviços
+**Responsável:** Kauã
+    - Usuário pode selecionar no mínimo 2 serviços na tela de comparação.
+
+- BU08 -> Padronizar tela principal com o resto do site
+**Responsável:** Lorenzo
+    - Tamanhos dos textos foram ajustados para seguir o padrão de rem (não px) e manter o mesmo tamanho das outras telas.
+    - Componente de lista de serviços é visualmente "igual" (dentro do possível) ao componente de lista de serviços da dashboard.
+    - Botões abaixo da lista de serviços foram alterados para seguir o padrão de outros botões.
+
+- BU09 -> Manter elementos da tela de cadastro no topo
+**Responsável:** Darcy
+    - Os elementos (greetings e tabela) ficam alinhados no topo da página, independente de seu tamanho, formato ou responsividade.
+
+- BU10 -> Refatorar landing page
+**Responsável:** Beatriz
+    - A tela possui todas as animações e adições que adicionam o interesse visual necessário.
+    - As cores e visuais estão harmoniosos.
+
+- BU11 -> Redirecionar administrador logado para tela de cadastro
+**Responsável:** Mariana
+    - Usuário administrador que acabou de logar é redirecionado para a página de cadastro, ao invés da tela principal.
+    - Um usuário normal deve ser redirecionado normalmente para a tela principal.
+    - Um link intuitivo foi adicionado, além da logo do header já existente, para redirecionar o usuário para a tela principal.
+
+- BU12 -> Padronizar erros de input para Toast
+**Responsável:** Kauã
+    - Todos os erros em formato de texto puro nas telas de Login e Cadastro foram retirados.
+    - Todos os erros que existiam em formato de texto puro agora possui seu formato em Toast, cubrindo todos eles, sem excluir algum.
+
+- BU13 -> Tratar e padronizar mensagens de erro do backend
+**Responsável:** Júlia
+    - Mensagens principais dos erros são mostrados como mais user-friendly para os usuários, e não erros que apenas pessoas da área entendem.
+    - Todos os erros do backend e do frontend estão formatados para ter o mesmo padrão, e possuem informações úteis para o usuário saber o que fazer em seguida.
+
+- BU14 -> Arrumar toast atrás de scrim
+**Responsável:** Kauã
+    - Toast definido pela não está mais atrás do scrim.
+
+- BU15 -> Adicionar tooltips e aria-label em componentes
+**Responsável:** Darcy
+    - Tooltips e aria-labels foram adicionados com as informações necessárias sobre a métrica/componente para o usuário entender sua função.
+    - Grande parte dos componentes possuem tooltips para entender suas funcionalidades.
+
+- BU16 -> Padronizar greetings
+**Responsável:** Kauã
+    - A página de ranking possui saudação
+    - As saudações de todas as páginas alteram de acordo com o horário atual (assim como a tela de Comparação).
+    - As saudações funcionam nas duas responsividades (mobile e desktop) e não apresentam nenhum problema visual.
+
+- ES06 -> Manter README.md
+**Responsável:** Júlia
+    - Atualizar o arquivo README.md
+    - Manter as informações atualizadas conforme a evolução do projeto
+    - Garantir clareza, organização e padronização da documentação
+
+- ES17 -> Finalizar a documentação técnica
+**Responsável:** Kauã
+    - Atualizar a documentação dos endpoints implementados ou modificados
+    - Documentar alterações no banco de dados, se for necessário
+    - Atualizar a documentação das funcionalidades e componentes do frontend
+    - Garantir que a documentação corresponda à implementação atual
+    - Manter a organização e padronização da documentação técnica
+
+- ES18 -> Criar Sprint Backlog referente a 3° sprint
+**Responsável:** Todos
+    - Selecionar e priorizar os itens do Product Backlog.
+    - Detalhar as tarefas necessárias para cada entrega.
+    - Definir responsáveis pelas atividades.
+    - Estabelecer critérios de aceite para as tarefas.
+    - Organizar as atividades no quadro de gerenciamento do projeto.
+    - Garantir o alinhamento da equipe quanto às entregas e objetivos da Sprint.
+
+- ES19 -> Criar vídeo referente a 3° sprint
+**Responsável:** Todos
+    - Elaborar o roteiro de apresentação do vídeo
+    - Demonstrar as principais funcionalidades do sistema
+    - Apresentar a evolução do projeto e as entregas realizadas
+    - Garantir qualidade de áudio, vídeo e clareza na apresentação
+    - Realizar a edição do vídeo
+    - Publicar vídeo no youtube
+
+- ES20 -> Criar relatório da 3° sprint
+**Responsável:** Júlia
+    - Documentar as atividades e tarefas realizadas durante a terceira Sprint.
+    - Registrar as entregas concluídas e funcionalidades implementadas.
+
+- ES21 -> Criar e manter burndown da 3° sprint  
+**Responsável:** Júlia
+    - Criar o gráfico Burndown para a Sprint.
+    - Registrar o progresso e o trabalho restante ao longo dos dias.
+    - Atualizar o gráfico conforme a conclusão das atividades.
+    - Apresentar as linhas de progresso ideal e real.
+    - Manter o gráfico atualizado durante toda a Sprint.
+    - Garantir que as informações estejam alinhadas ao Sprint Backlog.
 
 <br>
 

@@ -36,6 +36,7 @@ async function fetchServices() {
 
 async function fetchMetricsAddHistory(serviceId: string) {
   try {
+    
     const result = await fetch(
       `http://localhost:${connection.ports}/collections/add-history`,
       {

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import AppHeader from "../../components/header/AppHeader";
 
 import {
@@ -11,11 +10,7 @@ import {
   PERIODS,
 } from "./components/comparisonData";
 
-import type {
-  Service,
-  CompareTarget,
-  Metrics,
-} from "./components/comparisonData";
+import type { CompareTarget } from "./components/comparisonData";
 
 import {
   Chevron,
@@ -30,10 +25,15 @@ import {
 import ServiceCard from "./components/ServiceCard";
 
 import "./Comparison.css";
+
 import {
   CmpAveragesSkeleton,
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
+
+import "./Comparison.css";
+
+import type { MetricsType, ServiceType } from "../../types/service";
 
 export default function Comparison() {
   const [period, setPeriod] = useState("today");
@@ -49,7 +49,7 @@ export default function Comparison() {
     }
   });
 
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,12 +99,12 @@ export default function Comparison() {
   const visible = order
     .filter((id) => selected.has(id))
     .map((id) => services.find((service) => service.id === id))
-    .filter((service): service is Service => service !== undefined);
+    .filter((service): service is ServiceType => service !== undefined);
 
   /* Médias dos serviços selecionados e escala dos medidores. */
   const averages = calculateAverages(visible);
-  const maxConsumo = calculateMax(visible, "consumo");
-  const maxEmissao = calculateMax(visible, "emissao");
+  const maxConsumo = calculateMax(visible, "kwh");
+  const maxEmissao = calculateMax(visible, "co2e");
 
   const gaugeFill = (value?: number, max?: number) =>
     value === undefined || !max ? "0" : String((value / max) * 100);
@@ -114,7 +114,7 @@ export default function Comparison() {
   );
 
   /* Base de comparação de cada cartão: referência ou média. */
-  const baseMetricsFor = (service: Service): Metrics | undefined => {
+  const baseMetricsFor = (service: ServiceType): MetricsType | undefined => {
     if (service.id === referenceId) return undefined;
 
     const target = compareMap[service.id] ?? "reference";
@@ -127,11 +127,16 @@ export default function Comparison() {
   };
 
   /* Selecionar ou desmarcar serviços. */
+  const MIN_SERVICES = 2;
+
   const toggleSelected = (id: string) => {
     setSelected((previous) => {
       const next = new Set(previous);
 
       if (next.has(id)) {
+        // não deixa ficar com menos de MIN_SERVICES
+        if (previous.size <= MIN_SERVICES) return previous;
+
         next.delete(id);
       } else {
         next.add(id);
@@ -180,6 +185,9 @@ export default function Comparison() {
             </h1>
 
             <p className="cmp-intro__sub">Comparação de serviços</p>
+            <p className="cmp-intro__sub">
+              Selecione dois ou mais serviços para comparar suas métricas.
+            </p>
 
             <Popover
               trigger={({ open, toggle }) => (
@@ -249,40 +257,44 @@ export default function Comparison() {
               <div className="cmp-averages__tiles">
                 <div className="cmp-avg-tile">
                   <span>Rede</span>
-                  <strong>{formatMetric("rede", averages.rede)}</strong>
-                </div>
-
-                <div className="cmp-avg-tile">
-                  <span>CPU</span>
-                  <strong>{formatMetric("cpu", averages.cpu)}</strong>
-                </div>
-
-                <div className="cmp-avg-tile">
-                  <span>Armazenamento</span>
                   <strong>
-                    {formatMetric("armazenamento", averages.armazenamento)}
+                    {formatMetric("network_gb", averages.network_gb)}
                   </strong>
                 </div>
 
                 <div className="cmp-avg-tile">
+                  <span>CPU</span>
+                  <strong>
+                    {formatMetric("cpu_percent", averages.cpu_percent)}
+                  </strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>Armazenamento</span>
+                  <strong>{formatMetric("disk_gb", averages.disk_gb)}</strong>
+                </div>
+
+                <div className="cmp-avg-tile">
                   <span>Memória</span>
-                  <strong>{formatMetric("memoria", averages.memoria)}</strong>
+                  <strong>
+                    {formatMetric("memory_gb", averages.memory_gb)}
+                  </strong>
                 </div>
               </div>
 
               <Gauge
                 title="Consumo energético"
-                value={formatMetric("consumo", averages.consumo)}
+                value={formatMetric("kwh", averages.kwh)}
                 unit=""
-                fill={gaugeFill(averages.consumo, maxConsumo)}
+                fill={gaugeFill(averages.kwh, maxConsumo)}
                 max={formatNumber(maxConsumo)}
               />
 
               <Gauge
                 title="Emissão de CO₂e"
-                value={formatMetric("emissao", averages.emissao)}
+                value={formatMetric("co2e", averages.co2e)}
                 unit=""
-                fill={gaugeFill(averages.emissao, maxEmissao)}
+                fill={gaugeFill(averages.co2e, maxEmissao)}
                 max={formatNumber(maxEmissao)}
               />
             </div>
@@ -368,6 +380,41 @@ export default function Comparison() {
                 ))}
               </>
             )}
+
+            {!loading && error && <p className="cmp-empty">{error}</p>}
+
+            {!loading && !error && visible.length === 0 && (
+              <p className="cmp-empty">
+                Nenhum serviço selecionado. Escolha ao menos um em “Serviços
+                selecionados”.
+              </p>
+            )}
+
+            {/* Aqui é gerado o card de cada serviço */}
+
+            {visible.map((service, index) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                rank={index + 1}
+                isFirst={index === 0}
+                isLast={index === visible.length - 1}
+                isReference={service.id === referenceId}
+                compareWith={compareMap[service.id] ?? "reference"}
+                hasReference={
+                  referenceId !== null && referenceId !== service.id
+                }
+                baseMetrics={baseMetricsFor(service)}
+                onMove={(direction) => move(service.id, direction)}
+                onToggleReference={() => toggleReference(service.id)}
+                onCompareChange={(target) =>
+                  setCompareMap((previous) => ({
+                    ...previous,
+                    [service.id]: target,
+                  }))
+                }
+              />
+            ))}
           </div>
         </section>
       </main>

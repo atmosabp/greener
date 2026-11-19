@@ -22,6 +22,7 @@ import {
 import type { FormValues } from "../../types/form";
 import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
+import { port } from "../../utils/connection";
 
 interface User {
   id: number;
@@ -38,7 +39,7 @@ interface ToastState {
 }
 
 // Rotas de usuários do back.
-const USERS_URL = `http://localhost:${import.meta.env.VITE_PORT}/users`;
+const USERS_URL = `http://localhost:${port}/users`;
 
 // Representa os erros que podem acontecer durante uma requisição.
 class RequestError extends Error {

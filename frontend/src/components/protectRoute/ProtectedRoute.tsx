@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Toast from "../toast/Toast";
+import { port } from "../../utils/connection";
 
 interface ProtectedRouteProps {
   requireAdmin?: boolean;
@@ -33,7 +34,7 @@ export default function ProtectedRoute({
 
       try {
         const response = await fetch(
-          `http://localhost:${import.meta.env.VITE_PORT}/auth/me`,
+          `http://localhost:${port}/auth/me`,
           {
             method: "GET",
             headers: {
@@ -79,6 +80,7 @@ export default function ProtectedRoute({
         }
 
         setStatus("authenticated");
+
       } catch (error: any) {
         if (error instanceof Error && error.name === "AbortError") {
           return;

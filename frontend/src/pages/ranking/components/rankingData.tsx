@@ -1,8 +1,9 @@
 export type RankingService = {
-  id: number;
+  id: string;
   name: string;
-  energy: number;
-  co2e: number;
+  energy?: number;
+  co2e?: number;
+  status: string;
 };
 
 export type RankingMetric = "energy" | "co2e";

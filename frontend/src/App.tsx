@@ -1,7 +1,7 @@
 import LandingHeader from "./components/header/LandingHeader";
 import Footer from "./components/footer/Footer";
 import Logo from "./assets/logo-greener-n-text.svg";
-import aboutPic from "./assets/about-picture.png";
+import aboutPic from "./assets/about-pic.png";
 import PlantPic from "./assets/plant.png";
 import {
   ShieldCheck,
@@ -12,9 +12,25 @@ import {
   ArrowLeftRight,
   UserCog,
   Mail,
+  ArrowDown,
+  ArrowRight,
+  Cpu,
+  MemoryStick,
+  HardDrive,
+  Network,
+  Leaf,
+  Zap,
+  Cloud,
+  Droplets,
 } from "lucide-react";
 import "./App.css";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
 // Cards de passos da missão (teste para ver se isso torna o código mais organizado/fácil de manter)
 const steps = [
@@ -76,7 +92,232 @@ const indicators = [
   },
 ];
 
-export default function App() {
+// Dados da seção overview -> retirados da apresentação do cliente
+type Stat = {
+  year: string;
+  from: number;
+  to?: number;
+  note: string;
+  projected?: boolean;
+};
+
+const overview: { title: string; unit: string; max: number; stats: Stat[] }[] =
+  [
+    {
+      title: "Eletricidade nos EUA",
+      unit: "terawatt-hora (TWh)",
+      max: 580,
+      stats: [
+        { year: "2014", from: 58, note: "base histórica" },
+        { year: "2023", from: 176, note: "≈ 3× em nove anos" },
+        {
+          year: "2028*",
+          from: 325,
+          to: 580,
+          note: "projetados",
+          projected: true,
+        },
+      ],
+    },
+    {
+      title: "Água direta nos EUA",
+      unit: "bilhões de litros (bi L)",
+      max: 124,
+      stats: [
+        { year: "2014", from: 21, note: "resfriamento local" },
+        { year: "2023", from: 66, note: "≈ 3,1× em nove anos" },
+        {
+          year: "2028*",
+          from: 60,
+          to: 124,
+          note: "projetados",
+          projected: true,
+        },
+      ],
+    },
+  ];
+
+const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
+
+// Revela os elementos quando entram na tela.
+function useRevealOnScroll() {
+  useLayoutEffect(() => {
+    document
+      .querySelectorAll<HTMLElement>("[data-stagger]")
+      .forEach((group) => {
+        const kind = group.dataset.stagger;
+        const type = kind && kind !== "true" ? kind : "up";
+        const cols = Number(group.dataset.cols) || Infinity;
+
+        Array.from(group.children).forEach((child, i) => {
+          const el = child as HTMLElement;
+          if (el.hasAttribute("data-no-reveal")) return;
+          if (!el.dataset.reveal) el.dataset.reveal = type;
+          if (!el.style.getPropertyValue("--d")) {
+            el.style.setProperty("--d", `${(i % cols) * 100}ms`);
+          }
+        });
+      });
+
+    document.documentElement.classList.add("has-reveal");
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+    );
+
+    document.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
+
+    return () => {
+      io.disconnect();
+      document.documentElement.classList.remove("has-reveal");
+    };
+  }, []);
+}
+
+// Barra de progresso da página + progresso da linha da seção Missão
+function useScrollProgress(
+  bar: { current: HTMLElement | null },
+  mission: { current: HTMLElement | null },
+) {
+  useEffect(() => {
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.current?.style.setProperty(
+        "--scroll",
+        String(max > 0 ? window.scrollY / max : 0),
+      );
+
+      const el = mission.current;
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const p = (window.innerHeight * 0.9 - rect.top) / rect.height;
+        const current = Number(el.style.getPropertyValue("--line")) || 0;
+        const progress = Math.min(1, Math.max(current, p));
+        el.style.setProperty("--line", String(progress));
+      }
+    };
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [bar, mission]);
+}
+
+// Número que "conta" até o valor final quando aparece na tela
+function CountUp({
+  to,
+  duration = 1600,
+  delay: startDelay = 0,
+}: {
+  to: number;
+  duration?: number;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let raf = 0;
+    let timer = 0;
+
+    const run = () => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min((now - start) / duration, 1);
+        setValue(Math.round(to * (1 - Math.pow(1 - t, 4))));
+        if (t < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        timer = window.setTimeout(run, startDelay);
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+
+    return () => {
+      io.disconnect();
+      window.clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
+  }, [to, duration, startDelay]);
+
+  return (
+    <span ref={ref} className="count">
+      <span aria-hidden="true">{value.toLocaleString("pt-BR")}</span>
+      <span className="sr-only">{to.toLocaleString("pt-BR")}</span>
+    </span>
+  );
+}
+
+/* órbita */
+const orbitOuter = [Cpu, MemoryStick, HardDrive, Network];
+const orbitInner = [Zap, Cloud, Droplets];
+
+function BannerOrbit() {
+  const ring = (
+    icons: typeof orbitOuter,
+    kind: string,
+    step: number,
+    offset: number,
+  ) => (
+    <div className={`spin ${kind}`}>
+      {icons.map((Icon, k) => (
+        <div
+          key={k}
+          className="node"
+          style={{ "--a": `${k * step + offset}deg` } as CSSProperties}
+        >
+          <span className="chip">
+            <Icon size={22} />
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="banner-orbit" aria-hidden="true">
+      <div className="orbit">
+        {ring(orbitOuter, "outer", 90, 45)}
+        {ring(orbitInner, "inner", 120, 0)}
+        <div className="orbit-core">
+          <Leaf size={40} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App(): import("react").JSX.Element {
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
@@ -89,54 +330,158 @@ export default function App() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const progressRef = useRef<HTMLDivElement>(null);
+  const missionRef = useRef<HTMLDivElement>(null);
+  useRevealOnScroll();
+  useScrollProgress(progressRef, missionRef);
+
   return (
     <>
-      {isMobile ? <img src={Logo} className="logo-top"/> : ""}
+      {isMobile ? (
+        <img src={Logo} className="logo-top" alt="Logo GreenER" />
+      ) : (
+        ""
+      )}
+      <div ref={progressRef} className="scroll-progress" aria-hidden="true" />
       <LandingHeader />
 
       <main className="landingpage">
         {/* seção BANNER */}
-        <section className="section-spaced">
-          <div className="banner">
-            <div className="text">
-              <h1>GREENER</h1>
-              <h2>Do consumo computacional ao impacto ambiental.</h2>
-              <p>
-                Uma plataforma para transformar métricas de infraestrutura em
-                indicadores de energia, água e emissões de CO2e.
-              </p>
-              <a href="#about" className="banner-btn">
-                Saber mais
-              </a>
+        {/* <section className="section-spaced"> */}
+        <div className="banner">
+          <div className="text">
+            <h1 aria-label="GREENER">
+              {"GREENER".split("").map((letter, i) => (
+                <span
+                  key={i}
+                  aria-hidden="true"
+                  style={{ "--i": i } as CSSProperties}
+                >
+                  {letter}
+                </span>
+              ))}
+            </h1>
+            <h2>Do consumo computacional ao impacto ambiental.</h2>
+            <p>
+              Uma plataforma para transformar métricas de infraestrutura em
+              indicadores de energia, água e emissões de CO2e.
+            </p>
+            <a href="#about" className="banner-btn">
+              Saber mais
+              <ArrowDown size={20} className="btn-arrow" aria-hidden="true" />
+            </a>
+          </div>
+
+          <BannerOrbit />
+          {/* <InteractiveGlobe
+            services={[]}
+            selectedServiceId={null}
+            onSelectService={() => {}}
+          /> */}
+
+          <div className="banner-ticker" aria-hidden="true">
+            <div className="ticker-track">
+              {[0, 1].map((g) => (
+                <div key={g} className="ticker-group">
+                  {[...steps, ...steps, ...steps].map((s, k) => (
+                    <span key={k}>{s.title}</span>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
-        </section>
+        </div>
+        {/* </section> */}
 
         {/* seção SOBRE */}
         <section className="about" id="about">
           <div className="about-content">
-            <div className="about-texts">
+            <div className="about-texts" data-stagger>
               <span className="section-id">O QUE É</span>
-              <h2>Monitoramento com propósito.</h2>
+              <h2 data-reveal="words" aria-label="Monitoramento com propósito.">
+                {"Monitoramento com propósito.".split(" ").map((w, k) => (
+                  <span key={k} className="w" aria-hidden="true">
+                    <span style={{ "--k": k } as CSSProperties}>{w}</span>
+                  </span>
+                ))}
+              </h2>
               <p>
                 <b>GreenER</b> é uma plataforma web capaz de monitorar{" "}
-                <b>continuamente</b> serviços de software, estimar seu consumo
-                energético e calcular sua emissão aproximada de CO₂ equivalente
-                (CO₂e).
+                <b className="hl">continuamente</b> serviços de software,
+                estimar seu consumo energético e calcular sua emissão aproximada
+                de CO₂ equivalente (CO₂e).
               </p>
               <p>
                 A aplicação consiste em monitorar métricas de serviços e as
                 exibir conforme a necessidade do usuário.
               </p>
             </div>
-            <img
-              src={aboutPic}
-              className="about-img"
-              alt="Dashboard do GreenER em um notebook"
-              loading="lazy"
-            />
+
+            <div
+              className="about-visual"
+              data-reveal="right"
+              onPointerMove={(e) => {
+                if (
+                  window.matchMedia("(max-width: 900px), (hover: none)").matches
+                )
+                  return;
+
+                const r = e.currentTarget.getBoundingClientRect();
+
+                const x = (e.clientX - r.left) / r.width - 0.5;
+                const y = (e.clientY - r.top) / r.height - 0.5;
+
+                e.currentTarget.style.setProperty("--ry", `${x * 10}deg`);
+                e.currentTarget.style.setProperty("--rx", `${-y * 10}deg`);
+              }}
+              onPointerLeave={(e) => {
+                e.currentTarget.style.setProperty("--ry", "0deg");
+                e.currentTarget.style.setProperty("--rx", "0deg");
+              }}
+            >
+              <div className="about-tilt">
+                <img
+                  src={aboutPic}
+                  className="about-img"
+                  alt="Dashboard do GreenER em um notebook"
+                  loading="lazy"
+                />
+                <span
+                  className="about-chip c1"
+                  data-reveal="pop"
+                  style={{ "--d": "700ms", "--i": 0 } as CSSProperties}
+                >
+                  <i>
+                    <Zap size={16} />
+                  </i>
+                  Energia
+                </span>
+                <span
+                  className="about-chip c2"
+                  data-reveal="pop"
+                  style={{ "--d": "900ms", "--i": 1 } as CSSProperties}
+                >
+                  <i>
+                    <Droplets size={16} />
+                  </i>
+                  Água
+                </span>
+                <span
+                  className="about-chip c3"
+                  data-reveal="pop"
+                  style={{ "--d": "1100ms", "--i": 2 } as CSSProperties}
+                >
+                  <i>
+                    <Cloud size={16} />
+                  </i>
+                  CO₂e
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="info-toast">
+
+          <div className="info-toast" data-reveal="up">
             <ShieldCheck size={32} />
             <span>
               Desenvolvida para <b>funcionários credenciados</b> terem controle
@@ -146,23 +491,31 @@ export default function App() {
         </section>
 
         {/* seção MISSÃO */}
-        <section className="mission" id="mission">
+        <section className="mission" id="mission" data-stagger>
           <span className="section-id">MISSÃO</span>
           <h2>
             Transformar sinais técnicos em uma {isMobile ? <br /> : ""}
             <mark>métrica ambiental.</mark>
           </h2>
-          <div className="cards-mission">
+          <div className="cards-mission" ref={missionRef} data-no-reveal>
             {steps.map((s, i) => (
               <div
                 key={s.title}
                 className={`mission-step ${i % 2 === 0 ? "left" : "right"}`}
               >
-                <div className="card" style={{ gridRow: i + 1 }}>
+                <div
+                  className="card"
+                  data-reveal={i % 2 === 0 ? "left" : "right"}
+                  style={{ gridRow: i + 1 }}
+                >
                   <h4>{s.title}</h4>
                   <p>{s.text}</p>
                 </div>
-                <div className="number" style={{ gridRow: i + 1 }}>
+                <div
+                  className="number"
+                  data-reveal="pop"
+                  style={{ gridRow: i + 1, "--d": "350ms" } as CSSProperties}
+                >
                   {i + 1}
                 </div>
               </div>
@@ -170,35 +523,135 @@ export default function App() {
           </div>
         </section>
 
+        {/* seção overview */}
+        <section className="overview" id="overview">
+          <div className="overview-head" data-stagger>
+            <span className="section-id">PANORAMA</span>
+            <h2>Datacenters: energia e água em uma mesma série.</h2>
+          </div>
+
+          <div className="charts">
+            {overview.map((panel, pi) => (
+              <figure
+                key={panel.title}
+                className="chart"
+                data-reveal="up"
+                style={delay(pi * 150)}
+              >
+                <figcaption>
+                  <strong>{panel.title}</strong>
+                  <span>{panel.unit}</span>
+                </figcaption>
+
+                <div className="chart-cols">
+                  {panel.stats.map((s, i) => {
+                    const base = 350 + pi * 150 + i * 220;
+                    const top = ((s.to ?? s.from) / panel.max) * 100;
+                    const solid = s.to ? (s.from / s.to) * 100 : 100;
+
+                    return (
+                      <div
+                        key={s.year}
+                        className="col"
+                        data-reveal="bar"
+                        style={delay(base)}
+                      >
+                        <div className="col-plot">
+                          <div
+                            className="col-bar"
+                            style={{ height: `${top}%` }}
+                          >
+                            <span className="col-value">
+                              <CountUp to={s.from} delay={base + 300} />
+                              {s.to && (
+                                <>
+                                  –<CountUp to={s.to} delay={base + 300} />
+                                </>
+                              )}
+                            </span>
+                            <div className="col-body" aria-hidden="true">
+                              {s.to && <i className="col-range" />}
+                              <i
+                                className="col-fill"
+                                style={{ height: `${solid}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-meta">
+                          <strong>{s.year}</strong>
+                          <span>{s.note}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </figure>
+            ))}
+          </div>
+
+          <div className="overview-strip" data-reveal="up" style={delay(150)}>
+            <div className="strip-water" aria-hidden="true" />
+            <strong className="strip-value">
+              ≈ <CountUp to={800} duration={2200} delay={500} />{" "}
+              <small>bi L</small>
+            </strong>
+            <p>
+              Água indireta associada à geração da eletricidade consumida em
+              2023.
+            </p>
+          </div>
+
+          <p className="overview-source" data-reveal="up">
+            Fonte: LBNL/DOE • 2024 U.S. Data Center Energy Usage Report •
+            *projeção (área hachurada = faixa estimada)
+          </p>
+        </section>
+
         {/* seção FUNCIONALIDADES */}
-        <section className="functions" id="functions">
+        <section className="functions" id="functions" data-stagger>
           <span className="section-id">FUNCIONALIDADES</span>
           <h2>Mais clareza, melhores decisões.</h2>
           <p>
             Conheça as funcionalidades e acompanhe o consumo de recursos e os
             impactos ambientais dos seus serviços <b>em um só lugar.</b>
           </p>
-          <div className="functions-grid">
+          <div
+            className="functions-grid"
+            data-stagger
+            data-cols="2"
+            data-no-reveal
+          >
             {features.map(({ title, Icon, text }, i) => (
               <div
                 key={title}
                 className={`function-card ${i % 2 === 0 ? "ltr" : "rtl"}`}
+                data-reveal={i % 2 === 0 ? "left" : "right"}
               >
                 <div className="function-text">
                   <h3>{title}</h3>
                   <p>{text}</p>
                 </div>
-                <Icon size={64} strokeWidth={1.6} />
-                {i === 0 && (
-                  <ArrowLeftRight className="function-link" size={22} />
-                )}
+                <Icon
+                  className="function-icon"
+                  size={64}
+                  strokeWidth={1.6}
+                  style={{ "--i": i } as CSSProperties}
+                />
               </div>
             ))}
+            <ArrowLeftRight
+              className="function-link"
+              size={22}
+              aria-hidden="true"
+              data-reveal="pop"
+              style={delay(700)}
+            />
           </div>
         </section>
 
         {/* seção RESULTADO */}
-        <section className="results" id="results">
+        <section className="results" id="results" data-stagger>
           <span className="section-id">RESULTADO</span>
           <h2>
             Indicadores que orientam <em>decisões reais</em>
@@ -207,7 +660,12 @@ export default function App() {
             Medir emissões só faz sentido quando leva a uma <b>escolha</b>. Por
             isso, cada indicador do projeto responde a uma pergunta prática.
           </p>
-          <div className="indicators">
+          <div
+            className="indicators"
+            data-stagger="scale"
+            data-cols="3"
+            data-no-reveal
+          >
             {indicators.map((item) => (
               <div key={item.n} className={`indicator ${item.tone}`}>
                 <strong>{item.n}</strong>
@@ -218,7 +676,7 @@ export default function App() {
         </section>
 
         <section className="success" id="success">
-          <div className="success-text">
+          <div className="success-text" data-stagger>
             <span className="section-id">CRITÉRIO DE SUCESSO</span>
             <h2>
               Um <em>sistema </em> vivo <br />
@@ -230,11 +688,13 @@ export default function App() {
             <p>Faça login e aproveite todos recursos.</p>
             <a href="/login" className="btn-dark">
               Fazer login
+              <ArrowRight size={20} className="btn-arrow" aria-hidden="true" />
             </a>
           </div>
           <img
             src={PlantPic}
             className="success-img"
+            data-reveal="right"
             alt="Broto crescendo em solo fértil"
             loading="lazy"
           />
@@ -242,65 +702,83 @@ export default function App() {
 
         {/* seção INTERESSE */}
         <section className="section-spaced">
-          <div className="interest-info">
-            <div className="interest-card">
-              <div className="info">
-                <div className="image">
-                  <img src={Logo} alt="Logo GreenER" />
-                </div>
-                <div className="texts">
-                  <h2>
-                    Se <em>interessou </em>
-                    <span>?</span>
-                  </h2>
+          <div className="contact">
+            <div className="contact-main" data-stagger>
+              <h2>
+                Se <em>interessou</em>
+                <span>?</span>
+              </h2>
+              <p>
+                Se deseja ter acesso ao <b>GreenER</b> e monitorar o consumo
+                energético dos serviços da sua corporação, é simples:
+              </p>
+              <ol className="contact-steps" data-stagger>
+                <li>
+                  <span className="step-n">1</span>
                   <p>
-                    Se deseja ter acesso ao <b>GreenER</b> e monitorar o consumo
-                    energético dos serviços da sua corporação
+                    Peça cadastro a um funcionário com acesso administrativo da
+                    sua empresa.
                   </p>
-                  <p>
-                    Peça cadastro a um funcionário com acesso administrativo de
-                    sua empresa para fazer login.
-                  </p>
-                </div>
+                </li>
+                <li>
+                  <span className="step-n">2</span>
+                  <p>Faça login e acompanhe o impacto dos seus serviços.</p>
+                </li>
+              </ol>
+            </div>
+
+            <div className="contact-side">
+              <img
+                src={Logo}
+                className="contact-logo"
+                alt="Logo GreenER"
+                data-reveal="scale"
+              />
+              <div
+                className="contact-login"
+                data-reveal="up"
+                style={delay(200)}
+              >
+                <p>
+                  <b>Já possui cadastro na plataforma?</b>
+                </p>
+                <a href="/login" className="btn-dark">
+                  Fazer login
+                  <ArrowRight
+                    size={20}
+                    className="btn-arrow"
+                    aria-hidden="true"
+                  />
+                </a>
               </div>
-              <div className="links">
-                <div className="icons">
-                  <a href="#" aria-label="LinkedIn">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-linkedin"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
-                    </svg>
-                  </a>
-                  <a href="#" aria-label="Instagram">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-instagram"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334" />
-                    </svg>
-                  </a>
-                  <a href="#" aria-label="E-mail">
-                    <Mail size={28} />
-                  </a>
-                </div>
-                <div className="login">
-                  <p>
-                    <b>Já possui cadastro na plataforma?</b>
-                  </p>
-                  <a href="/login">
-                    Faça login <span>aqui</span>.
-                  </a>
-                </div>
+              <div className="contact-icons" data-stagger="pop">
+                <a href="#" aria-label="LinkedIn">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-linkedin"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
+                  </svg>
+                </a>
+                <a href="#" aria-label="Instagram">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-instagram"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334" />
+                  </svg>
+                </a>
+                <a href="#" aria-label="E-mail">
+                  <Mail size={28} />
+                </a>
               </div>
             </div>
           </div>
