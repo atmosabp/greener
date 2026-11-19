@@ -1,0 +1,53 @@
+.skeleton {
+  display: block;
+  background-color: var(--skeleton-base, rgba(128, 128, 128, 0.15)) !important;
+  border-radius: var(--skeleton-radius, 6px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* brilho que atravessa o bloco (shimmer) */
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--skeleton-shine, rgba(255, 255, 255, 0.35)),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton--circle {
+  border-radius: 50%;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+.skeleton-boundary {
+  display: contents; /* não interfere no layout da página */
+}
+
+.skeleton-fade-in {
+  animation: skeleton-fade-in 0.25s ease-out;
+}
+
+@keyframes skeleton-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-fade-in {
+    animation: none;
+  }
+}

@@ -8,6 +8,7 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
+  PERIODS,
 } from "./components/comparisonData";
 
 import type { CompareTarget } from "./components/comparisonData";
@@ -25,8 +26,12 @@ import "../ranking/Ranking.css";
 
 import ServiceCard from "./components/ServiceCard";
 
+import {
+  CmpAveragesSkeleton,
+  ComparisonServicesSkeleton,
+} from "./ComparisonSkeleton";
+
 import "./Comparison.css";
-import Loading from "../../components/loading/Loading";
 import {
   timeFormatter,
   type RankingPeriod,
@@ -242,7 +247,6 @@ export default function Comparison() {
 
   return (
     <div className="cmp-comparison">
-      <Loading data={services} />
       <AppHeader />
 
       <main className="cmp-page">
@@ -252,6 +256,7 @@ export default function Comparison() {
               {greeting()}, {userName}.
             </h1>
 
+            <p className="cmp-intro__sub">Comparação de serviços</p>
             <p className="cmp-intro__sub">
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
@@ -260,8 +265,9 @@ export default function Comparison() {
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className="cmp-pill-outline"
+                  className={`cmp-pill-outline ${loading ? "blocked" : ""}`}
                   aria-expanded={open}
+                  disabled={loading}
                   onClick={toggle}
                 >
                   Serviços selecionados
@@ -335,19 +341,22 @@ export default function Comparison() {
         {/* Médias dos indicadores                                     */}
         {/* ---------------------------------------------------------- */}
 
-        <section className="cmp-averages" aria-labelledby="avg-title">
-          <h2 id="avg-title" className="cmp-averages__title">
-            Média indicadores
-          </h2>
+        {loading ? (
+          <CmpAveragesSkeleton />
+        ) : (
+          <section className="cmp-averages" aria-labelledby="avg-title">
+            <h2 id="avg-title" className="cmp-averages__title">
+              Média indicadores
+            </h2>
 
-          <button
-            type="button"
-            className="cmp-averages__help"
-            aria-label="Ajuda sobre os indicadores"
-            title="Média dos serviços selecionados"
-          >
-            <HelpIcon />
-          </button>
+            <button
+              type="button"
+              className="cmp-averages__help"
+              aria-label="Ajuda sobre os indicadores"
+              title="Média dos serviços selecionados"
+            >
+              <HelpIcon />
+            </button>
 
           <div className="cmp-averages__content">
             <div className="cmp-averages__tiles">
@@ -393,6 +402,7 @@ export default function Comparison() {
             />
           </div>
         </section>
+        )}
 
         {/* ---------------------------------------------------------- */}
         {/* Serviços                                                    */}
@@ -408,9 +418,10 @@ export default function Comparison() {
                 trigger={({ open, toggle }) => (
                   <button
                     type="button"
-                    className="cmp-chip cmp-chip--wide"
+                    className={`cmp-chip cmp-chip--wide ${loading ? "blocked" : ""}`}
                     aria-expanded={open}
                     onClick={toggle}
+                    disabled={loading}
                   >
                     Escolher serviço referência
                     <StarIcon size={24} />
@@ -442,7 +453,36 @@ export default function Comparison() {
           </div>
 
           <div className="cmp-services__scroll">
-            {loading && <p className="cmp-empty">Carregando serviços...</p>}
+            {/* {!loading && error && <p className="cmp-empty">{error}</p>} */}
+            {loading ? (
+              <ComparisonServicesSkeleton quantity={8} />
+            ) : (
+              <>
+                {visible.map((service, index) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    rank={index + 1}
+                    isFirst={index === 0}
+                    isLast={index === visible.length - 1}
+                    isReference={service.id === referenceId}
+                    compareWith={compareMap[service.id] ?? "reference"}
+                    hasReference={
+                      referenceId !== null && referenceId !== service.id
+                    }
+                    baseMetrics={baseMetricsFor(service)}
+                    onMove={(direction) => move(service.id, direction)}
+                    onToggleReference={() => toggleReference(service.id)}
+                    onCompareChange={(target) =>
+                      setCompareMap((previous) => ({
+                        ...previous,
+                        [service.id]: target,
+                      }))
+                    }
+                  />
+                ))}
+              </>
+            )}
 
             {!loading && error && <p className="cmp-empty">{error}</p>}
 

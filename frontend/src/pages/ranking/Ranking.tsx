@@ -16,12 +16,14 @@ import {
 } from "./components/rankingData";
 
 import "./Ranking.css";
-import Loading from "../../components/loading/Loading";
+import { RankingTableSkeletonRows } from "./RankingSkeleton";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
 import { port } from "../../utils/connection";
-import { Link } from "react-router-dom";
 import type { ServiceType } from "../../types/service";
 import { greeting } from "../comparison/components/ComparisonComponents";
 import Toast from "../../components/toast/Toast";
+import { Link } from "react-router-dom";
 
 export default function Ranking() {
   const [userName, _setUserName] = useState<string>(() => {
@@ -41,6 +43,7 @@ export default function Ranking() {
   const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
   const [historyMessage, setHistoryMessage] = useState("");
+  const [timeUpdated, setTimeUpdated] = useState<string>("");
 
   //variáveis como ref para se atualizar entre os Timeouts (pois estava dando erro)
   const historyActivatedRef = useRef(false);
@@ -111,12 +114,20 @@ export default function Ranking() {
         sortRanking(formatedData);
       } else {
         handleRefresh();
-        <Toast icon="error" title="Histórico" message="Não há dados para o período selecionado." />
+        <Toast
+          icon="error"
+          title="Histórico"
+          message="Não há dados para o período selecionado."
+        />;
         setHistoryMessage("Período escolhido não possui dados ");
       }
     } catch (e: any) {
       console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
-      <Toast icon="error" title="Histórico" message="Não há dados para o período selecionado." />
+      <Toast
+        icon="error"
+        title="Histórico"
+        message="Não há dados para o período selecionado."
+      />;
       setHistoryMessage("Período escolhido não possui dados ");
     }
   }
@@ -130,6 +141,8 @@ export default function Ranking() {
       `http://localhost:${port}/collections/all-service-data`,
     );
     const data: ServiceType[] = await result.json();
+
+    setTimeUpdated(new Date().toLocaleString());
 
     for (let service of data) {
       formatedData.push({
@@ -164,6 +177,28 @@ export default function Ranking() {
   }
 
   function sortRanking(data: RankingService[]) {
+    var key: (x: undefined | number) => undefined | number = (x) => x;
+    setInitialServices(
+      data.sort((a, b) => {
+        if (metric === "energy") {
+          const xKey = key(a.energy),
+            yKey = key(b.energy);
+          if (typeof xKey === "undefined") {
+            return typeof yKey === "string" ? 0 : 1;
+          } else {
+            return typeof yKey === "string" ? -1 : yKey! - xKey!;
+          }
+        } else {
+          const xKey = key(a.co2e),
+            yKey = key(b.co2e);
+          if (typeof xKey === "undefined") {
+            return typeof yKey === "string" ? 0 : 1;
+          } else {
+            return typeof yKey === "string" ? -1 : yKey! - xKey!;
+          }
+        }
+      }),
+    );
     var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
     let dataHolder = data.sort((a, b) => {
       if (metricUsed === "energy") {
@@ -206,9 +241,16 @@ export default function Ranking() {
     }
   }, [historyActivatedRef.current]);
 
+  const [gaveUp, setGaveUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 15000);
+    return () => clearTimeout(t);
+  }, []);
+  const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
+
   return (
     <div className="ranking-page">
-      <Loading data={initialServices} />
+      {/* <Loading data={initialServices} /> */}
       <AppHeader />
 
       <main className="ranking-main">
@@ -229,6 +271,7 @@ export default function Ranking() {
 
                 <select
                   id="ranking-period-select"
+                  className={showSkeleton ? "blocked" : ""}
                   value={period}
                   onClick={(event) => {
                     const currentValue = event.currentTarget
@@ -240,6 +283,7 @@ export default function Ranking() {
                   onChange={(event) =>
                     handlePeriodChange(event.target.value as RankingPeriod)
                   }
+                  disabled={showSkeleton}
                 >
                   <option value="now">Agora</option>
                   <option value="today">Hoje</option>
@@ -254,30 +298,32 @@ export default function Ranking() {
                 <div className="ranking-classification-buttons">
                   <button
                     type="button"
-                    className={
+                    className={`${showSkeleton ? "blocked " : ""}${
                       metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }`}
                     aria-pressed={metric === "energy"}
                     onClick={() => {
                       handleParamChange("energy");
                     }}
+                    disabled={showSkeleton}
                   >
                     Consumo energético
                   </button>
 
                   <button
                     type="button"
-                    className={
-                      metric === "co2e"
+                    className={`${showSkeleton ? "blocked " : ""}${
+                      metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }`}
                     aria-pressed={metric === "co2e"}
                     onClick={() => {
                       handleParamChange("co2e");
                     }}
+                    disabled={showSkeleton}
                   >
                     Emissão de CO₂e
                   </button>
@@ -292,10 +338,12 @@ export default function Ranking() {
 
               <select
                 id="ranking-update-select"
+                className={`${showSkeleton ? "blocked" : ""}`}
                 value={Number(updateInterval)}
                 onChange={(event) =>
                   handleUpdateIntervalChange(Number(event.target.value))
                 }
+                disabled={showSkeleton}
               >
                 <option value={5}>05s</option>
                 <option value={10}>10s</option>
@@ -307,18 +355,25 @@ export default function Ranking() {
             </div>
 
             <div className="ranking-toolbar-info">
-              <span className="ranking-last-update">
-                <strong>{historyMessage}</strong>&nbsp; &nbsp;
-                {historyActivatedRef.current ? (
-                  <></>
-                ) : (
-                  <>Última atualização: {formattedLastUpdate}</>
-                )}
-              </span>
+              {showSkeleton ? (
+                <p>
+                  <Skeleton width="10rem" height="1rem" />
+                </p>
+              ) : (
+                <span className="ranking-last-update">
+                  <strong>{historyMessage}</strong>&nbsp; &nbsp;
+                  {historyActivatedRef.current ? (
+                    <></>
+                  ) : (
+                    <>Última atualização: {formattedLastUpdate}</>
+                  )}
+                </span>
+              )}
 
               <button
+                id="ranking-update-select"
+                className={`ranking-refresh-button ${showSkeleton ? "blocked" : ""}`}
                 type="button"
-                className="ranking-refresh-button"
                 onClick={handleRefresh}
                 aria-label="Atualizar horário da última atualização"
                 title="Atualizar"
@@ -365,73 +420,93 @@ export default function Ranking() {
               </thead>
 
               <tbody>
-                {initialServices
-                  ? initialServices.map((service, index) => (
-                      <tr key={service.id}>
-                        <td>
-                          <span
-                            className={
-                              index < 3
-                                ? `ranking-position ranking-position--${index + 1}`
-                                : "ranking-position"
-                            }
-                          >
-                            #{index + 1}
-                          </span>
-                        </td>
+                {showSkeleton ? (
+                  <RankingTableSkeletonRows rows={8} />
+                ) : (
+                  <>
+                    {initialServices
+                      ? initialServices.map((service, index) => (
+                          <tr key={service.id}>
+                            <td>
+                              <span
+                                className={
+                                  index < 3
+                                    ? `ranking-position ranking-position--${index + 1}`
+                                    : "ranking-position"
+                                }
+                              >
+                                #{index + 1}
+                              </span>
+                            </td>
 
-                        <td className="ranking-service-name">
-                          {service.status == "active" ? (
-                            <Link
-                              className="service-link-text"
-                              to={`/dashboard/${service.id}`}
-                            >
-                              {service.name}
-                              <ExternalLink className="redirect-link-icon" />
-                            </Link>
-                          ) : (
-                            <>{service.name}</>
-                          )}
-                        </td>
+                            <td className="ranking-service-name">
+                              {service.status == "active" ? (
+                                <Link
+                                  className="service-link-text"
+                                  to={`/dashboard/${service.id}`}
+                                >
+                                  {service.name}
+                                  <ExternalLink className="redirect-link-icon" />
+                                </Link>
+                              ) : (
+                                <>{service.name}</>
+                              )}
+                            </td>
 
-                        <td>
-                          {service.energy ? (
-                            <>
-                              {numberFormatter.format(service.energy) != "NaN"
-                                ? numberFormatter.format(service.energy) +
-                                  " kWh"
-                                : "Indisponível"}{" "}
-                            </>
-                          ) : (
-                            "Indisponível"
-                          )}
-                        </td>
+                            <td>
+                              {service.energy ? (
+                                <>
+                                  {numberFormatter.format(service.energy) !=
+                                  "NaN"
+                                    ? numberFormatter.format(service.energy) +
+                                      " kWh"
+                                    : "Indisponível"}{" "}
+                                </>
+                              ) : (
+                                "Indisponível"
+                              )}
+                            </td>
 
-                        <td>
-                          {service.co2e ? (
-                            <>
-                              {numberFormatter.format(service.co2e) != "NaN"
-                                ? numberFormatter.format(service.co2e) +
-                                  " kg CO₂e"
-                                : "Indisponível"}{" "}
-                            </>
-                          ) : (
-                            "Indisponível"
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  : "não foi possível pegar os serviços"}
+                            <td>
+                              {service.co2e ? (
+                                <>
+                                  {numberFormatter.format(service.co2e) != "NaN"
+                                    ? numberFormatter.format(service.co2e) +
+                                      " kg CO₂e"
+                                    : "Indisponível"}{" "}
+                                </>
+                              ) : (
+                                "Indisponível"
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      : "não foi possível pegar os serviços"}
+                  </>
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="ranking-table-caption">
-            <span>Período selecionado: {periodLabel[period]}</span>
-            <span>
-              {initialServices ? initialServices.length : 0} serviços
-              encontrados
-            </span>
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>Período selecionado: {periodLabel[period]}</span>
+            )}
+            
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>
+                {initialServices ? initialServices.length : 0} serviços
+                encontrados
+              </span>
+            )}
           </div>
         </section>
       </main>
