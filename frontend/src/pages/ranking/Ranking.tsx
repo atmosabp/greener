@@ -102,10 +102,10 @@ export default function Ranking() {
         for (let service of data) {
           formatedData.push({
             id: service.id,
-            name: service.id,
+            name: service.name,
             energy: service.kwh,
             co2e: service.co2e,
-            status: service.status
+            status: "active"
           });
         }
         setLastUpdate(datePull);

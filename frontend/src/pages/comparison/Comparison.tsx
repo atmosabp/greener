@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import AppHeader from '../../components/header/AppHeader';
 
@@ -29,14 +29,17 @@ import ServiceCard from './components/ServiceCard';
 
 import './Comparison.css';
 import Loading from '../../components/loading/Loading';
-import type { RankingPeriod, RankingService } from '../ranking/components/rankingData';
+import { timeFormatter, type RankingPeriod, type RankingService } from '../ranking/components/rankingData';
 import useRankingCalendar from '../ranking/components/useRankingCalendar';
 import RankingCalendar from '../ranking/components/rankingCalendar';
 import type { MetricsType, ServiceType } from '../../types/service';
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
+  const historyActivatedRef = useRef(false);
+  const [lastUpdate, setLastUpdate] = useState(() => new Date());
 
+  const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   const [userName, _setUserName] = useState<string>(() => {
     const storedUser = localStorage.getItem("user");
@@ -71,7 +74,7 @@ export default function Comparison() {
 
   async function fetchHistory(periodType:string, datePull:Date){
       try{
-  
+        let formatedData : ServiceType[]= []
         const port: number = import.meta.env.VITE_PORT || 3000;
   
         const result = await fetch(
@@ -82,15 +85,35 @@ export default function Comparison() {
             body: JSON.stringify({ periodType: periodType, datePull: datePull }),
           }
         );
-        const data: any[] = await result.json();
+        const data : any[] = await result.json();
+        
+
         // console.log(datePull)
-        // console.log(data, "aaaaaaaa")
+        console.log(data, "aaaaaaaa")
         if(data.length > 0){
+            for (let service of data) {
+              formatedData.push({
+                id: service.id,
+                name: service.name,
+                metrics:{
+                  cpu_percent: service.cpu_percentage,
+                  memory_gb: service.memory_gb,
+                  disk_gb: service.disk_gb,
+                  network_gb: service.network_gb,
+                  co2e: service.co2e,
+                  kwh: service.kwh,
+                  carbon_intensity: service.co2e / service.kwh
+                },
+                status: "active"
+
+              });
+            }
+
             setHistoryMessage("Você está vendo dados do passado ")
-            setServices(data);
-            setOrder(data.map((service) => service.id));
-            setSelected(new Set(data.map((service) => service.id)));
-            setReferenceId(data[0]?.id ?? null);
+            setServices(formatedData);
+            setOrder(formatedData.map((service) => service.id));
+            setSelected(new Set(formatedData.map((service) => service.id)));
+            setReferenceId(formatedData[0]?.id ?? null);
             setError(null);
             setLoading(false);
           
@@ -110,15 +133,18 @@ export default function Comparison() {
     if (nextPeriod == "now") {
       handleRefresh()
       setHistoryMessage("");
-    } 
-
+    } else {
+      historyActivatedRef.current = true;
+    }
     setPeriod(nextPeriod);
     calendar.openCalendar(nextPeriod);
   }
 
   async function handleRefresh(){
-  
-
+    setHistoryMessage("")
+    setPeriod("now")
+    setLastUpdate(new Date());
+    historyActivatedRef.current = false;
     fetchServices()
       .then((data) => {
         console.log(data)
@@ -284,6 +310,12 @@ export default function Comparison() {
             options={PERIODS}
           /> */}
           <span className={`cmp-select `}>
+          <span className="ranking-last-update">
+                <strong>{historyMessage}</strong>&nbsp; &nbsp;   
+                {historyActivatedRef.current ? 
+                <></>:
+                <>Última atualização: {formattedLastUpdate}</>} &nbsp; &nbsp; &nbsp; &nbsp;
+          </span>
             <div className="ranking-period">
               <label htmlFor="ranking-period-select">
                 Período
