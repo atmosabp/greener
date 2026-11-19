@@ -12,11 +12,13 @@ import Comparison from "./pages/comparison/Comparison.tsx";
 import Admin from "./pages/admin/Admin.tsx";
 
 import ThemeProvider from "./providers/ThemeProvider.tsx";
+import ToastProvider from "./providers/ToastProvider.tsx";
 import ProtectedRoute from "./components/protectRoute/ProtectedRoute.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           {/* Rotas públicas */}
@@ -39,6 +41,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </ThemeProvider>
   </StrictMode>
 );

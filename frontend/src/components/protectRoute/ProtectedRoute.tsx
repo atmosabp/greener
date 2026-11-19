@@ -29,7 +29,7 @@ export default function ProtectedRoute({
       if (!token) {
         <Toast icon="error" title="Erro" message="Usuário não autenticado." />;
         setStatus("unauthenticated");
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return;
       }
 
       try {
@@ -59,6 +59,7 @@ export default function ProtectedRoute({
             title="Erro"
             message="Não foi possível validar a sessão."
           />;
+          setStatus("error");
           return;
         }
 
@@ -99,9 +100,6 @@ export default function ProtectedRoute({
 
     return () => controller.abort();
   }, [requireAdmin]);
-
-  // if (status === "loading") {
-  // }
 
   if (status === "unauthenticated") {
     return <Navigate to="/login" state={{ from: location }} replace />;

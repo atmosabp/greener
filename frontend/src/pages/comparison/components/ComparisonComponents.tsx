@@ -169,12 +169,14 @@ export function SelectPill({
     options,
     variant,
     label,
+    disabled = false
 }: {
     value: string;
     onChange: (value: string) => void;
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
+    disabled?:boolean;
 }) {
     return (
         <span className={`cmp-select cmp-select--${variant}`}>
@@ -182,6 +184,7 @@ export function SelectPill({
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
                 aria-label={label}
+                disabled={disabled}
             >
                 {options.map((option) => (
                     <option

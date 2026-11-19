@@ -68,11 +68,8 @@
     height: calc(100vh - 70px);
 
     background: url("./assets/banner-img.png") center / cover no-repeat;
-
-    /* background: linear-gradient(90deg,var(--primary-light) 0%, var(--background) 100%); */
-
-    /* border-radius: 1.875rem; */
-    color: var(--text-inverse);
+    background-color: var(--primary-darker);
+    color: var(--background);
     overflow: hidden;
 }
 

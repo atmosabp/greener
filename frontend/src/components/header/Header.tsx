@@ -25,8 +25,10 @@ export default function Header({
       const parsedUser = JSON.parse(storedUser);
 
       //caso o usuário não seja administrador, adiciona um link para a página de cadastro
-      if (parsedUser.isAdm) {
+      if (parsedUser.isAdm && links.length != 0 && links.length < 4) { //também garante que não seja o header de cadastro
         links[links.length] = { to: "/admin", label: "Gerenciamento" };
+      } else if (links.length > 3 && !parsedUser.isAdm) {
+        delete links[links.length - 1];
       }
       return parsedUser.isAdm;
     } catch (e: any) {
