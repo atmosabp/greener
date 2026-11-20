@@ -3,6 +3,8 @@ import { Eye, EyeClosed, X } from "lucide-react";
 import "./Form.css";
 import { useEffect, useState, type FormEvent } from "react";
 import type { FormErrors, FormProps, FormValues } from "../../types/form";
+import { useToast } from "../../hooks/useToast";
+import { toToast } from "./Validators";
 
 export default function Form({
   title,
@@ -22,6 +24,7 @@ export default function Form({
   );
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const { showToast } = useToast();
   // Qual campo de senha está com o olho pressionado
   const [visible, setVisible] = useState<Record<string, boolean>>({});
 
@@ -74,7 +77,13 @@ export default function Form({
 
     setErrors(newErrors);
 
-    if (Object.values(newErrors).some(Boolean)) return;
+    // Mostra só um toast, com o primeiro erro na ordem dos campos
+    const firstError = fields.map((f) => newErrors[f.name]).find(Boolean);
+    if (firstError) {
+      const { title, message } = toToast(firstError);
+      showToast("error", title, message);
+      return;
+    }
 
     await onSubmit(values);
   };
@@ -118,7 +127,7 @@ export default function Form({
           const error = errors[f.name];
           const isPassword = f.type === "password";
           const isRequired = f.required ?? true;
-          const showStar = isRequired && !error;
+          const showStar = isRequired;
 
           const input = (
             <input
@@ -135,7 +144,6 @@ export default function Form({
               onBlur={() => handleBlur(f.name)}
               className={error ? "input-error" : ""}
               aria-invalid={!!error}
-              aria-describedby={error ? `${f.name}-error` : undefined}
             />
           );
 
@@ -149,15 +157,6 @@ export default function Form({
                   {f.label}
                   {showStar && "*"}
                 </label>
-
-                {error && (
-                  <span
-                    id={`${f.name}-error`}
-                    className="error-msg"
-                  >
-                    {error}
-                  </span>
-                )}
               </div>
 
               {isPassword ? (

@@ -40,7 +40,10 @@ const fields: FieldConfig[] = [
     placeholder: "Repita sua senha...",
     validate: compose(
       required,
-      matches("password", "As senhas não coincidem*")
+      matches("password", {
+        title: "Senhas diferentes",
+        message: "As senhas informadas não coincidem.",
+      })
     ),
   },
 ];

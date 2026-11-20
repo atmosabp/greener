@@ -4,9 +4,14 @@ import "./Dashboard.css";
 import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
-import Loading from "../../components/loading/Loading";
-import Toast from "../../components/toast/Toast";
-// import { Oval } from "react-loader-spinner";
+
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
+import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
+
+
+import { port } from "../../utils/connection";
+import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -31,17 +36,6 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 
 export default function Dashboard() {
   const { serviceId } = useParams();
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -110,7 +104,7 @@ export default function Dashboard() {
 
     try {
       const result = await fetch(
-        `http://localhost:${import.meta.env.VITE_PORT}/collections/service-metrics/${serviceId}`,
+        `http://localhost:${port}/collections/service-metrics/${serviceId}`,
       );
       const data = await result.json();
       setTimeUpdated(new Date().toLocaleString());
@@ -123,7 +117,7 @@ export default function Dashboard() {
   async function getServiceList(): Promise<void> {
     try {
       const result = await fetch(
-        `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
+        `http://localhost:${port}/collections/all-service-data`,
       );
       const data: ServicesType[] = await result.json();
       let serviceNames: {
@@ -223,33 +217,57 @@ export default function Dashboard() {
 
   let year = new Date().getFullYear();
 
+  const [gaveUp, setGaveUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 15000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const metricsDone = timeUpdated !== "" || serviceList.length > 0;
+  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+
+  // A lista "Outros serviços" vem em outra requisição, depois das métricas.
+  const showListSkeleton = useSkeleton(serviceList.length === 0 && !gaveUp);
+
   return (
     <div className="dashboard-page">
-      <Loading data={serviceList} />
       <AppHeader />
 
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>Bom dia, {userName}.</h1>
-            {/* backend: nome do usuário */}
-            <p>
-              Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
-              .{/* backend: nome do serviço */}
-            </p>
+            <Greeting />
+            
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="15rem" height="1rem" />
+              </p>
+            ) : (
+              <p>
+                Analise os dados do serviço
+                <strong> {serviceMetrics.name}</strong>.
+              </p>
+            )}
           </div>
 
           <div className="btns">
-            <span className="last-update">
-              Última atualização: {timeUpdated || "-"}
-            </span>
-            {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
+            {showSkeleton ? (
+              <span className="last-update">
+                <Skeleton width="15rem" height="1rem" />
+              </span>
+            ) : (
+              <span className="last-update">
+                Última atualização: {timeUpdated || "-"}
+              </span>
+            )}
 
             {isCompact ? (
               <div className="alter-btns">
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="updates"
                     value={Number(updateInterval)}
                     id="update-select"
@@ -268,6 +286,8 @@ export default function Dashboard() {
 
                 <div className="btn-date">
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="date"
                     id="date-select"
                     value={filter}
@@ -283,6 +303,8 @@ export default function Dashboard() {
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="updates"
                     id="update-select"
                     value={Number(updateInterval)}
@@ -301,6 +323,8 @@ export default function Dashboard() {
 
                 <div className="btn-date">
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="date"
                     id="date-select"
                     value={filter}
@@ -315,13 +339,14 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="main-section">
-          {serviceMetrics.metrics?.cpu_percent ? (
+          {showSkeleton ? (
+            <DashboardGridSkeleton />
+          ) : serviceMetrics.metrics?.cpu_percent ? (
             <div className="dashboard-grid">
               <section className="service-info service-info--selected">
                 <h4>Serviço selecionado</h4>
                 <p>{serviceMetrics.name}</p>
               </section>
-
               <section className="service-info service-info--status">
                 <h4>Status</h4>
                 <div className="service-info-status">
@@ -330,7 +355,6 @@ export default function Dashboard() {
                     data-status="active"
                     aria-hidden="true"
                   />
-                  {/* backend: data-status = "active" | "warning" | "inactive" */}
                   <p>
                     {serviceMetrics &&
                     serviceMetrics.status &&
@@ -357,20 +381,35 @@ export default function Dashboard() {
               <section className="metric-card metric-card--data metric-energy">
                 <p>Consumo energético</p>
                 <h4>
-                  {serviceMetrics.metrics?.kwh.toLocaleString("pt-BR", {
-                    maximumSignificantDigits: 4,
-                  })}{" "}
-                  kWh
+                  {serviceMetrics.metrics?.memory_gb ? (
+                    <>
+                      {serviceMetrics.metrics?.memory_gb.toLocaleString(
+                        "pt-BR",
+                        {
+                          maximumSignificantDigits: 4,
+                        },
+                      )}{" "}
+                      kWh
+                    </>
+                  ) : (
+                    <>Indisponível</>
+                  )}
                 </h4>
               </section>
 
               <section className="metric-card metric-card--data metric-co2">
                 <p>Emissão de CO₂e</p>
                 <h4>
-                  {serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
-                    maximumSignificantDigits: 6,
-                  })}{" "}
-                  CO₂e
+                  {serviceMetrics.metrics?.co2e ? (
+                    <>
+                      {serviceMetrics.metrics?.co2e.toLocaleString("pt-BR", {
+                        maximumSignificantDigits: 4,
+                      })}{" "}
+                      CO₂e
+                    </>
+                  ) : (
+                    <>Indisponível</>
+                  )}
                 </h4>
               </section>
 
@@ -425,13 +464,19 @@ export default function Dashboard() {
                     <p>Memória</p>
                     <span className="metric-counter">2/4</span>
                     <h4>
-                      {serviceMetrics.metrics?.memory_gb.toLocaleString(
-                        "pt-BR",
-                        {
-                          maximumSignificantDigits: 4,
-                        },
-                      )}{" "}
-                      GB
+                      {serviceMetrics.metrics?.memory_gb ? (
+                        <>
+                          {serviceMetrics.metrics?.memory_gb.toLocaleString(
+                            "pt-BR",
+                            {
+                              maximumSignificantDigits: 4,
+                            },
+                          )}{" "}
+                          GB
+                        </>
+                      ) : (
+                        <>Indisponível</>
+                      )}
                     </h4>
                   </section>
 
@@ -439,10 +484,19 @@ export default function Dashboard() {
                     <p>Armazenamento</p>
                     <span className="metric-counter">3/4</span>
                     <h4>
-                      {serviceMetrics.metrics?.disk_gb.toLocaleString("pt-BR", {
-                        maximumSignificantDigits: 4,
-                      })}{" "}
-                      GB
+                      {serviceMetrics.metrics?.disk_gb ? (
+                        <>
+                          {serviceMetrics.metrics?.disk_gb.toLocaleString(
+                            "pt-BR",
+                            {
+                              maximumSignificantDigits: 4,
+                            },
+                          )}{" "}
+                          GB
+                        </>
+                      ) : (
+                        <>Indisponível</>
+                      )}
                     </h4>
                   </section>
 
@@ -450,13 +504,19 @@ export default function Dashboard() {
                     <p>Rede</p>
                     <span className="metric-counter">4/4</span>
                     <h4>
-                      {serviceMetrics.metrics?.network_gb.toLocaleString(
-                        "pt-BR",
-                        {
-                          maximumSignificantDigits: 4,
-                        },
-                      )}{" "}
-                      GB
+                      {serviceMetrics.metrics?.network_gb ? (
+                        <>
+                          {serviceMetrics.metrics?.network_gb.toLocaleString(
+                            "pt-BR",
+                            {
+                              maximumSignificantDigits: 4,
+                            },
+                          )}{" "}
+                          GB
+                        </>
+                      ) : (
+                        <>Indisponível</>
+                      )}
                     </h4>
                   </section>
                 </div>
@@ -528,17 +588,20 @@ export default function Dashboard() {
                 aria-labelledby="others-title"
               >
                 <h3 id="others-title">Outros serviços</h3>
-                <ul>
-                  {createServiceList()}
-                </ul>
+                {showListSkeleton ? (
+                  <ServiceListSkeleton rows={8} />
+                ) : (
+                  <ul>{createServiceList()}</ul>
+                )}
               </aside>
             </div>
           ) : (
             <div>
-              O serviço está inativo.
+              O serviço está inativo, e não é possível recolher as suas métricas
+              no momento.
               <br />
               Volte à tela principal e selecione outro serviço.
-              <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." />
+              {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}
             </div>
           )}
         </div>

@@ -7,6 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css">
   <title>Greener</title>
+
+  <script>
+    (function () {
+      try {
+        var MODE_KEY = "theme-mode";      // ← a chave que você viu no Local Storage
+        var PALETTE_KEY = "theme-palette"; // ← idem
+        var el = document.documentElement; // ← o elemento que recebe data-theme
+
+        var mode =
+          localStorage.getItem(MODE_KEY) ||
+          (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        el.setAttribute("data-theme", mode);
+
+        var palette = localStorage.getItem(PALETTE_KEY);
+        if (palette) el.setAttribute("data-palette", palette);
+      } catch (e) { }
+    })();
+  </script>
 </head>
 
 <body>

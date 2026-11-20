@@ -544,6 +544,7 @@ ul {
 .dashboard-page footer {
     text-align: center;
     padding: 15px;
+    margin-top: auto;
 }
 
 .dashboard-page footer span {
@@ -655,12 +656,6 @@ ul {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
-    }
-
-    .start-section h1 {
-        font-size: 2.25rem;
-        line-height: 1.1;
-        padding-right: 3.5rem;
     }
 
     .start-section p {

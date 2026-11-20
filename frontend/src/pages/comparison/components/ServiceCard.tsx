@@ -1,5 +1,6 @@
-import type { Metrics, Service, CompareTarget } from "./comparisonData";
+import type { CompareTarget } from "./comparisonData";
 import { calculateDelta, formatMetric } from "./comparisonData";
+import { ExternalLink } from "lucide-react";
 
 import {
   CarbonCard,
@@ -10,19 +11,22 @@ import {
   StarIcon,
 } from "./ComparisonComponents";
 
+import type { MetricsType, ServiceType } from "../../../types/service";
+import { Link } from "react-router-dom";
+
 /* ------------------------------------------------------------------ */
 /* Propriedades do cartão                                              */
 /* ------------------------------------------------------------------ */
 
 interface ServiceCardProps {
-  service: Service;
+  service: ServiceType;
   rank: number;
   isFirst: boolean;
   isLast: boolean;
   isReference: boolean;
   compareWith: CompareTarget;
   hasReference: boolean;
-  baseMetrics?: Metrics;
+  baseMetrics?: MetricsType;
   onMove: (direction: -1 | 1) => void;
   onToggleReference: () => void;
   onCompareChange: (target: CompareTarget) => void;
@@ -45,44 +49,43 @@ export default function ServiceCard({
   onToggleReference,
   onCompareChange,
 }: ServiceCardProps) {
-  const metrics: Metrics = service.metrics;
+  const metrics: MetricsType | undefined = service.metrics;
 
   /* Diferença em relação à base (referência ou média). */
-  const delta = (key: keyof Metrics) =>
-    baseMetrics ? calculateDelta(metrics[key], baseMetrics[key]) : undefined;
+  const delta = (key: keyof MetricsType) =>
+    baseMetrics && metrics
+      ? calculateDelta(metrics[key], baseMetrics[key])
+      : undefined;
 
   return (
     <article
       className={`cmp-service ${isReference ? "cmp-service--reference" : ""}`}
     >
-      <h3 className="cmp-service__name">{service.name}</h3>
-
-      <div
-        className={`cmp-service__star ${
-          isReference ? "cmp-service__star--active" : ""
-        }`}
-        title={isReference ? "Serviço de referência" : "Marcar como referência"}
-      >
-        {isReference ? (
-          <button
-            type="button"
-            className="btn-star"
-            onClick={onToggleReference}
-          >
-            <StarIcon filled={isReference} size={38} />
-          </button>
+      <h3 className="cmp-service__name">
+        {service.status == "active" ? (
+          <Link className="cmp-service-link" to={`/dashboard/${service.id}`}>
+            {service.name}
+            <ExternalLink className="redirect-link-icon" />
+          </Link>
         ) : (
-          <>
-            <button
-              type="button"
-            className="btn-star"
-              onClick={onToggleReference}
-            >
-              <StarIcon filled={isReference} size={38} />
-            </button>
-          </>
+          <>{service.name}</>
         )}
-      </div>
+      </h3>
+
+      {isReference ? (
+        <span
+          className={`cmp-service__star ${
+            isReference ? "cmp-service__star--active" : ""
+          }`}
+          title={
+            isReference ? "Serviço de referência" : "Marcar como referência"
+          }
+        >
+          <StarIcon filled={isReference} size={38} />
+        </span>
+      ) : (
+        <></>
+      )}
 
       <div className="cmp-service__actions">
         {isReference ? (
@@ -157,47 +160,61 @@ export default function ServiceCard({
       <div className="cmp-service__body">
         <EnergyTile
           label="Consumo energético"
-          value={formatMetric("consumo", metrics.consumo)}
-          delta={delta("consumo")}
+          value={formatMetric("kwh", metrics ? metrics.kwh : undefined)}
+          delta={delta("kwh")}
         />
 
         <EnergyTile
           label="Emissão de CO₂e"
-          value={formatMetric("emissao", metrics.emissao)}
-          delta={delta("emissao")}
+          value={formatMetric("co2e", metrics ? metrics.co2e : undefined)}
+          delta={delta("co2e")}
         />
 
         <div className="cmp-tiles">
           <MetricTile
             label="Rede"
-            value={formatMetric("rede", metrics.rede)}
-            delta={delta("rede")}
-            unavailable={metrics.rede === undefined}
+            value={formatMetric(
+              "network_gb",
+              metrics ? metrics.network_gb : undefined,
+            )}
+            delta={delta("network_gb")}
+            unavailable={metrics && metrics.network_gb === undefined}
           />
 
           <MetricTile
             label="CPU"
-            value={formatMetric("cpu", metrics.cpu)}
-            delta={delta("cpu")}
-            unavailable={metrics.cpu === undefined}
+            value={formatMetric(
+              "cpu_percent",
+              metrics ? metrics.cpu_percent : undefined,
+            )}
+            delta={delta("cpu_percent")}
+            unavailable={metrics && metrics.cpu_percent === undefined}
           />
 
           <MetricTile
             label="Armazenamento"
-            value={formatMetric("armazenamento", metrics.armazenamento)}
-            delta={delta("armazenamento")}
-            unavailable={metrics.armazenamento === undefined}
+            value={formatMetric(
+              "disk_gb",
+              metrics ? metrics.disk_gb : undefined,
+            )}
+            delta={delta("disk_gb")}
+            unavailable={metrics && metrics.disk_gb === undefined}
           />
 
           <MetricTile
             label="Memória"
-            value={formatMetric("memoria", metrics.memoria)}
-            delta={delta("memoria")}
-            unavailable={metrics.memoria === undefined}
+            value={formatMetric(
+              "memory_gb",
+              metrics ? metrics.memory_gb : undefined,
+            )}
+            delta={delta("memory_gb")}
+            unavailable={metrics && metrics.memory_gb === undefined}
           />
         </div>
 
-        <CarbonCard intensity={metrics.intensidade} />
+        <CarbonCard
+          intensity={metrics ? metrics.carbon_intensity : undefined}
+        />
       </div>
     </article>
   );
