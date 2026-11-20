@@ -7,7 +7,7 @@ export interface ServiceType {
   status: ServiceStatus;
 }
 
-export type ServiceStatus = "active" | "incomplete" | "inactive";
+export type ServiceStatus = "active" | "incomplete" | "inactive" | "deleted";
 
 export interface CoordinatesType {
   region_code?: string;

@@ -3,7 +3,7 @@ import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
 import "../ranking/Ranking.css";
 import { Link, useParams } from "react-router-dom";
-import type { CoordinatesType, MetricsType } from "../../types/service";
+import type { CoordinatesType, MetricsType, ServiceStatus } from "../../types/service";
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
 
 import RankingCalendar from "../ranking/components/RankingCalendar";
@@ -108,7 +108,7 @@ export default function Dashboard() {
   interface ServicesType {
     id?: string;
     name?: string;
-    status?: "active" | "inactive";
+    status?: ServiceStatus;
     location?: CoordinatesType;
     metrics?: MetricsType;
   }
@@ -465,7 +465,7 @@ export default function Dashboard() {
                     serviceMetrics.status &&
                     serviceMetrics.status == "active"
                       ? "Ativo"
-                      : "Inativo"}
+                      : serviceMetrics.status == "inactive" ? "Inativo" : "Deletado"}
                   </p>
                 </div>
               </section>

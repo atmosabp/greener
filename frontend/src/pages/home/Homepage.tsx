@@ -26,6 +26,7 @@ const statusLabels: Record<ServiceStatus, string> = {
   active: "Ativo",
   incomplete: "Incompleto",
   inactive: "Inativo",
+  deleted: "Deletado",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -82,6 +83,10 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
   const inactiveCount = services
     ? services.filter((service) => service.status === "inactive").length
+    : 0;
+
+  const deletedCount = services
+    ? services.filter((service) => service.status === "deleted").length
     : 0;
 
   return (
@@ -183,7 +188,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   </strong>
                 </span>
 
-                <span>
+                {/* <span>
                   <i className="status-dot incomplete" />
                   Incompletos
                   <strong>
@@ -197,7 +202,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                       incompleteCount
                     )}
                   </strong>
-                </span>
+                </span> */}
 
                 <span>
                   <i className="status-dot inactive" />
@@ -211,6 +216,22 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                       />
                     ) : (
                       inactiveCount
+                    )}
+                  </strong>
+                </span>
+
+                <span>
+                  <i className="status-dot incomplete" />
+                  Deletados
+                  <strong>
+                    {showSkeleton ? (
+                      <Skeleton
+                        width={18}
+                        height="0.9rem"
+                        style={inlineSkeleton}
+                      />
+                    ) : (
+                      deletedCount
                     )}
                   </strong>
                 </span>

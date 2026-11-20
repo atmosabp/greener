@@ -41,6 +41,9 @@ export async function getServiceMetrics(serviceId: string) {
   let metricsEnergy : MetricsData | undefined = undefined
   let service: ServiceTypes | undefined = undefined;
 
+  const statusResult = await fetch(`https://metrics.unilaunch.org/metrics/${serviceId}`);
+  const statusCode = statusResult.status;
+
   try {
     service = (await reqServices()).find((value) => value.id == serviceId);
     [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
@@ -48,7 +51,14 @@ export async function getServiceMetrics(serviceId: string) {
       reqInterval(serviceId),
       reqCarbonValue(serviceId),
       reqRenewablePercent(serviceId),
-    ])
+    ]);
+
+    if(statusCode == 404){
+      service!.status = "deleted";
+    }
+    if(statusCode == 500){
+      service!.status = "inactive";
+    }
 
     metricsEnergy = await reqMetrics(serviceId);
     
