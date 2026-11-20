@@ -8,7 +8,6 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
-  PERIODS,
 } from "./components/comparisonData";
 
 import type { CompareTarget } from "./components/comparisonData";
@@ -39,6 +38,9 @@ import {
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
 import RankingCalendar from "../ranking/components/RankingCalendar";
 import type { MetricsType, ServiceType } from "../../types/service";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { toReadableTime } from "../../utils/history";
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -75,7 +77,16 @@ export default function Comparison() {
 
   const calendar = useRankingCalendar();
 
-  async function fetchHistory(periodType: string, datePull: Date) {
+  const [gaveUp, setGaveUp] = useState(false);
+    useEffect(() => {
+      const t = setTimeout(() => setGaveUp(true), 15000);
+      return () => clearTimeout(t);
+  }, []);
+
+  const metricsDone = undefined;
+  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       let formatedData: ServiceType[] = [];
       const port: number = import.meta.env.VITE_PORT || 3000;
@@ -90,7 +101,7 @@ export default function Comparison() {
       );
       const data: any[] = await result.json();
 
-      if (data.length > 0) {
+      if (data && data.length > 0) {
         for (let service of data) {
           formatedData.push({
             id: service.id,
@@ -108,21 +119,21 @@ export default function Comparison() {
           });
         }
 
-        setHistoryMessage("Você está vendo dados do passado ");
+        setHistoryMessage(`Você está vendo dados do passado: ${toReadableTime(datePull)}`);
+
         setServices(formatedData);
         setOrder(formatedData.map((service) => service.id));
         setSelected(new Set(formatedData.map((service) => service.id)));
         setReferenceId(formatedData[0]?.id ?? null);
         setError(null);
         setLoading(false);
-
-        // setLastUpdate(datePull);
       } else {
         handleRefresh();
         setHistoryMessage("Período escolhido não possui dados ");
       }
     } catch (e: any) {
-      console.log(e.message);
+      console.error(`Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`);
+      setHistoryMessage("Ocorreu um erro ao buscar dados do período selecionado.");
     }
   }
 
@@ -311,29 +322,7 @@ export default function Comparison() {
               )}{" "}
               &nbsp; &nbsp; &nbsp; &nbsp;
             </span>
-            <div className="ranking-period">
-              <label htmlFor="ranking-period-select">Período</label>
-
-              <select
-                id="ranking-period-select"
-                value={period}
-                onChange={(event) =>
-                  handlePeriodChange(event.target.value as RankingPeriod)
-                }
-                onClick={(event) => {
-                  const currentValue = event.currentTarget
-                    .value as RankingPeriod;
-                  if (currentValue === period) {
-                    handlePeriodChange(currentValue);
-                  }
-                }}
-              >
-                <option value="now">Agora</option>
-                <option value="today">Hoje</option>
-                <option value="month">Esse mês</option>
-                <option value="year">Esse ano</option>
-              </select>
-            </div>
+            <PeriodSelect showSkeleton={showSkeleton} handlePeriodChange={handlePeriodChange} period={period} />
           </span>
         </section>
 
@@ -523,6 +512,7 @@ export default function Comparison() {
         {calendar.calendarOpen && (
           <RankingCalendar
             period={period}
+            selectedMinute={calendar.selectedMinute}
             selectedHour={calendar.selectedHour}
             selectedDay={calendar.selectedDay}
             selectedMonth={calendar.selectedMonth}
@@ -532,15 +522,16 @@ export default function Comparison() {
             currentYear={calendar.currentYear}
             currentMonth={calendar.currentMonth}
             currentDay={calendar.currentDay}
+            currentHour={calendar.currentHour}
             calendarDays={calendar.calendarDays}
+            lastHourSlots={calendar.lastHourSlots}
             onClose={calendar.closeCalendar}
-            onChangeMonth={(direction) =>
-              calendar.changeMonth(direction, period)
-            }
+            onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+            onConfirmMinute={calendar.confirmMinute}
+            onConfirmHour={calendar.confirmHour}
             onConfirmDay={calendar.confirmDay}
             onConfirmMonth={calendar.confirmMonth}
             onConfirmYear={calendar.confirmYear}
-            onConfirmHour={calendar.confirmHour}
             handleFetch={fetchHistory}
             handleCancel={handleRefresh}
           />

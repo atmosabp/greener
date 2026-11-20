@@ -27,6 +27,7 @@ const statusLabels: Record<ServiceStatus, string> = {
   incomplete: "Incompleto",
   inactive: "Inativo",
   deleted: "Deletado",
+  unavailable: "Indisponível"
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {

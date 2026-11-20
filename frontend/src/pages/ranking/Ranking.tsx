@@ -24,6 +24,8 @@ import type { ServiceType } from "../../types/service";
 import { greeting } from "../comparison/components/ComparisonComponents";
 import Toast from "../../components/toast/Toast";
 import { Link } from "react-router-dom";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { toLocalISOTime, toReadableTime } from "../../utils/history";
 
 export default function Ranking() {
   const [userName, _setUserName] = useState<string>(() => {
@@ -81,7 +83,7 @@ export default function Ranking() {
     await fetchServices();
   }
 
-  async function fetchHistory(periodType: string, datePull: Date) {
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       var formatedData: RankingService[] = [];
 
@@ -98,7 +100,7 @@ export default function Ranking() {
 
       const data = await result.json();
 
-      if (data.length > 0) {
+      if (data && data.length > 0) {
         for (let service of data) {
           formatedData.push({
             id: service.id,
@@ -108,8 +110,8 @@ export default function Ranking() {
             status: "active",
           });
         }
-        setLastUpdate(datePull);
-        setHistoryMessage("Você está vendo dados do passado ");
+        setLastUpdate(new Date(datePull));
+        setHistoryMessage(`Você está vendo dados do passado: ${toReadableTime(datePull)}`);
 
         sortRanking(formatedData);
       } else {
@@ -119,16 +121,16 @@ export default function Ranking() {
           title="Histórico"
           message="Não há dados para o período selecionado."
         />;
-        setHistoryMessage("Período escolhido não possui dados ");
+        setHistoryMessage("Período escolhido não possui dados.");
       }
     } catch (e: any) {
       console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
       <Toast
         icon="error"
         title="Histórico"
-        message="Não há dados para o período selecionado."
+        message="Não foi possível obter dados para o peíodo selecionado."
       />;
-      setHistoryMessage("Período escolhido não possui dados ");
+      setHistoryMessage("Não foi possível obter dados para o peíodo selecionado.");
     }
   }
 
@@ -225,6 +227,7 @@ export default function Ranking() {
 
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
+    hour: "Hora",
     today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
     month: `${calendar.selectedDay} de ${
       monthNames[calendar.selectedMonth]
@@ -264,34 +267,6 @@ export default function Ranking() {
             </div>
 
             <div className="ranking-filters">
-              <div className="ranking-period">
-                <label htmlFor="ranking-period-select">
-                  Ver ranking por período:
-                </label>
-
-                <select
-                  id="ranking-period-select"
-                  className={showSkeleton ? "blocked" : ""}
-                  value={period}
-                  onClick={(event) => {
-                    const currentValue = event.currentTarget
-                      .value as RankingPeriod;
-                    if (currentValue === period) {
-                      handlePeriodChange(currentValue);
-                    }
-                  }}
-                  onChange={(event) =>
-                    handlePeriodChange(event.target.value as RankingPeriod)
-                  }
-                  disabled={showSkeleton}
-                >
-                  <option value="now">Agora</option>
-                  <option value="today">Hoje</option>
-                  <option value="month">Esse mês</option>
-                  <option value="year">Esse ano</option>
-                </select>
-              </div>
-
               <div className="ranking-classification">
                 <span>Classificar por:</span>
 
@@ -315,7 +290,7 @@ export default function Ranking() {
                   <button
                     type="button"
                     className={`${showSkeleton ? "blocked " : ""}${
-                      metric === "energy"
+                      metric === "co2e"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
                     }`}
@@ -329,6 +304,11 @@ export default function Ranking() {
                   </button>
                 </div>
               </div>
+              <PeriodSelect
+                showSkeleton={showSkeleton}
+                handlePeriodChange={handlePeriodChange}
+                period={period}
+              />
             </div>
           </section>
 
@@ -338,7 +318,7 @@ export default function Ranking() {
 
               <select
                 id="ranking-update-select"
-                className={`${showSkeleton ? "blocked" : ""}`}
+                className={`${showSkeleton ? ".update-select blocked" : ".update-select"}`}
                 value={Number(updateInterval)}
                 onChange={(event) =>
                   handleUpdateIntervalChange(Number(event.target.value))
@@ -496,7 +476,7 @@ export default function Ranking() {
             ) : (
               <span>Período selecionado: {periodLabel[period]}</span>
             )}
-            
+
             {showSkeleton ? (
               <p>
                 <Skeleton width="10rem" height="1rem" />
@@ -516,6 +496,7 @@ export default function Ranking() {
       {calendar.calendarOpen && (
         <RankingCalendar
           period={period}
+          selectedMinute={calendar.selectedMinute}
           selectedHour={calendar.selectedHour}
           selectedDay={calendar.selectedDay}
           selectedMonth={calendar.selectedMonth}
@@ -525,13 +506,16 @@ export default function Ranking() {
           currentYear={calendar.currentYear}
           currentMonth={calendar.currentMonth}
           currentDay={calendar.currentDay}
+          currentHour={calendar.currentHour}
           calendarDays={calendar.calendarDays}
+          lastHourSlots={calendar.lastHourSlots}
           onClose={calendar.closeCalendar}
           onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+          onConfirmMinute={calendar.confirmMinute}
+          onConfirmHour={calendar.confirmHour}
           onConfirmDay={calendar.confirmDay}
           onConfirmMonth={calendar.confirmMonth}
           onConfirmYear={calendar.confirmYear}
-          onConfirmHour={calendar.confirmHour}
           handleFetch={fetchHistory}
           handleCancel={handleRefresh}
         />

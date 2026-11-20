@@ -2,9 +2,18 @@ import { useState } from "react";
 import "./RankingCalendar.css";
 
 import { hours, monthNames, weekDays, type RankingPeriod } from "./rankingData";
+import { toLocalISOTime } from "../../../utils/history";
+
+type LastHourSlotType = {
+  hour: number;
+  minute: number;
+  label: string;
+  date: Date;
+};
 
 type RankingCalendarProps = {
   period: RankingPeriod;
+  selectedMinute: number;
   selectedHour: number;
   selectedDay: number;
   selectedMonth: number;
@@ -14,19 +23,23 @@ type RankingCalendarProps = {
   currentYear: number;
   currentMonth: number;
   currentDay: number;
+  currentHour: number;
   calendarDays: (number | null)[];
+  lastHourSlots: LastHourSlotType[];
   onClose: () => void;
   onChangeMonth: (direction: number) => void;
   onConfirmDay: (day: number) => void;
   onConfirmMonth: (month: number) => void;
   onConfirmYear: (year: number) => void;
   onConfirmHour: (hour: number) => void;
-  handleFetch: (periodType: string, datePull: Date) => void;
+  onConfirmMinute: (minute: number, hour?: number) => void;
+  handleFetch: (periodType: string, datePull: Date | string) => void;
   handleCancel: () => void;
 };
 
 export default function RankingCalendar({
   period,
+  selectedMinute,
   selectedHour,
   selectedDay,
   selectedMonth,
@@ -35,22 +48,45 @@ export default function RankingCalendar({
   currentYear,
   currentMonth,
   currentDay,
+  currentHour,
   calendarDays,
+  lastHourSlots,
   onClose,
+  onConfirmMinute,
+  onConfirmHour,
   onConfirmDay,
   onConfirmMonth,
-  onConfirmHour,
   handleFetch,
   handleCancel,
 }: RankingCalendarProps) {
   const [draftDay, setDraftDay] = useState(selectedDay);
+  const [draftMinute, setDraftMinute] = useState(selectedMinute);
   const [draftHour, setDraftHour] = useState(selectedHour);
   const [draftMonth, setDraftMonth] = useState(selectedMonth);
   const oppeningDate = new Date(); // pega a data atual da abertura da pagina
 
   const handleConfirm = () => {
     let date = new Date();
-    if (period === "today") {
+    if (period === "hour") {
+      const selectedSlot =
+        lastHourSlots.find((slot) => slot.minute === draftMinute) ??
+        new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          currentHour,
+          draftMinute,
+        );
+
+      const rawDate =
+        selectedSlot instanceof Date ? selectedSlot : selectedSlot.date;
+
+      const targetDate = new Date(rawDate);
+      targetDate.setSeconds(0, 0);
+
+      handleFetch("minute", toLocalISOTime(targetDate));
+      onConfirmMinute(draftMinute, targetDate.getHours());
+    } else if (period === "today") {
       handleFetch(
         "hour",
         new Date(
@@ -94,11 +130,31 @@ export default function RankingCalendar({
         </button>
 
         <h2 id="ranking-calendar-title">
+          {period === "hour" && "Escolha um minuto"}
           {period === "today" && "Escolha um horário"}
           {period === "month" && "Escolha uma data"}
           {period === "year" && "Escolha um mês"}
           {period === "other-years" && "Escolha um ano"}
         </h2>
+
+        {period === "hour" && (
+          <div className="ranking-calendar-panel">
+            <div className="ranking-calendar-options ranking-calendar-minute-options">
+              {/* pega os minutos do slots e coloca em uma div */}
+              {lastHourSlots.map((slot) => (
+                <button
+                  type="button"
+                  key={`${slot.hour}-${slot.minute}-${slot.label}`}
+                  className={draftMinute === slot.minute ? "is-selected" : ""}
+                  disabled={slot.date.getTime() > oppeningDate.getTime()}
+                  onClick={() => setDraftMinute(slot.minute)}
+                >
+                  {slot.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {period === "month" && (
           <>

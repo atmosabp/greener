@@ -45,7 +45,7 @@ export async function getServiceMetrics(serviceId: string) {
   const statusCode = statusResult.status;
 
   try {
-    service = (await reqServices()).find((value) => value.id == serviceId);
+    service = (await reqServices())!.find((value) => value.id == serviceId);
     [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
     await Promise.all([
       reqInterval(serviceId),

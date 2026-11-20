@@ -1,15 +1,13 @@
 import type {
   ServiceTypes,
-  MetricsType,
-  CoordinatesTypes,
 } from "../types/services-types";
 import { findServices } from "../modules/collections/collections.repository";
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 
-export async function reqServices(): Promise<ServiceTypes[]> {
+export async function reqServices(): Promise<ServiceTypes[] | undefined> {
   try {
-    const responseDb = await findServices();
+    const responseDb: ServiceTypes[] | undefined = await findServices();
 
     let startTime = Date.now(); //para calcular tempo total da operação
 
@@ -46,7 +44,7 @@ export async function reqServices(): Promise<ServiceTypes[]> {
 
     return responseDb;
   } catch (error: any) {
-    throw new Error(error.message || "API não disponível.");
+    console.error(error.message || "API não disponível.");
   }
 }
 
