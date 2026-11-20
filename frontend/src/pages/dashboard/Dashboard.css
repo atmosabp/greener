@@ -310,6 +310,7 @@
 }
 
 .analytics-card--renewable {
+    position: relative;
     flex: 1.2;
     justify-content: space-between;
 }
@@ -354,6 +355,7 @@
 
 /* Intensidade de carbono */
 .analytics-card--carbon {
+    position: relative;
     justify-content: space-between;
     gap: 0.5rem;
 }

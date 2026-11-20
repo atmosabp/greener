@@ -16,7 +16,6 @@ import type { CompareTarget } from "./components/comparisonData";
 import {
   Chevron,
   Gauge,
-  HelpIcon,
   Popover,
   SelectPill,
   StarIcon,
@@ -24,9 +23,10 @@ import {
 
 import ServiceCard from "./components/ServiceCard";
 
-import "./Comparison.css";
+import type { MetricsType, ServiceType } from '../../types/service';
+import Tooltip from '../../components/tooltip/tooltip';
+
 import Greeting from "../../components/greetings/Greeting";
-import "./Comparison.css";
 
 import {
   CmpAveragesSkeleton,
@@ -34,8 +34,6 @@ import {
 } from "./ComparisonSkeleton";
 
 import "./Comparison.css";
-
-import type { MetricsType, ServiceType } from "../../types/service";
 
 export default function Comparison() {
   const [period, setPeriod] = useState("today");
@@ -229,14 +227,14 @@ export default function Comparison() {
               Média indicadores
             </h2>
 
-            <button
-              type="button"
-              className="cmp-averages__help"
-              aria-label="Ajuda sobre os indicadores"
-              title="Média dos serviços selecionados"
-            >
-              <HelpIcon />
-            </button>
+          <button
+            type="button"
+            className="cmp-averages__help"
+            aria-label="Ajuda sobre os indicadores"
+            title="Média dos serviços selecionados"
+          >
+            <Tooltip text={"Média das métricas dos \n servicos selecionadas"} />  
+          </button>
 
             <div className="cmp-averages__content">
               <div className="cmp-averages__tiles">
