@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import AppHeader from "../../components/header/AppHeader";
+import { port } from "../../utils/connection";
 import "./Dashboard.css";
+
+import AppHeader from "../../components/header/AppHeader";
 import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
-import Loading from "../../components/loading/Loading";
-import { port } from "../../utils/connection";
-import { greeting } from "../comparison/components/ComparisonComponents";
-import Tooltip from "../../components/tooltip/tooltip";
+
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
+import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
+
+import Tooltip from "../../components/tooltip/Tooltip";
+import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -32,17 +37,6 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 
 export default function Dashboard() {
   const { serviceId } = useParams();
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -224,34 +218,57 @@ export default function Dashboard() {
 
   let year = new Date().getFullYear();
 
+  const [gaveUp, setGaveUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 15000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const metricsDone = timeUpdated !== "" || serviceList.length > 0;
+  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+
+  // A lista "Outros serviços" vem em outra requisição, depois das métricas.
+  const showListSkeleton = useSkeleton(serviceList.length === 0 && !gaveUp);
+
   return (
     <div className="dashboard-page">
-      <Loading data={serviceList} />
       <AppHeader />
 
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-              <h1>
-                {greeting()}, {userName}.
-              </h1>
-            <p>
-              Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
-              .{/* backend: nome do serviço */}
-            </p>
+            <Greeting />
+            
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="15rem" height="1rem" />
+              </p>
+            ) : (
+              <p>
+                Analise os dados do serviço
+                <strong> {serviceMetrics.name}</strong>.
+              </p>
+            )}
           </div>
 
           <div className="btns">
-            <span className="last-update">
-              Última atualização: {timeUpdated || "-"}
-            </span>
-            {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
+            {showSkeleton ? (
+              <span className="last-update">
+                <Skeleton width="15rem" height="1rem" />
+              </span>
+            ) : (
+              <span className="last-update">
+                Última atualização: {timeUpdated || "-"}
+              </span>
+            )}
 
             {isCompact ? (
               <div className="alter-btns">
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="updates"
                     value={Number(updateInterval)}
                     id="update-select"
@@ -270,6 +287,8 @@ export default function Dashboard() {
 
                 <div className="btn-date">
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="date"
                     id="date-select"
                     value={filter}
@@ -285,6 +304,8 @@ export default function Dashboard() {
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="updates"
                     id="update-select"
                     value={Number(updateInterval)}
@@ -303,6 +324,8 @@ export default function Dashboard() {
 
                 <div className="btn-date">
                   <select
+                    className={`${showSkeleton ? "blocked " : ""}`}
+                    disabled={showSkeleton}
                     name="date"
                     id="date-select"
                     value={filter}
@@ -317,13 +340,14 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="main-section">
-          {serviceMetrics.metrics?.cpu_percent ? (
+          {showSkeleton ? (
+            <DashboardGridSkeleton />
+          ) : serviceMetrics.metrics?.cpu_percent ? (
             <div className="dashboard-grid">
               <section className="service-info service-info--selected">
                 <h4>Serviço selecionado</h4>
                 <p>{serviceMetrics.name}</p>
               </section>
-
               <section className="service-info service-info--status">
                 <h4>Status</h4>
                 <div className="service-info-status">
@@ -332,7 +356,6 @@ export default function Dashboard() {
                     data-status="active"
                     aria-hidden="true"
                   />
-                  {/* backend: data-status = "active" | "warning" | "inactive" */}
                   <p>
                     {serviceMetrics &&
                     serviceMetrics.status &&
@@ -575,12 +598,17 @@ export default function Dashboard() {
                 aria-labelledby="others-title"
               >
                 <h3 id="others-title">Outros serviços</h3>
-                <ul>{createServiceList()}</ul>
+                {showListSkeleton ? (
+                  <ServiceListSkeleton rows={8} />
+                ) : (
+                  <ul>{createServiceList()}</ul>
+                )}
               </aside>
             </div>
           ) : (
             <div>
-              O serviço está inativo, e não é possível recolher as suas métricas no momento.
+              O serviço está inativo, e não é possível recolher as suas métricas
+              no momento.
               <br />
               Volte à tela principal e selecione outro serviço.
               {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}

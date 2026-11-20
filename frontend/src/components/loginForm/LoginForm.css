@@ -1,6 +1,7 @@
 .form-login {
     padding: 30px;
     background-color: var(--primary);
+    color: var(--on-primary);
     border-radius: 10px;
     border: 2px solid var(--primary-dark);
     width: fit-content;
@@ -104,30 +105,6 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-}
-
-.forgotten-password {
-    width: fit-content;
-    color: var(--primary-darker);
-    text-decoration: none;
-    position: relative;
-}
-
-.forgotten-password::after {
-    content: "";
-    position: absolute;
-    width: 0%;
-    height: 2px;
-    border-radius: 2px;
-    bottom: -1px;
-    left: 0;
-    background-color: var(--primary-darker);
-    ;
-    transition: width 0.5s;
-}
-
-.forgotten-password:hover::after {
-    width: 100%;
 }
 
 .btn-login {

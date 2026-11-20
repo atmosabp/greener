@@ -184,19 +184,31 @@ body {
 }
 
 
-[data-theme="light"] ::selection {
+::selection {
   background-color: var(--primary-dark);
-  color: var(--background);
-}
-
-[data-theme="dark"] ::selection {
-  background-color: var(--primary-dark);
-  color: var(--text);
+  color: var(--on-primary-dark);
 }
 
 *:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+
+/* Estado bloqueado durante loading */
+.blocked,
+*:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.55;
+  user-select: none;
+}
+
+/* Evita alterações visuais no hover */
+*:disabled:hover,
+.blocked:hover {
+  filter: none;
+  transform: none;
+  box-shadow: inherit;
 }
 
 body,
@@ -217,4 +229,32 @@ input {
     border-color 0.3s ease,
     box-shadow 0.3s ease,
     text-shadow 0.3s ease;
+}
+
+
+:root {
+  --on-primary-light: #38322E;
+  --on-primary-dark: #F9EEDC;
+  --on-primary-darker: #F9EEDC;
+}
+
+/* fundo + texto sempre em par */
+.bg-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.bg-primary-light {
+  background-color: var(--primary-light);
+  color: var(--on-primary-light);
+}
+
+.bg-primary-dark {
+  background-color: var(--primary-dark);
+  color: var(--on-primary-dark);
+}
+
+.bg-primary-darker {
+  background-color: var(--primary-darker);
+  color: var(--on-primary-darker);
 }

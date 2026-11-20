@@ -66,10 +66,11 @@
 }
 
 .dashboard .last-update {
-    padding: 0;
-    color: var(--text);
-    font-size: 0.95rem;
-    font-weight: 500;
+    color: color-mix(in srgb,
+            var(--text) 55%,
+            var(--background));
+        ;
+    font-size: 0.8rem;
     white-space: nowrap;
 }
 
@@ -79,6 +80,7 @@
     gap: 15px;
     padding-left: 15px;
     background-color: var(--primary-light);
+    color: var(--on-primary-light);
     border-radius: 999px;
     font-weight: 500;
     white-space: nowrap;
@@ -108,11 +110,25 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
+
 .dashboard select option {
     background-color: var(--text);
     color: var(--background);
     cursor: pointer;
 }
+
+[data-theme="dark"] .btn-update {
+    background-color: var(--primary-darker);
+    color: var(--on-primary-darker);
+    cursor: pointer;
+}
+
+[data-theme="dark"] .dashboard select {
+    background-color: var(--primary-light);
+    color: var(--background);
+    cursor: pointer;
+}
+
 
 .btn-date select {
     min-width: 10.5rem;
@@ -252,11 +268,12 @@
 
 .metric-card--data {
     background-color: var(--primary-dark);
-    color: var(--background);
+    color: var(--on-primary-dark);
 }
 
 .metric-card--usage {
     background-color: var(--primary-light);
+    color: var(--on-primary-light);
 }
 
 
@@ -440,8 +457,8 @@
     border: 2px solid var(--text);
     border-radius: 1.25rem;
     background-color: color-mix(in srgb,
-            var(--primary-light) 55%,
-            var(--background));
+            var(--background) 50%,
+            var(--primary-light));
     min-height: 0;
     transition: border 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
@@ -480,7 +497,7 @@
     border-radius: 999px;
 }
 
-ul{
+ul {
     display: flex;
     flex-direction: column;
 }
@@ -502,7 +519,7 @@ ul{
     transition: transform 0.3s ease-in-out;
 }
 
-.service-link-url{
+.service-link-url {
     color: inherit;
     text-decoration: none;
 }
@@ -641,12 +658,6 @@ ul{
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
-    }
-
-    .start-section h1 {
-        font-size: 2.25rem;
-        line-height: 1.1;
-        padding-right: 3.5rem;
     }
 
     .start-section p {

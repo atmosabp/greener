@@ -445,6 +445,7 @@ export default function App(): import("react").JSX.Element {
                   src={aboutPic}
                   className="about-img"
                   alt="Dashboard do GreenER em um notebook"
+                  loading="lazy"
                 />
                 <span
                   className="about-chip c1"
@@ -695,6 +696,7 @@ export default function App(): import("react").JSX.Element {
             className="success-img"
             data-reveal="right"
             alt="Broto crescendo em solo fértil"
+            loading="lazy"
           />
         </section>
 

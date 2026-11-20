@@ -1,5 +1,4 @@
 import { useState, useEffect, type ChangeEvent } from "react";
-import { ExternalLink } from "lucide-react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -16,30 +15,22 @@ import {
 } from "./components/rankingData";
 
 import "./Ranking.css";
-import Loading from "../../components/loading/Loading";
+import { RankingTableSkeletonRows } from "./RankingSkeleton";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
 import { port } from "../../utils/connection";
-import { Link } from "react-router-dom";
 import type { ServiceType } from "../../types/service";
-import { greeting } from "../comparison/components/ComparisonComponents";
+import Greeting from "../../components/greetings/Greeting";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 export default function Ranking() {
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
-
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
   const [updateInterval, setUpdateInterval] = useState(5);
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
+  const [timeUpdated, setTimeUpdated] = useState<string>("");
 
   var metricUsed: RankingMetric = "energy";
   const calendar = useRankingCalendar();
@@ -72,6 +63,8 @@ export default function Ranking() {
     );
     const data: ServiceType[] = await result.json();
 
+    setTimeUpdated(new Date().toLocaleString());
+
     for (let service of data) {
       formatedData.push({
         id: service.id,
@@ -100,6 +93,28 @@ export default function Ranking() {
   }
 
   function sortRanking(data: RankingService[]) {
+    var key: (x: undefined | number) => undefined | number = (x) => x;
+    setInitialServices(
+      data.sort((a, b) => {
+        if (metric === "energy") {
+          const xKey = key(a.energy),
+            yKey = key(b.energy);
+          if (typeof xKey === "undefined") {
+            return typeof yKey === "string" ? 0 : 1;
+          } else {
+            return typeof yKey === "string" ? -1 : yKey! - xKey!;
+          }
+        } else {
+          const xKey = key(a.co2e),
+            yKey = key(b.co2e);
+          if (typeof xKey === "undefined") {
+            return typeof yKey === "string" ? 0 : 1;
+          } else {
+            return typeof yKey === "string" ? -1 : yKey! - xKey!;
+          }
+        }
+      }),
+    );
     var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
     let dataHolder = data.sort((a, b) => {
       if (metricUsed === "energy") {
@@ -127,8 +142,9 @@ export default function Ranking() {
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
     today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
-    month: `${calendar.selectedDay} de ${monthNames[calendar.selectedMonth]
-      } de ${calendar.selectedYear}`,
+    month: `${calendar.selectedDay} de ${
+      monthNames[calendar.selectedMonth]
+    } de ${calendar.selectedYear}`,
     year: `${monthNames[calendar.selectedMonth]} de ${calendar.selectedYear}`,
     "other-years": String(calendar.selectedYear),
   };
@@ -147,27 +163,80 @@ export default function Ranking() {
     return () => clearInterval(fetchTimer);
   }, []);
 
+  const [gaveUp, setGaveUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 15000);
+    return () => clearTimeout(t);
+  }, []);
+  const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
+
   return (
     <div className="ranking-page">
-      <Loading data={initialServices} />
+      {/* <Loading data={initialServices} /> */}
       <AppHeader />
 
       <main className="ranking-main">
         <div className="ranking-intro-box">
           <section className="ranking-intro">
             <div className="ranking-heading">
-              <h1>
-                {greeting()}, {userName}.
-              </h1>
+              <Greeting />
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
-            <div className="ranking-filters">
-              <div className="ranking-period">
-                <label htmlFor="ranking-period-select">
-                  Ver ranking por período:
-                </label>
+            <div className="ranking-classification">
+              <span>Classificar por:</span>
 
+              <div className="ranking-classification-buttons">
+                <button
+                  type="button"
+                  className={
+                    metric === "energy"
+                      ? "ranking-metric-button is-active"
+                      : "ranking-metric-button"
+                  }
+                  aria-pressed={metric === "energy"}
+                  onClick={() => handleParamChange("energy")}
+                >
+                  Consumo energético
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    metric === "co2e"
+                      ? "ranking-metric-button is-active"
+                      : "ranking-metric-button"
+                  }
+                  aria-pressed={metric === "co2e"}
+                  onClick={() => handleParamChange("co2e")}
+                >
+                  Emissão de CO₂e
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="ranking-toolbar">
+            <div className="ranking-toolbar-buttons">
+              <div className="ranking-update">
+                <label htmlFor="ranking-update-select">Atualizações:</label>
+
+                <select
+                  id="ranking-update-select"
+                  value={Number(updateInterval)}
+                  onChange={(event) =>
+                    handleUpdateIntervalChange(Number(event.target.value))
+                  }
+                >
+                  <option value={5}>05s</option>
+                  <option value={10}>10s</option>
+                  <option value={15}>15s</option>
+                  <option value={30}>30s</option>
+                  <option value={60}>60s</option>
+                  <option value={120}>120s</option>
+                </select>
+              </div>
+              <div className="ranking-period">
                 <select
                   id="ranking-period-select"
                   value={period}
@@ -180,63 +249,6 @@ export default function Ranking() {
                   <option value="other-years">Outros anos</option>
                 </select>
               </div>
-
-              <div className="ranking-classification">
-                <span>Classificar por:</span>
-
-                <div className="ranking-classification-buttons">
-                  <button
-                    type="button"
-                    className={
-                      metric === "energy"
-                        ? "ranking-metric-button is-active"
-                        : "ranking-metric-button"
-                    }
-                    aria-pressed={metric === "energy"}
-                    onClick={() => {
-                      handleParamChange("energy");
-                    }}
-                  >
-                    Consumo energético
-                  </button>
-
-                  <button
-                    type="button"
-                    className={
-                      metric === "co2e"
-                        ? "ranking-metric-button is-active"
-                        : "ranking-metric-button"
-                    }
-                    aria-pressed={metric === "co2e"}
-                    onClick={() => {
-                      handleParamChange("co2e");
-                    }}
-                  >
-                    Emissão de CO₂e
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="ranking-toolbar">
-            <div className="ranking-update">
-              <label htmlFor="ranking-update-select">Atualizações:</label>
-
-              <select
-                id="ranking-update-select"
-                value={Number(updateInterval)}
-                onChange={(event) =>
-                  handleUpdateIntervalChange(Number(event.target.value))
-                }
-              >
-                <option value={5}>05s</option>
-                <option value={10}>10s</option>
-                <option value={15}>15s</option>
-                <option value={30}>30s</option>
-                <option value={60}>60s</option>
-                <option value={120}>120s</option>
-              </select>
             </div>
 
             <div className="ranking-toolbar-info">
@@ -282,79 +294,106 @@ export default function Ranking() {
             aria-label="Tabela de ranking. Role para ver todos os serviços."
             tabIndex={0}
           >
-            <table className="ranking-table">
-              <thead>
-                <tr>
-                  <th scope="col">Posição</th>
-                  <th scope="col">Serviço</th>
-                  <th scope="col">Consumo Energético</th>
-                  <th scope="col">Emissão de CO₂e</th>
-                </tr>
-              </thead>
+            <div className="table-border">
+              <table className="ranking-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Posição</th>
+                    <th scope="col">Serviço</th>
+                    <th scope="col">Consumo Energético</th>
+                    <th scope="col">Emissão de CO₂e</th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {initialServices
-                  ? initialServices.map((service, index) => (
-                    <tr key={service.id}>
-                      <td>
-                        <span
-                          className={
-                            index < 3
-                              ? `ranking-position ranking-position--${index + 1}`
-                              : "ranking-position"
-                          }
-                        >
-                          #{index + 1}
-                        </span>
-                      </td>
+                <tbody>
+                  {showSkeleton ? (
+                    <RankingTableSkeletonRows rows={8} />
+                  ) : (
+                    <>
+                      {initialServices
+                        ? initialServices.map((service, index) => (
+                            <tr key={service.id}>
+                              <td>
+                                <span
+                                  className={
+                                    index < 3
+                                      ? `ranking-position ranking-position--${index + 1}`
+                                      : "ranking-position"
+                                  }
+                                >
+                                  #{index + 1}
+                                </span>
+                              </td>
 
-                      <td className="ranking-service-name">
-                        {service.status == "active" ? (
-                          <Link
-                            className="service-link-text"
-                            to={`/dashboard/${service.id}`}
-                          >
-                            {service.name}
-                            <ExternalLink className="redirect-link-icon" />
-                          </Link>
-                        ) : (
-                          <>{service.name}</>
-                        )}
-                      </td>
+                              <td className="ranking-service-name">
+                                {service.status == "active" ? (
+                                  <Link
+                                    className="service-link-text"
+                                    to={`/dashboard/${service.id}`}
+                                  >
+                                    {service.name}
+                                    <ExternalLink className="redirect-link-icon" />
+                                  </Link>
+                                ) : (
+                                  <>{service.name}</>
+                                )}
+                              </td>
 
-                      <td>
-                        {service.energy ? (
-                          <>
-                            {numberFormatter.format(service.energy) != "NaN"
-                              ? numberFormatter.format(service.energy) +
-                              " kWh"
-                              : "Indisponível"}{" "}
-                          </>
-                        ) : (
-                          "Indisponível"
-                        )}
-                      </td>
+                              <td>
+                                {service.energy ? (
+                                  <>
+                                    {numberFormatter.format(service.energy) !=
+                                    "NaN"
+                                      ? numberFormatter.format(service.energy) +
+                                        " kWh"
+                                      : "Indisponível"}{" "}
+                                  </>
+                                ) : (
+                                  "Indisponível"
+                                )}
+                              </td>
 
-                      <td>
-                        {service.co2e ? (
-                          <>
-                            {numberFormatter.format(service.co2e) != "NaN"
-                              ? numberFormatter.format(service.co2e) +
-                              " kg CO₂e"
-                              : "Indisponível"}{" "}
-                          </>
-                        ) : (
-                          "Indisponível"
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                  : "não foi possível pegar os serviços"}
-              </tbody>
-            </table>
+                              <td>
+                                {service.co2e ? (
+                                  <>
+                                    {numberFormatter.format(service.co2e) !=
+                                    "NaN"
+                                      ? numberFormatter.format(service.co2e) +
+                                        " kg CO₂e"
+                                      : "Indisponível"}{" "}
+                                  </>
+                                ) : (
+                                  "Indisponível"
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        : "não foi possível pegar os serviços"}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div className="ranking-table-caption">
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>Período selecionado: {periodLabel[period]}</span>
+            )}
+            {showSkeleton ? (
+              <p>
+                <Skeleton width="10rem" height="1rem" />
+              </p>
+            ) : (
+              <span>
+                {initialServices ? initialServices.length : 0} serviços
+                encontrados
+              </span>
+            )}
             <span>Período selecionado: {periodLabel[period]}</span>
             <span>
               {initialServices ? initialServices.length : 0} serviços

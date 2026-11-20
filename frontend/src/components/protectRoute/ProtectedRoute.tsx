@@ -33,16 +33,13 @@ export default function ProtectedRoute({
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:${port}/auth/me`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            signal: controller.signal,
+        const response = await fetch(`http://localhost:${port}/auth/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+          signal: controller.signal,
+        });
 
         if (response.status === 401) {
           sessionStorage.removeItem("token");
@@ -62,12 +59,15 @@ export default function ProtectedRoute({
             title="Erro"
             message="Não foi possível validar a sessão."
           />;
-          throw new Error("Não foi possível validar a sessão.");
+          setStatus("error");
+          return;
         }
 
         const data = await response.json();
 
         localStorage.setItem("user", JSON.stringify(data.user));
+
+        console.log(data.user.isAdm);
 
         if (requireAdmin && !data.user.isAdm) {
           <Toast
@@ -80,7 +80,6 @@ export default function ProtectedRoute({
         }
 
         setStatus("authenticated");
-
       } catch (error: any) {
         if (error instanceof Error && error.name === "AbortError") {
           return;
@@ -93,6 +92,7 @@ export default function ProtectedRoute({
         />;
         console.error("Erro ao verificar autenticação: ", error);
         setStatus("error");
+        return;
       }
     }
 
@@ -100,10 +100,6 @@ export default function ProtectedRoute({
 
     return () => controller.abort();
   }, [requireAdmin]);
-
-  if (status === "loading") {
-    return <p>Verificando autenticação...</p>;
-  }
 
   if (status === "unauthenticated") {
     return <Navigate to="/login" state={{ from: location }} replace />;
@@ -114,14 +110,7 @@ export default function ProtectedRoute({
   }
 
   if (status === "error") {
-    return (
-      <div>
-        <p>Não foi possível verificar sua sessão.</p>
-        <button onClick={() => window.location.reload()}>
-          Tentar novamente
-        </button>
-      </div>
-    );
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

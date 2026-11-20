@@ -5,18 +5,6 @@ import { carbonLevel, formatNumber } from './comparisonData';
 import Tooltip from '../../../components/tooltip/tooltip';
 
 /* ------------------------------------------------------------------ */
-/* Saudação                                                            */
-/* ------------------------------------------------------------------ */
-
-export function greeting() {
-    const hour = new Date().getHours();
-
-    if (hour < 12) return 'Bom dia';
-    if (hour < 18) return 'Boa tarde';
-    return 'Boa noite';
-}
-
-/* ------------------------------------------------------------------ */
 /* Fechar menus ao clicar fora ou pressionar Escape                    */
 /* ------------------------------------------------------------------ */
 
@@ -182,12 +170,14 @@ export function SelectPill({
     options,
     variant,
     label,
+    disabled = false
 }: {
     value: string;
     onChange: (value: string) => void;
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
+    disabled?:boolean;
 }) {
     return (
         <span className={`cmp-select cmp-select--${variant}`}>
@@ -195,6 +185,7 @@ export function SelectPill({
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
                 aria-label={label}
+                disabled={disabled}
             >
                 {options.map((option) => (
                     <option

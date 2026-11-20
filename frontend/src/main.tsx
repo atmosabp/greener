@@ -1,7 +1,6 @@
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 
 import App from "./App.tsx";
@@ -13,11 +12,13 @@ import Comparison from "./pages/comparison/Comparison.tsx";
 import Admin from "./pages/admin/Admin.tsx";
 
 import ThemeProvider from "./providers/ThemeProvider.tsx";
+import ToastProvider from "./providers/ToastProvider.tsx";
 import ProtectedRoute from "./components/protectRoute/ProtectedRoute.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           {/* Rotas públicas */}
@@ -36,8 +37,11 @@ createRoot(document.getElementById("root")!).render(
           <Route element={<ProtectedRoute requireAdmin />}>
             <Route path="/admin" element={<Admin />} />
           </Route>
+
+          <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </ThemeProvider>
   </StrictMode>
 );
