@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import AppHeader from "../../components/header/AppHeader";
 
 import {
@@ -23,8 +24,8 @@ import {
 
 import ServiceCard from "./components/ServiceCard";
 
-import './Comparison.css';
-import Greeting from '../../components/greetings/Greeting';
+import "./Comparison.css";
+import Greeting from "../../components/greetings/Greeting";
 import "./Comparison.css";
 
 import {
@@ -171,19 +172,17 @@ export default function Comparison() {
         <section className="cmp-intro">
           <div>
             <Greeting />
-
-            <p className="cmp-intro__sub">Comparação de serviços</p>
             <p className="cmp-intro__sub">
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
-
+          </div>
+           <div className="cmp-intro-btns">
             <Popover
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className={`cmp-pill-outline ${loading ? "blocked" : ""}`}
+                  className="cmp-pill-outline"
                   aria-expanded={open}
-                  disabled={loading}
                   onClick={toggle}
                 >
                   Serviços selecionados
@@ -208,16 +207,14 @@ export default function Comparison() {
                 </ul>
               )}
             </Popover>
+            <SelectPill
+              variant="dark"
+              label="Período"
+              value={period}
+              onChange={setPeriod}
+              options={PERIODS}
+            />
           </div>
-
-          <SelectPill
-            variant="dark"
-            label="Período"
-            value={period}
-            onChange={setPeriod}
-            options={PERIODS}
-            disabled={loading}
-          />
         </section>
 
         {/* ---------------------------------------------------------- */}
@@ -377,32 +374,6 @@ export default function Comparison() {
                 selecionados”.
               </p>
             )}
-
-            {/* Aqui é gerado o card de cada serviço */}
-
-            {visible.map((service, index) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                rank={index + 1}
-                isFirst={index === 0}
-                isLast={index === visible.length - 1}
-                isReference={service.id === referenceId}
-                compareWith={compareMap[service.id] ?? "reference"}
-                hasReference={
-                  referenceId !== null && referenceId !== service.id
-                }
-                baseMetrics={baseMetricsFor(service)}
-                onMove={(direction) => move(service.id, direction)}
-                onToggleReference={() => toggleReference(service.id)}
-                onCompareChange={(target) =>
-                  setCompareMap((previous) => ({
-                    ...previous,
-                    [service.id]: target,
-                  }))
-                }
-              />
-            ))}
           </div>
         </section>
       </main>
