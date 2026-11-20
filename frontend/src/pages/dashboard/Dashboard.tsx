@@ -357,7 +357,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-energy">
-                <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt hora"} />
+                <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
                 <h4>
                   {serviceMetrics.metrics?.memory_gb ? (
@@ -442,7 +442,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-memory">
-                    <Tooltip text={"Mémoria RAM utiliazada  "} />
+                    <Tooltip text={"Mémoria RAM utiliazada "} />
                     <p>Memória</p>
                     <span className="metric-counter">2/4</span>
                     <h4>
@@ -463,7 +463,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-storage">
-                    <Tooltip text={"Memória normal utilizadas"} />
+                    <Tooltip text={"Memória de disco utilizadas"} />
                     <p>Armazenamento</p>
                     <span className="metric-counter">3/4</span>
                     <h4>
@@ -510,7 +510,7 @@ export default function Dashboard() {
               <div className="analytics">
                 
                 <section className="analytics-card analytics-card--renewable">
-                  <Tooltip text={"Porcentagem da energia utilizada \n na localização que é renovavel"} />
+                  <Tooltip text={"Porcentagem da energia utilizada \n na localização que é renovável"} />
                   <h3>Energia renovável</h3>
                   <div
                     className="donut"

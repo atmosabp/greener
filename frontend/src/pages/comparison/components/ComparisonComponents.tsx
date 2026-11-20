@@ -349,6 +349,7 @@ export function Delta({ value }: { value: number }) {
 
     return (
         <span className="cmp-delta">
+            
             <ArrowIcon dir={rounded > 0 ? 'up' : 'down'} />
             {formatNumber(Math.abs(rounded))}%
         </span>
@@ -420,9 +421,7 @@ export function EnergyTile({
 
     return (
         <div className="cmp-energy" title={deltaTitle(delta)}>
-            {rounded !== undefined && rounded !== 0 && (
-                <Tooltip text={"Quantidade que o seriço se distancia \n da referencia (média ou serviço marcado)"} />
-            )}
+            
             <span className="cmp-energy__label">
                 {label}
 
