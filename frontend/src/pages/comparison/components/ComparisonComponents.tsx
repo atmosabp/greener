@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { carbonLevel, formatNumber } from './comparisonData';
+import type { RankingPeriod } from '../../ranking/components/rankingData';
 
 /* ------------------------------------------------------------------ */
 /* Fechar menus ao clicar fora ou pressionar Escape                    */
@@ -172,7 +173,7 @@ export function SelectPill({
     disabled = false
 }: {
     value: string;
-    onChange: (value: string) => void;
+    onChange: (value: RankingPeriod) => void;
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
@@ -182,7 +183,7 @@ export function SelectPill({
         <span className={`cmp-select cmp-select--${variant}`}>
             <select
                 value={value}
-                onChange={(event) => onChange(event.target.value)}
+                onChange={(event) => onChange(event.target.value as RankingPeriod)}
                 aria-label={label}
                 disabled={disabled}
             >

@@ -14,14 +14,17 @@ import {
 export async function addMinuteHistory(serviceId: string) {
   const client = await pool.connect();
 
-  const [collectionIntervalSeconds,carbonIntensity,renewablePercent,metricsEnergy] =
-    await Promise.all([
-      reqInterval(serviceId),
-      reqCarbonValue(serviceId),
-      reqRenewablePercent(serviceId),
-      reqMetrics(serviceId)
-    ])
-  
+  const [
+    collectionIntervalSeconds,
+    carbonIntensity,
+    renewablePercent,
+    metricsEnergy,
+  ] = await Promise.all([
+    reqInterval(serviceId),
+    reqCarbonValue(serviceId),
+    reqRenewablePercent(serviceId),
+    reqMetrics(serviceId),
+  ]);
 
   const metricsCalculator = new MetricsCalculator({
     collection_interval_seconds: collectionIntervalSeconds,
@@ -53,7 +56,7 @@ export async function addMinuteHistory(serviceId: string) {
     return result;
   } catch (error: any) {
     if (client) await client.query("ROLLBACK");
-    // console.log(error);
+
     throw new Error(error.message || "Não foi possível registrar o histórico.");
   } finally {
     await client.release();
@@ -114,44 +117,10 @@ async function insertMinuteHistory(
   return result.rows[0] || null;
 }
 
-// Funções que ainda serão feitas ==========
-
-export async function addHourHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM hour_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-async function insertHourHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM hour_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-export async function addMonthHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM month_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-async function insertMonthHistory(datePull: any) {
-  const result = await pool.query(
-    `SELECT FROM month_data WHERE date_pull = $1`,
-    [datePull],
-  );
-  return result.rows[0] || null;
-}
-
-// ==========================================
-
 export async function findHistory() {
-  const result = await pool.query(`SELECT * FROM hour_data where service_id = 'billing-api'`);
+  const result = await pool.query(
+    `SELECT * FROM minute_data where service_id = 'billing-api'`,
+  );
 
   return result.rows || [];
 }
@@ -164,202 +133,194 @@ export async function findServices() {
 
 export async function findMonthHistory(datePull: Date) {
   //preciso de um if que detecta de o date pull é um mes antes do atual
-  var result;
-  if (differenceInMonths(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from day_data 
-          where date_pull <= date_trunc('month',current_timestamp)`,
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM month_data WHERE date_pull between $1 and $1 :: timestamp + interval '1 month'`,
-      [datePull],
-    );
-  }
-  return result.rows[0] || null;
+  var result = await pool.query(
+    `SELECT name,
+        service_id as id,
+        AVG(co2e) as co2e,
+        AVG(kwh) as kwh,
+        AVG(cpu_percentage) as cpu_percentage,
+        AVG(memory_gb) as memory_gb,
+        AVG(disk_gb) as disk_gb,
+        AVG(network_gb) as network_gb,
+        AVG(renewable_percent) as renewable_percent
+        FROM month_data
+        inner join services as s on service_id = s.id
+        WHERE date_pull between $1 :: timestamptz - interval '27 days' and $1 :: timestamptz + interval '1 month'
+        group by name, service_id`,
+    [datePull],
+  );
+  
+  return result.rows || null;
 }
 
 export async function findServiceMonthHistory(
   datePull: any,
   serviceId: string,
 ) {
-  var result;
-  if (differenceInMonths(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from day_data 
-          where service_id = $1
-          and date_pull <= date_trunc('month',current_timestamp)`,
-      [serviceId],
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM month_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '1 month' limit 1`,
-      [serviceId, datePull],
-    );
-  }
+  var result = await pool.query(
+    `SELECT 
+        name,
+        service_id as id,
+        AVG(co2e) as co2e,
+        AVG(kwh) as kwh,
+        AVG(cpu_percentage) as cpu_percentage,
+        AVG(memory_gb) as memory_gb,
+        AVG(disk_gb) as disk_gb,
+        AVG(network_gb) as network_gb,
+        AVG(renewable_percent) as renewable_percent
+      FROM month_data 
+      inner join services as s on service_id = s.id
+      WHERE service_id = $1 and date_pull between $2 :: timestamptz - interval '27 days' and $2 :: timestamptz + interval '1 month' 
+      group by name, service_id
+      limit 1`,
+    [serviceId, datePull],
+  );
+  
   return result.rows[0] || null;
 }
 
 export async function findDayHistory(datePull: Date) {
-  //preciso de um if que detecta de o date pull é um mes antes do atual
-  var result;
-  if (differenceInDays(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from hour_data 
-          where date_pull <= date_trunc('day',current_timestamp)`,
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM day_data WHERE date_pull between $1 and $1 :: timestamp + interval '1 day'`,
-      [datePull],
-    );
-  }
-  return result.rows[0] || null;
+  var result = await pool.query(
+    `SELECT name,
+        service_id as id,
+        AVG(co2e) as co2e,
+        AVG(kwh) as kwh,
+        AVG(cpu_percentage) as cpu_percentage,
+        AVG(memory_gb) as memory_gb,
+        AVG(disk_gb) as disk_gb,
+        AVG(network_gb) as network_gb,
+        AVG(renewable_percent) as renewable_percent
+        FROM day_data 
+        inner join services as s on service_id = s.id
+        WHERE date_pull between $1 :: timestamptz - interval '23 hours' and $1 :: timestamptz + interval '1 day'
+        group by name, service_id`,
+    [datePull],
+  );
+  
+  return result.rows || null;
 }
 
 export async function findServiceDayHistory(datePull: Date, serviceId: string) {
-  var result;
-  if (differenceInDays(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from hour_data 
-          where service_id = $1
-          and date_pull <= date_trunc('day',current_timestamp)`,
-      [serviceId],
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM day_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '1 day' limit 1`,
-      [serviceId, datePull],
-    );
-  }
-  return result.rows[0] || null;
+  var result = await pool.query(
+    `SELECT name,
+        service_id as id,
+        AVG(co2e) as co2e,
+        AVG(kwh) as kwh,
+        AVG(cpu_percentage) as cpu_percentage,
+        AVG(memory_gb) as memory_gb,
+        AVG(disk_gb) as disk_gb,
+        AVG(network_gb) as network_gb,
+        AVG(renewable_percent) as renewable_percent
+        FROM day_data 
+        inner join services as s on service_id = s.id
+        WHERE service_id = $1 and date_pull between $2 :: timestamptz - interval '23 hours' and $2 :: timestamptz + interval '1 day' 
+        group by name, service_id
+        limit 1`,
+    [serviceId, datePull],
+  );
+
+  return result.rows || null;
 }
 
 export async function findHourHistory(datePull: Date) {
-  var result;
-  if (differenceInHours(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from minute_data 
-          where date_pull <= date_trunc('hour',current_timestamp)`,
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM hour_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 minutes'`,
-      [datePull],
-    );
-  }
-  return result.rows[0] || null;
-}
-
-export async function findMinuteHistory(datePull: Date) {
-  var result;
-  if (differenceInHours(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from minute_data 
-          where date_pull <= date_trunc('hour',current_timestamp)`,
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM hour_data WHERE date_pull between $1 and $1 :: timestamp + interval '59 minutes'`,
-      [datePull],
-    );
-  }
-  return result.rows[0] || null;
+  var result = await pool.query(
+    `SELECT 
+        name,
+        service_id as id,
+        AVG(co2e) as co2e,
+        AVG(kwh) as kwh,
+        AVG(cpu_percentage) as cpu_percentage,
+        AVG(memory_gb) as memory_gb,
+        AVG(disk_gb) as disk_gb,
+        AVG(network_gb) as network_gb,
+        AVG(renewable_percent) as renewable_percent 
+        FROM hour_data 
+        inner join services as s on service_id = s.id
+        WHERE date_pull between $1 :: timestamptz - interval '59 minutes' and $1 :: timestamptz + interval '59 minutes' 
+        group by name, service_id`,
+    [datePull],
+  );
+  
+  return result.rows || null;
 }
 
 export async function findServiceHourHistory(
   datePull: Date,
   serviceId: string,
 ) {
-  var result;
-  if (differenceInHours(Date(), datePull) < 2) {
-    result = await pool.query(
-      `select 
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent
-          from minute_data 
-          where service_id = $1
-          and date_pull <= date_trunc('hour',current_timestamp)`,
-      [serviceId],
-    );
-  } else {
-    result = await pool.query(
-      `SELECT * FROM hour_data WHERE service_id = $1 and date_pull between $2 and $2 :: timestamp + interval '59 minutes' limit 1`,
-      [serviceId, datePull],
-    );
-  }
+  var result = await pool.query(
+    `SELECT 
+        name,
+        service_id as id,
+        AVG(co2e) as co2e,
+        AVG(kwh) as kwh,
+        AVG(cpu_percentage) as cpu_percentage,
+        AVG(memory_gb) as memory_gb,
+        AVG(disk_gb) as disk_gb,
+        AVG(network_gb) as network_gb,
+        AVG(renewable_percent) as renewable_percent
+        FROM hour_data h
+        inner join services as s on service_id = s.id
+        WHERE service_id = $1 and date_pull between $2 :: timestamptz - interval '59 minutes' and $2 :: timestamptz + interval '59 minutes' 
+        group by name, service_id
+        limit 1`,
+    [serviceId, datePull],
+  );
 
   return result.rows[0] || null;
 }
 
-// export async function findMinuteHistory(datePull: Date) {
-//   const result = await pool.query(
-//     `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
-//     [serviceId, datePull],
-//   );
-//   return result.rows[0] || null;
-// }
+export async function findMinuteHistory(datePull: Date) {
+  var result;
+
+  result = await pool.query(
+    `SELECT 
+        name,
+        service_id as id,
+        date_pull,
+        co2e as co2e,
+        kwh as kwh,
+        cpu_percentage as cpu_percentage,
+        memory_gb as memory_gb,
+        disk_gb as disk_gb,
+        network_gb as network_gb,
+        renewable_percent as renewable_percent
+        FROM minute_data 
+        inner join services as s on service_id = s.id
+        WHERE date_pull between $1 :: timestamptz - interval '58 seconds' and $1 :: timestamptz + interval '59 seconds'
+        group by name, service_id, co2e, kwh, cpu_percentage, memory_gb, disk_gb, network_gb, renewable_percent, date_pull
+        `,
+    [datePull],
+  );
+
+  return result.rows || null;
+}
 
 export async function findServiceMinuteHistory(
-  datePull: number,
+  datePull: Date,
   serviceId: string,
 ) {
+  //busca o horário exato buscado (já que o histórico é guardado pontualmente)
   const result = await pool.query(
-    `SELECT * FROM services WHERE service_id = $1 and date_pull = $2`,
-    [serviceId, datePull],
+    `SELECT
+        s.name,
+        m.service_id AS id,
+        m.date_pull,
+        m.co2e,
+        m.kwh,
+        m.cpu_percentage,
+        m.memory_gb,
+        m.disk_gb,
+        m.network_gb,
+        m.renewable_percent
+        FROM minute_data m
+        INNER JOIN services s ON m.service_id = s.id
+        WHERE m.service_id = $1
+          AND m.date_pull BETWEEN $2::timestamptz - interval '30 seconds'
+          AND $2::timestamptz + interval '30 seconds'
+        ORDER BY ABS(EXTRACT(EPOCH FROM (m.date_pull - $2::timestamptz))) ASC
+        LIMIT 1`,
+      [serviceId, datePull],
   );
   return result.rows[0] || null;
 }

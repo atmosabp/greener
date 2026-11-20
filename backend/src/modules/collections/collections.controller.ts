@@ -5,7 +5,7 @@ import {
   searchServiceHistory,
   searchAllHistory,
   getServiceMetrics,
-  getAllServicesMetrics
+  getAllServicesMetrics,
 } from "./collections.service";
 
 export async function getHistoryController(_req: Request, res: Response) {
@@ -24,7 +24,7 @@ export async function getHistoryController(_req: Request, res: Response) {
 export async function addHistoryController(req: Request, res: Response) {
   const { serviceId } = req.body;
   try {
-    const result = await addHistory( serviceId);
+    const result = await addHistory(serviceId);
     return res.status(200).json(result);
   } catch (error: any) {
     return res.status(500).json({
@@ -50,7 +50,10 @@ export async function getServiceMetricsController(req: Request, res: Response) {
   }
 }
 
-export async function getAllServicesDataController(req: Request, res: Response) {
+export async function getAllServicesDataController(
+  req: Request,
+  res: Response,
+) {
   try {
     const result = await getAllServicesMetrics();
     return res.status(200).json(result);
@@ -78,12 +81,22 @@ export async function findAllHistoryController(req: Request, res: Response) {
   }
 }
 
-export async function findServiceHistoryController(req: Request, res: Response) {
-  const serviceId = String(req.params.id)
+export async function findServiceHistoryController(
+  req: Request,
+  res: Response,
+) {
+  const serviceId = String(req.params.id);
   const { periodType, datePull } = req.body;
 
   try {
-    const result = await searchServiceHistory(periodType, datePull, serviceId);
+    const date = new Date(datePull);
+    if (isNaN(date.getTime())) {
+      return res
+        .status(400)
+        .json({ message: "O padrão da data enviada é inválido." });
+    }
+
+    const result = await searchServiceHistory(periodType, date, serviceId);
     return res.status(200).json(result);
   } catch (error: any) {
     return res.status(500).json({

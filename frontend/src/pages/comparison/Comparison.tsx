@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -22,27 +22,40 @@ import {
   StarIcon,
 } from "./components/ComparisonComponents";
 
-import ServiceCard from "./components/ServiceCard";
+import "../ranking/Ranking.css";
 
+import ServiceCard from "./components/ServiceCard";
 import "./Comparison.css";
+
 import Greeting from "../../components/greetings/Greeting";
-import "./Comparison.css";
 
 import {
   CmpAveragesSkeleton,
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
 
-import "./Comparison.css";
-
+import {
+  timeFormatter,
+  type RankingPeriod,
+} from "../ranking/components/rankingData";
+import useRankingCalendar from "../ranking/components/useRankingCalendar";
+import RankingCalendar from "../ranking/components/RankingCalendar";
 import type { MetricsType, ServiceType } from "../../types/service";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { toReadableTime } from "../../utils/history";
 
 export default function Comparison() {
-  const [period, setPeriod] = useState("today");
+  const [period, setPeriod] = useState<RankingPeriod>("now");
+  const historyActivatedRef = useRef(false);
+  const [lastUpdate, setLastUpdate] = useState(() => new Date());
+
+  const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [historyMessage, setHistoryMessage] = useState("");
 
   const [order, setOrder] = useState<string[]>([]);
 
@@ -54,14 +67,92 @@ export default function Comparison() {
     {},
   );
 
-  /* Buscar os serviços e suas métricas no backend. */
-  useEffect(() => {
-    let ignore = false;
+  const calendar = useRankingCalendar();
 
+  const [gaveUp, setGaveUp] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const metricsDone = undefined;
+  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+
+  async function fetchHistory(periodType: string, datePull: Date | string) {
+    try {
+      let formatedData: ServiceType[] = [];
+      const port: number = import.meta.env.VITE_PORT || 3000;
+
+      const result = await fetch(
+        `http://localhost:${port}/collections/all-service-history`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+        },
+      );
+      const data: any[] = await result.json();
+
+      if (data && data.length > 0) {
+        for (let service of data) {
+          formatedData.push({
+            id: service.id,
+            name: service.name,
+            metrics: {
+              cpu_percent: service.cpu_percentage,
+              memory_gb: service.memory_gb,
+              disk_gb: service.disk_gb,
+              network_gb: service.network_gb,
+              co2e: service.co2e,
+              kwh: service.kwh,
+              carbon_intensity: service.co2e / service.kwh,
+            },
+            status: "active",
+          });
+        }
+
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
+
+        setServices(formatedData);
+        setOrder(formatedData.map((service) => service.id));
+        setSelected(new Set(formatedData.map((service) => service.id)));
+        setReferenceId(formatedData[0]?.id ?? null);
+        setError(null);
+        setLoading(false);
+      } else {
+        handleRefresh();
+        setHistoryMessage("Período escolhido não possui dado.");
+      }
+    } catch (e: any) {
+      console.error(
+        `Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`,
+      );
+      setHistoryMessage(
+        "Ocorreu um erro ao buscar dados do período selecionado.",
+      );
+    }
+  }
+
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
+    if (nextPeriod == "now") {
+      handleRefresh();
+      setHistoryMessage("");
+    } else {
+      historyActivatedRef.current = true;
+    }
+    setPeriod(nextPeriod);
+    calendar.openCalendar(nextPeriod);
+  }
+
+  async function handleRefresh() {
+    setHistoryMessage("");
+    setPeriod("now");
+    setLastUpdate(new Date());
+    historyActivatedRef.current = false;
     fetchServices()
       .then((data) => {
-        if (ignore) return;
-
         setServices(data);
         setOrder(data.map((service) => service.id));
         setSelected(new Set(data.map((service) => service.id)));
@@ -69,8 +160,6 @@ export default function Comparison() {
         setError(null);
       })
       .catch((error: unknown) => {
-        if (ignore) return;
-
         setError(
           error instanceof Error
             ? error.message
@@ -78,12 +167,13 @@ export default function Comparison() {
         );
       })
       .finally(() => {
-        if (!ignore) setLoading(false);
+        setLoading(false);
       });
+  }
 
-    return () => {
-      ignore = true;
-    };
+  /* Buscar os serviços e suas métricas no backend. */
+  useEffect(() => {
+    handleRefresh();
   }, []);
 
   /* Serviços selecionados na ordem atual. */
@@ -176,7 +266,17 @@ export default function Comparison() {
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
           </div>
-           <div className="cmp-intro-btns">
+          
+          <div className="cmp-intro-btns">
+            <span className="ranking-last-update">
+              <strong>{historyMessage}</strong>&nbsp; &nbsp;
+              {historyActivatedRef.current ? (
+                <></>
+              ) : (
+                <>Última atualização: {formattedLastUpdate}</>
+              )}{" "}
+              &nbsp; &nbsp; &nbsp; &nbsp;
+            </span>
             <Popover
               trigger={({ open, toggle }) => (
                 <button
@@ -207,12 +307,10 @@ export default function Comparison() {
                 </ul>
               )}
             </Popover>
-            <SelectPill
-              variant="dark"
-              label="Período"
-              value={period}
-              onChange={setPeriod}
-              options={PERIODS}
+            <PeriodSelect
+              showSkeleton={showSkeleton}
+              handlePeriodChange={handlePeriodChange}
+              period={period}
             />
           </div>
         </section>
@@ -376,6 +474,35 @@ export default function Comparison() {
             )}
           </div>
         </section>
+        {calendar.calendarOpen && (
+          <RankingCalendar
+            period={period}
+            selectedMinute={calendar.selectedMinute}
+            selectedHour={calendar.selectedHour}
+            selectedDay={calendar.selectedDay}
+            selectedMonth={calendar.selectedMonth}
+            selectedYear={calendar.selectedYear}
+            viewMonth={calendar.viewMonth}
+            viewYear={calendar.viewYear}
+            currentYear={calendar.currentYear}
+            currentMonth={calendar.currentMonth}
+            currentDay={calendar.currentDay}
+            currentHour={calendar.currentHour}
+            calendarDays={calendar.calendarDays}
+            lastHourSlots={calendar.lastHourSlots}
+            onClose={calendar.closeCalendar}
+            onChangeMonth={(direction) =>
+              calendar.changeMonth(direction, period)
+            }
+            onConfirmMinute={calendar.confirmMinute}
+            onConfirmHour={calendar.confirmHour}
+            onConfirmDay={calendar.confirmDay}
+            onConfirmMonth={calendar.confirmMonth}
+            onConfirmYear={calendar.confirmYear}
+            handleFetch={fetchHistory}
+            handleCancel={handleRefresh}
+          />
+        )}
       </main>
 
       <footer className="cmp-footer">Desenvolvido por Atmos © 2026</footer>
