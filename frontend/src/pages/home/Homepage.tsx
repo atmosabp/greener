@@ -12,6 +12,8 @@ import {
   inlineSkeleton,
 } from "./HomepageSkeleton";
 
+import { Globe2, Map } from "lucide-react";
+
 import { port } from "../../utils/connection";
 import type { ServiceStatus, ServiceType } from "../../types/service";
 
@@ -102,8 +104,8 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
           <aside className="services-panel">
             <div className="panel-heading">
               <div>
-                <span className="section-kicker">EXPLORADOR</span>
-                <h2>Seus serviços</h2>
+                {/* <span className="section-kicker">EXPLORADOR</span> */}
+                <h3>Seus serviços</h3>
               </div>
 
               <span className="service-count">
@@ -299,7 +301,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   onClick={() => setMode("globe")}
                   aria-pressed={mode === "globe"}
                 >
-                  <span aria-hidden="true">◎</span>
+                  <span aria-hidden="true"><Globe2/></span>
                   Globo
                 </button>
 
@@ -309,7 +311,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   onClick={() => setMode("map")}
                   aria-pressed={mode === "map"}
                 >
-                  <span aria-hidden="true">▦</span>
+                  <span aria-hidden="true"><Map/></span>
                   Mapa
                 </button>
               </div>

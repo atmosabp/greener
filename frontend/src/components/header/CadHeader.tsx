@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { HeaderLink } from "../../types/header";
 import Header from "./Header";
 import Warning from "../warning/Warning";
 import { logout } from "../../utils/logoff";
 import { useNavigate } from "react-router-dom";
 
-// Navegação entre páginas
 const appLinks: HeaderLink[] = [];
 
 export default function CadHeader() {

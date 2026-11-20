@@ -47,9 +47,3 @@ export async function reqServices(): Promise<ServiceTypes[] | undefined> {
     console.error(error.message || "API não disponível.");
   }
 }
-
-async function teste(){
-  await reqServices();
-}
-
-teste();

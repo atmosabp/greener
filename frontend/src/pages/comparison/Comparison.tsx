@@ -8,6 +8,7 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
+  PERIODS,
 } from "./components/comparisonData";
 
 import type { CompareTarget } from "./components/comparisonData";
@@ -15,22 +16,24 @@ import type { CompareTarget } from "./components/comparisonData";
 import {
   Chevron,
   Gauge,
-  greeting,
   HelpIcon,
   Popover,
+  SelectPill,
   StarIcon,
 } from "./components/ComparisonComponents";
 
 import "../ranking/Ranking.css";
 
 import ServiceCard from "./components/ServiceCard";
+import "./Comparison.css";
+
+import Greeting from "../../components/greetings/Greeting";
 
 import {
   CmpAveragesSkeleton,
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
 
-import "./Comparison.css";
 import {
   timeFormatter,
   type RankingPeriod,
@@ -48,17 +51,6 @@ export default function Comparison() {
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
 
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,9 +70,9 @@ export default function Comparison() {
   const calendar = useRankingCalendar();
 
   const [gaveUp, setGaveUp] = useState(false);
-    useEffect(() => {
-      const t = setTimeout(() => setGaveUp(true), 15000);
-      return () => clearTimeout(t);
+  useEffect(() => {
+    const t = setTimeout(() => setGaveUp(true), 2000);
+    return () => clearTimeout(t);
   }, []);
 
   const metricsDone = undefined;
@@ -119,7 +111,9 @@ export default function Comparison() {
           });
         }
 
-        setHistoryMessage(`Você está vendo dados do passado: ${toReadableTime(datePull)}`);
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
 
         setServices(formatedData);
         setOrder(formatedData.map((service) => service.id));
@@ -129,11 +123,15 @@ export default function Comparison() {
         setLoading(false);
       } else {
         handleRefresh();
-        setHistoryMessage("Período escolhido não possui dados ");
+        setHistoryMessage("Período escolhido não possui dado.");
       }
     } catch (e: any) {
-      console.error(`Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`);
-      setHistoryMessage("Ocorreu um erro ao buscar dados do período selecionado.");
+      console.error(
+        `Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`,
+      );
+      setHistoryMessage(
+        "Ocorreu um erro ao buscar dados do período selecionado.",
+      );
     }
   }
 
@@ -263,22 +261,28 @@ export default function Comparison() {
       <main className="cmp-page">
         <section className="cmp-intro">
           <div>
-            <h1>
-              {greeting()}, {userName}.
-            </h1>
-
-            <p className="cmp-intro__sub">Comparação de serviços</p>
+            <Greeting />
             <p className="cmp-intro__sub">
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
-
+          </div>
+          
+          <div className="cmp-intro-btns">
+            <span className="ranking-last-update">
+              <strong>{historyMessage}</strong>&nbsp; &nbsp;
+              {historyActivatedRef.current ? (
+                <></>
+              ) : (
+                <>Última atualização: {formattedLastUpdate}</>
+              )}{" "}
+              &nbsp; &nbsp; &nbsp; &nbsp;
+            </span>
             <Popover
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className={`cmp-pill-outline ${loading ? "blocked" : ""}`}
+                  className="cmp-pill-outline"
                   aria-expanded={open}
-                  disabled={loading}
                   onClick={toggle}
                 >
                   Serviços selecionados
@@ -303,27 +307,12 @@ export default function Comparison() {
                 </ul>
               )}
             </Popover>
+            <PeriodSelect
+              showSkeleton={showSkeleton}
+              handlePeriodChange={handlePeriodChange}
+              period={period}
+            />
           </div>
-
-          {/* <SelectPill
-            variant="dark"
-            label="Período"
-            value={period}
-            onChange={setPeriod}
-            options={PERIODS}
-          /> */}
-          <span className={`cmp-select `}>
-            <span className="ranking-last-update">
-              <strong>{historyMessage}</strong>&nbsp; &nbsp;
-              {historyActivatedRef.current ? (
-                <></>
-              ) : (
-                <>Última atualização: {formattedLastUpdate}</>
-              )}{" "}
-              &nbsp; &nbsp; &nbsp; &nbsp;
-            </span>
-            <PeriodSelect showSkeleton={showSkeleton} handlePeriodChange={handlePeriodChange} period={period} />
-          </span>
         </section>
 
         {/* ---------------------------------------------------------- */}
@@ -347,50 +336,52 @@ export default function Comparison() {
               <HelpIcon />
             </button>
 
-          <div className="cmp-averages__content">
-            <div className="cmp-averages__tiles">
-              <div className="cmp-avg-tile">
-                <span>Rede</span>
-                <strong>
-                  {formatMetric("network_gb", averages.network_gb)}
-                </strong>
+            <div className="cmp-averages__content">
+              <div className="cmp-averages__tiles">
+                <div className="cmp-avg-tile">
+                  <span>Rede</span>
+                  <strong>
+                    {formatMetric("network_gb", averages.network_gb)}
+                  </strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>CPU</span>
+                  <strong>
+                    {formatMetric("cpu_percent", averages.cpu_percent)}
+                  </strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>Armazenamento</span>
+                  <strong>{formatMetric("disk_gb", averages.disk_gb)}</strong>
+                </div>
+
+                <div className="cmp-avg-tile">
+                  <span>Memória</span>
+                  <strong>
+                    {formatMetric("memory_gb", averages.memory_gb)}
+                  </strong>
+                </div>
               </div>
 
-              <div className="cmp-avg-tile">
-                <span>CPU</span>
-                <strong>
-                  {formatMetric("cpu_percent", averages.cpu_percent)}
-                </strong>
-              </div>
+              <Gauge
+                title="Consumo energético"
+                value={formatMetric("kwh", averages.kwh)}
+                unit=""
+                fill={gaugeFill(averages.kwh, maxConsumo)}
+                max={formatNumber(maxConsumo)}
+              />
 
-              <div className="cmp-avg-tile">
-                <span>Armazenamento</span>
-                <strong>{formatMetric("disk_gb", averages.disk_gb)}</strong>
-              </div>
-
-              <div className="cmp-avg-tile">
-                <span>Memória</span>
-                <strong>{formatMetric("memory_gb", averages.memory_gb)}</strong>
-              </div>
+              <Gauge
+                title="Emissão de CO₂e"
+                value={formatMetric("co2e", averages.co2e)}
+                unit=""
+                fill={gaugeFill(averages.co2e, maxEmissao)}
+                max={formatNumber(maxEmissao)}
+              />
             </div>
-
-            <Gauge
-              title="Consumo energético"
-              value={formatMetric("kwh", averages.kwh)}
-              unit=""
-              fill={gaugeFill(averages.kwh, maxConsumo)}
-              max={formatNumber(maxConsumo)}
-            />
-
-            <Gauge
-              title="Emissão de CO₂e"
-              value={formatMetric("co2e", averages.co2e)}
-              unit=""
-              fill={gaugeFill(averages.co2e, maxEmissao)}
-              max={formatNumber(maxEmissao)}
-            />
-          </div>
-        </section>
+          </section>
         )}
 
         {/* ---------------------------------------------------------- */}
@@ -481,32 +472,6 @@ export default function Comparison() {
                 selecionados”.
               </p>
             )}
-
-            {/* Aqui é gerado o card de cada serviço */}
-
-            {visible.map((service, index) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                rank={index + 1}
-                isFirst={index === 0}
-                isLast={index === visible.length - 1}
-                isReference={service.id === referenceId}
-                compareWith={compareMap[service.id] ?? "reference"}
-                hasReference={
-                  referenceId !== null && referenceId !== service.id
-                }
-                baseMetrics={baseMetricsFor(service)}
-                onMove={(direction) => move(service.id, direction)}
-                onToggleReference={() => toggleReference(service.id)}
-                onCompareChange={(target) =>
-                  setCompareMap((previous) => ({
-                    ...previous,
-                    [service.id]: target,
-                  }))
-                }
-              />
-            ))}
           </div>
         </section>
         {calendar.calendarOpen && (
@@ -526,7 +491,9 @@ export default function Comparison() {
             calendarDays={calendar.calendarDays}
             lastHourSlots={calendar.lastHourSlots}
             onClose={calendar.closeCalendar}
-            onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+            onChangeMonth={(direction) =>
+              calendar.changeMonth(direction, period)
+            }
             onConfirmMinute={calendar.confirmMinute}
             onConfirmHour={calendar.confirmHour}
             onConfirmDay={calendar.confirmDay}

@@ -1,7 +1,7 @@
 import type { HeaderLink } from "../../types/header";
 import Header from "./Header";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { logout } from "../../utils/logoff";
 import Warning from "../warning/Warning";
 

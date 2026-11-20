@@ -30,6 +30,28 @@
     justify-content: left;
 }
 
+.back-link{
+    text-decoration: none;
+    color: var(--text);
+    position: relative;
+}
+
+.back-link::after {
+    content: "";
+    width: 0%;
+    height: 1.5px;
+    position: absolute;
+    background-color: var(--text);
+    left: 0;
+    bottom: -2px;
+    transition: width 0.5s ease-in-out;
+    border-radius: 5px;
+}
+
+.back-link.active::after,
+.back-link:hover::after {
+    width: 100%;
+}
 
 /* esconde o checkbox da lista mobile, mas ele continua acessível */
 .checkbox-user {
@@ -52,12 +74,6 @@
     flex-direction: column;
     align-items: flex-start;
     padding-bottom: 15px;
-}
-
-.admin .start-section h1 {
-    margin: 0;
-    font-size: 2.25rem;
-    font-weight: 600;
 }
 
 .admin .start-section p {
@@ -94,6 +110,11 @@
     background: var(--primary-light);
 }
 
+[data-theme="dark"] .total {
+    background-color: var(--primary-darker);
+    color: var(--on-primary-darker);
+}
+
 .total strong {
     display: grid;
     place-items: center;
@@ -106,6 +127,11 @@
     color: var(--btn-fg);
     font-size: 1.15rem;
     font-weight: 400;
+}
+
+[data-theme="dark"] .total strong {
+    background: var(--primary-light);
+    color: var(--on-primary-light);
 }
 
 .btn {
@@ -126,6 +152,11 @@
         transform 0.3s ease-in-out,
         background-color 0.3s ease,
         color 0.3s ease-in-out;
+}
+
+[data-theme="dark"] .btn {
+    background: var(--primary-light);
+    color: var(--on-primary-light);
 }
 
 .btn svg {
@@ -154,6 +185,11 @@
     background: var(--btn-disabled);
     color: var(--btn-disabled-fg);
     cursor: not-allowed;
+}
+
+[data-theme="dark"] .btn:disabled {
+    background: color-mix(in srgb, var(--primary-light) 68%, var(--background));
+    color: color-mix(in srgb, var(--on-primary-light) 60%, var(--background));
 }
 
 /* Checkbox customizado */
@@ -253,17 +289,18 @@
     border-spacing: 0;
     table-layout: fixed;
     overflow: hidden;
-    border: 5px solid var(--primary);
-    border-radius: 30px;
+    border: 2px solid var(--primary-light);
+    border-radius: 15px;
     transition: border 0.3s ease-in-out;
 }
 
 .table thead th {
-    height: 60px;
-    padding: 0 14px;
-    background: var(--primary);
+    height: 2rem;
+    padding: 0.5rem 0.5rem;
+    background: var(--primary-light);
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 500;
+    line-height: 1.2;
     text-align: left;
 }
 
@@ -278,7 +315,7 @@
 }
 
 .table tbody td+td {
-    border-left: 2px solid var(--primary);
+    border-left: 2px solid var(--primary-light);
 }
 
 .table tbody tr:nth-child(odd) td {

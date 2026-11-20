@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { port } from "../../utils/connection";
+
 import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
 import { Link, useParams } from "react-router-dom";
@@ -7,10 +9,9 @@ import type {
   MetricsType,
   ServiceStatus,
 } from "../../types/service";
+
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
-
 import RankingCalendar from "../ranking/components/RankingCalendar";
-
 import { type RankingPeriod } from "../ranking/components/rankingData";
 
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
@@ -19,11 +20,11 @@ import {
   DashboardGridSkeleton,
   ServiceListSkeleton,
 } from "./DashboardSkeleton";
-import { port } from "../../utils/connection";
-import { greeting } from "../comparison/components/ComparisonComponents";
+
 import Toast from "../../components/toast/Toast";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
-import { toLocalISOTime, toReadableTime } from "../../utils/history";
+import { toReadableTime } from "../../utils/history";
+import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -56,17 +57,6 @@ export default function Dashboard() {
   let serviceFetchReq = useRef<any>(undefined);
 
   const calendar = useRankingCalendar();
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -334,9 +324,8 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>
-              {greeting()}, {userName}.
-            </h1>
+            <Greeting />
+            
             {showSkeleton ? (
               <p>
                 <Skeleton width="15rem" height="1rem" />
@@ -684,6 +673,8 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
+              <br />
+              <br />
               O serviço está inativo ou não foi recolher as suas métricas dentro
               do tempo esperado.
               <br />
@@ -693,7 +684,6 @@ export default function Dashboard() {
                 tela principal
               </Link>{" "}
               e selecione outro serviço.
-              {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}
             </div>
           )}
         </div>

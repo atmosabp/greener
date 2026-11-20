@@ -1,7 +1,6 @@
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 
 import App from "./App.tsx";
@@ -38,6 +37,8 @@ createRoot(document.getElementById("root")!).render(
           <Route element={<ProtectedRoute requireAdmin />}>
             <Route path="/admin" element={<Admin />} />
           </Route>
+
+          <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Routes>
       </BrowserRouter>
       </ToastProvider>
