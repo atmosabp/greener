@@ -195,13 +195,6 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {/* Recuperação de senha */}
-      <div className="form-link password">
-        <a href="#" className="forgotten-password">
-          Esqueci minha senha
-        </a>
-      </div>
-
       {/* Botão de login */}
       <div className="form-link">
         <button type="submit" className="btn-login" disabled={isLoading}>

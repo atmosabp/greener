@@ -30,6 +30,28 @@
     justify-content: left;
 }
 
+.back-link{
+    text-decoration: none;
+    color: var(--text);
+    position: relative;
+}
+
+.back-link::after {
+    content: "";
+    width: 0%;
+    height: 1.5px;
+    position: absolute;
+    background-color: var(--text);
+    left: 0;
+    bottom: -2px;
+    transition: width 0.5s ease-in-out;
+    border-radius: 5px;
+}
+
+.back-link.active::after,
+.back-link:hover::after {
+    width: 100%;
+}
 
 /* esconde o checkbox da lista mobile, mas ele continua acessível */
 .checkbox-user {
@@ -52,12 +74,6 @@
     flex-direction: column;
     align-items: flex-start;
     padding-bottom: 15px;
-}
-
-.admin .start-section h1 {
-    margin: 0;
-    font-size: 2.25rem;
-    font-weight: 600;
 }
 
 .admin .start-section p {

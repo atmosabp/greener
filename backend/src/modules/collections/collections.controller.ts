@@ -13,10 +13,10 @@ export async function getHistoryController(_req: Request, res: Response) {
     const result = await searchAllHistory();
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro ao buscar o histórico. Tente novamente mais tarde.",
+        "Ocorreu um erro interno ao buscar o histórico. Tente novamente mais tarde.",
     });
   }
 }
@@ -27,10 +27,10 @@ export async function addHistoryController(req: Request, res: Response) {
     const result = await addHistory( serviceId);
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro ao guardar o histórico. Tente novamente mais tarde.",
+        "Ocorreu um erro interno ao guardar o histórico. Tente novamente mais tarde.",
     });
   }
 }
@@ -42,10 +42,10 @@ export async function getServiceMetricsController(req: Request, res: Response) {
     const result = await getServiceMetrics(String(serviceId));
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro ao buscar as métricas do serviço. Tente novamente mais tarde.",
+        "Ocorreu um erro interno ao buscar as métricas do serviço. Tente novamente mais tarde.",
     });
   }
 }
@@ -55,10 +55,10 @@ export async function getAllServicesDataController(req: Request, res: Response) 
     const result = await getAllServicesMetrics();
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro ao buscar as métricas do serviço. Tente novamente mais tarde.",
+        "Ocorreu um erro interno ao buscar as métricas do serviço. Tente novamente mais tarde.",
     });
   }
 }
@@ -70,10 +70,10 @@ export async function findAllHistoryController(req: Request, res: Response) {
     const result = await searchHistory(periodType, datePull);
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro ao buscar o histórico. Tente novamente mais tarde.",
+        "Ocorreu um erro interno ao buscar o histórico. Tente novamente mais tarde.",
     });
   }
 }
@@ -86,10 +86,10 @@ export async function findServiceHistoryController(req: Request, res: Response) 
     const result = await searchServiceHistory(periodType, datePull, serviceId);
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro ao buscar o histórico do serviço. Tente novamente mais tarde.",
+        "Ocorreu um erro interno ao buscar o histórico do serviço. Tente novamente mais tarde.",
     });
   }
 }

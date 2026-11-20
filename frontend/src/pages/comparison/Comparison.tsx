@@ -15,7 +15,6 @@ import type { CompareTarget } from "./components/comparisonData";
 import {
   Chevron,
   Gauge,
-  greeting,
   HelpIcon,
   Popover,
   SelectPill,
@@ -24,6 +23,8 @@ import {
 
 import ServiceCard from "./components/ServiceCard";
 
+import './Comparison.css';
+import Greeting from '../../components/greetings/Greeting';
 import "./Comparison.css";
 
 import {
@@ -37,17 +38,6 @@ import type { MetricsType, ServiceType } from "../../types/service";
 
 export default function Comparison() {
   const [period, setPeriod] = useState("today");
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -180,9 +170,7 @@ export default function Comparison() {
       <main className="cmp-page">
         <section className="cmp-intro">
           <div>
-            <h1>
-              {greeting()}, {userName}.
-            </h1>
+            <Greeting />
 
             <p className="cmp-intro__sub">Comparação de serviços</p>
             <p className="cmp-intro__sub">

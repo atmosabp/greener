@@ -19,7 +19,7 @@ export async function reqMetrics(serviceId: string) {
     }
   } catch (error: any) {
     throw new Error(
-      error.message || "Não foi possivel buscar as métricas da API.",
+      `Ocorreu um erro interno ao buscar as métricas do serviço ${serviceId}.`,
     );
   }
 }
@@ -30,7 +30,7 @@ export async function reqCarbonValue(serviceId: string): Promise<number|undefine
   if (!respMetrics) return;
 
   if (!respMetrics.carbon_intensity_gco2e_per_kwh) {
-    throw new Error("Não foi possivel capturar a intensidade de carbono.");
+    throw new Error(`Ocorreu um erro interno ao capturar a intensidade de carbono do serviço ${serviceId}.`);
   }
 
   const valueCarbon = respMetrics.carbon_intensity_gco2e_per_kwh;
@@ -44,7 +44,7 @@ export async function reqRenewablePercent(serviceId: string): Promise<number|und
   if (!respMetrics) return;
 
   if (!respMetrics.renewable_share_percent) {
-    throw new Error("Não foi possivel capturar métricas da porcentagem renovável.");
+    throw new Error(`Ocorreu um erro interno ao capturar métricas da porcentagem renovável do serviço ${serviceId}.`);
   }
 
   const valueRenewable = respMetrics.renewable_share_percent;

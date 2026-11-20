@@ -20,22 +20,11 @@ import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import { port } from "../../utils/connection";
 import type { ServiceType } from "../../types/service";
-import { greeting } from "../comparison/components/ComparisonComponents";
+import Greeting from "../../components/greetings/Greeting";
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 
 export default function Ranking() {
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
-
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
@@ -190,9 +179,7 @@ export default function Ranking() {
         <div className="ranking-intro-box">
           <section className="ranking-intro">
             <div className="ranking-heading">
-              <h1>
-                {greeting()}, {userName}.
-              </h1>
+              <Greeting />
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
