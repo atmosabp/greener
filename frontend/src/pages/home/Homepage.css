@@ -278,7 +278,7 @@
     background: #91bd79;
 }
 
-.status-dot.incomplete, status-dot.deleted {
+.status-dot.incomplete, .status-dot.deleted {
     background: #dfd044;
 }
 
