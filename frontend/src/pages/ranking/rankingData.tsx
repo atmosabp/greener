@@ -8,7 +8,7 @@ export type RankingService = {
 
 export type RankingMetric = "energy" | "co2e";
 
-export type RankingPeriod = "now" | "today" | "month" | "year" | "other-years";
+export type RankingPeriod = "now" | "hour" | "today" | "month" | "year" | "other-years";
 
 export const monthNames = [
   "Janeiro",
