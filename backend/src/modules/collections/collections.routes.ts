@@ -24,9 +24,9 @@ export function collectionsRoutes(controller: ICollectionsController) {
     controller.getAllServicesData(req, res),
   );
 
-  // Tota para retornar histórico de um serviço
+  // Rota para retornar histórico de um serviço
   // POST localhost:PORT/collections/service-history/:id
-  router.post("/service-history", (req, res) =>
+  router.post("/service-history/:id", (req, res) =>
     controller.findServiceHistory(req, res),
   );
 
@@ -38,18 +38,3 @@ export function collectionsRoutes(controller: ICollectionsController) {
 
   return router;
 }
-
-/*
-Teste de endpoints
-
-Cadastro de histórico de um serviço:
-curl -X POST http://localhost:PORT/collections/add-history \
-  -H "Content-Type: application/json" \
-  -d '{"serviceId": "inventory-sync"}'
-
-Ver todo o histórico da data especificada:
-curl -X POST http://localhost:PORT/collections/all-service-history \
-  -H "Content-Type: application/json" \
-  -d '{"periodType": "minute", "datePull": "2026-10-17"}'
-
-*/

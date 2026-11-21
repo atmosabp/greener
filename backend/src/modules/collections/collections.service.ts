@@ -5,6 +5,7 @@ import type { CarbonApi } from "../../integrations/carbon-api";
 import type { MetricsApi } from "../../integrations/metrics-api";
 import type { ServicesApi } from "../../integrations/services-api";
 import type { CollectionsRepository } from "./collections.repository";
+import { PassThrough } from "node:stream";
 
 // Contrato do cálculo de métricas (a classe MetricsCalculator atende a ele).
 export interface MetricsCalculation {
@@ -13,7 +14,9 @@ export interface MetricsCalculation {
 }
 
 // Função que cria um calculador a partir das métricas. É injetada no service.
-export type MetricsCalculatorFactory = (metrics: MetricsProps) => MetricsCalculation;
+export type MetricsCalculatorFactory = (
+  metrics: MetricsProps,
+) => MetricsCalculation;
 
 export interface ICollectionsService {
   addHistory(serviceId: string): Promise<any>;
@@ -21,7 +24,11 @@ export interface ICollectionsService {
   getAllServicesMetrics(): Promise<any>;
   searchAllHistory(): Promise<any>;
   searchHistory(periodType: string, datePull: any): Promise<any>;
-  searchServiceHistory(periodType: string, datePull: any, serviceId: string): Promise<any>;
+  searchServiceHistory(
+    periodType: string,
+    datePull: any,
+    serviceId: string,
+  ): Promise<any>;
 }
 
 export class CollectionsService implements ICollectionsService {
@@ -34,14 +41,17 @@ export class CollectionsService implements ICollectionsService {
   ) {}
 
   async addHistory(serviceId: string) {
-
-    const [collectionIntervalSeconds, carbonIntensity, renewablePercent, metricsEnergy] =
-      await Promise.all([
-        this.metricsApi.reqInterval(serviceId),
-        this.carbonApi.reqCarbonValue(serviceId),
-        this.carbonApi.reqRenewablePercent(serviceId),
-        this.metricsApi.reqMetrics(serviceId),
-      ]);
+    const [
+      collectionIntervalSeconds,
+      carbonIntensity,
+      renewablePercent,
+      metricsEnergy,
+    ] = await Promise.all([
+      this.metricsApi.reqInterval(serviceId),
+      this.carbonApi.reqCarbonValue(serviceId),
+      this.carbonApi.reqRenewablePercent(serviceId),
+      this.metricsApi.reqMetrics(serviceId),
+    ]);
 
     const metricsCalculator = this.createCalculator({
       collection_interval_seconds: collectionIntervalSeconds,
@@ -72,26 +82,27 @@ export class CollectionsService implements ICollectionsService {
   }
 
   async getServiceMetrics(serviceId: string) {
-    let 
-      collectionIntervalSeconds,
+    let collectionIntervalSeconds,
       carbonIntensity,
       renewablePercent,
       kwh,
       co2e: number | undefined = undefined;
-    let metricsEnergy : MetricsData | undefined = undefined
+    let metricsEnergy: MetricsData | undefined = undefined;
     let service: ServiceTypes | undefined = undefined;
 
     try {
-      service = (await this.servicesApi.reqServices(await this.repository.findServices())).find((value) => value.id == serviceId);
-      [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
-      await Promise.all([
-        this.metricsApi.reqInterval(serviceId),
-        this.carbonApi.reqCarbonValue(serviceId),
-        this.carbonApi.reqRenewablePercent(serviceId),
-      ])
+      service = (await this.servicesApi.reqServices(
+        await this.repository.findServices(),
+      ))!.find((value) => value.id == serviceId);
+      [collectionIntervalSeconds, carbonIntensity, renewablePercent] =
+        await Promise.all([
+          this.metricsApi.reqInterval(serviceId),
+          this.carbonApi.reqCarbonValue(serviceId),
+          this.carbonApi.reqRenewablePercent(serviceId),
+        ]);
 
       metricsEnergy = await this.metricsApi.reqMetrics(serviceId);
-    
+
       const metricsCalculator = this.createCalculator({
         collection_interval_seconds: collectionIntervalSeconds,
         metrics: {
@@ -108,6 +119,18 @@ export class CollectionsService implements ICollectionsService {
       co2e = metricsCalculator.calculateCO2e() || undefined;
     } catch (error: any) {
       console.error(error.message);
+    }
+
+    const statusResult = await fetch(
+      `https://metrics.unilaunch.org/metrics/${serviceId}`,
+    );
+    const statusCode = statusResult.status;
+
+    if (statusCode == 404) {
+      service ? service.status = "deleted" : PassThrough;
+    }
+    if (statusCode == 500) {
+      service ? service.status = "inactive" : PassThrough;
     }
 
     const metrics = {
@@ -138,7 +161,9 @@ export class CollectionsService implements ICollectionsService {
     let fetchedServices: any;
 
     try {
-      result = await this.servicesApi.reqServices(await this.repository.findServices());
+      result = await this.servicesApi.reqServices(
+        await this.repository.findServices(),
+      );
 
       if (!result) return null;
 
@@ -152,7 +177,7 @@ export class CollectionsService implements ICollectionsService {
                 this.metricsApi.reqMetrics(id),
                 this.metricsApi.reqInterval(id),
                 this.carbonApi.reqCarbonValue(id),
-                this.carbonApi.reqRenewablePercent(id)
+                this.carbonApi.reqRenewablePercent(id),
               ]);
 
             const calc = this.createCalculator({
@@ -184,7 +209,7 @@ export class CollectionsService implements ICollectionsService {
         }),
       );
     } catch (e: any) {
-      // console.error(e.message);
+      console.error(`Ocorreu um erro ao buscar todos os serviços. Erro: ${e.message}`);
     }
 
     return fetchedServices;
@@ -231,16 +256,28 @@ export class CollectionsService implements ICollectionsService {
 
     switch (periodType) {
       case "minute":
-        result = await this.repository.findServiceMinuteHistory(datePull, serviceId);
+        result = await this.repository.findServiceMinuteHistory(
+          datePull,
+          serviceId,
+        );
         break;
       case "hour":
-        result = await this.repository.findServiceHourHistory(datePull, serviceId);
+        result = await this.repository.findServiceHourHistory(
+          datePull,
+          serviceId,
+        );
         break;
       case "day":
-        result = await this.repository.findServiceDayHistory(datePull, serviceId);
+        result = await this.repository.findServiceDayHistory(
+          datePull,
+          serviceId,
+        );
         break;
       case "month":
-        result = await this.repository.findServiceMonthHistory(datePull, serviceId);
+        result = await this.repository.findServiceMonthHistory(
+          datePull,
+          serviceId,
+        );
         break;
     }
 
