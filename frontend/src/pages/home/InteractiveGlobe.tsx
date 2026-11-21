@@ -154,37 +154,35 @@ export default function InteractiveGlobe({
 
         const totalPoints = emissionDatasets.reduce(
             (total, dataset) => total + dataset.points.length,
-            0
+            0,
         );
 
         console.log("===== DIAGNÓSTICO DO HEATMAP =====");
         console.log("Total de serviços recebidos:", services.length);
         console.log(
             "Serviços com coordenadas válidas:",
-            servicesWithCoordinates.length
+            servicesWithCoordinates.length,
         );
         console.log(
             "Serviços com emissões válidas:",
-            servicesWithValidEmissions.length
+            servicesWithValidEmissions.length,
         );
         console.log("Pontos enviados ao heatmap:", totalPoints);
         console.log("=================================");
     }, [services, emissionDatasets]);
 
     const selectedService = useMemo(
-        () =>
-            services.find(
-                (service) => service.id === selectedServiceId
-            ),
-        [services, selectedServiceId]
+        () => services.find(
+            (service) => service.id === selectedServiceId,
+        ),
+        [services, selectedServiceId],
     );
 
     const selectedPoint = useMemo(
-        () =>
-            globeData.find(
-                (point) => point.id === selectedServiceId
-            ),
-        [globeData, selectedServiceId]
+        () => globeData.find(
+            (point) => point.id === selectedServiceId,
+        ),
+        [globeData, selectedServiceId],
     );
 
     // Para a rotação quando o mouse entra no globo.
@@ -199,8 +197,7 @@ export default function InteractiveGlobe({
     const handleMouseLeave = () => {
         if (!globeRef.current) return;
 
-        globeRef.current.controls().autoRotate =
-            !selectedServiceId;
+        globeRef.current.controls().autoRotate = !selectedServiceId;
     };
 
     // Fecha o cartão quando o usuário clica fora do globo.
@@ -219,7 +216,9 @@ export default function InteractiveGlobe({
 
             if (
                 target instanceof Element &&
-                target.closest(".view-switch, .globe-view-switch")
+                target.closest(
+                    ".view-switch, .globe-view-switch",
+                )
             ) {
                 return;
             }
@@ -232,12 +231,15 @@ export default function InteractiveGlobe({
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener(
+            "mousedown",
+            handleClickOutside,
+        );
 
         return () => {
             document.removeEventListener(
                 "mousedown",
-                handleClickOutside
+                handleClickOutside,
             );
         };
     }, [
@@ -258,7 +260,10 @@ export default function InteractiveGlobe({
             const { width, height } = entry.contentRect;
 
             if (width > 0 && height > 0) {
-                setDimensions({ width, height });
+                setDimensions({
+                    width: Math.floor(width),
+                    height: Math.floor(height),
+                });
             }
         });
 
@@ -273,7 +278,7 @@ export default function InteractiveGlobe({
 
         globeRef.current?.pointOfView(
             { lat: 20, lng: 0, altitude: 1.75 },
-            0
+            0,
         );
     }, [
         dimensions.width,
@@ -297,7 +302,7 @@ export default function InteractiveGlobe({
                 lng: selectedPoint.lng,
                 altitude: 1.75,
             },
-            1000
+            1000,
         );
 
         globeRef.current.controls().autoRotate = false;
@@ -321,7 +326,7 @@ export default function InteractiveGlobe({
                         selectedPointId={selectedServiceId}
                         onSelectPoint={(id) => {
                             onSelectService(
-                                id === selectedServiceId ? null : id
+                                id === selectedServiceId ? null : id,
                             );
                         }}
                         onPointHover={(hovered) => {
@@ -354,9 +359,9 @@ export default function InteractiveGlobe({
                     selectedPoint={
                         selectedPoint
                             ? {
-                                lat: selectedPoint.lat,
-                                lng: selectedPoint.lng,
-                            }
+                                  lat: selectedPoint.lat,
+                                  lng: selectedPoint.lng,
+                              }
                             : null
                     }
                 />

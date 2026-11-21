@@ -26,45 +26,32 @@
 .globe-service-card {
     position: absolute;
     z-index: 10;
-
     top: 16px;
     right: 16px;
-
-    width: min(260px, calc(100% - 32px));
-    box-sizing: border-box;
-    padding: 14px;
-
-    border: 1px solid var(--text);
-    border-radius: 14px;
-
-    background: var(--background);
-    color: var(--text);
-
-    box-shadow: 0 6px 24px var(--shadow);
-
-    font-family: "Roboto", sans-serif;
-
-    pointer-events: auto;
-    user-select: text;
-
     display: flex;
     flex-direction: column;
     gap: 8px;
-
+    width: min(260px, calc(100% - 32px));
+    box-sizing: border-box;
+    padding: 14px;
+    border: 1px solid var(--text);
+    border-radius: 14px;
+    background: var(--background);
+    color: var(--text);
+    box-shadow: 0 6px 24px var(--shadow);
+    font-family: "Roboto", sans-serif;
+    pointer-events: auto;
+    user-select: text;
     animation: globe-card-appear 200ms ease-out;
 }
 
-/* ========================================
-   CABEÇALHO
-======================================== */
+/* Cabeçalho */
 
 .globe-service-card__header {
     position: relative;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     min-height: 24px;
     gap: 8px;
 }
@@ -72,28 +59,21 @@
 .globe-service-card__status-dot {
     width: 15px;
     height: 15px;
-
     flex: 0 0 15px;
-
     border: #000000 solid 1px;
     border-radius: 50%;
 }
 
 .globe-service-card__title {
     position: absolute;
-
     left: 32px;
     right: 32px;
-
     margin: 0;
-
     font-size: 13px;
     font-weight: 600;
     line-height: 1.45;
-
     text-align: center;
     overflow-wrap: anywhere;
-
     pointer-events: none;
 }
 
@@ -103,26 +83,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     flex: 0 0 24px;
-
     width: 24px;
     height: 24px;
-
     padding: 0;
     margin-left: auto;
-
     border: none;
     border-radius: 50%;
-
     background: var(--primary-light);
     color: var(--text);
-
     font-size: 19px;
     line-height: 1;
-
     cursor: pointer;
-
     transition:
         transform 160ms ease,
         filter 160ms ease;
@@ -133,19 +105,13 @@
     transform: scale(1.05);
 }
 
-/* ========================================
-   STATUS E LOCALIZAÇÃO
-======================================== */
+/* Status e localização */
 
 .globe-service-card__status {
     align-self: flex-start;
-
     padding: 4px 8px;
-
     border-radius: 6px;
-
     background: var(--background-transparent);
-
     font-size: 11px;
     font-weight: 500;
 }
@@ -157,24 +123,18 @@
 .globe-service-card__location {
     font-size: 0.8rem;
     line-height: 1.5;
-
     opacity: 0.75;
-
     overflow-wrap: anywhere;
 }
 
-/* ========================================
-   MÉTRICAS
-======================================== */
+/* Métricas */
 
 .globe-service-card__metrics {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-
     margin-top: 4px;
     padding-top: 10px;
-
     border-top: 1px solid var(--shadow);
 }
 
@@ -182,7 +142,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-
     min-width: 0;
 }
 
@@ -190,10 +149,8 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-
     min-width: 0;
     font-size: 0.8rem;
-
     overflow-wrap: anywhere;
 }
 
@@ -206,32 +163,24 @@
     font-weight: 600;
 }
 
-/* ========================================
-   BOTÃO VER DETALHES
-======================================== */
+/* Botão ver detalhes */
 
 .globe-service-card__details-button {
     display: block;
     width: 100%;
     box-sizing: border-box;
-
     margin-top: 6px;
     padding: 9px 12px;
-
     border: 1px solid var(--primary-dark);
     border-radius: 8px;
-
     background: var(--primary);
     color: var(--text);
-
     font-family: inherit;
     font-size: 12px;
     font-weight: 600;
     text-align: center;
     text-decoration: none;
-
     cursor: pointer;
-
     transition:
         filter 160ms ease,
         transform 160ms ease;
@@ -245,9 +194,7 @@
     transform: scale(0.98);
 }
 
-/* ========================================
-   ANIMAÇÃO
-======================================== */
+/* Animação */
 
 @keyframes globe-card-appear {
     from {
@@ -269,7 +216,6 @@
     .globe-service-card {
         top: 10px;
         right: 10px;
-
         width: min(230px, calc(100% - 20px));
         padding: 12px;
     }
@@ -298,8 +244,9 @@
     }
 }
 
-
-
+/* ========================================
+   VISUALIZAÇÃO DE EMISSÕES
+======================================== */
 
 .emissions-globe {
     overflow: hidden;

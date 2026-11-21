@@ -1,3 +1,8 @@
+
+/* ========================================
+   ESTRUTURA PRINCIPAL
+======================================== */
+
 .homepage {
     --panel-background: var(--primary-light);
     --panel-text: var(--text);
@@ -18,17 +23,16 @@
     box-sizing: border-box;
 }
 
-/* Área principal */
-
 .homepage-main {
     width: calc(100% - 48px);
     max-width: 1700px;
     flex: 1;
-    margin: 0 auto;
-    margin-top: 6rem;
+    margin: 6rem auto 0;
 }
 
-/* Introdução */
+/* ========================================
+   INTRODUÇÃO
+======================================== */
 
 .intro-section {
     display: flex;
@@ -81,7 +85,7 @@
     color: var(--primary-dark);
 }
 
-.intro-copy>p {
+.intro-copy > p {
     max-width: 560px;
     margin-top: 15px;
     font-size: 0.9rem;
@@ -89,33 +93,38 @@
     opacity: 0.78;
 }
 
-/* Última atualização */
+/* ========================================
+   ÚLTIMA ATUALIZAÇÃO
+======================================== */
 
 .homepage .last-update {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    min-width: 190px;
-    padding-bottom: 4px;
-    font-size: 1rem;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 0 8px 2px;
+    text-align: center;
+    font-size: 0.9rem;
 }
 
-.last-update .update-indicator {
-    grid-row: 1;
-}
-
-.last-update>span:nth-child(2) {
+.last-update > span {
     opacity: 0.7;
+    white-space: nowrap;
 }
 
 .last-update strong {
-    grid-column: 2;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 
-/* Área do explorador */
+/* ========================================
+   EXPLORADOR
+======================================== */
 
 .explorer-layout {
     display: grid;
@@ -124,10 +133,12 @@
     align-items: stretch;
     column-gap: 40px;
     row-gap: 0;
-    width: 80%;
+    width: 100%;
 }
 
-/* Painel de serviços */
+/* ========================================
+   PAINEL DE SERVIÇOS
+======================================== */
 
 .services-panel {
     grid-column: 1;
@@ -136,13 +147,13 @@
     min-width: 0;
     min-height: 0;
     padding: 20px 18px 16px;
-
     border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
     border-radius: 15px;
-
-    background: color-mix(in srgb,
-            var(--background) 83%,
-            var(--primary-light));
+    background: color-mix(
+        in srgb,
+        var(--background) 83%,
+        var(--primary-light)
+    );
 }
 
 .panel-heading {
@@ -154,12 +165,12 @@
 
 .section-kicker {
     color: var(--primary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .panel-heading h2,
 .visualization-heading h2 {
-    margin-top: 5px;
+    margin: 5px 0 0;
     font-size: 1.3rem;
     font-weight: 400;
     letter-spacing: -0.035em;
@@ -189,10 +200,10 @@
     display: flex;
     flex-direction: column;
     max-height: 230px;
-    overflow-y: auto;
-    overflow-x: hidden;
     min-height: 0;
     padding-right: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: var(--primary-dark) transparent;
@@ -200,7 +211,6 @@
 
 .services-list::-webkit-scrollbar {
     width: 0.6rem;
-    transition: all 0.5s;
 }
 
 .services-list::-webkit-scrollbar-track {
@@ -269,7 +279,6 @@
     width: 12px;
     height: 12px;
     flex: 0 0 12px;
-
     border: #000000 solid 1px;
     border-radius: 50%;
 }
@@ -333,7 +342,7 @@
     opacity: 0.7;
 }
 
-.selected-service-summary>strong {
+.selected-service-summary > strong {
     font-size: 12px;
     font-weight: 500;
     line-height: 1.5;
@@ -350,7 +359,7 @@
     font-size: 10px;
 }
 
-.summary-emissions>strong {
+.summary-emissions > strong {
     font-size: 12px;
     font-variant-numeric: tabular-nums;
 }
@@ -375,7 +384,6 @@
 
 .services-legend {
     margin-top: 21px;
-    bottom: 0;
 }
 
 .legend-title {
@@ -390,7 +398,7 @@
     gap: 9px;
 }
 
-.legend-items>span {
+.legend-items > span {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -403,7 +411,9 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* Botões de ranking e comparação */
+/* ========================================
+   RANKING E COMPARAÇÃO
+======================================== */
 
 .homepage-actions {
     display: flex;
@@ -475,7 +485,9 @@
     opacity: 0.65;
 }
 
-/* Globo e mapa */
+/* ========================================
+   VISUALIZAÇÃO
+======================================== */
 
 .visualization-column {
     display: flex;
@@ -484,65 +496,141 @@
     min-width: 0;
     width: 100%;
     flex-direction: column;
-    justify-content: start;
+    justify-content: flex-start;
 }
 
+/*
+   Cabeçalho dividido em três áreas:
+   título | atualização | seletores.
+   Isso evita que o título e a data sejam
+   comprimidos pelos botões.
+*/
+
 .visualization-topline {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: minmax(145px, 1fr) minmax(175px, auto) minmax(310px, 1.2fr);
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.visualization-heading {
+    min-width: 0;
 }
 
 .visualization-heading h2 {
-    font-size: 22px;
+    font-size: clamp(20px, 2vw, 25px);
+    line-height: 1.25;
+    white-space: nowrap;
 }
 
-.view-switch {
-    display: inline-grid;
-    grid-template-columns: 1fr 1fr;
+/* ========================================
+   CONTROLES SEGMENTADOS
+======================================== */
+
+.visualization-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Os dois seletores possuem exatamente
+   a mesma dimensão e linguagem visual. */
+
+.view-switch,
+.globe-view-switch {
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
     gap: 3px;
-    padding: 3px;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px;
     border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
-    border-radius: 30px;
-    background: color-mix(in srgb, var(--background) 75%, var(--primary-light));
+    border-radius: 28px;
+    background: color-mix(
+        in srgb,
+        var(--background) 75%,
+        var(--primary-light)
+    );
 }
 
-.view-switch button {
+.view-switch button,
+.globe-view-switch button {
     display: inline-flex;
+    flex: 1 1 0;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-width: 84px;
-    min-height: 31px;
-    padding: 5px 11px;
+    min-width: 0;
+    min-height: 34px;
+    padding: 7px 8px;
     border: 0;
-    border-radius: 24px;
+    border-radius: 22px;
     background: transparent;
     color: var(--text);
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
     cursor: pointer;
     transition:
         background-color 180ms ease,
-        color 180ms ease;
+        color 180ms ease,
+        box-shadow 180ms ease;
 }
 
-.view-switch button span {
-    font-size: 18px;
+.view-switch button span,
+.globe-view-switch button span {
+    flex: 0 0 auto;
+    font-size: 16px;
+    line-height: 1;
 }
+
+/* Estado selecionado */
 
 .view-switch button.active {
     background: var(--text);
     color: var(--background);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
 }
 
 .view-switch button.active span {
     color: var(--background);
 }
 
-/* Área fixa para o globo e o mapa */
+.globe-view-switch button.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+/* Hover */
+
+.view-switch button:not(.active):hover,
+.globe-view-switch button:not(.active):hover {
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+/* Foco por teclado */
+
+.view-switch button:focus-visible,
+.globe-view-switch button:focus-visible {
+    position: relative;
+    z-index: 2;
+    outline: 2px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   ÁREA DO GLOBO E MAPA
+======================================== */
 
 .visualization-stage {
     position: relative;
@@ -555,8 +643,8 @@
     border-radius: 18px;
 }
 
-.visualization-stage>.globe-container,
-.visualization-stage>.map-visualization {
+.visualization-stage > .globe-container,
+.visualization-stage > .map-visualization {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -568,9 +656,9 @@
     box-sizing: border-box;
 }
 
-/* Canvas do globo */
+/* Canvas */
 
-.visualization-stage>.globe-container canvas {
+.visualization-stage > .globe-container canvas {
     display: block;
     width: 100%;
     height: 100%;
@@ -581,7 +669,7 @@
 
 /* Mapa */
 
-.visualization-stage>.map-visualization {
+.visualization-stage > .map-visualization {
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
     border-radius: 18px;
@@ -594,7 +682,7 @@
     align-items: center;
     gap: 9px;
     min-height: 35px;
-    padding-top: 8px;
+    padding-top: 10px;
 }
 
 .caption-symbol {
@@ -604,6 +692,7 @@
 
 .visualization-caption p {
     flex: 1;
+    min-width: 0;
     font-size: 14px;
     line-height: 1.6;
     opacity: 0.7;
@@ -616,7 +705,9 @@
     opacity: 0.55;
 }
 
-/* Rodapé */
+/* ========================================
+   RODAPÉ
+======================================== */
 
 .homepage-footer {
     display: flex;
@@ -641,18 +732,61 @@
     color: var(--primary-dark);
 }
 
-
-/* ====== RESPONSIVO ====== */
-
-/* Telas grandes */
+/* ========================================
+   TELAS GRANDES
+======================================== */
 
 @media (min-width: 1500px) {
     .visualization-stage {
         height: 540px;
     }
+
+    .visualization-topline {
+        gap: 26px;
+    }
 }
 
-/* Tablets e telas intermediárias */
+/* ========================================
+   NOTEBOOKS E TELAS INTERMEDIÁRIAS
+======================================== */
+
+@media (max-width: 1200px) {
+    .explorer-layout {
+        grid-template-columns: minmax(230px, 270px) minmax(0, 1fr);
+        column-gap: 25px;
+    }
+
+    .visualization-topline {
+        grid-template-columns: minmax(130px, 1fr) minmax(150px, auto);
+        gap: 14px;
+    }
+
+    .visualization-controls {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: end;
+        max-width: 420px;
+    }
+
+    .visualization-heading {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .homepage .last-update {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+
+    .visualization-stage {
+        height: clamp(320px, 42vw, 480px);
+    }
+}
+
+/* ========================================
+   TABLETS
+======================================== */
 
 @media (max-width: 1000px) {
     .homepage-main {
@@ -662,8 +796,7 @@
 
     .explorer-layout {
         grid-template-columns: minmax(220px, 270px) minmax(0, 1fr);
-        column-gap: 25px;
-        row-gap: 0;
+        column-gap: 22px;
         width: 100%;
     }
 
@@ -679,22 +812,19 @@
         font-size: clamp(29px, 4vw, 40px);
     }
 
-    .last-update {
-        min-width: 155px;
-    }
-
     .coordinate-note {
         display: none;
     }
 }
 
-/* Celulares */
+/* ========================================
+   CELULARES
+======================================== */
 
 @media (max-width: 700px) {
     .homepage-main {
         width: min(100% - 32px, 540px);
-        padding-top: 75px;
-        padding-bottom: 25px;
+        padding: 75px 0 25px;
     }
 
     .intro-section {
@@ -708,13 +838,15 @@
         font-size: clamp(31px, 8vw, 42px);
     }
 
-    .intro-copy>p {
+    .intro-copy > p {
         font-size: 12px;
     }
 
     .homepage .last-update {
         align-items: flex-start;
         min-width: 0;
+        padding: 0;
+        text-align: left;
     }
 
     .last-update strong {
@@ -746,22 +878,65 @@
         margin-top: -10px;
     }
 
-    .visualization-stage {
-        height: min(88vw, 440px);
-        min-height: 280px;
+    .visualization-topline {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
     }
 
-    .visualization-topline {
-        align-items: center;
+    .visualization-heading {
+        grid-column: 1;
+        grid-row: 1;
     }
 
     .visualization-heading h2 {
         font-size: 19px;
+        white-space: normal;
     }
 
-    .view-switch button {
-        min-width: 66px;
-        padding: 5px 8px;
+    .homepage .last-update {
+        grid-column: 2;
+        grid-row: 1;
+        align-items: flex-end;
+        justify-self: end;
+        text-align: right;
+    }
+
+    .last-update > span {
+        font-size: 11px;
+    }
+
+    .last-update strong {
+        font-size: 12px;
+    }
+
+    .visualization-controls {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-self: stretch;
+        width: 100%;
+        max-width: none;
+        gap: 8px;
+    }
+
+    .view-switch,
+    .globe-view-switch {
+        min-height: 42px;
+    }
+
+    .view-switch button,
+    .globe-view-switch button {
+        min-height: 32px;
+        padding: 6px 7px;
+        font-size: 12px;
+    }
+
+    .visualization-stage {
+        height: min(88vw, 440px);
+        min-height: 280px;
     }
 
     .visualization-caption p {
@@ -778,11 +953,11 @@
         gap: 8px;
     }
 
-    .legend-items>span {
+    .legend-items > span {
         flex-wrap: wrap;
+        justify-content: center;
         gap: 8px;
         font-size: 12px;
-        justify-content: center;
     }
 
     .legend-items strong {
@@ -796,14 +971,62 @@
         gap: 10px;
     }
 
-    .homepage-footer>span:nth-child(2) {
+    .homepage-footer > span:nth-child(2) {
         display: none;
     }
 }
 
+/* ========================================
+   CELULARES ESTREITOS
+======================================== */
+
 @media (max-width: 480px) {
     .homepage-main {
-        padding: 10px;
+        width: calc(100% - 24px);
+        padding: 75px 0 25px;
+    }
+
+    .visualization-topline {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .visualization-heading {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .homepage .last-update {
+        grid-column: 1;
+        grid-row: 2;
+        align-items: flex-start;
+        justify-self: start;
+        text-align: left;
+    }
+
+    .visualization-controls {
+        grid-column: 1;
+        grid-row: 3;
+        gap: 7px;
+    }
+
+    .view-switch,
+    .globe-view-switch {
+        gap: 2px;
+        padding: 3px;
+    }
+
+    .view-switch button,
+    .globe-view-switch button {
+        min-height: 33px;
+        padding: 6px 5px;
+        gap: 4px;
+        font-size: 11px;
+    }
+
+    .view-switch button span,
+    .globe-view-switch button span {
+        font-size: 14px;
     }
 
     .legend-items span {
@@ -811,18 +1034,14 @@
     }
 }
 
-/* Celulares estreitos */
+/* ========================================
+   TELAS MUITO ESTREITAS
+======================================== */
 
 @media (max-width: 380px) {
     .homepage-main {
         width: calc(100% - 24px);
-        padding: 10px;
-    }
-
-    .visualization-topline {
-        align-items: center;
-        flex-direction: column;
-        gap: 8px;
+        padding: 75px 0 20px;
     }
 
     .visualization-stage {
@@ -835,13 +1054,6 @@
 
     .caption-symbol {
         display: none;
-    }
-
-
-    .homepage .last-update {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 
     .service-item {
@@ -857,87 +1069,28 @@
         width: calc(100% - 24px);
         justify-content: center;
     }
+
+    .visualization-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .view-switch button,
+    .globe-view-switch button {
+        font-size: 10px;
+    }
 }
 
-/* Acessibilidade */
+/* ========================================
+   ACESSIBILIDADE
+======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-
     .homepage *,
     .homepage *::before,
     .homepage *::after {
         scroll-behavior: auto !important;
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
-    }
-}
-
-
-/* Controles de visualização do planeta */
-
-.visualization-controls {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 10px;
-    min-width: 0;
-}
-
-.globe-view-switch {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: nowrap;
-    gap: 4px;
-    padding: 4px;
-    border-radius: 10px;
-    background: var(--panel, rgba(128, 128, 128, 0.12));
-    position: relative;
-    z-index: 5;
-    visibility: visible;
-    opacity: 1;
-}
-
-.globe-view-switch button {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 9px 13px;
-    border: none;
-    border-radius: 7px;
-    background: transparent;
-    color: var(--text);
-    font: inherit;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.globe-view-switch button:hover {
-    background: rgba(128, 128, 128, 0.12);
-}
-
-.globe-view-switch button.active {
-    background: var(--primary);
-    color: white;
-}
-
-.globe-view-switch button:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-@media (max-width: 768px) {
-    .visualization-controls {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .globe-view-switch,
-    .view-switch {
-        max-width: 100%;
     }
 }
