@@ -1,9 +1,9 @@
 import { Router } from "express";
-import type { AuthController } from "./auth.controller";
+import type { IAuthController } from "./auth.controller";
 
 import { authenticateToken } from "../../middlewares/middleware";
 
-export function authRoutes(controller: AuthController) {
+export function authRoutes(controller: IAuthController) {
     const router = Router();
 
     // Login - http://localhost:PORT/auth/login

@@ -38,7 +38,6 @@ export interface CollectionsRepository {
 export class PgCollectionsRepository implements CollectionsRepository {
   constructor(private readonly db: Database) {}
 
-  // As métricas e os cálculos (kwh e co2e) agora chegam prontos do service.
   async addMinuteHistory(
     serviceId: string,
     metrics: MetricsData,

@@ -12,8 +12,6 @@ config = {
 
 export const pool = new Pool(config);
 
-// Contrato de acesso ao banco recebido pelos repositórios por injeção de dependência.
-// O Pool do "pg" já atende a esse contrato.
 export interface Database {
   query<T extends QueryResultRow = any>(
     sql: string,

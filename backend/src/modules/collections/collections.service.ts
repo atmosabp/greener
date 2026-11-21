@@ -1,31 +1,49 @@
-import {
-  reqCarbonValue,
-  reqRenewablePercent,
-} from "../../integrations/carbon-api";
-import {
-  reqInterval,
-  reqMetrics
-} from "../../integrations/metrics-api";
-import { reqServices } from "../../integrations/services-api";
 import { MetricsData } from "../../types/metrics-types";
 import { ServiceTypes } from "../../types/services-types";
-import { MetricsCalculator } from "../metrics-calculator";
+import type { MetricsProps } from "../metrics-calculator";
+import type { CarbonApi } from "../../integrations/carbon-api";
+import type { MetricsApi } from "../../integrations/metrics-api";
+import type { ServicesApi } from "../../integrations/services-api";
 import type { CollectionsRepository } from "./collections.repository";
 
-export class CollectionsService {
-  constructor(private readonly repository: CollectionsRepository) {}
+// Contrato do cálculo de métricas (a classe MetricsCalculator atende a ele).
+export interface MetricsCalculation {
+  calculateKWh(): number | null;
+  calculateCO2e(): number | null;
+}
+
+// Função que cria um calculador a partir das métricas. É injetada no service.
+export type MetricsCalculatorFactory = (metrics: MetricsProps) => MetricsCalculation;
+
+export interface ICollectionsService {
+  addHistory(serviceId: string): Promise<any>;
+  getServiceMetrics(serviceId: string): Promise<any>;
+  getAllServicesMetrics(): Promise<any>;
+  searchAllHistory(): Promise<any>;
+  searchHistory(periodType: string, datePull: any): Promise<any>;
+  searchServiceHistory(periodType: string, datePull: any, serviceId: string): Promise<any>;
+}
+
+export class CollectionsService implements ICollectionsService {
+  constructor(
+    private readonly repository: CollectionsRepository,
+    private readonly carbonApi: CarbonApi,
+    private readonly metricsApi: MetricsApi,
+    private readonly servicesApi: ServicesApi,
+    private readonly createCalculator: MetricsCalculatorFactory,
+  ) {}
 
   async addHistory(serviceId: string) {
-    // Busca nas APIs auxiliares e calcula (antes isso ficava dentro do repository)
+
     const [collectionIntervalSeconds, carbonIntensity, renewablePercent, metricsEnergy] =
       await Promise.all([
-        reqInterval(serviceId),
-        reqCarbonValue(serviceId),
-        reqRenewablePercent(serviceId),
-        reqMetrics(serviceId),
+        this.metricsApi.reqInterval(serviceId),
+        this.carbonApi.reqCarbonValue(serviceId),
+        this.carbonApi.reqRenewablePercent(serviceId),
+        this.metricsApi.reqMetrics(serviceId),
       ]);
 
-    const metricsCalculator = new MetricsCalculator({
+    const metricsCalculator = this.createCalculator({
       collection_interval_seconds: collectionIntervalSeconds,
       metrics: {
         cpu_percent: metricsEnergy?.cpu_percent,
@@ -64,17 +82,17 @@ export class CollectionsService {
     let service: ServiceTypes | undefined = undefined;
 
     try {
-      service = (await reqServices(await this.repository.findServices())).find((value) => value.id == serviceId);
+      service = (await this.servicesApi.reqServices(await this.repository.findServices())).find((value) => value.id == serviceId);
       [collectionIntervalSeconds,carbonIntensity,renewablePercent] =
       await Promise.all([
-        reqInterval(serviceId),
-        reqCarbonValue(serviceId),
-        reqRenewablePercent(serviceId),
+        this.metricsApi.reqInterval(serviceId),
+        this.carbonApi.reqCarbonValue(serviceId),
+        this.carbonApi.reqRenewablePercent(serviceId),
       ])
 
-      metricsEnergy = await reqMetrics(serviceId);
+      metricsEnergy = await this.metricsApi.reqMetrics(serviceId);
     
-      const metricsCalculator = new MetricsCalculator({
+      const metricsCalculator = this.createCalculator({
         collection_interval_seconds: collectionIntervalSeconds,
         metrics: {
           cpu_percent: metricsEnergy?.cpu_percent,
@@ -120,7 +138,7 @@ export class CollectionsService {
     let fetchedServices: any;
 
     try {
-      result = await reqServices(await this.repository.findServices());
+      result = await this.servicesApi.reqServices(await this.repository.findServices());
 
       if (!result) return null;
 
@@ -131,13 +149,13 @@ export class CollectionsService {
           try {
             const [metricsEnergy, interval, carbon, renewable] =
               await Promise.all([
-                reqMetrics(id),
-                reqInterval(id),
-                reqCarbonValue(id),
-                reqRenewablePercent(id)
+                this.metricsApi.reqMetrics(id),
+                this.metricsApi.reqInterval(id),
+                this.carbonApi.reqCarbonValue(id),
+                this.carbonApi.reqRenewablePercent(id)
               ]);
 
-            const calc = new MetricsCalculator({
+            const calc = this.createCalculator({
               collection_interval_seconds: interval,
               metrics: {
                 cpu_percent: metricsEnergy?.cpu_percent,

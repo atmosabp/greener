@@ -1,8 +1,17 @@
 import { Request, Response } from "express";
-import type { CollectionsService } from "./collections.service";
+import type { ICollectionsService } from "./collections.service";
 
-export class CollectionsController {
-  constructor(private readonly service: CollectionsService) {}
+export interface ICollectionsController {
+  getHistory(req: Request, res: Response): Promise<Response>;
+  addHistory(req: Request, res: Response): Promise<Response>;
+  getServiceMetrics(req: Request, res: Response): Promise<Response>;
+  getAllServicesData(req: Request, res: Response): Promise<Response>;
+  findAllHistory(req: Request, res: Response): Promise<Response>;
+  findServiceHistory(req: Request, res: Response): Promise<Response>;
+}
+
+export class CollectionsController implements ICollectionsController {
+  constructor(private readonly service: ICollectionsService) {}
 
   async getHistory(_req: Request, res: Response) {
     try {

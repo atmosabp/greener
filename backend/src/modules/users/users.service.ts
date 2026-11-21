@@ -1,8 +1,17 @@
 import bcrypt from "bcrypt";
 import { UserEditValues } from "../../types/user-types";
 import type { UsersRepository } from "./users.repository";
+import type { User } from "../../types/user-types";
 
-export class UsersService {
+export interface IUsersService {
+    createNewUser(name: string, email: string, password: string, isAdm: boolean): Promise<User | null>;
+    searchUsers(): Promise<User[] | null>;
+    searchUserById(id: number): Promise<User[] | null>;
+    editUser(id: number, values: UserEditValues): Promise<User | null>;
+    removeUserById(id: number): Promise<{ id: number } | null>;
+}
+
+export class UsersService implements IUsersService {
     constructor(private readonly repository: UsersRepository) {}
 
     async createNewUser(name: string, email: string, password: string, isAdm: boolean) {

@@ -1,8 +1,16 @@
 import { Request, Response } from "express";
-import type { UsersService } from "./users.service";
+import type { IUsersService } from "./users.service";
 
-export class UsersController {
-  constructor(private readonly service: UsersService) {}
+export interface IUsersController {
+  createUser(req: Request, res: Response): Promise<Response>;
+  listUsers(req: Request, res: Response): Promise<Response>;
+  listUserById(req: Request, res: Response): Promise<Response>;
+  editUser(req: Request, res: Response): Promise<Response>;
+  deleteUserById(req: Request, res: Response): Promise<Response>;
+}
+
+export class UsersController implements IUsersController {
+  constructor(private readonly service: IUsersService) {}
 
   async createUser(req: Request, res: Response) {
     const { name, email, password, isAdm } = req.body;

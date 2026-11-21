@@ -17,6 +17,11 @@ import { CollectionsService } from "./modules/collections/collections.service";
 import { CollectionsController } from "./modules/collections/collections.controller";
 import { collectionsRoutes } from "./modules/collections/collections.routes";
 
+import { MetricsCalculator } from "./modules/metrics-calculator";
+import { HttpCarbonApi } from "./integrations/carbon-api";
+import { HttpMetricsApi } from "./integrations/metrics-api";
+import { HttpServicesApi } from "./integrations/services-api";
+
 export function createApp(db: Database) {
   const app = express();
 
@@ -44,14 +49,22 @@ export function createApp(db: Database) {
     res.json({ status: "ok" });
   });
 
-  // Raiz de composição: aqui os objetos são criados e recebem suas dependências.
-  // banco -> repository -> service -> controller -> rotas
   const usersRepository = new PgUsersRepository(db);
   const collectionsRepository = new PgCollectionsRepository(db);
 
+  const carbonApi = new HttpCarbonApi();
+  const metricsApi = new HttpMetricsApi();
+  const servicesApi = new HttpServicesApi();
+
   const usersService = new UsersService(usersRepository);
-  const authService = new AuthService(usersRepository);
-  const collectionsService = new CollectionsService(collectionsRepository);
+  const authService = new AuthService(usersRepository, process.env.JWT_SECRET);
+  const collectionsService = new CollectionsService(
+    collectionsRepository,
+    carbonApi,
+    metricsApi,
+    servicesApi,
+    (metrics) => new MetricsCalculator(metrics),
+  );
 
   const usersController = new UsersController(usersService);
   const authController = new AuthController(authService);

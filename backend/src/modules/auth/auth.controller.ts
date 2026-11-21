@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
-import type { AuthService } from "./auth.service";
+import type { IAuthService } from "./auth.service";
 
-export class AuthController {
-  constructor(private readonly service: AuthService) {}
+export interface IAuthController {
+  login(req: Request, res: Response): Promise<Response>;
+  currentUser(req: Request, res: Response): Response;
+}
+
+export class AuthController implements IAuthController {
+  constructor(private readonly service: IAuthService) {}
 
   async login(req: Request, res: Response) {
     const { email, password } = req.body;

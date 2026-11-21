@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import type { UsersController } from "./users.controller";
+import type { IUsersController } from "./users.controller";
 
 import {
     authenticateToken,
     requireAdmin
 } from "../../middlewares/middleware";
 
-export function usersRoutes(controller: UsersController) {
+export function usersRoutes(controller: IUsersController) {
     const router = Router();
 
     router.use(authenticateToken, requireAdmin);

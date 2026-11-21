@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { CollectionsController } from "./collections.controller";
+import type { ICollectionsController } from "./collections.controller";
 
-export function collectionsRoutes(controller: CollectionsController) {
+export function collectionsRoutes(controller: ICollectionsController) {
   const router = Router();
 
   // Rota de teste para retornar todo o histórico
