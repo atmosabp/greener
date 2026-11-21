@@ -1336,7 +1336,7 @@
   }
 
   .cmp-intro {
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.875rem;
     padding-right: 0.125rem;
     padding-left: 0.125rem;
@@ -1437,7 +1437,7 @@
   }
 
   .cmp-selection-dropdown {
-    width: 100%;
+    width: 85%;
     max-width: 100%;
   }
 
@@ -1448,7 +1448,7 @@
   }
 
   .cmp-intro > .gr-dropdown {
-    width: 100%;
+    width: 35%;
     min-width: 0;
   }
 

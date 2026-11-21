@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import AppHeader from "../../components/header/AppHeader";
 import "./Dashboard.css";
@@ -7,8 +8,24 @@ import type { CoordinatesType, MetricsType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import { port } from "../../utils/connection";
 import { greeting } from "../comparison/components/ComparisonComponents";
+import { Select } from "../../components/dropdown";
 
-/* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
+/* Opções dos dropdowns */
+const UPDATE_OPTIONS = [
+  { label: "05s", value: "5" },
+  { label: "10s", value: "10" },
+  { label: "15s", value: "15" },
+  { label: "30s", value: "30" },
+  { label: "60s", value: "60" },
+  { label: "120s", value: "120" },
+];
+
+const DATE_OPTIONS = [
+  { label: "Hoje", value: "today" },
+  { label: "Escolher data", value: "custom" },
+];
+
+/* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up */
 function ArrowIcon({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -74,9 +91,7 @@ export default function Dashboard() {
     // Insirir lógica aqui
   }
 
-  function handleFilterChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const selectedFilter = event.target.value;
-
+  function handleFilterChange(selectedFilter: string) {
     setFilter(selectedFilter);
     setIsCalendarOpen(selectedFilter === "custom");
   }
@@ -144,9 +159,10 @@ export default function Dashboard() {
     }
   }
 
-  function changeInterval(newTime: number): void {
-    setUpdateInterval(newTime);
-    localStorage.setItem("refresh_interval", String(newTime));
+  function changeInterval(newTime: string): void {
+    const interval = Number(newTime);
+    setUpdateInterval(interval);
+    localStorage.setItem("refresh_interval", String(interval));
     window.location.reload();
   }
 
@@ -231,9 +247,9 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-              <h1>
-                {greeting()}, {userName}.
-              </h1>
+            <h1>
+              {greeting()}, {userName}.
+            </h1>
             <p>
               Analise os dados do serviço <strong>{serviceMetrics.name}</strong>
               .{/* backend: nome do serviço */}
@@ -250,71 +266,52 @@ export default function Dashboard() {
               <div className="alter-btns">
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
-                  <select
-                    name="updates"
-                    value={Number(updateInterval)}
-                    id="update-select"
-                    onChange={(event) =>
-                      changeInterval(Number(event.target.value))
-                    }
-                  >
-                    <option value="5">05s</option>
-                    <option value="10">10s</option>
-                    <option value="15">15s</option>
-                    <option value="30">30s</option>
-                    <option value="60">60s</option>
-                    <option value="120">120s</option>
-                  </select>
+                  <Select
+                    className="dashboard-dropdown dashboard-dropdown--interval"
+                    variant="dark"
+                    value={String(updateInterval)}
+                    options={UPDATE_OPTIONS}
+                    onChange={changeInterval}
+                  />
                 </div>
 
                 <div className="btn-date">
-                  <select
-                    name="date"
-                    id="date-select"
+                  <Select
+                    className="dashboard-dropdown dashboard-dropdown--date"
+                    variant="dark"
                     value={filter}
+                    options={DATE_OPTIONS}
                     onChange={handleFilterChange}
-                  >
-                    <option value="today">Hoje</option>
-                    <option value="custom">Escolher data</option>
-                  </select>
+                  />
                 </div>
               </div>
             ) : (
               <>
                 <div className="btn-update">
                   <label htmlFor="update-select">Atualizações:</label>
-                  <select
-                    name="updates"
-                    id="update-select"
-                    value={Number(updateInterval)}
-                    onChange={(event) =>
-                      changeInterval(Number(event.target.value))
-                    }
-                  >
-                    <option value="5">05s</option>
-                    <option value="10">10s</option>
-                    <option value="15">15s</option>
-                    <option value="30">30s</option>
-                    <option value="60">60s</option>
-                    <option value="120">120s</option>
-                  </select>
+                  <Select
+                    className="dashboard-dropdown dashboard-dropdown--interval"
+                    variant="dark"
+                    value={String(updateInterval)}
+                    options={UPDATE_OPTIONS}
+                    onChange={changeInterval}
+                  />
                 </div>
 
                 <div className="btn-date">
-                  <select
-                    name="date"
-                    id="date-select"
+                  <Select
+                    className="dashboard-dropdown dashboard-dropdown--date"
+                    variant="dark"
                     value={filter}
+                    options={DATE_OPTIONS}
                     onChange={handleFilterChange}
-                  >
-                    <option value="today">Hoje</option>
-                    <option value="custom">Escolher data</option>
-                  </select>
+                  />
                 </div>
               </>
             )}
           </div>
         </div>
+
         <div className="main-section">
           {serviceMetrics.metrics?.cpu_percent ? (
             <div className="dashboard-grid">
@@ -577,6 +574,7 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
         {isCalendarOpen && (
           <Calendar
             onSelect={handleDateSelect}
@@ -584,9 +582,11 @@ export default function Dashboard() {
           />
         )}
       </main>
+
       <footer>
         <span>Desenvolvido por Atmos &copy; {year}</span>
       </footer>
+
       {/* mobile: botão voltar ao topo */}
       <button
         type="button"

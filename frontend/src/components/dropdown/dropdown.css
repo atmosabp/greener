@@ -1,287 +1,419 @@
 
-/* ==========================================================
-   GREENR — DROPDOWN
-   Identidade visual original da aplicação
-========================================================== */
+/* =========================================================
+   GREEN ER - DROPDOWN GLOBAL
+   Padrão visual baseado na tela de Comparação
+========================================================= */
 
 .gr-dropdown {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    font-family: inherit;
+  --dropdown-bg: var(--background, #f9eedc);
+  --dropdown-ink: var(--text, #3a322c);
+  --dropdown-panel: var(--primary-light, #dacfba);
+  --dropdown-lime: var(--primary, #bec47d);
+  --dropdown-moss: var(--primary-dark, #6f8f5f);
+  --dropdown-moss-dark: var(--primary-dark, #4f7a5a);
+  --dropdown-muted: #81766b;
+
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  font-family: inherit;
+  text-align: left;
+  box-sizing: border-box;
 }
 
-.gr-dropdown-label {
-    margin-bottom: 7px;
-    color: var(--text);
-    font-size: 0.85rem;
-    font-weight: 600;
+.gr-dropdown *,
+.gr-dropdown *::before,
+.gr-dropdown *::after {
+  box-sizing: border-box;
 }
 
-/* ---------- Seletor ---------- */
+/* =========================================================
+   BOTÃO PRINCIPAL
+========================================================= */
 
 .gr-dropdown-trigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 
-    width: 100%;
-    min-height: 40px;
-    padding: 0 2.75rem 0 1.25rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.625rem;
 
-    border: none;
-    border-radius: 999px;
+  padding: 0 0.9375rem;
 
-    background-color: var(--text);
-    color: var(--background);
+  border: 1px solid var(--dropdown-moss);
+  border-radius: 1.2rem;
 
-    font-family: inherit;
-    font-size: 1.05rem;
-    font-weight: 400;
-    text-align: left;
+  background: var(--dropdown-bg);
+  color: var(--dropdown-ink);
 
-    cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
 
-    transition:
-        background-color 0.2s ease,
-        opacity 0.2s ease;
+  box-shadow: 0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.gr-dropdown-trigger:hover:not(:disabled) {
-    opacity: 0.9;
+.gr-dropdown-trigger:hover,
+.gr-dropdown-trigger[aria-expanded="true"] {
+  background: var(--dropdown-panel);
+  border-color: var(--dropdown-moss-dark);
+
+  box-shadow: 0 0.1875rem 0.5625rem rgba(58, 50, 44, 0.12);
 }
 
 .gr-dropdown-trigger:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 3px;
+  outline: 0.125rem solid var(--dropdown-moss);
+  outline-offset: 0.125rem;
 }
 
 .gr-dropdown-trigger:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .gr-dropdown-value {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .gr-dropdown-chevron {
-    flex-shrink: 0;
-    color: var(--background);
-    transition: transform 0.2s ease;
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  color: var(--dropdown-ink);
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .gr-dropdown-chevron.is-open {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
-/* ---------- Painel ---------- */
+/* =========================================================
+   VARIANTE CLARA
+   Seleção múltipla e dropdown padrão
+========================================================= */
+
+.gr-dropdown-trigger.gr-dropdown-default {
+  background: var(--dropdown-bg);
+  color: var(--dropdown-ink);
+  border-color: var(--dropdown-moss);
+}
+
+.gr-dropdown-trigger.gr-dropdown-default:hover,
+.gr-dropdown-trigger.gr-dropdown-default[aria-expanded="true"] {
+  background: var(--dropdown-panel);
+  border-color: var(--dropdown-moss-dark);
+}
+
+.gr-dropdown-trigger.gr-dropdown-default .gr-dropdown-chevron {
+  color: var(--dropdown-ink);
+}
+
+/* =========================================================
+   VARIANTE ESCURA
+   Seleção de período
+========================================================= */
+
+.gr-dropdown-trigger.gr-dropdown-dark {
+  min-height: 2.5rem;
+  padding: 0 2.375rem 0 1rem;
+
+  border-color: var(--dropdown-moss);
+  border-radius: 1.375rem;
+
+  background: var(--dropdown-ink);
+  color: var(--dropdown-bg);
+}
+
+.gr-dropdown-trigger.gr-dropdown-dark:hover,
+.gr-dropdown-trigger.gr-dropdown-dark[aria-expanded="true"] {
+  background: var(--dropdown-moss);
+  border-color: var(--dropdown-moss);
+  color: var(--dropdown-bg);
+}
+
+.gr-dropdown-trigger.gr-dropdown-dark .gr-dropdown-chevron {
+  color: var(--dropdown-bg);
+}
+
+/* =========================================================
+   VARIANTE VERDE
+   Menu de referência e ações
+========================================================= */
+
+.gr-dropdown-trigger.gr-dropdown-green {
+  min-height: 2rem;
+  padding: 0 0.75rem;
+
+  border: 0;
+  border-radius: 1.125rem;
+
+  background: var(--dropdown-lime);
+  color: var(--dropdown-ink);
+
+  box-shadow: none;
+}
+
+.gr-dropdown-trigger.gr-dropdown-green:hover,
+.gr-dropdown-trigger.gr-dropdown-green[aria-expanded="true"] {
+  background: var(--dropdown-panel);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.gr-dropdown-trigger.gr-dropdown-green .gr-dropdown-chevron {
+  color: var(--dropdown-ink);
+}
+
+/* =========================================================
+   PAINEL DE OPÇÕES
+========================================================= */
 
 .gr-dropdown-panel {
-    position: absolute;
-    z-index: 1000;
-    top: calc(100% + 8px);
-    left: 0;
+  position: absolute;
+  top: calc(100% + 0.4375rem);
+  left: 0;
+  z-index: 1000;
 
-    width: 100%;
-    max-height: 260px;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
-    padding: 8px;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(20rem, calc(100vw - 2rem));
+  max-height: min(18.75rem, 55vh);
 
-    border: 1px solid color-mix(
-        in srgb,
-        var(--text) 15%,
-        transparent
-    );
+  padding: 0.375rem;
+  overflow-x: hidden;
+  overflow-y: auto;
 
-    border-radius: 16px;
+  border: 1px solid var(--dropdown-panel);
+  border-radius: 0.75rem;
 
-    background-color: var(--complementary);
-    color: var(--text);
+  background: var(--dropdown-bg);
+  color: var(--dropdown-ink);
 
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+  box-shadow:
+    0 0.5rem 1.5rem rgba(58, 50, 44, 0.14),
+    0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
 
-    animation: gr-dropdown-enter 0.16s ease;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dropdown-moss) var(--dropdown-bg);
+
+  animation: gr-dropdown-enter 0.16s ease-out;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar-track {
+  background: var(--dropdown-bg);
+  border-radius: 0.5rem;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar-thumb {
+  background: var(--dropdown-moss);
+  border-radius: 0.5rem;
 }
 
 @keyframes gr-dropdown-enter {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ---------- Opções ---------- */
+/* =========================================================
+   OPÇÕES
+========================================================= */
 
 .gr-dropdown-option {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5625rem;
 
-    width: 100%;
-    min-height: 36px;
-    padding: 8px 12px;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.25rem;
 
-    border: none;
-    border-radius: 999px;
+  padding: 0.5rem 0.625rem;
 
-    background: transparent;
-    color: var(--text);
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
 
-    font-family: inherit;
-    font-size: 0.95rem;
-    text-align: left;
+  background: var(--dropdown-bg);
+  color: var(--dropdown-ink);
 
-    cursor: pointer;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
 
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
+  cursor: pointer;
+
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
 }
 
-.gr-dropdown-option:hover:not(:disabled) {
-    background-color: color-mix(
-        in srgb,
-        var(--primary-light) 65%,
-        transparent
-    );
+.gr-dropdown-option:hover,
+.gr-dropdown-option.is-selected {
+  background: var(--dropdown-panel);
+  border-color: var(--dropdown-lime);
 }
 
 .gr-dropdown-option.is-selected {
-    background-color: var(--primary-light);
-    font-weight: 600;
+  font-weight: 500;
 }
 
 .gr-dropdown-option:disabled,
 .gr-dropdown-option.is-disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.gr-dropdown-option:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: -2px;
+.gr-dropdown-option:disabled:hover,
+.gr-dropdown-option.is-disabled:hover {
+  background: var(--dropdown-bg);
+  border-color: transparent;
 }
 
-/* ---------- MultiSelect ---------- */
+.gr-dropdown-option svg {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  color: var(--dropdown-moss);
+}
+
+/* =========================================================
+   MULTISELECT
+========================================================= */
 
 .gr-dropdown-multi-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 4px;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(22rem, calc(100vw - 2rem));
 }
 
 .gr-dropdown-checkbox-option {
-    justify-content: flex-start;
-    cursor: pointer;
+  justify-content: flex-start;
+  gap: 0.5625rem;
+  margin-top: 0;
+  cursor: pointer;
 }
 
-.gr-dropdown-checkbox-option input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
+.gr-dropdown-checkbox-option + .gr-dropdown-checkbox-option {
+  margin-top: 0.5rem;
+}
+
+.gr-dropdown-checkbox-option input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .gr-dropdown-check {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
 
-    width: 17px;
-    height: 17px;
+  width: 1rem;
+  height: 1rem;
 
-    border: 1px solid var(--text);
-    border-radius: 4px;
+  border: 1px solid var(--dropdown-moss);
+  border-radius: 0.25rem;
 
-    color: var(--background);
+  background: transparent;
+  color: var(--dropdown-bg);
+
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
 }
 
 .gr-dropdown-checkbox-option.is-selected .gr-dropdown-check {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
+  background: var(--dropdown-moss);
+  border-color: var(--dropdown-moss);
 }
 
 .gr-dropdown-checkbox-option input:focus-visible + .gr-dropdown-check {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
+  outline: 0.125rem solid var(--dropdown-moss);
+  outline-offset: 0.125rem;
+}
+
+.gr-dropdown-checkbox-option.is-disabled {
+  cursor: not-allowed;
 }
 
 .gr-dropdown-empty {
-    display: block;
-    padding: 10px;
-
-    color: var(--text);
-    opacity: 0.65;
-
-    font-size: 0.85rem;
+  display: block;
+  padding: 0.625rem;
+  color: var(--dropdown-muted);
+  font-size: 0.875rem;
 }
 
-/* ---------- Variantes ---------- */
-
-.gr-dropdown-dark {
-    --dropdown-background: var(--text);
-    --dropdown-panel: var(--complementary);
-    --dropdown-text: var(--text);
-}
-
-.gr-dropdown-green {
-    --dropdown-background: var(--primary);
-    --dropdown-panel: var(--background);
-    --dropdown-text: var(--text);
-}
-
-/* ---------- Scroll ---------- */
-
-.gr-dropdown-panel {
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-light) transparent;
-}
-
-.gr-dropdown-panel::-webkit-scrollbar {
-    width: 6px;
-}
-
-.gr-dropdown-panel::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: var(--primary-light);
-}
-
-.gr-dropdown-panel::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* ---------- Responsividade ---------- */
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
 
 @media (max-width: 600px) {
-    .gr-dropdown-trigger {
-        min-height: 38px;
-        padding: 0 2.5rem 0 1rem;
-        font-size: 0.95rem;
-    }
+  .gr-dropdown-trigger {
+    min-height: 2.5rem;
+    font-size: 0.875rem;
+  }
 
-    .gr-dropdown-option {
-        min-height: 38px;
-        font-size: 0.88rem;
-    }
+  .gr-dropdown-trigger.gr-dropdown-dark {
+    min-height: 2.5rem;
+  }
 
-    .gr-dropdown-panel {
-        max-height: 220px;
-    }
+  .gr-dropdown-trigger.gr-dropdown-green {
+    min-height: 2.25rem;
+  }
+
+  .gr-dropdown-panel {
+    max-width: min(20rem, calc(100vw - 2rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gr-dropdown *,
+  .gr-dropdown *::before,
+  .gr-dropdown *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
