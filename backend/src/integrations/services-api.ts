@@ -16,7 +16,7 @@ export async function reqServices(): Promise<ServiceTypes[]> {
 
     return avaliableList;
   } catch (error: any) {
-    throw new Error(error.message || "API não disponível.");
+    throw new Error("Ocorreu um erro interno ao listar os serviços. Tente novamente mais tarde.", {cause: error});
   }
 }
 
@@ -68,19 +68,19 @@ export async function reqCoordinates(serviceId: string): Promise<CoordinatesType
     const response = await fetch(`${serviceURL}/${serviceId}`);
 
     if (!response.ok) {
-      throw new Error(`Erro na requisição de dados`);
+      throw new Error(`Ocorreu um erro ao requisitar os dados do serviço ${serviceId}. Tente novamente mais tarde.`);
     }
     const serviceData: ServiceTypes = await response.json();
 
     const serviceCoordinate = serviceData.location;
 
     if (!serviceCoordinate?.latitude || !serviceCoordinate?.longitude) {
-      throw new Error(`Não foi possível encontrar as coordenadas`);
+      throw new Error(`Não foi possível encontrar as coordenadas do serviço.`);
     }
 
     return serviceCoordinate;
   } catch (error: any) {
-    throw new Error(`Erro ao buscar coordenadas: ${error.message}`, {
+    throw new Error(`Ocoreu um erro interno ao buscar coordenadas do serviço ${serviceId}. Tente novamente.`, {
       cause: error,
     });
   }

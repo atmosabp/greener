@@ -10,7 +10,11 @@
     background-color: var(--primary-light);
     color: var(--text);
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: all 0.5s ease-in-out;
+}
+
+.refresh-button:hover {
+    transform: rotate(30deg);
 }
 
 .refresh-button svg{
@@ -18,8 +22,4 @@
     height: 1.2rem;
     width: 1.2rem;
     right: 0;
-}
-
-.refresh-button:hover {
-    transform: rotate(30deg);
 }

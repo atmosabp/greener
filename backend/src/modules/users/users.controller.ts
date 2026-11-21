@@ -23,7 +23,7 @@ export async function createUserController(req: Request, res: Response) {
     (isAdm !== undefined && typeof isAdm !== "boolean")
   ) {
     return res.status(400).json({
-      message: "Os dados informados são inválidos."
+      message: "O tipo de um ou mais dados informados são inválidos."
     });
   }
 
@@ -50,7 +50,7 @@ export async function createUserController(req: Request, res: Response) {
     }
 
     return res.status(500).json({
-      message: "Ocorreu um erro ao cadastrar o usuário."
+      message: "Ocorreu um erro interno ao cadastrar o usuário. Tente novamente."
     });
   }
 }
@@ -60,8 +60,8 @@ export async function listUsersController(_req: Request, res: Response) {
     const result = await searchUsers();
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(400).json({
-      message: error.message || "Ocorreu um erro ao listar os usuários.",
+    return res.status(500).json({
+      message: error.message || "Ocorreu um erro interno ao listar os usuários. Tente novamente.",
     });
   }
 }
@@ -71,7 +71,7 @@ export async function listUserByIdController(req: Request, res: Response) {
 
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({
-      message: "O ID informado é inválido."
+      message: "O id informado é inválido. Tente um id válido."
     });
   }
 
@@ -80,7 +80,7 @@ export async function listUserByIdController(req: Request, res: Response) {
 
     if (!result) {
       return res.status(404).json({
-        message: "Usuário não encontrado."
+        message: "Usuário não foi encontrado no sistema."
       });
     }
 
@@ -98,7 +98,7 @@ export async function editUserController(req: Request, res: Response) {
 
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({
-      message: "O ID informado é inválido."
+      message: "O id informado é inválido."
     });
   }
 
@@ -131,7 +131,7 @@ export async function editUserController(req: Request, res: Response) {
 
     if (!result) {
       return res.status(404).json({
-        message: "Usuário não encontrado ou nenhum campo válido para atualizar."
+        message: "Usuário não encontrado ou nenhum campo válido para atualizar. Tente novamente."
       });
     }
 
@@ -153,7 +153,7 @@ export async function deleteUserByIdController(req: Request, res: Response) {
   const id = Number(req.params.id);
 
   if (!id) {
-    return res.status(400).json({ message: "Não foi recebido nenhum id." });
+    return res.status(400).json({ message: "Não foi informado nenhum id." });
   }
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({ message: "O id deve ser do tipo number." });
@@ -166,7 +166,7 @@ export async function deleteUserByIdController(req: Request, res: Response) {
       return res
         .status(404)
         .json({
-          message: "Não foi encontrado nenhum usuário com o id informado.",
+          message: "Não foi encontrado nenhum usuário com o id informado. Tente outro válido.",
         });
     }
 
@@ -175,7 +175,7 @@ export async function deleteUserByIdController(req: Request, res: Response) {
     return res.status(500).json({
       message:
         error.message ||
-        "Ocorreu um erro interno ao tentar deletar o(s) usuário(s).",
+        "Ocorreu um erro interno ao tentar deletar o(s) usuário(s). Tente novamente.",
     });
   }
 }

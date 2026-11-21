@@ -11,7 +11,7 @@ export async function loginController(req: Request, res: Response) {
     !password
   ) {
     return res.status(400).json({
-      message: "Informe um email e uma senha válidos.",
+      message: "Informe um email e senha válidos.",
     });
   }
 
@@ -26,11 +26,8 @@ export async function loginController(req: Request, res: Response) {
 
     return res.status(200).json(result);
   } catch (error) {
-    console.error("Erro ao realizar login:");
-    console.error(error);
-
     return res.status(500).json({
-      message: "Ocorreu um erro interno ao realizar o login.",
+      message: "Ocorreu um erro interno ao realizar o login. Tente novamente.",
     });
   }
 }

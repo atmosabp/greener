@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import AppHeader from "../../components/header/AppHeader";
+import { port } from "../../utils/connection";
 import "./Dashboard.css";
-import "../ranking/Ranking.css";
+
+import AppHeader from "../../components/header/AppHeader";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
@@ -13,10 +14,12 @@ import { type RankingPeriod } from "../ranking/components/rankingData";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
-import { port } from "../../utils/connection";
-import { greeting } from "../comparison/components/ComparisonComponents";
+
 import Toast from "../../components/toast/Toast";
 import RefreshButton from "../../components/refreshButton/RefreshButton";
+
+import Tooltip from "../../components/tooltip/Tooltip";
+import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -49,17 +52,6 @@ export default function Dashboard() {
   let serviceFetchReq = useRef<any>(undefined);
 
   const calendar = useRankingCalendar();
-
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -318,9 +310,8 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>
-              {greeting()}, {userName}.
-            </h1>
+            <Greeting />
+            
             {showSkeleton ? (
               <p>
                 <Skeleton width="15rem" height="1rem" />
@@ -488,6 +479,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-energy">
+                <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
                 <h4>
                   {serviceMetrics.metrics?.memory_gb ? (
@@ -507,6 +499,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-co2">
+                <Tooltip text={"Emissão em gramas de CO2 por hora"} />
                 <p>Emissão de CO₂e</p>
                 <h4>
                   {serviceMetrics.metrics?.co2e ? (
@@ -556,6 +549,7 @@ export default function Dashboard() {
                   tabIndex={0}
                 >
                   <section className="metric-card metric-card--usage metric-cpu">
+                    <Tooltip text={"Porcentagem utilizada da CPU"} />
                     <p>CPU</p>
                     <span className="metric-counter">1/4</span>
                     <h4>
@@ -570,6 +564,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-memory">
+                    <Tooltip text={"Mémoria RAM utiliazada "} />
                     <p>Memória</p>
                     <span className="metric-counter">2/4</span>
                     <h4>
@@ -590,6 +585,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-storage">
+                    <Tooltip text={"Memória de disco utilizadas"} />
                     <p>Armazenamento</p>
                     <span className="metric-counter">3/4</span>
                     <h4>
@@ -610,6 +606,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-network">
+                    <Tooltip text={"Memória movida pela rede"} />
                     <p>Rede</p>
                     <span className="metric-counter">4/4</span>
                     <h4>
@@ -633,7 +630,9 @@ export default function Dashboard() {
 
               {/* Gráficos */}
               <div className="analytics">
+                
                 <section className="analytics-card analytics-card--renewable">
+                  <Tooltip text={"Porcentagem da energia utilizada \n na localização que é renovável"} />
                   <h3>Energia renovável</h3>
                   <div
                     className="donut"
@@ -652,6 +651,7 @@ export default function Dashboard() {
                 </section>
 
                 <section className="analytics-card analytics-card--carbon">
+                  <Tooltip text={"Quantidade de carbono emitida \n por Kwh na localização"} />
                   <h3>Intensidade de carbono</h3>
                   <p className="carbon-level">
                     {serviceMetrics.metrics?.carbon_intensity
