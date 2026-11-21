@@ -29,12 +29,12 @@ function toService(apiService: ServiceType): ServiceType {
         id: apiService.id,
         name: apiService.name,
         metrics: {
-            kwh: Number(metrics.kwh),
-            co2e: Number(metrics.co2e),
-            network_gb: Number(metrics.network_gb),
-            cpu_percent: Number(metrics.cpu_percent),
-            disk_gb: Number(metrics.disk_gb),
-            memory_gb: Number(metrics.memory_gb),
+            kwh: (metrics.kwh),
+            co2e: (metrics.co2e),
+            network_gb: (metrics.network_gb),
+            cpu_percent: (metrics.cpu_percent),
+            disk_gb: (metrics.disk_gb),
+            memory_gb: (metrics.memory_gb),
             carbon_intensity: intensidade
         },
         status: "active"
