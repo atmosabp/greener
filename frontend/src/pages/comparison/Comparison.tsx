@@ -39,6 +39,7 @@ import {
 import useRankingCalendar from "../ranking/components/useRankingCalendar";
 import RankingCalendar from "../ranking/components/rankingCalendar";
 import type { MetricsType, ServiceType } from "../../types/service";
+import RefreshButton from "../../components/refreshButton/RefreshButton";
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -140,7 +141,6 @@ export default function Comparison() {
   async function handleRefresh() {
     setHistoryMessage("");
     setPeriod("now");
-    setLastUpdate(new Date());
     historyActivatedRef.current = false;
     fetchServices()
       .then((data) => {
@@ -160,6 +160,8 @@ export default function Comparison() {
       .finally(() => {
         setLoading(false);
       });
+    
+    setLastUpdate(new Date());
   }
 
   /* Buscar os serviços e suas métricas no backend. */
@@ -294,14 +296,7 @@ export default function Comparison() {
             </Popover>
           </div>
 
-          {/* <SelectPill
-            variant="dark"
-            label="Período"
-            value={period}
-            onChange={setPeriod}
-            options={PERIODS}
-          /> */}
-          <span className={`cmp-select `}>
+          <span className="cmp-select">
             <span className="ranking-last-update">
               <strong>{historyMessage}</strong>&nbsp; &nbsp;
               {historyActivatedRef.current ? (
@@ -309,32 +304,10 @@ export default function Comparison() {
               ) : (
                 <>Última atualização: {formattedLastUpdate}</>
               )}{" "}
-              &nbsp; &nbsp; &nbsp; &nbsp;
             </span>
-            <button
-                type="button"
-                className="refresh-button"
-                onClick={handleRefresh}
-                aria-label="Atualizar horário da última atualização"
-                title="Atualizar"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="17"
-                  height="17"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M20 7v5h-5" />
-                  <path d="M4 17v-5h5" />
-                  <path d="M5.6 9a7 7 0 0 1 11.6-2L20 12" />
-                  <path d="M4 12l2.8 5a7 7 0 0 0 11.6-2" />
-                </svg>
-              </button>
+            
+            <RefreshButton handleRefresh={handleRefresh} />
+
             <div className="ranking-period">
               <label htmlFor="ranking-period-select">Período</label>
 

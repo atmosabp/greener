@@ -243,26 +243,6 @@
     display: none;
 }
 
-.refresh-button {
-    width: 2.5rem;
-    height: 2.5rem;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background-color: var(--primary-light);
-    color: var(--text);
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.refresh-button:hover {
-    transform: rotate(30deg);
-}
-
-
 .metrics-carousel,
 .metrics-track {
     display: contents;
