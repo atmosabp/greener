@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { port } from "../../utils/connection";
+import { Link, useParams } from "react-router-dom";
+import "./Dashboard.css";
 
 import AppHeader from "../../components/header/AppHeader";
-import "./Dashboard.css";
-import { Link, useParams } from "react-router-dom";
+
 import type {
   CoordinatesType,
   MetricsType,
@@ -24,6 +25,8 @@ import {
 import Toast from "../../components/toast/Toast";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
+
+import Tooltip from "../../components/tooltip/Tooltip";
 import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
@@ -348,7 +351,7 @@ export default function Dashboard() {
                 {historyMessage ? (
                   <strong>{historyMessage}</strong>
                 ) : (
-                  <>Última atualização: {timeUpdated || "-"}</>
+                  <span className="last-updated-text"><strong>Última atualização:</strong> {timeUpdated || "-"}</span>
                 )}
               </span>
             )}
@@ -458,6 +461,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-energy">
+                <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
                 <h4>
                   {serviceMetrics.metrics?.kwh ? (
@@ -474,6 +478,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-co2">
+                <Tooltip text={"Emissão em gramas de CO2 por hora"} />
                 <p>Emissão de CO₂e</p>
                 <h4>
                   {serviceMetrics.metrics?.co2e ? (
@@ -523,6 +528,7 @@ export default function Dashboard() {
                   tabIndex={0}
                 >
                   <section className="metric-card metric-card--usage metric-cpu">
+                    <Tooltip text={"Porcentagem utilizada da CPU"} />
                     <p>CPU</p>
                     <span className="metric-counter">1/4</span>
                     <h4>
@@ -537,6 +543,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-memory">
+                    <Tooltip text={"Mémoria RAM utiliazada "} />
                     <p>Memória</p>
                     <span className="metric-counter">2/4</span>
                     <h4>
@@ -557,6 +564,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-storage">
+                    <Tooltip text={"Memória de disco utilizadas"} />
                     <p>Armazenamento</p>
                     <span className="metric-counter">3/4</span>
                     <h4>
@@ -577,6 +585,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-network">
+                    <Tooltip text={"Memória movida pela rede"} />
                     <p>Rede</p>
                     <span className="metric-counter">4/4</span>
                     <h4>
@@ -600,7 +609,9 @@ export default function Dashboard() {
 
               {/* Gráficos */}
               <div className="analytics">
+                
                 <section className="analytics-card analytics-card--renewable">
+                  <Tooltip text={"Porcentagem da energia utilizada \n na localização que é renovável"} />
                   <h3>Energia renovável</h3>
                   <div
                     className="donut"
@@ -619,6 +630,7 @@ export default function Dashboard() {
                 </section>
 
                 <section className="analytics-card analytics-card--carbon">
+                  <Tooltip text={"Quantidade de carbono emitida \n por Kwh na localização"} />
                   <h3>Intensidade de carbono</h3>
                   <p className="carbon-level">
                     {serviceMetrics.metrics?.carbon_intensity

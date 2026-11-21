@@ -10,20 +10,33 @@ export function toLocalISOTime(input: Date | string): string {
 
 export function toReadableTime(input: Date | string): string {
   var dateString = String(input);
-  if(typeof(input) != "string"){
+  if (typeof input != "string") {
     var dateString = toLocalISOTime(input);
   }
-  
+
   let dateArray = dateString.split("");
   let newDate: string = ``;
 
-  for(let i in dateArray){
-    if(dateArray[i] === "T"){
-      dateArray[i] = " ";
+  let datePart = "";
+  let hourPart = "";
+
+  for (let i=0; i < dateArray.length; i++) {
+    if (dateArray[i] === "T") {
+      dateArray.map((letter: string, idx: number) => {
+        if (idx < i && dateArray[i] !== undefined) {
+          if(letter == "-"){
+            letter = "/";
+          }
+          datePart += letter;
+        }
+        if (idx > i && dateArray[i] !== undefined && letter != "Z") {
+          hourPart += letter;
+        }
+      });
     }
   }
 
-  newDate = dateArray.slice(0, dateArray.length-5).reduce((acc, curr) => acc + curr.toString(), '');
+  newDate = datePart + ", " + hourPart.slice(0, hourPart.length - 4);
 
   return newDate;
 }

@@ -16,7 +16,6 @@ import {
 import {
   Chevron,
   Gauge,
-  HelpIcon,
   Popover,
   StarIcon,
 } from "./components/ComparisonComponents";
@@ -41,6 +40,7 @@ import Calendar from "../../components/calendar/Calendar";
 import type { MetricsType, ServiceType } from "../../types/service";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
+import Tooltip from "../../components/tooltip/Tooltip";
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -269,7 +269,7 @@ export default function Comparison() {
               {historyActivatedRef.current ? (
                 <></>
               ) : (
-                <>Última atualização: {formattedLastUpdate}</>
+                <span className="last-updated-text"><strong>Última atualização:</strong> {formattedLastUpdate}</span>
               )}{" "}
               &nbsp; &nbsp; &nbsp; &nbsp;
             </span>
@@ -323,14 +323,14 @@ export default function Comparison() {
               Média indicadores
             </h2>
 
-            <button
-              type="button"
-              className="cmp-averages__help"
-              aria-label="Ajuda sobre os indicadores"
-              title="Média dos serviços selecionados"
-            >
-              <HelpIcon />
-            </button>
+          <button
+            type="button"
+            className="cmp-averages__help"
+            aria-label="Ajuda sobre os indicadores"
+            title="Média dos serviços selecionados"
+          >
+            <Tooltip text={"Média das métricas dos \n servicos selecionadas"} />  
+          </button>
 
             <div className="cmp-averages__content">
               <div className="cmp-averages__tiles">

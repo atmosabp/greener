@@ -110,6 +110,11 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
+.last-updated-text{
+    color: var(--text);
+    font-size: 1rem;
+}
+
 .home-back-link {
     color: var(--link-icon-color);
     font-weight: 700;
@@ -333,6 +338,7 @@
 }
 
 .analytics-card--renewable {
+    position: relative;
     flex: 1.2;
     justify-content: space-between;
 }
@@ -377,6 +383,7 @@
 
 /* Intensidade de carbono */
 .analytics-card--carbon {
+    position: relative;
     justify-content: space-between;
     gap: 0.5rem;
 }
