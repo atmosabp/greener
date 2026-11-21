@@ -10,9 +10,9 @@ import type {
   ServiceStatus,
 } from "../../types/service";
 
-import useRankingCalendar from "../ranking/components/useRankingCalendar";
-import RankingCalendar from "../ranking/components/RankingCalendar";
-import { type RankingPeriod } from "../ranking/components/rankingData";
+import { type RankingPeriod } from "../ranking/rankingData";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
 
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
@@ -56,7 +56,7 @@ export default function Dashboard() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   let serviceFetchReq = useRef<any>(undefined);
 
-  const calendar = useRankingCalendar();
+  const calendar = useCalendar();
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -325,7 +325,7 @@ export default function Dashboard() {
         <div className="start-section">
           <div className="text">
             <Greeting />
-            
+
             {showSkeleton ? (
               <p>
                 <Skeleton width="15rem" height="1rem" />
@@ -704,7 +704,7 @@ export default function Dashboard() {
 
       {/* calendário do histórico */}
       {calendar.calendarOpen && (
-        <RankingCalendar
+        <Calendar
           period={period}
           selectedMinute={calendar.selectedMinute}
           selectedHour={calendar.selectedHour}

@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { port } from "../../utils/connection";
+import "./Comparison.css";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -8,24 +10,18 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
-  PERIODS,
+  type CompareTarget
 } from "./components/comparisonData";
-
-import type { CompareTarget } from "./components/comparisonData";
 
 import {
   Chevron,
   Gauge,
   HelpIcon,
   Popover,
-  SelectPill,
   StarIcon,
 } from "./components/ComparisonComponents";
 
-import "../ranking/Ranking.css";
-
 import ServiceCard from "./components/ServiceCard";
-import "./Comparison.css";
 
 import Greeting from "../../components/greetings/Greeting";
 
@@ -33,16 +29,17 @@ import {
   CmpAveragesSkeleton,
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
 
 import {
   timeFormatter,
   type RankingPeriod,
-} from "../ranking/components/rankingData";
-import useRankingCalendar from "../ranking/components/useRankingCalendar";
-import RankingCalendar from "../ranking/components/RankingCalendar";
+} from "../ranking/rankingData";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
+
 import type { MetricsType, ServiceType } from "../../types/service";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
-import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { toReadableTime } from "../../utils/history";
 
 export default function Comparison() {
@@ -67,7 +64,7 @@ export default function Comparison() {
     {},
   );
 
-  const calendar = useRankingCalendar();
+  const calendar = useCalendar();
 
   const [gaveUp, setGaveUp] = useState(false);
   useEffect(() => {
@@ -81,7 +78,6 @@ export default function Comparison() {
   async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       let formatedData: ServiceType[] = [];
-      const port: number = import.meta.env.VITE_PORT || 3000;
 
       const result = await fetch(
         `http://localhost:${port}/collections/all-service-history`,
@@ -475,7 +471,7 @@ export default function Comparison() {
           </div>
         </section>
         {calendar.calendarOpen && (
-          <RankingCalendar
+          <Calendar
             period={period}
             selectedMinute={calendar.selectedMinute}
             selectedHour={calendar.selectedHour}

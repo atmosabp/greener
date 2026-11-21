@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import "./Ranking.css";
 
 import AppHeader from "../../components/header/AppHeader";
 
-import RankingCalendar from "./components/RankingCalendar";
-import useRankingCalendar from "./components/useRankingCalendar";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
 
 import {
   monthNames,
@@ -13,9 +15,8 @@ import {
   type RankingMetric,
   type RankingPeriod,
   type RankingService,
-} from "./components/rankingData";
+} from "./rankingData";
 
-import "./Ranking.css";
 import { RankingTableSkeletonRows } from "./RankingSkeleton";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
@@ -23,8 +24,6 @@ import { port } from "../../utils/connection";
 import type { ServiceType } from "../../types/service";
 import Toast from "../../components/toast/Toast";
 import Greeting from "../../components/greetings/Greeting";
-
-import { Link } from "react-router-dom";
 
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
@@ -42,7 +41,7 @@ export default function Ranking() {
   const historyActivatedRef = useRef(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   var metricUsed: RankingMetric = "energy";
-  const calendar = useRankingCalendar();
+  const calendar = useCalendar();
 
   function handlePeriodChange(nextPeriod: RankingPeriod) {
     if (nextPeriod == "now") {
@@ -77,8 +76,6 @@ export default function Ranking() {
   async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       var formatedData: RankingService[] = [];
-
-      const port: number = import.meta.env.VITE_PORT || 3000;
 
       const result = await fetch(
         `http://localhost:${port}/collections/all-service-history`,
@@ -486,7 +483,7 @@ export default function Ranking() {
       <footer className="ranking-footer">Desenvolvido por Atmos © 2026</footer>
 
       {calendar.calendarOpen && (
-        <RankingCalendar
+        <Calendar
           period={period}
           selectedMinute={calendar.selectedMinute}
           selectedHour={calendar.selectedHour}

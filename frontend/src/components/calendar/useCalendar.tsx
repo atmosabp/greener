@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 
-import type { RankingPeriod } from "./rankingData";
+import type { RankingPeriod } from "../../pages/ranking/rankingData";
 
-export default function useRankingCalendar() {
+export default function useCalendar() {
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const [selectedMinute, setSelectedMinute] = useState(() => new Date().getMinutes());
@@ -30,6 +30,7 @@ export default function useRankingCalendar() {
   const lastHourSlots = useMemo(() => {
     const baseTime = new Date(currentTimestamp);
 
+    // constrói um array com 60 números (última hora)
     return Array.from({ length: 60 }, (_, index) => {
       const offsetMinutes = index - 59;
       const slotDate = new Date(

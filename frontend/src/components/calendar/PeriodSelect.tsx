@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import type { RankingPeriod } from "../../pages/ranking/components/rankingData";
+import type { RankingPeriod } from "../../pages/ranking/rankingData";
 import "./PeriodSelect.css";
 
 interface PeriodSelectProps {

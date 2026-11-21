@@ -9,7 +9,11 @@ export function toLocalISOTime(input: Date | string): string {
 }
 
 export function toReadableTime(input: Date | string): string {
-  const dateString = toLocalISOTime(input);
+  var dateString = String(input);
+  if(typeof(input) != "string"){
+    var dateString = toLocalISOTime(input);
+  }
+  
   let dateArray = dateString.split("");
   let newDate: string = ``;
 
