@@ -1,57 +1,55 @@
 import bcrypt from "bcrypt";
 import { UserEditValues } from "../../types/user-types";
-import {
-    findUsers,
-    findUserById,
-    createUser,
-    updateUser,
-    deleteUserById
-} from "./users.repository";
+import type { UsersRepository } from "./users.repository";
 
-export async function createNewUser(name: string, email: string, password: string, isAdm: boolean) {
-    const passwordHash = await bcrypt.hash(password, 12);
+export class UsersService {
+    constructor(private readonly repository: UsersRepository) {}
 
-    const result = await createUser(name, email, passwordHash, isAdm);
+    async createNewUser(name: string, email: string, password: string, isAdm: boolean) {
+        const passwordHash = await bcrypt.hash(password, 12);
 
-    if (!result) return null;
+        const result = await this.repository.createUser(name, email, passwordHash, isAdm);
 
-    return result;
-}
+        if (!result) return null;
 
-export async function searchUsers(){
-    const result = await findUsers();
-
-    if (!result) return null;
-
-    return result;
-}
-
-export async function searchUserById(id: number){
-    const result = await findUserById(id);
-
-    if(!result) return null;
-
-    return result;
-}
-
-export async function editUser(id: number, values: UserEditValues) {
-    const updatedValues = { ...values };
-
-    if (updatedValues.password) {
-        updatedValues.password = await bcrypt.hash(updatedValues.password, 12);
+        return result;
     }
 
-    const result = await updateUser(id, updatedValues);
+    async searchUsers() {
+        const result = await this.repository.findUsers();
 
-    if (!result) return null;
+        if (!result) return null;
 
-    return result;
-}
+        return result;
+    }
 
-export async function removeUserById(id: number){
-    const result = await deleteUserById(id);
+    async searchUserById(id: number) {
+        const result = await this.repository.findUserById(id);
 
-    if(!result) return null;
+        if (!result) return null;
 
-    return result;
+        return result;
+    }
+
+    async editUser(id: number, values: UserEditValues) {
+        const updatedValues = { ...values };
+
+        if (updatedValues.password) {
+            updatedValues.password = await bcrypt.hash(updatedValues.password, 12);
+        }
+
+        const result = await this.repository.updateUser(id, updatedValues);
+
+        if (!result) return null;
+
+        return result;
+    }
+
+    async removeUserById(id: number) {
+        const result = await this.repository.deleteUserById(id);
+
+        if (!result) return null;
+
+        return result;
+    }
 }

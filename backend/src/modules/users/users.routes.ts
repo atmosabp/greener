@@ -1,33 +1,31 @@
 import { Router } from "express";
 
-import {
-    createUserController,
-    deleteUserByIdController,
-    editUserController,
-    listUserByIdController,
-    listUsersController,
-} from "./users.controller";
+import type { UsersController } from "./users.controller";
 
 import {
     authenticateToken,
     requireAdmin
 } from "../../middlewares/middleware";
 
-export const router = Router();
+export function usersRoutes(controller: UsersController) {
+    const router = Router();
 
-router.use(authenticateToken, requireAdmin);
+    router.use(authenticateToken, requireAdmin);
 
-// POST localhost:PORT/users
-router.post("/", createUserController);
+    // POST localhost:PORT/users
+    router.post("/", (req, res) => controller.createUser(req, res));
 
-// GET localhost:PORT/users/get-users
-router.get("/get-users", listUsersController);
+    // GET localhost:PORT/users/get-users
+    router.get("/get-users", (req, res) => controller.listUsers(req, res));
 
-// GET localhost:PORT/users/:id
-router.get("/:id", listUserByIdController);
+    // GET localhost:PORT/users/:id
+    router.get("/:id", (req, res) => controller.listUserById(req, res));
 
-// PATCH localhost:PORT/users/:id
-router.patch("/:id", editUserController);
+    // PATCH localhost:PORT/users/:id
+    router.patch("/:id", (req, res) => controller.editUser(req, res));
 
-// DELETE localhost:PORT/users/:id
-router.delete("/:id", deleteUserByIdController);
+    // DELETE localhost:PORT/users/:id
+    router.delete("/:id", (req, res) => controller.deleteUserById(req, res));
+
+    return router;
+}

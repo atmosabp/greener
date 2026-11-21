@@ -1,17 +1,19 @@
 import type { ServiceTypes, MetricsType, CoordinatesTypes } from "../types/services-types";
-import {findServices} from "../modules/collections/collections.repository"
 
 const serviceURL = "https://metrics.unilaunch.org/services";
 const metricsURL = "https://metrics.unilaunch.org/metrics";
 
-export async function reqServices(): Promise<ServiceTypes[]> {
+// A lista de serviços do banco agora é recebida por parâmetro (vem do repository, via service).
+export async function reqServices(
+  responseDb: { id: string; name: string }[],
+): Promise<ServiceTypes[]> {
   try {
-    const responseDb = await findServices();
-
     var avaliableList = [];
 
     for (let i of responseDb) {
-      avaliableList.push(await checkServiceAvailiability(i));
+      avaliableList.push(
+        await checkServiceAvailiability({ ...i, status: undefined }),
+      );
     }
 
     return avaliableList;

@@ -1,18 +1,19 @@
 import { Router } from "express";
-import {
-    loginController,
-    currentUserController
-} from "./auth.controller";
+import type { AuthController } from "./auth.controller";
 
 import { authenticateToken } from "../../middlewares/middleware";
 
-export const router = Router();
+export function authRoutes(controller: AuthController) {
+    const router = Router();
 
-// Login - http://localhost:PORT/auth/login
-router.post("/login", loginController);
+    // Login - http://localhost:PORT/auth/login
+    router.post("/login", (req, res) => controller.login(req, res));
 
-// Verificar sessão - http://localhost:PORT/auth/me
-router.get("/me", authenticateToken, currentUserController);
+    // Verificar sessão - http://localhost:PORT/auth/me
+    router.get("/me", authenticateToken, (req, res) => controller.currentUser(req, res));
+
+    return router;
+}
 
 /*
 LOGIN:
