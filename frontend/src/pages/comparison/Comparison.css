@@ -1,3 +1,4 @@
+
 .cmp-comparison {
     --bg: var(--background, #f9eedc);
     --ink: var(--text, #3a322c);
@@ -174,7 +175,6 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-
 }
 
 .cmp-intro__sub {
@@ -197,8 +197,6 @@
 .cmp-select select {
     appearance: none;
     -webkit-appearance: none;
-
-
     border: none;
     border-radius: 99px;
     font: inherit;
@@ -912,42 +910,96 @@
     line-height: 1.2;
 }
 
+/* Estrutura da escala */
+
 .cmp-carbon__bar {
     position: relative;
-    width: min(100%, 10.625rem);
-    height: 0.25rem;
+    width: min(100%, 17rem);
+    height: 1.5rem;
+    min-width: 0;
+    box-sizing: border-box;
     margin-top: 0.625rem;
-    border-radius: 0.125rem;
-    background: var(--panel);
+    border-radius: 999px;
+    background: transparent;
+    flex-shrink: 0;
 }
+
+/* Linha de fundo */
+
+.cmp-carbon__track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background-color: color-mix(
+        in srgb,
+        var(--text) 14%,
+        var(--complementary)
+    );
+    z-index: 0;
+}
+
+/* Preenchimento */
 
 .cmp-carbon__fill {
     position: absolute;
-    top: -0.1875rem;
     left: 0;
-    height: 0.625rem;
-    border-radius: 0.3125rem;
-    background: linear-gradient(90deg, var(--moss), var(--lime));
+    top: 0;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 999px;
+    z-index: 1;
 }
+
+.cmp-carbon__bar[data-level="low"] .cmp-carbon__fill {
+    width: 38%;
+    background: linear-gradient(90deg, #94c47d 45%, #e3d26f);
+}
+
+.cmp-carbon__bar[data-level="medium"] .cmp-carbon__fill {
+    width: 58%;
+    background: linear-gradient(90deg, #94c47d 30%, #e3d26f);
+}
+
+.cmp-carbon__bar[data-level="high"] .cmp-carbon__fill {
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #94c47d 20%,
+        #e3d26f 55%,
+        #db7b7b
+    );
+}
+
+/* Marcadores */
 
 .cmp-carbon__dot {
     position: absolute;
-    top: -0.4375rem;
-    width: 1.125rem;
-    height: 1.125rem;
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
-    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.cmp-carbon__dot--low {
+    left: 0;
+    background-color: #94c47d;
 }
 
 .cmp-carbon__dot--mid {
-    left: 51%;
-    background: var(--lime);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #e3d26f;
     color: var(--on-primary-light);
 }
 
 .cmp-carbon__dot--high {
-    left: 100%;
-    background: var(--brown);
+    right: 0;
+    background-color: #db7b7b;
 }
 
 .cmp-carbon__value {
