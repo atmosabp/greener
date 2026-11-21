@@ -67,8 +67,6 @@ export default function ProtectedRoute({
 
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        console.log(data.user.isAdm);
-
         if (requireAdmin && !data.user.isAdm) {
           <Toast
             icon="error"

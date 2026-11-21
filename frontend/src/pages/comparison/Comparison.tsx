@@ -24,7 +24,7 @@ import {
 import ServiceCard from "./components/ServiceCard";
 
 import type { MetricsType, ServiceType } from '../../types/service';
-import Tooltip from '../../components/tooltip/tooltip';
+import Tooltip from '../../components/tooltip/Tooltip';
 
 import Greeting from "../../components/greetings/Greeting";
 
@@ -54,6 +54,8 @@ export default function Comparison() {
 
   /* Buscar os serviços e suas métricas no backend. */
   useEffect(() => {
+    localStorage.setItem("last_page", '/comparison');
+
     let ignore = false;
 
     fetchServices()

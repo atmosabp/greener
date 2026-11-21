@@ -144,7 +144,7 @@ export async function getAllServicesMetrics() {
       }),
     );
   } catch (e: any) {
-    // console.error(e.message);
+    console.error(e.message);
   }
 
   return fetchedServices;

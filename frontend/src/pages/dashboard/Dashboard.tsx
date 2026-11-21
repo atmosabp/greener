@@ -3,7 +3,6 @@ import { port } from "../../utils/connection";
 import "./Dashboard.css";
 
 import AppHeader from "../../components/header/AppHeader";
-import Calendar from "../../components/calendar/Calendar";
 import { Link, useParams } from "react-router-dom";
 import type { CoordinatesType, MetricsType } from "../../types/service";
 
@@ -11,6 +10,7 @@ import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
 
+import { useToast } from "../../hooks/useToast";
 import Tooltip from "../../components/tooltip/Tooltip";
 import Greeting from "../../components/greetings/Greeting";
 
@@ -38,6 +38,8 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 export default function Dashboard() {
   const { serviceId } = useParams();
 
+  const { showToast } = useToast();
+
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -62,12 +64,6 @@ export default function Dashboard() {
   /* Calendário para selecionar data */
   const [filter, setFilter] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-
-  function handleDateSelect(date: string): void {
-    console.log("Data:", date);
-
-    // Insirir lógica aqui
-  }
 
   function handleFilterChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const selectedFilter = event.target.value;
@@ -107,11 +103,18 @@ export default function Dashboard() {
       const result = await fetch(
         `http://localhost:${port}/collections/service-metrics/${serviceId}`,
       );
+
+      if(!result.ok){
+        showToast("error", "Erro ao buscar métricas", "Serviço não existe ou não foi possível buscá-lo no momento.");
+      }
+
       const data = await result.json();
+
       setTimeUpdated(new Date().toLocaleString());
       setServiceMetrics(data);
     } catch (e: any) {
-      console.log(e.message);
+      console.error(`Ocorreu um erro ao buscar métricas do serviço. Erro: ${e.message}`);
+      showToast("error", "Erro ao buscar métricas", "Serviço não existe ou não foi possível buscá-lo no momento.");
     }
   }
 
@@ -135,7 +138,7 @@ export default function Dashboard() {
       }
       setServiceList(serviceNames);
     } catch (e: any) {
-      console.log(e.message);
+      console.error(`Ocorreu um erro ao buscar métricas do serviço. Erro: ${e.message}`);
     }
   }
 
@@ -152,6 +155,8 @@ export default function Dashboard() {
 
   // useEffect para atualizar de acordo com o intervalo
   useEffect(() => {
+    localStorage.setItem("last_page", `/dashboard/${serviceId}`);
+    
     updateMetrics();
     const fetchData = async () => {
       await updateMetrics();
@@ -615,12 +620,6 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-        {isCalendarOpen && (
-          <Calendar
-            onSelect={handleDateSelect}
-            onClose={() => setIsCalendarOpen(false)}
-          />
-        )}
       </main>
       <footer>
         <span>Desenvolvido por Atmos &copy; {year}</span>

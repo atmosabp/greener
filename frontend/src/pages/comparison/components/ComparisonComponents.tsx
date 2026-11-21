@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { carbonLevel, formatNumber } from './comparisonData';
-import Tooltip from '../../../components/tooltip/tooltip';
+import Tooltip from '../../../components/tooltip/Tooltip';
 
 /* ------------------------------------------------------------------ */
 /* Fechar menus ao clicar fora ou pressionar Escape                    */

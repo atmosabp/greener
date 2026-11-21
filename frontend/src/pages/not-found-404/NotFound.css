@@ -1,0 +1,37 @@
+*{
+    box-sizing: border-box;
+}
+
+.not-found-page{
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+}
+
+.not-found{
+    min-height: 80vh;
+    margin-top: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-text{
+    max-width: 20rem;
+}
+
+.back-button{
+    min-width: 6rem;
+    color: var(--text-inverse);
+    background-color: var(--primary);
+    border-radius: 999px;
+    padding: 0.6rem;
+    text-decoration: none;
+    border: 2px solid var(--complementary)
+}
+
+.back-button:hover{
+    background-color: var(--primary-dark);
+}

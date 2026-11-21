@@ -249,13 +249,15 @@ export default function Admin() {
     try {
       const data = await request<User[] | null>(`${USERS_URL}/get-users`);
       setUsers(data ?? []);
-    } catch (e) {
+    } catch (e: any) {
       showToast("error", "Erro ao carregar usuários", errorMessage(e));
     }
   }
 
   // Carrega a lista ao abrir a tela.
   useEffect(() => {
+    localStorage.setItem("last_page", '/admin');
+    
     const fetchData = async () => {
       await getUsers();
       setLoadingUsers(false);

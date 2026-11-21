@@ -323,6 +323,8 @@ export default function App(): import("react").JSX.Element {
   );
 
   useEffect(() => {
+    localStorage.setItem("last_page", '/');
+    
     const handleResize = () => setIsMobile(window.innerWidth < 768);
 
     handleResize();

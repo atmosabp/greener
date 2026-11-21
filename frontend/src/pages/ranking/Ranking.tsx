@@ -152,6 +152,8 @@ export default function Ranking() {
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   useEffect(() => {
+    localStorage.setItem("last_page", '/ranking');
+    
     fetchServices();
     const fetchTimer = setInterval(
       fetchServices,
