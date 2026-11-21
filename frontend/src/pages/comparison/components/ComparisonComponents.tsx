@@ -177,7 +177,7 @@ export function SelectPill({
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
-    disabled?:boolean;
+    disabled?: boolean;
 }) {
     return (
         <span className={`cmp-select cmp-select--${variant}`}>
@@ -260,10 +260,9 @@ export function Gauge({
 
     return (
         <div className="cmp-gauge-card">
-        
-         
             <h3 className="cmp-gauge-card__title">{title}</h3>
-            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} /> 
+            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} />
+
             <svg
                 className="cmp-gauge"
                 viewBox="0 0 160 82"
@@ -299,20 +298,120 @@ export function Gauge({
 export function CarbonCard({ intensity }: { intensity?: number }) {
     const level = carbonLevel(intensity);
 
+    const dataLevel =
+        intensity === undefined || intensity <= 100
+            ? 'low'
+            : intensity > 500
+                ? 'high'
+                : 'medium';
+
+    const fillWidth = {
+        low: '38%',
+        medium: '58%',
+        high: '100%',
+    }[dataLevel];
+
+    const fillGradient = {
+        low: 'linear-gradient(90deg, #94c47d 45%, #e3d26f)',
+        medium: 'linear-gradient(90deg, #94c47d 30%, #e3d26f)',
+        high: 'linear-gradient(90deg, #94c47d 20%, #e3d26f 55%, #db7b7b)',
+    }[dataLevel];
+
+    const nodeStyle = {
+        position: 'absolute' as const,
+        top: 0,
+        width: '1.5rem',
+        height: '1.5rem',
+        borderRadius: '50%',
+        zIndex: 2,
+    };
+
     return (
         <div className="cmp-carbon">
             <p className="cmp-carbon__title">Intensidade de carbono</p>
 
             <p className="cmp-carbon__level">{level.label}</p>
 
-            <div className="cmp-carbon__bar" aria-hidden="true">
+            <div
+                className="cmp-carbon__bar"
+                aria-hidden="true"
+                style={{
+                    position: 'relative',
+                    width: 'min(100%, 17rem)',
+                    height: '1.5rem',
+                    minWidth: 0,
+                    boxSizing: 'border-box',
+                    marginTop: '0.625rem',
+                    background: 'transparent',
+                    borderRadius: '999px',
+                    overflow: 'visible',
+                    flexShrink: 0,
+                }}
+            >
+                {/* Linha de fundo */}
                 <span
-                    className="cmp-carbon__fill"
-                    style={{ width: level.bar }}
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        top: '50%',
+                        height: '2px',
+                        transform: 'translateY(-50%)',
+                        backgroundColor:
+                            'color-mix(in srgb, var(--text) 14%, var(--complementary))',
+                        borderRadius: '999px',
+                        zIndex: 0,
+                    }}
                 />
 
-                <span className="cmp-carbon__dot cmp-carbon__dot--mid" />
-                <span className="cmp-carbon__dot cmp-carbon__dot--high" />
+                {/* Preenchimento */}
+                <span
+                    className="cmp-carbon__fill"
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        width: fillWidth,
+                        height: '100%',
+                        boxSizing: 'border-box',
+                        borderRadius: '999px',
+                        background: fillGradient,
+                        zIndex: 1,
+                    }}
+                />
+
+                {/* Marcador baixo */}
+                <span
+                    className="cmp-carbon__dot"
+                    style={{
+                        ...nodeStyle,
+                        left: 0,
+                        transform: 'none',
+                        backgroundColor: '#94c47d',
+                    }}
+                />
+
+                {/* Marcador médio */}
+                <span
+                    className="cmp-carbon__dot"
+                    style={{
+                        ...nodeStyle,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: '#e3d26f',
+                    }}
+                />
+
+                {/* Marcador alto */}
+                <span
+                    className="cmp-carbon__dot"
+                    style={{
+                        ...nodeStyle,
+                        right: 0,
+                        transform: 'none',
+                        backgroundColor: '#db7b7b',
+                    }}
+                />
             </div>
 
             <p className="cmp-carbon__value">
@@ -340,7 +439,6 @@ export function Delta({ value }: { value: number }) {
 
     return (
         <span className="cmp-delta">
-            
             <ArrowIcon dir={rounded > 0 ? 'up' : 'down'} />
             {formatNumber(Math.abs(rounded))}%
         </span>
@@ -412,7 +510,6 @@ export function EnergyTile({
 
     return (
         <div className="cmp-energy" title={deltaTitle(delta)}>
-            
             <span className="cmp-energy__label">
                 {label}
 
