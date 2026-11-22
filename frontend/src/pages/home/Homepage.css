@@ -125,7 +125,7 @@
 
 .explorer-layout {
     display: grid;
-    grid-template-columns: minmax(19.375rem, 0.9fr) minmax(0, 1.55fr);
+    grid-template-columns: minmax(15rem, 0.7fr) minmax(0, 1.5fr);
     grid-template-rows: auto auto;
     align-items: stretch;
     column-gap: 3.25rem;
@@ -705,8 +705,8 @@
 
 @media (min-width: 93.75rem) {
     .explorer-layout {
-        grid-template-columns: minmax(21.25rem, 0.9fr) minmax(0, 1.55fr);
-        column-gap: 3.75rem;
+        grid-template-columns: minmax(11rem, 0.5fr) minmax(0, 1fr);
+        column-gap: 8rem;
     }
 
     .visualization-stage {
