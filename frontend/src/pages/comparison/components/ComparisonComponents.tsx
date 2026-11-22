@@ -2,18 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { carbonLevel, formatNumber } from './comparisonData';
-
-/* ------------------------------------------------------------------ */
-/* Saudação                                                            */
-/* ------------------------------------------------------------------ */
-
-export function greeting() {
-    const hour = new Date().getHours();
-
-    if (hour < 12) return 'Bom dia';
-    if (hour < 18) return 'Boa tarde';
-    return 'Boa noite';
-}
+import type { RankingPeriod } from '../../ranking/rankingData';
+import Tooltip from '../../../components/tooltip/Tooltip';
 
 /* ------------------------------------------------------------------ */
 /* Fechar menus ao clicar fora ou pressionar Escape                    */
@@ -184,7 +174,7 @@ export function SelectPill({
     disabled = false
 }: {
     value: string;
-    onChange: (value: string) => void;
+    onChange: (value: RankingPeriod) => void;
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
@@ -194,7 +184,7 @@ export function SelectPill({
         <span className={`cmp-select cmp-select--${variant}`}>
             <select
                 value={value}
-                onChange={(event) => onChange(event.target.value)}
+                onChange={(event) => onChange(event.target.value as RankingPeriod)}
                 aria-label={label}
                 disabled={disabled}
             >
@@ -271,8 +261,10 @@ export function Gauge({
 
     return (
         <div className="cmp-gauge-card">
+        
+         
             <h3 className="cmp-gauge-card__title">{title}</h3>
-
+            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} /> 
             <svg
                 className="cmp-gauge"
                 viewBox="0 0 160 82"
@@ -349,6 +341,7 @@ export function Delta({ value }: { value: number }) {
 
     return (
         <span className="cmp-delta">
+            
             <ArrowIcon dir={rounded > 0 ? 'up' : 'down'} />
             {formatNumber(Math.abs(rounded))}%
         </span>
@@ -420,6 +413,7 @@ export function EnergyTile({
 
     return (
         <div className="cmp-energy" title={deltaTitle(delta)}>
+            
             <span className="cmp-energy__label">
                 {label}
 

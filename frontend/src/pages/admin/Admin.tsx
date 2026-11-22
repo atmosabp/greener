@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -11,7 +11,7 @@ import {
 import CadHeader from "../../components/header/CadHeader";
 import CadForm from "../../components/form/CadForm";
 import AltForm from "../../components/form/AltForm";
-import Toast from "../../components/toast/Toast";
+import { useToast } from "../../hooks/useToast";
 import Warning from "../../components/warning/Warning";
 import { Skeleton } from "../../components/skeleton/Skeleton.tsx";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
@@ -20,10 +20,11 @@ import {
   AdminTableSkeletonRows,
 } from "./AdminSkeleton.tsx";
 import type { FormValues } from "../../types/form";
-import type { ToastIcon } from "../../types/toast";
 import "./Admin.css";
 import { port } from "../../utils/connection";
 import Loading from "../../components/loading/Loading.tsx";
+import Greeting from "../../components/greetings/Greeting";
+import { NavLink } from "react-router-dom";
 
 interface User {
   id: number;
@@ -32,14 +33,6 @@ interface User {
   is_adm?: boolean;
 }
 
-interface ToastState {
-  id: number;
-  icon: ToastIcon;
-  title: string;
-  message?: string;
-}
-
-// Rotas de usuários do back.
 const USERS_URL = `http://localhost:${port}/users`;
 
 // Representa os erros que podem acontecer durante uma requisição.
@@ -110,14 +103,6 @@ const PAGE_SIZES = [5, 10, 15, 20, 50];
 
 // Completa com zeros à esquerda.
 const pad = (n: number, size = 3) => String(n).padStart(size, "0");
-
-// Escolhe a saudação de acordo com a hora do dia.
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Bom dia";
-  if (hour < 18) return "Boa tarde";
-  return "Boa noite";
-}
 
 // Devolve uma cópia do Set com o id adicionado ou removido.
 function toggle(set: Set<number>, id: number) {
@@ -211,23 +196,12 @@ function EmptyState() {
 }
 
 export default function Admin() {
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
-
   const [users, setUsers] = useState<User[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
+  const { showToast } = useToast();
   // Só a carga inicial mostra skeleton -> recarregar após criar/editar/deletar não.
   const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
   const showSkeleton = useSkeleton(loadingUsers);
-  const [toast, setToast] = useState<ToastState | null>(null);
 
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [openRows, setOpenRows] = useState<Set<number>>(new Set());
@@ -238,6 +212,17 @@ export default function Admin() {
     window.matchMedia("(max-width: 480px)").matches ? 5 : 10,
   );
   const [page, setPage] = useState(1);
+
+  const [isUserAdmin, _setIsUserAdmin] = useState<boolean>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return false;
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      return parsedUser.isAdm;
+    } catch (e: any) {
+      return false;
+    }
+  });
 
   const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -259,12 +244,6 @@ export default function Admin() {
     }
     setSelected(next);
   };
-
-  const showToast = (icon: ToastIcon, title: string, message?: string) =>
-    setToast({ id: Date.now(), icon, title, message });
-
-  // Evita que o Toast reinicie o timer a cada render.
-  const closeToast = useCallback(() => setToast(null), []);
 
   // Busca a lista de usuários no backend.
   async function getUsers(): Promise<void> {
@@ -469,298 +448,306 @@ export default function Admin() {
   }
 
   return (
-    <div className="admin-page">
-      {showSkeleton && <Loading/>}
-      {toast && (
-        <Toast
-          key={toast.id}
-          icon={toast.icon}
-          title={toast.title}
-          message={toast.message}
-          onClose={closeToast}
-        />
-      )}
+    <>
+      {isUserAdmin ? (
+        <div className="admin-page">
+          {showSkeleton && <Loading/>}
+          {/* Modais de cada ação. */}
 
-      {/* Modais de cada ação. */}
+          {openCadModal && (
+            <CadForm
+              onSave={createUser}
+              onClose={() => setOpenCadModal(false)}
+              isSubmitting={saving}
+            />
+          )}
 
-      {openCadModal && (
-        <CadForm
-          onSave={createUser}
-          onClose={() => setOpenCadModal(false)}
-          isSubmitting={saving}
-        />
-      )}
+          {editingUser && (
+            <AltForm
+              user={editingUser}
+              onSave={updateUser}
+              onClose={() => setEditingUser(null)}
+            />
+          )}
 
-      {editingUser && (
-        <AltForm
-          user={editingUser}
-          onSave={updateUser}
-          onClose={() => setEditingUser(null)}
-        />
-      )}
+          {deleteIds && (
+            <Warning
+              variant="delete"
+              onConfirm={confirmDelete}
+              onCancel={() => setDeleteIds(null)}
+            />
+          )}
 
-      {deleteIds && (
-        <Warning
-          variant="delete"
-          onConfirm={confirmDelete}
-          onCancel={() => setDeleteIds(null)}
-        />
-      )}
+          <CadHeader />
 
-      <CadHeader />
+          <main className="admin">
+            <NavLink to={"/home"} className="back-link">
+              <ChevronLeft /> <span>Voltar para tela principal</span> 
+            </NavLink>
 
-      <main className="admin">
-        <div className="start-section">
-          <h1>
-            {getGreeting()}, {userName}.
-          </h1>
-          <p>Crie, altere e exclua usuários de acesso restrito.</p>
-        </div>
+            <div className="start-section">
+              <Greeting />
+              <p>Crie, altere e exclua usuários de acesso restrito.</p>
+            </div>
 
-        <section className="users" aria-busy={showSkeleton}>
-          <div className="toolbar">
-            <h2 id="users-title">Usuários</h2>
+            <section className="users" aria-busy={showSkeleton}>
+              <div className="toolbar">
+                <h2 id="users-title">Usuários</h2>
 
-            <div className="toolbar-btns">
-              <div className="total">
-                <span>Total de usuários:</span>
-                <strong>
-                  {showSkeleton ? (
-                    <Skeleton width={28} height="1rem" />
-                  ) : (
-                    users.length
-                  )}
-                </strong>
+                <div className="toolbar-btns">
+                  <div className="total">
+                    <span>Total de usuários:</span>
+                    <strong>
+                      {showSkeleton ? (
+                        <Skeleton width={28} height="1rem" />
+                      ) : (
+                        users.length
+                      )}
+                    </strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-delete"
+                    disabled={selected.size === 0}
+                    onClick={() => deleteUsers([...selected])}
+                  >
+                    <Trash />
+                    <span className="btn-label">Deletar</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`btn btn-add ${showSkeleton ? "blocked" : ""}`}
+                    disabled={showSkeleton}
+                    onClick={addUser}
+                  >
+                    <Plus />
+                    <span className="btn-label">Adicionar</span>
+                  </button>
+                </div>
               </div>
 
-              <button
-                type="button"
-                className="btn btn-delete"
-                disabled={selected.size === 0}
-                onClick={() => deleteUsers([...selected])}
-              >
-                <Trash />
-                <span className="btn-label">Deletar</span>
-              </button>
-
-              <button
-                type="button"
-                className={`btn btn-add ${showSkeleton ? "blocked" : ""}`}
-                disabled={showSkeleton}
-                onClick={addUser}
-              >
-                <Plus />
-                <span className="btn-label">Adicionar</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Tabela (desktop). */}
-          <table className="table">
-            <colgroup>
-              <col style={{ width: "10%" }} />
-              <col style={{ width: "25%" }} />
-              <col style={{ width: "41%" }} />
-              <col style={{ width: "12%" }} />
-              <col style={{ width: "12%" }} />
-            </colgroup>
-            <thead>
-              <tr>
-                <th scope="col">
-                  <div className="cell-id">
-                    <Checkbox
-                      checked={allOnPageSelected}
-                      indeterminate={someOnPageSelected && !allOnPageSelected}
-                      onChange={toggleSelectAll}
-                      label="Selecionar todos desta página"
-                    />
-                    <span>ID</span>
-                  </div>
-                </th>
-                <th scope="col">Nome</th>
-                <th scope="col">Email</th>
-                <th scope="col">Editar</th>
-                <th scope="col">Excluir</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {showSkeleton ? (
-                <AdminTableSkeletonRows rows={5} />
-              ) : pageUsers.length === 0 ? (
-                <tr className="table-empty">
-                  <td colSpan={5}>
-                    <EmptyState />
-                  </td>
-                </tr>
-              ) : (
-                pageUsers.map((u) => {
-                  const isSelected = selected.has(u.id);
-                  return (
-                    <tr
-                      key={u.id}
-                      className={isSelected ? "is-selected" : undefined}
-                    >
-                      <td>
-                        <div className="cell-id">
-                          <Checkbox
-                            checked={isSelected}
-                            onChange={() => setSelected(toggle(selected, u.id))}
-                            label={`Selecionar ${u.name}`}
-                          />
-                          <span>{pad(u.id)}</span>
-                        </div>
-                      </td>
-                      <td>{u.name}</td>
-                      <td>{u.email}</td>
-                      <td>
-                        <EditButton
-                          name={u.name}
-                          disabled={isSelected}
-                          onClick={() => editUser(u)}
+              {/* Tabela (desktop). */}
+              <table className="table">
+                <colgroup>
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "25%" }} />
+                  <col style={{ width: "41%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "12%" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <div className="cell-id">
+                        <Checkbox
+                          checked={allOnPageSelected}
+                          indeterminate={
+                            someOnPageSelected && !allOnPageSelected
+                          }
+                          onChange={toggleSelectAll}
+                          label="Selecionar todos desta página"
                         />
-                      </td>
-                      <td>
-                        <DeleteButton
-                          name={u.name}
-                          disabled={isSelected}
-                          onClick={() => deleteUsers([u.id])}
-                        />
+                        <span>ID</span>
+                      </div>
+                    </th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Editar</th>
+                    <th scope="col">Excluir</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {showSkeleton ? (
+                    <AdminTableSkeletonRows rows={5} />
+                  ) : pageUsers.length === 0 ? (
+                    <tr className="table-empty">
+                      <td colSpan={5}>
+                        <EmptyState />
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-
-          {/* Lista expansível (mobile). */}
-          <div className="m-card">
-            {showSkeleton ? (
-              <AdminMobileSkeleton rows={5} />
-            ) : pageUsers.length === 0 ? (
-              <EmptyState />
-            ) : (
-              <ul className="m-list">
-                {pageUsers.map((u) => {
-                  const isSelected = selected.has(u.id);
-                  const isOpen = openRows.has(u.id);
-                  return (
-                    <li
-                      key={u.id}
-                      className={`m-item${isSelected ? " is-selected" : ""}${isOpen ? " is-open" : ""}`}
-                    >
-                      <div className="m-head">
-                        <button
-                          type="button"
-                          className="m-toggle"
-                          onClick={() => setOpenRows(toggle(openRows, u.id))}
+                  ) : (
+                    pageUsers.map((u) => {
+                      const isSelected = selected.has(u.id);
+                      return (
+                        <tr
+                          key={u.id}
+                          className={isSelected ? "is-selected" : undefined}
                         >
-                          <ChevronDown />
-                        </button>
-
-                        {/* Tocar no nome seleciona o usuário. */}
-                        <label className="m-label">
-                          <input
-                            type="checkbox"
-                            className="checkbox-user"
-                            checked={isSelected}
-                            onChange={() => setSelected(toggle(selected, u.id))}
-                          />
-                          <span className="m-key">Nome</span>
-                          <span className="m-val">{u.name}</span>
-                        </label>
-                      </div>
-
-                      <div className="m-details" id={`m-details-${u.id}`}>
-                        <div className="m-details-inner">
-                          <div className="m-row">
-                            <span className="m-key">ID</span>
-                            <span className="m-val">{pad(u.id)}</span>
-                          </div>
-                          <div className="m-row">
-                            <span className="m-key">Email</span>
-                            <span className="m-val">{u.email}</span>
-                          </div>
-                          <div className="m-row">
-                            <span className="m-key">Ações</span>
-                            <span className="m-actions">
-                              <EditButton
-                                name={u.name}
-                                disabled={isSelected}
-                                onClick={() => editUser(u)}
+                          <td>
+                            <div className="cell-id">
+                              <Checkbox
+                                checked={isSelected}
+                                onChange={() =>
+                                  setSelected(toggle(selected, u.id))
+                                }
+                                label={`Selecionar ${u.name}`}
                               />
-                              <DeleteButton
-                                name={u.name}
-                                disabled={isSelected}
-                                onClick={() => deleteUsers([u.id])}
+                              <span>{pad(u.id)}</span>
+                            </div>
+                          </td>
+                          <td>{u.name}</td>
+                          <td>{u.email}</td>
+                          <td>
+                            <EditButton
+                              name={u.name}
+                              disabled={isSelected}
+                              onClick={() => editUser(u)}
+                            />
+                          </td>
+                          <td>
+                            <DeleteButton
+                              name={u.name}
+                              disabled={isSelected}
+                              onClick={() => deleteUsers([u.id])}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+
+              {/* Lista expansível (mobile). */}
+              <div className="m-card">
+                {showSkeleton ? (
+                  <AdminMobileSkeleton rows={5} />
+                ) : pageUsers.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <ul className="m-list">
+                    {pageUsers.map((u) => {
+                      const isSelected = selected.has(u.id);
+                      const isOpen = openRows.has(u.id);
+                      return (
+                        <li
+                          key={u.id}
+                          className={`m-item${isSelected ? " is-selected" : ""}${isOpen ? " is-open" : ""}`}
+                        >
+                          <div className="m-head">
+                            <button
+                              type="button"
+                              className="m-toggle"
+                              onClick={() =>
+                                setOpenRows(toggle(openRows, u.id))
+                              }
+                            >
+                              <ChevronDown />
+                            </button>
+
+                            {/* Tocar no nome seleciona o usuário. */}
+                            <label className="m-label">
+                              <input
+                                type="checkbox"
+                                className="checkbox-user"
+                                checked={isSelected}
+                                onChange={() =>
+                                  setSelected(toggle(selected, u.id))
+                                }
                               />
-                            </span>
+                              <span className="m-key">Nome</span>
+                              <span className="m-val">{u.name}</span>
+                            </label>
                           </div>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
 
-          {/* Paginação. */}
-          <div className="table-footer">
-            <label className="per-page">
-              <span>Mostrando</span>
-              <span className="select">
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setPage(1);
-                  }}
-                >
-                  {PAGE_SIZES.map((size) => (
-                    <option key={size} value={size}>
-                      {pad(size, 2)}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="select-icon" />
-              </span>
-              <span>por página</span>
-            </label>
+                          <div className="m-details" id={`m-details-${u.id}`}>
+                            <div className="m-details-inner">
+                              <div className="m-row">
+                                <span className="m-key">ID</span>
+                                <span className="m-val">{pad(u.id)}</span>
+                              </div>
+                              <div className="m-row">
+                                <span className="m-key">Email</span>
+                                <span className="m-val">{u.email}</span>
+                              </div>
+                              <div className="m-row">
+                                <span className="m-key">Ações</span>
+                                <span className="m-actions">
+                                  <EditButton
+                                    name={u.name}
+                                    disabled={isSelected}
+                                    onClick={() => editUser(u)}
+                                  />
+                                  <DeleteButton
+                                    name={u.name}
+                                    disabled={isSelected}
+                                    onClick={() => deleteUsers([u.id])}
+                                  />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
 
-            <div className="pager">
-              <button
-                type="button"
-                className="pager-btn pager-btn-prev"
-                disabled={currentPage === 1}
-                onClick={() => setPage(currentPage - 1)}
-              >
-                <ChevronLeft />
-              </button>
+              {/* Paginação. */}
+              <div className="table-footer">
+                <label className="per-page">
+                  <span>Mostrando</span>
+                  <span className="select">
+                    <select
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(Number(e.target.value));
+                        setPage(1);
+                      }}
+                    >
+                      {PAGE_SIZES.map((size) => (
+                        <option key={size} value={size}>
+                          {pad(size, 2)}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="select-icon" />
+                  </span>
+                  <span>por página</span>
+                </label>
 
-              {showSkeleton ? (
-                <Skeleton width={46} height={30} radius={8} />
-              ) : (
-                <span className="pager-count" key={currentPage}>
-                  {currentPage}/{totalPages}
-                </span>
-              )}
+                <div className="pager">
+                  <button
+                    type="button"
+                    className="pager-btn pager-btn-prev"
+                    disabled={currentPage === 1}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    <ChevronLeft />
+                  </button>
 
-              <button
-                type="button"
-                className="pager-btn pager-btn-next"
-                disabled={currentPage === totalPages}
-                onClick={() => setPage(currentPage + 1)}
-              >
-                <ChevronRight />
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
+                  {showSkeleton ? (
+                    <Skeleton width={46} height={30} radius={8} />
+                  ) : (
+                    <span className="pager-count" key={currentPage}>
+                      {currentPage}/{totalPages}
+                    </span>
+                  )}
 
-      <footer className="admin-footer">Desenvolvido por Atmos © 2026</footer>
-    </div>
+                  <button
+                    type="button"
+                    className="pager-btn pager-btn-next"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    <ChevronRight />
+                  </button>
+                </div>
+              </div>
+            </section>
+          </main>
+
+          <footer className="admin-footer">
+            Desenvolvido por Atmos © 2026
+          </footer>
+        </div>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }

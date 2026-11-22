@@ -1,18 +1,34 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import AppHeader from "../../components/header/AppHeader";
-import "./Dashboard.css";
-import Calendar from "../../components/calendar/Calendar";
+import { port } from "../../utils/connection";
 import { Link, useParams } from "react-router-dom";
-import type { CoordinatesType, MetricsType } from "../../types/service";
+import "./Dashboard.css";
+
+import AppHeader from "../../components/header/AppHeader";
+
+import type {
+  CoordinatesType,
+  MetricsType,
+  ServiceStatus,
+} from "../../types/service";
+
+import { type RankingPeriod } from "../ranking/rankingData";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
 
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
-import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
+import {
+  DashboardGridSkeleton,
+  ServiceListSkeleton,
+} from "./DashboardSkeleton";
 
+import Toast from "../../components/toast/Toast";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { toReadableTime } from "../../utils/history";
 
-import { port } from "../../utils/connection";
-import { greeting } from "../comparison/components/ComparisonComponents";
 import Loading from "../../components/loading/Loading";
+import Tooltip from "../../components/tooltip/Tooltip";
+import Greeting from "../../components/greetings/Greeting";
 
 /* Ícone de seta (direita). A direção muda via classe: icon-left | icon-down | icon-up  -> para ser reutilizavel*/
 function ArrowIcon({ className = "" }: { className?: string }) {
@@ -37,17 +53,14 @@ function ArrowIcon({ className = "" }: { className?: string }) {
 
 export default function Dashboard() {
   const { serviceId } = useParams();
+  const [period, setPeriod] = useState<RankingPeriod>("now");
 
-  const [userName, _setUserName] = useState<string>(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return "usuário";
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      return parsedUser.name || "usuário";
-    } catch (e) {
-      return "usuário";
-    }
-  });
+  //variáveis como ref para se atualizar entre os Timeouts (pois estava dando erro)
+  const historyActivatedRef = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  let serviceFetchReq = useRef<any>(undefined);
+
+  const calendar = useCalendar();
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -70,21 +83,23 @@ export default function Dashboard() {
     track.scrollBy({ left: direction * step, behavior: "smooth" });
   };
 
-  /* Calendário para selecionar data */
-  const [filter, setFilter] = useState("");
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  //lógica do histórico e calendário
+  const [historyMessage, setHistoryMessage] = useState("");
 
-  function handleDateSelect(date: string): void {
-    console.log("Data:", date);
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
+    if (nextPeriod == "now") {
+      historyActivatedRef.current = false;
+      setHistoryMessage("");
+    } else {
+      historyActivatedRef.current = true;
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
 
-    // Insirir lógica aqui
-  }
-
-  function handleFilterChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const selectedFilter = event.target.value;
-
-    setFilter(selectedFilter);
-    setIsCalendarOpen(selectedFilter === "custom");
+    setPeriod(nextPeriod);
+    calendar.openCalendar(nextPeriod);
   }
 
   const compact_query = "(max-width: 1024px)";
@@ -95,7 +110,7 @@ export default function Dashboard() {
   interface ServicesType {
     id?: string;
     name?: string;
-    status?: "active" | "inactive";
+    status?: ServiceStatus;
     location?: CoordinatesType;
     metrics?: MetricsType;
   }
@@ -110,19 +125,85 @@ export default function Dashboard() {
     }[]
   >([]);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
+  const [metricsLoaded, setMetricsLoaded] = useState(false);
+
+  async function fetchHistory(periodType: string, datePull: Date | string) {
+    try {
+      const result = await fetch(
+        `http://localhost:${port}/collections/service-history/${serviceId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            periodType: periodType,
+            datePull: datePull,
+          }),
+        },
+      );
+
+      const data = await result.json();
+
+      if (data && data.id) {
+        setServiceMetrics({
+          id: serviceMetrics.id,
+          name: serviceMetrics.name,
+          status: serviceMetrics.status,
+          location: serviceMetrics.location,
+          metrics: {
+            cpu_percent: data.cpu_percentage,
+            memory_gb: data.memory_gb,
+            disk_gb: data.disk_gb,
+            network_gb: data.network_gb,
+            co2e: data.co2e,
+            kwh: data.kwh,
+            renewable_percent: Math.floor(data.renewable_percent),
+            carbon_intensity: data.co2e / data.kwh,
+          },
+        });
+
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
+      } else {
+        setHistoryMessage("Período escolhido não possui dados.");
+        <Toast
+          icon="error"
+          title="Histórico"
+          message="Não há dados para o período selecionado."
+        />;
+      }
+    } catch (e: any) {
+      console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
+      <Toast
+        icon="error"
+        title="Histórico"
+        message="Ocorreu um erro ao buscar o histórico."
+      />;
+      setHistoryMessage("Não foi possível obter dados do período selecionado.");
+    }
+  }
 
   async function getServiceMetrics() {
     setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
+    let data: ServicesType = {};
 
     try {
       const result = await fetch(
         `http://localhost:${port}/collections/service-metrics/${serviceId}`,
       );
-      const data = await result.json();
+      serviceFetchReq.current = result;
+
+      data = await result.json();
       setTimeUpdated(new Date().toLocaleString());
       setServiceMetrics(data);
     } catch (e: any) {
-      console.log(e.message);
+      console.error(
+        `Ocorreu um erro ao obter métricas do serviço. Erro: ${e.message}`,
+      );
+    }
+    setMetricsLoaded(true);
+    if (!historyActivatedRef.current && data) {
+      timerRef.current = setTimeout(getServiceMetrics, updateInterval * 1000);
     }
   }
 
@@ -146,7 +227,12 @@ export default function Dashboard() {
       }
       setServiceList(serviceNames);
     } catch (e: any) {
-      console.log(e.message);
+      console.error(
+        `Ocorreu um erro ao tentar obter a lista de serviços. Erro: ${e.message}`,
+      );
+    }
+    if (!historyActivatedRef.current) {
+      timerRef.current = setTimeout(getServiceList, updateInterval * 1000);
     }
   }
 
@@ -157,25 +243,20 @@ export default function Dashboard() {
   }
 
   async function updateMetrics(): Promise<void> {
-    await getServiceMetrics();
+    setHistoryMessage("");
+    setPeriod("now");
+    historyActivatedRef.current = false;
     await getServiceList();
+    await getServiceMetrics();
   }
 
-  // useEffect para atualizar de acordo com o intervalo
+  //useEffect para rodar na inicialização e iniciar o refresh de dados
   useEffect(() => {
-    updateMetrics();
-    const fetchData = async () => {
-      await updateMetrics();
-    };
-    const fetchTimer = setInterval(
-      fetchData,
-      (localStorage.getItem("refresh_interval")
-        ? Number(localStorage.getItem("refresh_interval"))
-        : updateInterval) * 1000,
-    );
-
-    return () => clearInterval(fetchTimer);
-  }, []);
+    if (!historyActivatedRef.current) {
+      updateMetrics();
+    }
+    <Toast icon="error" title="oie" />;
+  }, [historyActivatedRef.current]);
 
   function createServiceList() {
     let serviceItemList = [];
@@ -183,7 +264,7 @@ export default function Dashboard() {
       let serviceActive = i.status == "inactive" ? true : false;
 
       serviceItemList.push(
-        <li>
+        <li key={i.id}>
           <Link
             to={`/dashboard/${i.id}`}
             reloadDocument
@@ -236,7 +317,7 @@ export default function Dashboard() {
   }, []);
 
   const metricsDone = timeUpdated !== "" || serviceList.length > 0;
-  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+  const showSkeleton = useSkeleton(!metricsLoaded && !gaveUp);
 
   // A lista "Outros serviços" vem em outra requisição, depois das métricas.
   const showListSkeleton = useSkeleton(serviceList.length === 0 && !gaveUp);
@@ -249,8 +330,8 @@ export default function Dashboard() {
       <main className="dashboard">
         <div className="start-section">
           <div className="text">
-            <h1>{greeting()}, {userName}.</h1>
-            
+            <Greeting />
+
             {showSkeleton ? (
               <p>
                 <Skeleton width="15rem" height="1rem" />
@@ -270,9 +351,14 @@ export default function Dashboard() {
               </span>
             ) : (
               <span className="last-update">
-                Última atualização: {timeUpdated || "-"}
+                {historyMessage ? (
+                  <strong>{historyMessage}</strong>
+                ) : (
+                  <span className="last-updated-text"><strong>Última atualização:</strong> {timeUpdated || "-"}</span>
+                )}
               </span>
             )}
+            {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
 
             {isCompact ? (
               <div className="alter-btns">
@@ -297,19 +383,11 @@ export default function Dashboard() {
                   </select>
                 </div>
 
-                <div className="btn-date">
-                  <select
-                    className={`${showSkeleton ? "blocked " : ""}`}
-                    disabled={showSkeleton}
-                    name="date"
-                    id="date-select"
-                    value={filter}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="today">Hoje</option>
-                    <option value="custom">Escolher data</option>
-                  </select>
-                </div>
+                <PeriodSelect
+                  showSkeleton={showSkeleton}
+                  handlePeriodChange={handlePeriodChange}
+                  period={period}
+                />
               </div>
             ) : (
               <>
@@ -334,19 +412,11 @@ export default function Dashboard() {
                   </select>
                 </div>
 
-                <div className="btn-date">
-                  <select
-                    className={`${showSkeleton ? "blocked " : ""}`}
-                    disabled={showSkeleton}
-                    name="date"
-                    id="date-select"
-                    value={filter}
-                    onChange={handleFilterChange}
-                  >
-                    <option value="today">Hoje</option>
-                    <option value="custom">Escolher data</option>
-                  </select>
-                </div>
+                <PeriodSelect
+                  showSkeleton={showSkeleton}
+                  handlePeriodChange={handlePeriodChange}
+                  period={period}
+                />
               </>
             )}
           </div>
@@ -373,7 +443,9 @@ export default function Dashboard() {
                     serviceMetrics.status &&
                     serviceMetrics.status == "active"
                       ? "Ativo"
-                      : "Inativo"}
+                      : serviceMetrics.status == "inactive"
+                        ? "Inativo"
+                        : "Deletado"}
                   </p>
                 </div>
               </section>
@@ -392,16 +464,14 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-energy">
+                <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
                 <h4>
-                  {serviceMetrics.metrics?.memory_gb ? (
+                  {serviceMetrics.metrics?.kwh ? (
                     <>
-                      {serviceMetrics.metrics?.memory_gb.toLocaleString(
-                        "pt-BR",
-                        {
-                          maximumSignificantDigits: 4,
-                        },
-                      )}{" "}
+                      {serviceMetrics.metrics?.kwh.toLocaleString("pt-BR", {
+                        maximumSignificantDigits: 4,
+                      })}{" "}
                       kWh
                     </>
                   ) : (
@@ -411,6 +481,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-co2">
+                <Tooltip text={"Emissão em gramas de CO2 por hora"} />
                 <p>Emissão de CO₂e</p>
                 <h4>
                   {serviceMetrics.metrics?.co2e ? (
@@ -460,6 +531,7 @@ export default function Dashboard() {
                   tabIndex={0}
                 >
                   <section className="metric-card metric-card--usage metric-cpu">
+                    <Tooltip text={"Porcentagem utilizada da CPU"} />
                     <p>CPU</p>
                     <span className="metric-counter">1/4</span>
                     <h4>
@@ -474,6 +546,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-memory">
+                    <Tooltip text={"Mémoria RAM utiliazada "} />
                     <p>Memória</p>
                     <span className="metric-counter">2/4</span>
                     <h4>
@@ -494,6 +567,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-storage">
+                    <Tooltip text={"Memória de disco utilizadas"} />
                     <p>Armazenamento</p>
                     <span className="metric-counter">3/4</span>
                     <h4>
@@ -514,6 +588,7 @@ export default function Dashboard() {
                   </section>
 
                   <section className="metric-card metric-card--usage metric-network">
+                    <Tooltip text={"Memória movida pela rede"} />
                     <p>Rede</p>
                     <span className="metric-counter">4/4</span>
                     <h4>
@@ -537,7 +612,9 @@ export default function Dashboard() {
 
               {/* Gráficos */}
               <div className="analytics">
+                
                 <section className="analytics-card analytics-card--renewable">
+                  <Tooltip text={"Porcentagem da energia utilizada \n na localização que é renovável"} />
                   <h3>Energia renovável</h3>
                   <div
                     className="donut"
@@ -556,6 +633,7 @@ export default function Dashboard() {
                 </section>
 
                 <section className="analytics-card analytics-card--carbon">
+                  <Tooltip text={"Quantidade de carbono emitida \n por Kwh na localização"} />
                   <h3>Intensidade de carbono</h3>
                   <p className="carbon-level">
                     {serviceMetrics.metrics?.carbon_intensity
@@ -610,23 +688,25 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              O serviço está inativo, e não é possível recolher as suas métricas no momento.
               <br />
-              Volte à tela principal e selecione outro serviço.
-              {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}
+              <br />
+              O serviço está inativo ou não foi recolher as suas métricas dentro
+              do tempo esperado.
+              <br />
+              <br />
+              Espere mais um momento ou volte à{" "}
+              <Link to={"/home"} className="home-back-link">
+                tela principal
+              </Link>{" "}
+              e selecione outro serviço.
             </div>
           )}
         </div>
-        {isCalendarOpen && (
-          <Calendar
-            onSelect={handleDateSelect}
-            onClose={() => setIsCalendarOpen(false)}
-          />
-        )}
       </main>
       <footer>
         <span>Desenvolvido por Atmos &copy; {year}</span>
       </footer>
+
       {/* mobile: botão voltar ao topo */}
       <button
         type="button"
@@ -636,6 +716,35 @@ export default function Dashboard() {
       >
         <ArrowIcon className="icon-up" />
       </button>
+
+      {/* calendário do histórico */}
+      {calendar.calendarOpen && (
+        <Calendar
+          period={period}
+          selectedMinute={calendar.selectedMinute}
+          selectedHour={calendar.selectedHour}
+          selectedDay={calendar.selectedDay}
+          selectedMonth={calendar.selectedMonth}
+          selectedYear={calendar.selectedYear}
+          viewMonth={calendar.viewMonth}
+          viewYear={calendar.viewYear}
+          currentYear={calendar.currentYear}
+          currentMonth={calendar.currentMonth}
+          currentDay={calendar.currentDay}
+          currentHour={calendar.currentHour}
+          calendarDays={calendar.calendarDays}
+          lastHourSlots={calendar.lastHourSlots}
+          onClose={calendar.closeCalendar}
+          onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+          onConfirmMinute={calendar.confirmMinute}
+          onConfirmHour={calendar.confirmHour}
+          onConfirmDay={calendar.confirmDay}
+          onConfirmMonth={calendar.confirmMonth}
+          onConfirmYear={calendar.confirmYear}
+          handleFetch={fetchHistory}
+          handleCancel={updateMetrics}
+        />
+      )}
     </div>
   );
 }
