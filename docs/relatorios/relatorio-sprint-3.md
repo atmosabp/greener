@@ -77,10 +77,26 @@ Foi feito a tarefa `esquema de cores`, trazendo também a padronização de esti
 ---
 
 #### 21/nov
+Em questão de pontos de esforço no burndown, hoje foi o dia mais produtivo, pois foram queimados 24 pontos (a média é cerca de 10)!  
+Várias tasks pequenas foram feitas hoje, mas que aceleraram muito o desenvolvimento.
+
+**Beatriz** -> Integra animação de loading no skeleton     
+**Darcy** -> Adiciona botão de atualizar instantâneamente e cria tooltips     
+**Júlia** -> Finaliza animação de loading e padronização mensagens de erro e faz relatório    
+**Lorenzo** -> Finaliza implementação de framework para dropdown  
+**Mariana** -> Refatora backend em classes 
 
 ---
 
 #### 22/nov
+Esse é o último dia produtivo da sprint.  
+Nele, muitas coisas pequenas de estilo CSS foram arrumadas, assim como várias pequenas funcionalidades, para garantir que tudo funcione no final.  
+Outras tarefas do backlog também foram concluídas esse dia, como por exemplo, terminar o vídeo.
+
+**Beatriz** -> Termina vídeo e corrige problemas visuais   
+**Júlia** -> Faz tela 404, finaliza todos os relatórios e documentos da sprint e corrige problemas funcionais e visuais  
+**Kauã** -> Refatora header e atualiza documentação técnica  
+**Lorenzo** -> Padroniza tela principal e padroniza intensidade de carbono  
 
 ---
 
