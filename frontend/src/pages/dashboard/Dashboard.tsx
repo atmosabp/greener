@@ -441,7 +441,7 @@ export default function Dashboard() {
                   </label>
 
                   <Select
-                    className="dashboard-dropdown dashboard-dropdown--interval"
+                    className="dashboard-dropdown-update"
                     variant="dark"
                     value={String(updateInterval)}
                     options={UPDATE_OPTIONS}
@@ -463,8 +463,7 @@ export default function Dashboard() {
                   </label>
 
                   <Select
-                    className="dashboard-dropdown dashboard-dropdown--interval"
-                    variant="dark"
+                    className=""
                     value={String(updateInterval)}
                     options={UPDATE_OPTIONS}
                     onChange={changeInterval}

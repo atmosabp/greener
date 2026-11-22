@@ -4,7 +4,7 @@ import { Select } from "../dropdown";
 import "./PeriodSelect.css";
 
 interface PeriodSelectProps {
-  showSkeleton: boolean;
+  showSkeleton?: boolean;
   handlePeriodChange: (period: RankingPeriod) => void;
   period: RankingPeriod;
 }
@@ -18,14 +18,13 @@ const periodOptions = [
 ];
 
 export default function PeriodSelect({
-  showSkeleton,
   handlePeriodChange,
   period,
 }: PeriodSelectProps) {
   return (
     <div className="period-select-container">
       <Select
-        className="ranking-period-dropdown"
+        className=""
         variant="default"
         value={period}
         options={periodOptions}

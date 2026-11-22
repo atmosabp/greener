@@ -3,8 +3,6 @@ export {
     Select,
     MultiSelect,
     DropdownMenu,
-} from "./dropdown";
+    type DropdownOption
+} from "./Dropdown";
 
-export type {
-    DropdownOption,
-} from "./dropdown";

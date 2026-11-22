@@ -82,29 +82,26 @@
 
 .ranking-filters {
     width: 100%;
-    min-width: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr);
-    align-items: stretch;
-    gap: 3rem;
+    display: flex;
+    justify-content: end;
+    gap: 2rem;
 }
 
-.ranking-period,
 .ranking-classification {
-    width: 100%;
     min-width: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
     gap: 0.6rem;
-    padding: 0.5rem 1.1rem;
-    border-radius: 1.15rem;
+    padding: 0rem 0rem 0rem 1rem;
+    border-radius: 999px;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
 }
 
-.ranking-period label,
-.ranking-classification > span {
+.ranking-classification>span {
     display: block;
     text-align: center;
     font-size: 1rem;
@@ -197,9 +194,31 @@
 ========================================= */
 
 .ranking-classification-buttons {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.6rem;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    padding: 0;
+    border-radius: 999px;
+    background-color: var(--primary-dark);
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* Cápsula deslizante */
+.ranking-classification-buttons::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 50%;
+    border-radius: 999px;
+    background-color: var(--text);
+    transform: translateX(0);
+    transition: transform 300ms linear;
+}
+
+.ranking-classification-buttons:has(.ranking-metric-button:nth-child(2).is-active)::before {
+    transform: translateX(100%);
 }
 
 .ranking-metric-button {
@@ -210,7 +229,7 @@
     align-items: center;
     padding: 0.45rem 0.65rem;
     border: 0.1rem solid transparent;
-    border-radius: 0.9rem;
+    border-radius: 1.2rem;
     background-color: var(--primary-dark);
     color: var(--background);
     font: inherit;
@@ -254,21 +273,26 @@
     flex-shrink: 0;
 }
 
+.ranking-toolbar .left-side{
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
 .ranking-update {
     display: flex;
     align-items: center;
     gap: 0.8rem;
     padding-left: 1rem;
-    border-radius: 2rem;
+    border-radius: 999px;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
     font-size: 1rem;
     font-weight: 500;
-    white-space: nowrap;
 }
 
 .ranking-update-dropdown {
-    width: 6.8rem;
+    max-width: 8rem;
     flex-shrink: 0;
 }
 
@@ -464,7 +488,7 @@
 }
 
 .redirect-link-icon {
-    color: var(--link-icon-color);
+    stroke: var(--primary-dark);
 }
 
 .ranking-position {

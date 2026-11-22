@@ -48,9 +48,7 @@ export default function Ranking() {
   const [metric, setMetric] = useState<RankingMetric>("energy");
 
   const [updateInterval, setUpdateInterval] = useState<number>(() => {
-    const storedInterval = Number(
-      localStorage.getItem("refresh_interval"),
-    );
+    const storedInterval = Number(localStorage.getItem("refresh_interval"));
 
     return storedInterval || 5;
   });
@@ -69,11 +67,9 @@ export default function Ranking() {
     selectedMetric: RankingMetric = metric,
   ) {
     const dataHolder = [...data].sort((a, b) => {
-      const aValue =
-        selectedMetric === "energy" ? a.energy : a.co2e;
+      const aValue = selectedMetric === "energy" ? a.energy : a.co2e;
 
-      const bValue =
-        selectedMetric === "energy" ? b.energy : b.co2e;
+      const bValue = selectedMetric === "energy" ? b.energy : b.co2e;
 
       if (aValue === undefined && bValue === undefined) return 0;
       if (aValue === undefined) return 1;
@@ -123,10 +119,7 @@ export default function Ranking() {
     window.location.reload();
   }
 
-  async function fetchHistory(
-    periodType: string,
-    datePull: Date | string,
-  ) {
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       const result = await fetch(
         `http://localhost:${port}/collections/all-service-history`,
@@ -149,15 +142,13 @@ export default function Ranking() {
       const data = await result.json();
 
       if (data && data.length > 0) {
-        const formattedData: RankingService[] = data.map(
-          (service: any) => ({
-            id: service.id,
-            name: service.name,
-            energy: service.kwh,
-            co2e: service.co2e,
-            status: "active",
-          }),
-        );
+        const formattedData: RankingService[] = data.map((service: any) => ({
+          id: service.id,
+          name: service.name,
+          energy: service.kwh,
+          co2e: service.co2e,
+          status: "active",
+        }));
 
         setLastUpdate(new Date(datePull));
         setHistoryMessage(
@@ -169,10 +160,7 @@ export default function Ranking() {
         setHistoryMessage("Período escolhido não possui dados.");
       }
     } catch (error) {
-      console.error(
-        "Ocorreu um erro ao buscar o histórico:",
-        error,
-      );
+      console.error("Ocorreu um erro ao buscar o histórico:", error);
 
       setHistoryMessage(
         "Não foi possível obter dados para o período selecionado.",
@@ -205,17 +193,11 @@ export default function Ranking() {
 
       sortRanking(formattedData);
     } catch (error) {
-      console.error(
-        "Ocorreu um erro ao buscar os serviços:",
-        error,
-      );
+      console.error("Ocorreu um erro ao buscar os serviços:", error);
     }
 
     if (!historyActivatedRef.current) {
-      timerRef.current = setTimeout(
-        fetchServices,
-        updateInterval * 1000,
-      );
+      timerRef.current = setTimeout(fetchServices, updateInterval * 1000);
     }
   }
 
@@ -239,9 +221,7 @@ export default function Ranking() {
     month: `${calendar.selectedDay} de ${
       monthNames[calendar.selectedMonth]
     } de ${calendar.selectedYear}`,
-    year: `${monthNames[calendar.selectedMonth]} de ${
-      calendar.selectedYear
-    }`,
+    year: `${monthNames[calendar.selectedMonth]} de ${calendar.selectedYear}`,
     "other-years": String(calendar.selectedYear),
   };
 
@@ -272,9 +252,7 @@ export default function Ranking() {
     return () => clearTimeout(timeout);
   }, []);
 
-  const showSkeleton = useSkeleton(
-    timeUpdated === "" && !gaveUp,
-  );
+  const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
 
   return (
     <div className="ranking-page">
@@ -292,14 +270,6 @@ export default function Ranking() {
 
             {/* Filtros superiores: período e classificação */}
             <div className="ranking-filters">
-              <div className="ranking-period">
-                <PeriodSelect
-                  showSkeleton={showSkeleton}
-                  handlePeriodChange={handlePeriodChange}
-                  period={period}
-                />
-              </div>
-
               <div className="ranking-classification">
                 <span>Classificar por:</span>
 
@@ -325,7 +295,7 @@ export default function Ranking() {
                       metric === "co2e"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }${showSkeleton ? " blocked" : ""}`}
+                    } ${showSkeleton ? " blocked" : ""}`}
                     aria-pressed={metric === "co2e"}
                     onClick={() => handleParamChange("co2e")}
                   >
@@ -338,15 +308,23 @@ export default function Ranking() {
 
           {/* Barra inferior: intervalo e atualização */}
           <section className="ranking-toolbar">
-            <div className="ranking-update">
-              <label>Atualizações:</label>
+            <div className="left-side">
+              <div className="ranking-update">
+                <label>Atualizações:</label>
 
-              <Select
-                className="ranking-update-dropdown"
-                variant="default"
-                value={String(updateInterval)}
-                options={updateOptions}
-                onChange={handleUpdateIntervalChange}
+                <Select
+                  className="ranking-update-dropdown"
+                  variant="default"
+                  value={String(updateInterval)}
+                  options={updateOptions}
+                  onChange={handleUpdateIntervalChange}
+                />
+              </div>
+
+              <PeriodSelect
+                showSkeleton={showSkeleton}
+                handlePeriodChange={handlePeriodChange}
+                period={period}
               />
             </div>
 
@@ -449,9 +427,7 @@ export default function Ranking() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4}>
-                        Não foi possível encontrar serviços.
-                      </td>
+                      <td colSpan={4}>Não foi possível encontrar serviços.</td>
                     </tr>
                   )}
                 </tbody>
@@ -465,9 +441,7 @@ export default function Ranking() {
                 <Skeleton width="10rem" height="1rem" />
               </p>
             ) : (
-              <span>
-                Período selecionado: {periodLabel[period]}
-              </span>
+              <span>Período selecionado: {periodLabel[period]}</span>
             )}
 
             {showSkeleton ? (
@@ -475,17 +449,13 @@ export default function Ranking() {
                 <Skeleton width="10rem" height="1rem" />
               </p>
             ) : (
-              <span>
-                {initialServices.length} serviços encontrados
-              </span>
+              <span>{initialServices.length} serviços encontrados</span>
             )}
           </div>
         </section>
       </main>
 
-      <footer className="ranking-footer">
-        Desenvolvido por Atmos © 2026
-      </footer>
+      <footer className="ranking-footer">Desenvolvido por Atmos © 2026</footer>
 
       {calendar.calendarOpen && (
         <Calendar
@@ -504,9 +474,7 @@ export default function Ranking() {
           calendarDays={calendar.calendarDays}
           lastHourSlots={calendar.lastHourSlots}
           onClose={calendar.closeCalendar}
-          onChangeMonth={(direction) =>
-            calendar.changeMonth(direction, period)
-          }
+          onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
           onConfirmMinute={calendar.confirmMinute}
           onConfirmHour={calendar.confirmHour}
           onConfirmDay={calendar.confirmDay}

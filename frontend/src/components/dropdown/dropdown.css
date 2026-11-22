@@ -1,8 +1,3 @@
-/* =========================================================
-   GREEN ER - DROPDOWN GLOBAL
-   Padrão visual baseado na tela de Comparação
-========================================================= */
-
 .gr-dropdown {
   --dropdown-bg: var(--background);
   --dropdown-ink: var(--text);
@@ -26,6 +21,7 @@
   font-family: inherit;
   text-align: left;
   box-sizing: border-box;
+  color: var(--text);
 }
 
 .gr-dropdown *,
@@ -52,10 +48,10 @@
   padding: 0 0.9375rem;
 
   border: 0.1rem solid var(--dropdown-bg);
-  border-radius: 1.2rem;
+  border-radius: 999px;
 
-  background: var(--dropdown-panel);
-  color: var(--dropdown-ink);
+  background-color: var(--primary);
+  color: var(--text);
 
   font-family: inherit;
   font-size: 0.9375rem;
@@ -105,7 +101,6 @@
   flex: 0 0 auto;
   width: 1rem;
   height: 1rem;
-  color: var(--dropdown-ink);
   transition:
     transform 0.2s ease,
     color 0.2s ease;
@@ -115,80 +110,18 @@
   transform: rotate(180deg);
 }
 
-/* =========================================================
-   VARIANTE CLARA
-   Seleção múltipla e dropdown padrão
-========================================================= */
+/* VARIANTES */
 
-.gr-dropdown-trigger.gr-dropdown-default {
-  background: var(--dropdown-bg);
-  color: var(--dropdown-ink);
+.gr-dropdown-trigger .gr-dropdown-default {
+  /* background: var(--dropdown-bg); */
 }
-
-.gr-dropdown-trigger.gr-dropdown-default:hover,
-.gr-dropdown-trigger.gr-dropdown-default[aria-expanded="true"] {
-  background: var(--dropdown-panel);
-}
-
-.gr-dropdown-trigger.gr-dropdown-default .gr-dropdown-chevron {
-  color: var(--dropdown-ink);
-}
-
-/* =========================================================
-   VARIANTE ESCURA
-   Seleção de período
-========================================================= */
 
 .gr-dropdown-trigger.gr-dropdown-dark {
-  min-height: 2.5rem;
-  padding: 0 2.375rem 0 1rem;
-
-  border-color: var(--dropdown-moss);
-  border-radius: 1.375rem;
-
-  background: var(--dropdown-ink);
-  color: var(--dropdown-bg);
 }
-
-.gr-dropdown-trigger.gr-dropdown-dark:hover,
-.gr-dropdown-trigger.gr-dropdown-dark[aria-expanded="true"] {
-  /* background: var(--dropdown-moss); */
-  border-color: var(--dropdown-moss);
-  color: var(--dropdown-bg);
-}
-
-.gr-dropdown-trigger.gr-dropdown-dark .gr-dropdown-chevron {
-  color: var(--dropdown-bg);
-}
-
-/* =========================================================
-   VARIANTE VERDE
-   Menu de referência e ações
-========================================================= */
 
 .gr-dropdown-trigger.gr-dropdown-green {
-  min-height: 2rem;
-  padding: 0 0.75rem;
-
-  border: 0;
-  border-radius: 1.125rem;
-
-  background: var(--dropdown-lime);
-  color: var(--dropdown-ink);
-
-  box-shadow: none;
 }
 
-.gr-dropdown-trigger.gr-dropdown-green:hover,
-.gr-dropdown-trigger.gr-dropdown-green[aria-expanded="true"] {
-  background: var(--dropdown-panel);
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.gr-dropdown-trigger.gr-dropdown-green .gr-dropdown-chevron {
-  color: var(--dropdown-ink);
-}
 
 /* =========================================================
    PAINEL DE OPÇÕES
@@ -216,7 +149,6 @@
   border-radius: 0.75rem;
 
   background: var(--dropdown-bg);
-  color: var(--dropdown-ink);
 
   box-shadow:
     0 0.5rem 1.5rem rgba(58, 50, 44, 0.14),
