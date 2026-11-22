@@ -41,7 +41,7 @@ export default function PeriodSelect({
       >
         <option value="now">Agora</option>
         <option value="hour">Última hora</option>
-        <option value="today">Hoje</option>
+        <option value="today">Dia</option>
         <option value="month">Esse mês</option>
         <option value="year">Esse ano</option>
       </select>

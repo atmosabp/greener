@@ -1,17 +1,17 @@
 import { useState } from "react";
 import "./Calendar.css";
-
+ 
 import { hours, monthNames, weekDays, type RankingPeriod } from "../../pages/ranking/rankingData";
 import { toLocalISOTime } from "../../utils/history";
 import ClockPicker, { type ClockValue } from "./ClockPicker";
-
+ 
 type LastHourSlotType = {
   hour: number;
   minute: number;
   label: string;
   date: Date;
 };
-
+ 
 type CalendarProps = {
   period: RankingPeriod;
   selectedMinute: number;
@@ -26,7 +26,7 @@ type CalendarProps = {
   currentDay: number;
   currentHour: number;
   calendarDays: (number | null)[];
-  lastHourSlots: LastHourSlotType[];
+  lastHourSlots: LastHourSlotType[]; // agora cobre as últimas 2 horas
   onClose: () => void;
   onChangeMonth: (direction: number) => void;
   onConfirmDay: (day: number) => void;
@@ -37,7 +37,7 @@ type CalendarProps = {
   handleFetch: (periodType: string, datePull: Date | string) => void;
   handleCancel: () => void;
 };
-
+ 
 export default function Calendar({
   period,
   selectedMinute,
@@ -62,7 +62,10 @@ export default function Calendar({
   const [draftDay, setDraftDay] = useState(selectedDay);
   const [draftHour, setDraftHour] = useState(selectedHour);
   const [draftMonth, setDraftMonth] = useState(selectedMonth);
-
+  const [dayOffset, setDayOffset] = useState(0); // 0 = hoje, 7 = 7 dias atrás
+ 
+  // relógio: começa na seleção anterior, se ainda estiver dentro das últimas 2h;
+  // senão, no horário mais recente
   const [draftClock, setDraftClock] = useState<ClockValue>(() => {
     const previous = lastHourSlots.find(
       (slot) => slot.hour === selectedHour && slot.minute === selectedMinute,
@@ -70,16 +73,32 @@ export default function Calendar({
     const slot = previous ?? lastHourSlots[lastHourSlots.length - 1];
     return { hour: slot.hour, minute: slot.minute };
   });
-  
+ 
   const oppeningDate = new Date(); // pega a data atual da abertura da pagina
-
+ 
+  const viewedDay = new Date(
+    oppeningDate.getFullYear(),
+    oppeningDate.getMonth(),
+    oppeningDate.getDate() - dayOffset,
+  );
+  const viewedDayLabel =
+    dayOffset === 0
+      ? "Hoje"
+      : dayOffset === 1
+        ? "Ontem"
+        : viewedDay.toLocaleDateString("pt-BR", {
+            weekday: "short",
+            day: "2-digit",
+            month: "2-digit",
+          });
+ 
   const handleConfirm = () => {
     const date = new Date();
-
     if (period === "hour") {
-      const slot = lastHourSlots.find(
+      const slot =
+        lastHourSlots.find(
           (s) => s.hour === draftClock.hour && s.minute === draftClock.minute,
-        ) || lastHourSlots[lastHourSlots.length - 1];
+        ) ?? lastHourSlots[lastHourSlots.length - 1];
  
       const targetDate = new Date(slot.date);
       targetDate.setSeconds(0, 0);
@@ -92,7 +111,7 @@ export default function Calendar({
         new Date(
           date.getFullYear(),
           date.getMonth(),
-          date.getDate(),
+          date.getDate() - dayOffset,
           draftHour,
         ),
       );
@@ -108,7 +127,7 @@ export default function Calendar({
       onConfirmMonth(draftMonth);
     }
   };
-
+ 
   return (
     <div className="ranking-calendar-overlay">
       <section
@@ -128,15 +147,15 @@ export default function Calendar({
         >
           ×
         </button>
-
+ 
         <h2 id="ranking-calendar-title">
-          {period === "hour" && "Escolha um minuto"}
+          {period === "hour" && "Escolha a hora e o minuto"}
           {period === "today" && "Escolha um horário"}
           {period === "month" && "Escolha uma data"}
           {period === "year" && "Escolha um mês"}
           {period === "other-years" && "Escolha um ano"}
         </h2>
-
+ 
         {period === "hour" && (
           <div className="ranking-calendar-panel">
             <ClockPicker
@@ -146,16 +165,38 @@ export default function Calendar({
             />
           </div>
         )}
-
+ 
         {period === "today" && (
           <div className="ranking-calendar-panel">
+            <div className="ranking-calendar-navigation ranking-calendar-day-nav">
+              <button
+                type="button"
+                className="ranking-calendar-day-nav-button"
+                onClick={() => setDayOffset((d) => Math.min(d + 1, 7))}
+                disabled={dayOffset >= 7}
+                aria-label="Dia anterior"
+              >
+                ‹
+              </button>
+              <strong>{viewedDayLabel}</strong>
+              <button
+                type="button"
+                className="ranking-calendar-day-nav-button"
+                onClick={() => setDayOffset((d) => Math.max(d - 1, 0))}
+                disabled={dayOffset <= 0}
+                aria-label="Próximo dia"
+              >
+                ›
+              </button>
+            </div>
+ 
             <div className="ranking-calendar-options ranking-calendar-hour-options">
               {hours.map((hour) => (
                 <button
                   type="button"
                   key={hour}
                   className={draftHour === hour ? "is-selected" : ""}
-                  disabled={hour > oppeningDate.getHours()}
+                  disabled={dayOffset === 0 && hour > oppeningDate.getHours()}
                   onClick={() => setDraftHour(hour)}
                 >
                   {String(hour).padStart(2, "0")}:00
@@ -164,7 +205,7 @@ export default function Calendar({
             </div>
           </div>
         )}
-
+ 
         {period === "month" && (
           <>
             <div className="ranking-calendar-navigation">
@@ -172,13 +213,13 @@ export default function Calendar({
                 {monthNames[currentMonth]} {currentYear}
               </strong>
             </div>
-
+ 
             <div className="ranking-calendar-panel">
               <div className="ranking-calendar-days">
                 {weekDays.map((day, index) => (
                   <span key={`${day}-${index}`}>{day}</span>
                 ))}
-
+ 
                 {calendarDays.map((day, index) =>
                   day === null ? (
                     <span
@@ -205,7 +246,7 @@ export default function Calendar({
             </div>
           </>
         )}
-
+ 
         {period === "year" && (
           <div className="ranking-calendar-panel">
             <div className="ranking-calendar-options ranking-calendar-month-options">
@@ -223,7 +264,7 @@ export default function Calendar({
             </div>
           </div>
         )}
-
+ 
         <button
           type="button"
           className="ranking-calendar-confirm"
