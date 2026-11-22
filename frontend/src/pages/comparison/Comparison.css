@@ -212,6 +212,11 @@
         border-color var(--theme-transition);
 }
 
+.last-updated-text{
+    color: var(--text);
+    font-size: 1rem;
+}
+
 .cmp-select option {
     background: var(--bg);
     color: var(--ink);

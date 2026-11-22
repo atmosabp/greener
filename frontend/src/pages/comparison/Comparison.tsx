@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { port } from "../../utils/connection";
 import "./Comparison.css";
 
 import AppHeader from "../../components/header/AppHeader";
@@ -9,9 +10,8 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
+  type CompareTarget
 } from "./components/comparisonData";
-
-import type { CompareTarget } from "./components/comparisonData";
 
 import {
   Chevron,
@@ -33,11 +33,16 @@ import {
 import {
   timeFormatter,
   type RankingPeriod,
-} from "../ranking/components/rankingData";
-import useRankingCalendar from "../ranking/components/useRankingCalendar";
-import RankingCalendar from "../ranking/components/rankingCalendar";
+} from "../ranking/rankingData";
+
 import type { MetricsType, ServiceType } from "../../types/service";
 import RefreshButton from "../../components/refreshButton/RefreshButton";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
+
+import Loading from "../../components/loading/Loading";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { toReadableTime } from "../../utils/history";
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -61,12 +66,20 @@ export default function Comparison() {
     {},
   );
 
-  const calendar = useRankingCalendar();
+  /* Buscar os serviços e suas métricas no backend. */
+  useEffect(() => {
+    localStorage.setItem("last_page", '/comparison');
+    const t = setTimeout(() => setGaveUp(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
 
-  async function fetchHistory(periodType: string, datePull: Date) {
+  const calendar = useCalendar();
+
+  const [_gaveUp, setGaveUp] = useState(false);
+
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       let formatedData: ServiceType[] = [];
-      const port: number = import.meta.env.VITE_PORT || 3000;
 
       const result = await fetch(
         `http://localhost:${port}/collections/all-service-history`,
@@ -78,7 +91,7 @@ export default function Comparison() {
       );
       const data: any[] = await result.json();
 
-      if (data.length > 0) {
+      if (data && data.length > 0) {
         for (let service of data) {
           formatedData.push({
             id: service.id,
@@ -96,21 +109,27 @@ export default function Comparison() {
           });
         }
 
-        setHistoryMessage("Você está vendo dados do passado ");
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
+
         setServices(formatedData);
         setOrder(formatedData.map((service) => service.id));
         setSelected(new Set(formatedData.map((service) => service.id)));
         setReferenceId(formatedData[0]?.id ?? null);
         setError(null);
         setLoading(false);
-
-        // setLastUpdate(datePull);
       } else {
         handleRefresh();
-        setHistoryMessage("Período escolhido não possui dados ");
+        setHistoryMessage("Período escolhido não possui dado.");
       }
     } catch (e: any) {
-      console.log(e.message);
+      console.error(
+        `Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`,
+      );
+      setHistoryMessage(
+        "Ocorreu um erro ao buscar dados do período selecionado.",
+      );
     }
   }
 
@@ -236,6 +255,7 @@ export default function Comparison() {
 
   return (
     <div className="cmp-comparison">
+      {loading && <Loading/>}
       <AppHeader />
 
       <main className="cmp-page">
@@ -254,43 +274,21 @@ export default function Comparison() {
               {historyActivatedRef.current ? (
                 <></>
               ) : (
-                <>Última atualização: {formattedLastUpdate}</>
+                <span className="last-updated-text"><strong>Última atualização:</strong> {formattedLastUpdate}</span>
               )}{" "}
+              &nbsp; &nbsp; &nbsp; &nbsp;
             </span>
 
             <RefreshButton handleRefresh={handleRefresh} />
 
-            <div className="ranking-period">
-              <label htmlFor="ranking-period-select">Período</label>
-
-              <select
-                id="ranking-period-select"
-                value={period}
-                onChange={(event) =>
-                  handlePeriodChange(event.target.value as RankingPeriod)
-                }
-                onClick={(event) => {
-                  const currentValue = event.currentTarget
-                    .value as RankingPeriod;
-                  if (currentValue === period) {
-                    handlePeriodChange(currentValue);
-                  }
-                }}
-              >
-                <option value="now">Agora</option>
-                <option value="today">Hoje</option>
-                <option value="month">Esse mês</option>
-                <option value="year">Esse ano</option>
-              </select>
-            </div>
-            
             <Popover
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className="cmp-pill-outline"
+                  className={`cmp-pill-outline ${loading} ? "blocked": "" `}
                   aria-expanded={open}
                   onClick={toggle}
+                  disabled={loading}
                 >
                   Serviços selecionados
                   <Chevron size={22} />
@@ -314,6 +312,12 @@ export default function Comparison() {
                 </ul>
               )}
             </Popover>
+            <PeriodSelect
+              showSkeleton={loading}
+              handlePeriodChange={handlePeriodChange}
+              period={period}
+            />
+            
           </span>
         </section>
 
@@ -479,8 +483,9 @@ export default function Comparison() {
           </div>
         </section>
         {calendar.calendarOpen && (
-          <RankingCalendar
+          <Calendar
             period={period}
+            selectedMinute={calendar.selectedMinute}
             selectedHour={calendar.selectedHour}
             selectedDay={calendar.selectedDay}
             selectedMonth={calendar.selectedMonth}
@@ -490,15 +495,18 @@ export default function Comparison() {
             currentYear={calendar.currentYear}
             currentMonth={calendar.currentMonth}
             currentDay={calendar.currentDay}
+            currentHour={calendar.currentHour}
             calendarDays={calendar.calendarDays}
+            lastHourSlots={calendar.lastHourSlots}
             onClose={calendar.closeCalendar}
             onChangeMonth={(direction) =>
               calendar.changeMonth(direction, period)
             }
+            onConfirmMinute={calendar.confirmMinute}
+            onConfirmHour={calendar.confirmHour}
             onConfirmDay={calendar.confirmDay}
             onConfirmMonth={calendar.confirmMonth}
             onConfirmYear={calendar.confirmYear}
-            onConfirmHour={calendar.confirmHour}
             handleFetch={fetchHistory}
             handleCancel={handleRefresh}
           />

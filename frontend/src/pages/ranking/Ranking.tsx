@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 import "./Ranking.css";
 
 import AppHeader from "../../components/header/AppHeader";
-import RankingCalendar from "./components/rankingCalendar";
-import useRankingCalendar from "./components/useRankingCalendar";
+
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
 
 import {
   monthNames,
@@ -15,7 +16,7 @@ import {
   type RankingMetric,
   type RankingPeriod,
   type RankingService,
-} from "./components/rankingData";
+} from "./rankingData";
 
 import { RankingTableSkeletonRows } from "./RankingSkeleton";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
@@ -26,6 +27,10 @@ import Toast from "../../components/toast/Toast";
 import Greeting from "../../components/greetings/Greeting";
 
 import RefreshButton from "../../components/refreshButton/RefreshButton";
+import Loading from "../../components/loading/Loading";
+
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { toReadableTime } from "../../utils/history";
 
 export default function Ranking() {
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
@@ -40,7 +45,7 @@ export default function Ranking() {
   const historyActivatedRef = useRef(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   var metricUsed: RankingMetric = "energy";
-  const calendar = useRankingCalendar();
+  const calendar = useCalendar();
 
   function handlePeriodChange(nextPeriod: RankingPeriod) {
     if (nextPeriod == "now") {
@@ -72,11 +77,9 @@ export default function Ranking() {
     setLastUpdate(new Date());
   }
 
-  async function fetchHistory(periodType: string, datePull: Date) {
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       var formatedData: RankingService[] = [];
-
-      const port: number = import.meta.env.VITE_PORT || 3000;
 
       const result = await fetch(
         `http://localhost:${port}/collections/all-service-history`,
@@ -89,7 +92,7 @@ export default function Ranking() {
 
       const data = await result.json();
 
-      if (data.length > 0) {
+      if (data && data.length > 0) {
         for (let service of data) {
           formatedData.push({
             id: service.id,
@@ -99,8 +102,10 @@ export default function Ranking() {
             status: "active",
           });
         }
-        setLastUpdate(datePull);
-        setHistoryMessage("Você está vendo dados do passado ");
+        setLastUpdate(new Date(datePull));
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
 
         sortRanking(formatedData);
       } else {
@@ -110,16 +115,18 @@ export default function Ranking() {
           title="Histórico"
           message="Não há dados para o período selecionado."
         />;
-        setHistoryMessage("Período escolhido não possui dados ");
+        setHistoryMessage("Período escolhido não possui dados.");
       }
     } catch (e: any) {
       console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
       <Toast
         icon="error"
         title="Histórico"
-        message="Não há dados para o período selecionado."
+        message="Não foi possível obter dados para o peíodo selecionado."
       />;
-      setHistoryMessage("Período escolhido não possui dados ");
+      setHistoryMessage(
+        "Não foi possível obter dados para o peíodo selecionado.",
+      );
     }
   }
 
@@ -216,6 +223,7 @@ export default function Ranking() {
 
   const periodLabel: Record<RankingPeriod, string> = {
     now: "Agora",
+    hour: "Hora",
     today: `Hoje às ${String(calendar.selectedHour).padStart(2, "0")}:00`,
     month: `${calendar.selectedDay} de ${
       monthNames[calendar.selectedMonth]
@@ -227,6 +235,7 @@ export default function Ranking() {
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   useEffect(() => {
+    localStorage.setItem("last_page", '/ranking');
     if (!historyActivatedRef.current) {
       fetchServices();
     }
@@ -241,6 +250,7 @@ export default function Ranking() {
 
   return (
     <div className="ranking-page">
+      {showSkeleton && <Loading />}
       <AppHeader />
 
       <main className="ranking-main">
@@ -251,35 +261,39 @@ export default function Ranking() {
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
-            <div className="ranking-classification">
-              <span>Classificar por:</span>
+            <div className="ranking-filters">
+              <div className="ranking-classification">
+                <span>Classificar por:</span>
 
-              <div className="ranking-classification-buttons">
-                <button
-                  type="button"
-                  className={
-                    metric === "energy"
-                      ? "ranking-metric-button is-active"
-                      : "ranking-metric-button"
-                  }
-                  aria-pressed={metric === "energy"}
-                  onClick={() => handleParamChange("energy")}
-                >
-                  Consumo energético
-                </button>
+                <div className="ranking-classification-buttons">
+                  <button
+                    disabled={showSkeleton}
+                    type="button"
+                    className={`${
+                      metric === "energy"
+                        ? "ranking-metric-button is-active"
+                        : "ranking-metric-button"
+                    }${showSkeleton ? " blocked" : ""}`}
+                    aria-pressed={metric === "energy"}
+                    onClick={() => handleParamChange("energy")}
+                  >
+                    Consumo energético
+                  </button>
 
-                <button
-                  type="button"
-                  className={
-                    metric === "co2e"
-                      ? "ranking-metric-button is-active"
-                      : "ranking-metric-button"
-                  }
-                  aria-pressed={metric === "co2e"}
-                  onClick={() => handleParamChange("co2e")}
-                >
-                  Emissão de CO₂e
-                </button>
+                  <button
+                    disabled={showSkeleton}
+                    type="button"
+                    className={`${
+                      metric === "co2e"
+                        ? "ranking-metric-button is-active"
+                        : "ranking-metric-button"
+                    } ${showSkeleton ? " blocked" : ""}`}
+                    aria-pressed={metric === "co2e"}
+                    onClick={() => handleParamChange("co2e")}
+                  >
+                    Emissão de CO₂e
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -291,6 +305,8 @@ export default function Ranking() {
 
                 <select
                   id="ranking-update-select"
+                  disabled={showSkeleton}
+                  className={`${showSkeleton} ? "blocked" : ""`}
                   value={Number(updateInterval)}
                   onChange={(event) =>
                     handleUpdateIntervalChange(Number(event.target.value))
@@ -305,26 +321,11 @@ export default function Ranking() {
                 </select>
               </div>
               <div className="ranking-period">
-                <select
-                  id="ranking-period-select"
-                  value={period}
-                  onClick={(event) => {
-                    const currentValue = event.currentTarget
-                      .value as RankingPeriod;
-                    if (currentValue === period) {
-                      handlePeriodChange(currentValue);
-                    }
-                  }}
-                  onChange={(event) =>
-                    handlePeriodChange(event.target.value as RankingPeriod)
-                  }
-                  disabled={showSkeleton}
-                >
-                  <option value="now">Agora</option>
-                  <option value="today">Hoje</option>
-                  <option value="month">Esse mês</option>
-                  <option value="year">Esse ano</option>
-                </select>
+                <PeriodSelect
+                  showSkeleton={showSkeleton}
+                  handlePeriodChange={handlePeriodChange}
+                  period={period}
+                />
               </div>
             </div>
 
@@ -449,7 +450,7 @@ export default function Ranking() {
             ) : (
               <span>Período selecionado: {periodLabel[period]}</span>
             )}
-            
+
             {showSkeleton ? (
               <p>
                 <Skeleton width="10rem" height="1rem" />
@@ -467,8 +468,9 @@ export default function Ranking() {
       <footer className="ranking-footer">Desenvolvido por Atmos © 2026</footer>
 
       {calendar.calendarOpen && (
-        <RankingCalendar
+        <Calendar
           period={period}
+          selectedMinute={calendar.selectedMinute}
           selectedHour={calendar.selectedHour}
           selectedDay={calendar.selectedDay}
           selectedMonth={calendar.selectedMonth}
@@ -478,13 +480,16 @@ export default function Ranking() {
           currentYear={calendar.currentYear}
           currentMonth={calendar.currentMonth}
           currentDay={calendar.currentDay}
+          currentHour={calendar.currentHour}
           calendarDays={calendar.calendarDays}
+          lastHourSlots={calendar.lastHourSlots}
           onClose={calendar.closeCalendar}
           onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+          onConfirmMinute={calendar.confirmMinute}
+          onConfirmHour={calendar.confirmHour}
           onConfirmDay={calendar.confirmDay}
           onConfirmMonth={calendar.confirmMonth}
           onConfirmYear={calendar.confirmYear}
-          onConfirmHour={calendar.confirmHour}
           handleFetch={fetchHistory}
           handleCancel={handleRefresh}
         />

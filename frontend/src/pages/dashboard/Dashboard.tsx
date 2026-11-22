@@ -1,23 +1,34 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { port } from "../../utils/connection";
+import { Link, useParams } from "react-router-dom";
 import "./Dashboard.css";
 
 import AppHeader from "../../components/header/AppHeader";
-import { Link, useParams } from "react-router-dom";
-import type { CoordinatesType, MetricsType } from "../../types/service";
-import useRankingCalendar from "../ranking/components/useRankingCalendar";
-
-import RankingCalendar from "../ranking/components/rankingCalendar";
-
-import { type RankingPeriod } from "../ranking/components/rankingData";
-
-import { useSkeleton } from "../../components/skeleton/useSkeleton";
-import { Skeleton } from "../../components/skeleton/Skeleton";
-import { DashboardGridSkeleton, ServiceListSkeleton } from "./DashboardSkeleton";
 
 import Toast from "../../components/toast/Toast";
 import RefreshButton from "../../components/refreshButton/RefreshButton";
 
+import type {
+  CoordinatesType,
+  MetricsType,
+  ServiceStatus,
+} from "../../types/service";
+
+import { type RankingPeriod } from "../ranking/rankingData";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
+
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import { Skeleton } from "../../components/skeleton/Skeleton";
+import {
+  DashboardGridSkeleton,
+  ServiceListSkeleton,
+} from "./DashboardSkeleton";
+
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { toReadableTime } from "../../utils/history";
+
+import Loading from "../../components/loading/Loading";
 import Tooltip from "../../components/tooltip/Tooltip";
 import Greeting from "../../components/greetings/Greeting";
 
@@ -51,7 +62,9 @@ export default function Dashboard() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   let serviceFetchReq = useRef<any>(undefined);
 
-  const calendar = useRankingCalendar();
+  const calendar = useCalendar();
+
+  // const { showToast } = useToast();
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -101,7 +114,7 @@ export default function Dashboard() {
   interface ServicesType {
     id?: string;
     name?: string;
-    status?: "active" | "inactive";
+    status?: ServiceStatus;
     location?: CoordinatesType;
     metrics?: MetricsType;
   }
@@ -116,21 +129,25 @@ export default function Dashboard() {
     }[]
   >([]);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
+  const [metricsLoaded, setMetricsLoaded] = useState(false);
 
-  async function fetchHistory(periodType: string, datePull: Date) {
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
       const result = await fetch(
         `http://localhost:${port}/collections/service-history/${serviceId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+          body: JSON.stringify({
+            periodType: periodType,
+            datePull: datePull,
+          }),
         },
       );
 
       const data = await result.json();
 
-      if (data && data.length > 0) {
+      if (data && data.id) {
         setServiceMetrics({
           id: serviceMetrics.id,
           name: serviceMetrics.name,
@@ -148,9 +165,11 @@ export default function Dashboard() {
           },
         });
 
-        setHistoryMessage("Você está vendo dados do passado ");
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
       } else {
-        setHistoryMessage("Período escolhido não possui dados ");
+        setHistoryMessage("Período escolhido não possui dados.");
         <Toast
           icon="error"
           title="Histórico"
@@ -162,9 +181,9 @@ export default function Dashboard() {
       <Toast
         icon="error"
         title="Histórico"
-        message="Não há dados para o período selecionado."
+        message="Ocorreu um erro ao buscar o histórico."
       />;
-      setHistoryMessage("Período escolhido não possui dados ");
+      setHistoryMessage("Não foi possível obter dados do período selecionado.");
     }
   }
 
@@ -182,9 +201,11 @@ export default function Dashboard() {
       setTimeUpdated(new Date().toLocaleString());
       setServiceMetrics(data);
     } catch (e: any) {
-      console.error(`Ocorreu um erro ao obter métricas do serviço. Erro: ${e.message}`);
+      console.error(
+        `Ocorreu um erro ao obter métricas do serviço. Erro: ${e.message}`,
+      );
     }
-
+    setMetricsLoaded(true);
     if (!historyActivatedRef.current && data) {
       timerRef.current = setTimeout(getServiceMetrics, updateInterval * 1000);
     }
@@ -210,7 +231,9 @@ export default function Dashboard() {
       }
       setServiceList(serviceNames);
     } catch (e: any) {
-      console.error(`Ocorreu um erro ao tentar obter a lista de serviços. Erro: ${e.message}`);
+      console.error(
+        `Ocorreu um erro ao tentar obter a lista de serviços. Erro: ${e.message}`,
+      );
     }
     if (!historyActivatedRef.current) {
       timerRef.current = setTimeout(getServiceList, updateInterval * 1000);
@@ -233,10 +256,11 @@ export default function Dashboard() {
 
   //useEffect para rodar na inicialização e iniciar o refresh de dados
   useEffect(() => {
+    localStorage.setItem("last_page", `/dashboard/${serviceId}`);
     if (!historyActivatedRef.current) {
       updateMetrics();
     }
-    <Toast icon="error" title="oie" />
+    <Toast icon="error" title="oie" />;
   }, [historyActivatedRef.current]);
 
   function createServiceList() {
@@ -297,14 +321,14 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
-  const metricsDone = timeUpdated !== "" || serviceList.length > 0;
-  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+  const showSkeleton = useSkeleton(!metricsLoaded && !gaveUp);
 
   // A lista "Outros serviços" vem em outra requisição, depois das métricas.
   const showListSkeleton = useSkeleton(serviceList.length === 0 && !gaveUp);
 
   return (
     <div className="dashboard-page">
+      {showSkeleton && <Loading/>}
       <AppHeader />
 
       <main className="dashboard">
@@ -327,12 +351,15 @@ export default function Dashboard() {
           <div className="btns">
             {showSkeleton ? (
               <span className="last-update">
-                <strong>{historyMessage}</strong>&nbsp; &nbsp;
                 <Skeleton width="15rem" height="1rem" />
               </span>
             ) : (
               <span className="last-update">
-                Última atualização: {timeUpdated || "-"}
+                {historyMessage ? (
+                  <strong>{historyMessage}</strong>
+                ) : (
+                  <span className="last-updated-text"><strong>Última atualização:</strong> {timeUpdated || "-"}</span>
+                )}
               </span>
             )}
 
@@ -363,32 +390,11 @@ export default function Dashboard() {
                   </select>
                 </div>
 
-                <div className="ranking-period">
-                  <label htmlFor="ranking-period-select">Período</label>
-
-                  <select
-                    className={`${showSkeleton ? "blocked " : ""}`}
-                    disabled={showSkeleton}
-                    name="date"
-                    id="ranking-period-select"
-                    value={period}
-                    onChange={(event) =>
-                      handlePeriodChange(event.target.value as RankingPeriod)
-                    }
-                    onClick={(event) => {
-                      const currentValue = event.currentTarget
-                        .value as RankingPeriod;
-                      if (currentValue === period) {
-                        handlePeriodChange(currentValue);
-                      }
-                    }}
-                  >
-                    <option value="now">Agora</option>
-                    <option value="today">Hoje</option>
-                    <option value="month">Esse mês</option>
-                    <option value="year">Esse ano</option>
-                  </select>
-                </div>
+                <PeriodSelect
+                  showSkeleton={showSkeleton}
+                  handlePeriodChange={handlePeriodChange}
+                  period={period}
+                />
               </div>
             ) : (
               <>
@@ -413,27 +419,11 @@ export default function Dashboard() {
                   </select>
                 </div>
 
-                <div className="ranking-period">
-                  <label htmlFor="ranking-period-select">
-                    Ver dados por período:
-                  </label>
-
-                  <select
-                    id="ranking-period-select"
-                    value={period}
-                    onChange={(event) =>
-                      handlePeriodChange(event.target.value as RankingPeriod)
-                    }
-                    className={`${showSkeleton ? "blocked " : ""}`}
-                    disabled={showSkeleton}
-                    name="date"
-                  >
-                    <option value="now">Agora</option>
-                    <option value="today">Hoje</option>
-                    <option value="month">Esse mês</option>
-                    <option value="year">Esse ano</option>
-                  </select>
-                </div>
+                <PeriodSelect
+                  showSkeleton={showSkeleton}
+                  handlePeriodChange={handlePeriodChange}
+                  period={period}
+                />
               </>
             )}
           </div>
@@ -460,7 +450,9 @@ export default function Dashboard() {
                     serviceMetrics.status &&
                     serviceMetrics.status == "active"
                       ? "Ativo"
-                      : "Inativo"}
+                      : serviceMetrics.status == "inactive"
+                        ? "Inativo"
+                        : "Deletado"}
                   </p>
                 </div>
               </section>
@@ -482,14 +474,11 @@ export default function Dashboard() {
                 <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
                 <h4>
-                  {serviceMetrics.metrics?.memory_gb ? (
+                  {serviceMetrics.metrics?.kwh ? (
                     <>
-                      {serviceMetrics.metrics?.memory_gb.toLocaleString(
-                        "pt-BR",
-                        {
-                          maximumSignificantDigits: 4,
-                        },
-                      )}{" "}
+                      {serviceMetrics.metrics?.kwh.toLocaleString("pt-BR", {
+                        maximumSignificantDigits: 4,
+                      })}{" "}
                       kWh
                     </>
                   ) : (
@@ -706,12 +695,17 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              O serviço está inativo ou não foi recolher as suas métricas
-              dentro do tempo esperado.
               <br />
               <br />
-              Espere mais um momento ou volte à <Link to={"/home"} className="home-back-link">tela principal</Link> e selecione outro serviço.
-              {/* <Toast icon="error" title="Erro" message="Erro ao carregar métricas do serviço. O serviço pode estar inativo." /> */}
+              O serviço está inativo ou não foi possível recolher as suas métricas dentro
+              do tempo esperado.
+              <br />
+              <br />
+              Espere mais um momento ou volte à{" "}
+              <Link to={"/home"} className="home-back-link">
+                tela principal
+              </Link>{" "}
+              e selecione outro serviço.
             </div>
           )}
         </div>
@@ -732,8 +726,9 @@ export default function Dashboard() {
 
       {/* calendário do histórico */}
       {calendar.calendarOpen && (
-        <RankingCalendar
+        <Calendar
           period={period}
+          selectedMinute={calendar.selectedMinute}
           selectedHour={calendar.selectedHour}
           selectedDay={calendar.selectedDay}
           selectedMonth={calendar.selectedMonth}
@@ -743,13 +738,16 @@ export default function Dashboard() {
           currentYear={calendar.currentYear}
           currentMonth={calendar.currentMonth}
           currentDay={calendar.currentDay}
+          currentHour={calendar.currentHour}
           calendarDays={calendar.calendarDays}
+          lastHourSlots={calendar.lastHourSlots}
           onClose={calendar.closeCalendar}
           onChangeMonth={(direction) => calendar.changeMonth(direction, period)}
+          onConfirmMinute={calendar.confirmMinute}
+          onConfirmHour={calendar.confirmHour}
           onConfirmDay={calendar.confirmDay}
           onConfirmMonth={calendar.confirmMonth}
           onConfirmYear={calendar.confirmYear}
-          onConfirmHour={calendar.confirmHour}
           handleFetch={fetchHistory}
           handleCancel={updateMetrics}
         />

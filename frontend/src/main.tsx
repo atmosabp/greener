@@ -14,6 +14,7 @@ import Admin from "./pages/admin/Admin.tsx";
 import ThemeProvider from "./providers/ThemeProvider.tsx";
 import ToastProvider from "./providers/ToastProvider.tsx";
 import ProtectedRoute from "./components/protectRoute/ProtectedRoute.tsx";
+import NotFound from "./pages/not-found-404/NotFound.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")!).render(
           {/* Rotas públicas */}
           <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/not-found" element={<NotFound />} />
 
           {/* Rotas que exigem autenticação */}
           <Route element={<ProtectedRoute />}>
@@ -38,7 +40,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/admin" element={<Admin />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace={true} />} />
+          <Route path="*" element={<Navigate to="/not-found" replace={true} />} />
         </Routes>
       </BrowserRouter>
       </ToastProvider>
