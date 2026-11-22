@@ -44,6 +44,10 @@
     --reference-border: #dfeaf6;
 }
 
+.cmp-comparison .gr-dropdown-trigger {
+    background-color: var(--lime);
+}
+
 /* ==========================================================
    RESET E BASE
 ========================================================== */
