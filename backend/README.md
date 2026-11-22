@@ -59,7 +59,6 @@ backend/
 │ ├ modules/
 │ │ ├ collections/            # Histórico de coletas (rotas, controller, service, repository)
 │ │ ├ users/                  # Usuários (rotas, controller, service, repository)
-│ │ ├ index.ts                # Registro das rotas e tratamento de rota inexistente
 │ │ └ metrics-calculator.ts   # Cálculos de kWh e CO₂e
 │ ├ types/                    # Interfaces TypeScript das APIs externas
 │ ├ app.ts                    # Criação do app Express e rota /health

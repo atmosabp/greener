@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from "pg";
 import { connection } from "../config/env";
 
 let config;
@@ -11,3 +11,12 @@ config = {
 };
 
 export const pool = new Pool(config);
+
+export interface Database {
+  query<T extends QueryResultRow = any>(
+    sql: string,
+    values?: unknown[],
+  ): Promise<QueryResult<T>>;
+  // Necessário para as transações (BEGIN / COMMIT / ROLLBACK).
+  connect(): Promise<PoolClient>;
+}

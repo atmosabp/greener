@@ -54,7 +54,7 @@
   border: 0.1rem solid var(--dropdown-bg);
   border-radius: 1.2rem;
 
-  background: var(--dropdown-bg);
+  background: var(--dropdown-panel);
   color: var(--dropdown-ink);
 
   font-family: inherit;
@@ -76,8 +76,8 @@
 
 .gr-dropdown-trigger:hover,
 .gr-dropdown-trigger[aria-expanded="true"] {
-  background: var(--dropdown-panel);
-  border-color: var(--dropdown-panel);
+  background: var(--dropdown-moss);
+  border-color: var(--dropdown-moss);
 
   box-shadow: 0 0.1875rem 0.5625rem rgba(58, 50, 44, 0.12);
 }

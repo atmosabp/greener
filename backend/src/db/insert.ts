@@ -1,8 +1,8 @@
 import { admin } from "../config/env";
 import bcrypt from "bcrypt";
-import { pool } from "./connections";
+import type { Database } from "./connections";
 
-async function insertAdmin(): Promise<void> {
+async function insertAdmin(db: Database): Promise<void> {
     try {
         // Recupera os dados do administrador das variáveis de ambiente
         const name = admin.name;
@@ -17,7 +17,7 @@ async function insertAdmin(): Promise<void> {
         }
 
         // Verifica se o administrador já está cadastrado
-        const existingAdmin = await pool.query(
+        const existingAdmin = await db.query(
             "SELECT id FROM users WHERE email = $1",
             [email]
         );
@@ -31,7 +31,7 @@ async function insertAdmin(): Promise<void> {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insere o administrador no banco
-        await pool.query(
+        await db.query(
             `INSERT INTO users (name, email, password, is_adm)
             VALUES ($1, $2, $3, $4)`,
             [name, email, hashedPassword, true]
@@ -45,6 +45,6 @@ async function insertAdmin(): Promise<void> {
     }
 }
 
-export async function runInsert(): Promise<void> {
-    await insertAdmin();
+export async function runInsert(db: Database): Promise<void> {
+    await insertAdmin(db);
 }

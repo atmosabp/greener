@@ -1,0 +1,17 @@
+
+.period-select-container {
+    width: 100%;
+    min-width: 0;
+    height: 2.5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 0.8rem;
+    padding-right: 0;
+
+    border-radius: 2rem;
+    background-color: var(--primary-light);
+    color: var(--text);
+}

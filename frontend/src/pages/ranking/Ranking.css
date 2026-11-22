@@ -1,4 +1,3 @@
-
 /* =========================================
    RANKING — ESTRUTURA PRINCIPAL
 ========================================= */
@@ -44,7 +43,7 @@
 
 
 /* =========================================
-   TÍTULO E FILTROS
+   TÍTULO E FILTROS SUPERIORES
 ========================================= */
 
 .ranking-intro-box {
@@ -115,69 +114,83 @@
 
 
 /* =========================================
-   SELECTS
+   PERÍODO — DROPDOWN PERSONALIZADO
 ========================================= */
 
-.ranking-page select {
+.ranking-period .period-select-container {
+    width: 100%;
+    min-width: 0;
+    height: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0;
+    border-radius: 2rem;
+    background-color: transparent;
+    color: var(--text);
+}
+
+.ranking-period .gr-dropdown {
+    width: 100%;
+    min-width: 0;
+}
+
+.ranking-period .gr-dropdown-trigger {
+    width: 100%;
+    min-height: 2.3rem;
+    padding: 0 2.5rem 0 0.85rem;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--primary-dark);
+    color: var(--background);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.ranking-period .gr-dropdown-trigger:hover,
+.ranking-period .gr-dropdown-trigger[aria-expanded="true"] {
+    background-color: var(--primary-darker);
+}
+
+.ranking-period .gr-dropdown-chevron {
+    color: var(--background);
+}
+
+.ranking-period .gr-dropdown-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   SELECT NATIVO DO CALENDÁRIO
+========================================= */
+
+.ranking-page .ranking-year-select {
     appearance: none;
     -webkit-appearance: none;
     min-width: 0;
-    border: 0;
+    border: 0.08rem solid var(--primary-dark);
     outline: none;
     border-radius: 999px;
-    background-color: var(--primary-dark);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+    background-color: var(--background);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.85rem center;
     background-size: 0.95rem;
-    color: var(--background);
+    color: var(--text);
     font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 500;
     cursor: pointer;
 }
 
-[data-theme="dark"] .ranking-page select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
-}
-
-.ranking-page select option {
-    background-color: var(--background);
-    color: var(--text);
-}
-
-.ranking-page select:focus-visible,
-.ranking-page button:focus-visible {
-    outline: 0.12rem solid var(--text);
-    outline-offset: 0.15rem;
-}
-
-.ranking-period select {
-    width: 100%;
-    height: 2.3rem;
-    padding: 0 2.5rem 0 0.85rem;
-    font-size: 1rem;
-    text-align: center;
-    text-align-last: center;
-}
-
-.ranking-period .ranking-year-select {
-    border: 0.08rem solid var(--primary-dark);
-    background-color: var(--background);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
-    color: var(--text);
-}
-
-[data-theme="dark"] .ranking-period .ranking-year-select {
+[data-theme="dark"] .ranking-page .ranking-year-select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 
-/* =========================================
-   DROPDOWN
-========================================= */
-.gr-dropdown-trigger {
-    border: none;
-}
 
 /* =========================================
    CLASSIFICAÇÃO
@@ -212,20 +225,24 @@
         border-color 0.2s ease;
 }
 
-.ranking-metric-button:hover {
+.ranking-metric-button:hover:not(:disabled) {
     filter: brightness(1.06);
 }
 
 .ranking-metric-button.is-active {
-    background-color:var(--primary-darker);
+    background-color: var(--primary-darker);
     border-color: #ECDEC7;
     color: #ECDEC7;
+}
 
+.ranking-metric-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 
 /* =========================================
-   ATUALIZAÇÃO
+   BARRA DE ATUALIZAÇÃO
 ========================================= */
 
 .ranking-toolbar {
@@ -250,11 +267,31 @@
     white-space: nowrap;
 }
 
-.ranking-update select {
+.ranking-update-dropdown {
     width: 6.8rem;
-    height: 2.65rem;
+    flex-shrink: 0;
+}
+
+.ranking-update .gr-dropdown-trigger {
+    width: 100%;
+    min-height: 2.65rem;
     padding: 0 2.25rem 0 0.8rem;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--primary-dark);
+    color: var(--background);
+    font-family: inherit;
     font-size: 1rem;
+    font-weight: 500;
+}
+
+.ranking-update .gr-dropdown-trigger:hover,
+.ranking-update .gr-dropdown-trigger[aria-expanded="true"] {
+    background-color: var(--primary-darker);
+}
+
+.ranking-update .gr-dropdown-chevron {
+    color: var(--background);
 }
 
 .ranking-toolbar-info {
@@ -263,34 +300,30 @@
     gap: 0.6rem;
 }
 
+.ranking-toolbar-info p {
+    margin: 0;
+}
+
 .ranking-last-update {
     color: var(--ranking-muted);
     font-size: 0.8rem;
     white-space: nowrap;
 }
 
-.ranking-refresh-button {
-    width: 2.15rem;
-    height: 2.15rem;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background-color: var(--primary-light);
-    color: var(--text);
-    cursor: pointer;
-    transition: transform 0.2s ease;
+.ranking-last-update strong {
+    font-weight: 600;
 }
 
-.ranking-refresh-button:hover {
-    transform: rotate(30deg);
+.ranking-page button:focus-visible,
+.ranking-page .gr-dropdown-trigger:focus-visible,
+.ranking-page .ranking-year-select:focus-visible {
+    outline: 0.12rem solid var(--text);
+    outline-offset: 0.15rem;
 }
 
 
 /* =========================================
-   TABELA — ROLAGEM INDEPENDENTE
+   TABELA
 ========================================= */
 
 .ranking-page .ranking-table-section {
@@ -333,6 +366,11 @@
     border: 0.08rem solid var(--ranking-row-main);
     border-radius: 999px;
     background-color: var(--primary-light);
+}
+
+.table-border {
+    width: 100%;
+    min-width: 0;
 }
 
 .ranking-table {
@@ -387,11 +425,6 @@
     overflow-wrap: anywhere;
 }
 
-.service-link-text{
-    color: var(--text);
-    /* text-decoration: none; */
-}
-
 .ranking-table td + td {
     border-left: 0.1rem solid var(--ranking-border);
 }
@@ -416,11 +449,12 @@
     font-weight: 500;
 }
 
-.service-link-text{
+.service-link-text {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
+    color: var(--text);
     transition: all 0.2s;
     text-decoration: none;
 }
@@ -460,9 +494,13 @@
     flex-shrink: 0;
 }
 
+.ranking-table-caption p {
+    margin: 0;
+}
+
 
 /* =========================================
-   CALENDÁRIO SUSPENSO
+   CALENDÁRIO
 ========================================= */
 
 .ranking-calendar-overlay {
@@ -834,8 +872,12 @@
         font-size: 0.9rem;
     }
 
-    .ranking-period select {
+    .ranking-period .period-select-container {
         height: 2.35rem;
+    }
+
+    .ranking-period .gr-dropdown-trigger {
+        min-height: 2.35rem;
         font-size: 0.9rem;
     }
 
@@ -861,9 +903,12 @@
         font-size: 0.9rem;
     }
 
-    .ranking-update select {
+    .ranking-update-dropdown {
         width: 5.5rem;
-        height: 2.4rem;
+    }
+
+    .ranking-update .gr-dropdown-trigger {
+        min-height: 2.4rem;
         font-size: 0.9rem;
     }
 
@@ -874,6 +919,7 @@
 
     .ranking-last-update {
         font-size: 0.75rem;
+        white-space: normal;
     }
 
     .ranking-page .ranking-table-section {
