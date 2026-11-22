@@ -14,7 +14,12 @@ import {
     inlineSkeleton,
 } from "./HomepageSkeleton";
 
-import { Globe2, Map } from "lucide-react";
+import {
+    Globe2,
+    Map,
+    ChartNoAxesColumn,
+    GitCompareArrows,
+} from "lucide-react";
 
 import { port } from "../../utils/connection";
 import type { ServiceStatus, ServiceType } from "../../types/service";
@@ -33,7 +38,7 @@ const statusLabels: Record<ServiceStatus, string> = {
     incomplete: "Incompleto",
     inactive: "Inativo",
     deleted: "",
-    unavailable: ""
+    unavailable: "",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -67,7 +72,6 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
     }
 
     // Controla o tempo máximo de exibição do skeleton.
-    // Caso o backend não responda em 15 segundos, exibe o estado vazio.
     const [gaveUp, setGaveUp] = useState(false);
 
     useEffect(() => {
@@ -116,6 +120,17 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
             <AppHeader />
 
             <main className="homepage-main">
+                {/* Introdução principal da página */}
+                <section className="intro-section">
+                    <div className="intro-copy">
+                        <span className="section-kicker">
+                            VISÃO GLOBAL
+                        </span>
+
+                        <h2>Explore o planeta</h2>
+                    </div>
+                </section>
+
                 <section
                     className="explorer-layout"
                     aria-label="Explorador de serviços"
@@ -210,6 +225,54 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                             )}
                         </div>
 
+                        {/* Navegação para outras análises */}
+                        <nav
+                            className="services-navigation"
+                            aria-label="Outras análises"
+                        >
+                            <span className="services-navigation-title">
+                                ANÁLISES
+                            </span>
+
+                            <Link
+                                to="/ranking"
+                                className="services-navigation-link"
+                            >
+                                <ChartNoAxesColumn
+                                    size={17}
+                                    strokeWidth={1.8}
+                                />
+
+                                <span>
+                                    <strong>Ranking</strong>
+                                    <small>Impacto por serviço</small>
+                                </span>
+
+                                <span className="services-navigation-arrow">
+                                    →
+                                </span>
+                            </Link>
+
+                            <Link
+                                to="/comparison"
+                                className="services-navigation-link"
+                            >
+                                <GitCompareArrows
+                                    size={17}
+                                    strokeWidth={1.8}
+                                />
+
+                                <span>
+                                    <strong>Comparação</strong>
+                                    <small>Diferenças entre operações</small>
+                                </span>
+
+                                <span className="services-navigation-arrow">
+                                    →
+                                </span>
+                            </Link>
+                        </nav>
+
                         <div className="services-legend">
                             <span className="legend-title">
                                 STATUS DOS SERVIÇOS
@@ -267,66 +330,9 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                         </div>
                     </aside>
 
-                    <nav
-                        className="homepage-actions"
-                        aria-label="Outras análises"
-                    >
-                        <Link to="/ranking" className="analysis-link">
-                            <span
-                                className="analysis-link-icon"
-                                aria-hidden="true"
-                            >
-                                ↗
-                            </span>
-
-                            <span className="analysis-link-content">
-                                <strong>Ranking de emissões</strong>
-                                <small>
-                                    Compare os serviços por impacto
-                                </small>
-                            </span>
-
-                            <span
-                                className="analysis-link-arrow"
-                                aria-hidden="true"
-                            >
-                                →
-                            </span>
-                        </Link>
-
-                        <Link to="/comparison" className="analysis-link">
-                            <span
-                                className="analysis-link-icon"
-                                aria-hidden="true"
-                            >
-                                ⇄
-                            </span>
-
-                            <span className="analysis-link-content">
-                                <strong>Comparação</strong>
-                                <small>
-                                    Analise diferenças entre operações
-                                </small>
-                            </span>
-
-                            <span
-                                className="analysis-link-arrow"
-                                aria-hidden="true"
-                            >
-                                →
-                            </span>
-                        </Link>
-                    </nav>
-
                     <section className="visualization-column">
                         <div className="visualization-topline">
-                            <div className="visualization-heading">
-                                <span className="section-kicker">
-                                    VISÃO GLOBAL
-                                </span>
-                                <h2>Explore o planeta</h2>
-                            </div>
-
+                            {/* Atualização permanece junto à visualização */}
                             <div className="last-update">
                                 <span>Última atualização:</span>
 
@@ -350,9 +356,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                         disabled={showSkeleton}
                                         type="button"
                                         className={
-                                            mode === "globe"
-                                                ? "active"
-                                                : ""
+                                            mode === "globe" ? "active" : ""
                                         }
                                         onClick={() => setMode("globe")}
                                         aria-pressed={mode === "globe"}
@@ -367,9 +371,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                         disabled={showSkeleton}
                                         type="button"
                                         className={
-                                            mode === "map"
-                                                ? "active"
-                                                : ""
+                                            mode === "map" ? "active" : ""
                                         }
                                         onClick={() => setMode("map")}
                                         aria-pressed={mode === "map"}
