@@ -26,7 +26,7 @@ import Toast from "../../components/toast/Toast";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
 
-import { useToast } from "../../hooks/useToast";
+import Loading from "../../components/loading/Loading";
 import Tooltip from "../../components/tooltip/Tooltip";
 import Greeting from "../../components/greetings/Greeting";
 
@@ -62,7 +62,7 @@ export default function Dashboard() {
 
   const calendar = useCalendar();
 
-  const { showToast } = useToast();
+  // const { showToast } = useToast();
 
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
@@ -127,6 +127,7 @@ export default function Dashboard() {
     }[]
   >([]);
   const [timeUpdated, setTimeUpdated] = useState<string>("");
+  const [metricsLoaded, setMetricsLoaded] = useState(false);
 
   async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
@@ -202,7 +203,7 @@ export default function Dashboard() {
         `Ocorreu um erro ao obter métricas do serviço. Erro: ${e.message}`,
       );
     }
-
+    setMetricsLoaded(true);
     if (!historyActivatedRef.current && data) {
       timerRef.current = setTimeout(getServiceMetrics, updateInterval * 1000);
     }
@@ -318,14 +319,14 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
-  const metricsDone = timeUpdated !== "" || serviceList.length > 0;
-  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+  const showSkeleton = useSkeleton(!metricsLoaded && !gaveUp);
 
   // A lista "Outros serviços" vem em outra requisição, depois das métricas.
   const showListSkeleton = useSkeleton(serviceList.length === 0 && !gaveUp);
 
   return (
     <div className="dashboard-page">
+      {showSkeleton && <Loading/>}
       <AppHeader />
 
       <main className="dashboard">

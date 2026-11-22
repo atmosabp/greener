@@ -22,6 +22,7 @@ import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import { port } from "../../utils/connection";
 import type { ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 import Toast from "../../components/toast/Toast";
 import Greeting from "../../components/greetings/Greeting";
 
@@ -99,7 +100,9 @@ export default function Ranking() {
           });
         }
         setLastUpdate(new Date(datePull));
-        setHistoryMessage(`Você está vendo dados do passado: ${toReadableTime(datePull)}`);
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
 
         sortRanking(formatedData);
       } else {
@@ -118,7 +121,9 @@ export default function Ranking() {
         title="Histórico"
         message="Não foi possível obter dados para o peíodo selecionado."
       />;
-      setHistoryMessage("Não foi possível obter dados para o peíodo selecionado.");
+      setHistoryMessage(
+        "Não foi possível obter dados para o peíodo selecionado.",
+      );
     }
   }
 
@@ -242,7 +247,7 @@ export default function Ranking() {
 
   return (
     <div className="ranking-page">
-      {/* <Loading data={initialServices} /> */}
+      {showSkeleton && <Loading />}
       <AppHeader />
 
       <main className="ranking-main">
@@ -259,12 +264,13 @@ export default function Ranking() {
 
                 <div className="ranking-classification-buttons">
                   <button
+                    disabled={showSkeleton}
                     type="button"
-                    className={
+                    className={`${
                       metric === "energy"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    }${showSkeleton ? " blocked" : ""}`}
                     aria-pressed={metric === "energy"}
                     onClick={() => handleParamChange("energy")}
                   >
@@ -272,12 +278,13 @@ export default function Ranking() {
                   </button>
 
                   <button
+                    disabled={showSkeleton}
                     type="button"
-                    className={
+                    className={`${
                       metric === "co2e"
                         ? "ranking-metric-button is-active"
                         : "ranking-metric-button"
-                    }
+                    } ${showSkeleton ? " blocked" : ""}`}
                     aria-pressed={metric === "co2e"}
                     onClick={() => handleParamChange("co2e")}
                   >
@@ -285,13 +292,6 @@ export default function Ranking() {
                   </button>
                 </div>
               </div>
-
-              <PeriodSelect
-                showSkeleton={showSkeleton}
-                handlePeriodChange={handlePeriodChange}
-                period={period}
-              />
-
             </div>
           </section>
 
@@ -302,6 +302,8 @@ export default function Ranking() {
 
                 <select
                   id="ranking-update-select"
+                  disabled={showSkeleton}
+                  className={`${showSkeleton} ? "blocked" : ""`}
                   value={Number(updateInterval)}
                   onChange={(event) =>
                     handleUpdateIntervalChange(Number(event.target.value))
@@ -315,33 +317,25 @@ export default function Ranking() {
                   <option value={120}>120s</option>
                 </select>
               </div>
-              <PeriodSelect
-                showSkeleton={showSkeleton}
-                handlePeriodChange={handlePeriodChange}
-                period={period}
-              />
+              <div className="ranking-period">
+                <PeriodSelect
+                  showSkeleton={showSkeleton}
+                  handlePeriodChange={handlePeriodChange}
+                  period={period}
+                />
+              </div>
             </div>
 
             <div className="ranking-toolbar-info">
-              {showSkeleton ? (
-                <p>
-                  <Skeleton width="10rem" height="1rem" />
-                </p>
-              ) : (
-                <span className="ranking-last-update">
-                  <strong>{historyMessage}</strong>&nbsp; &nbsp;
-                  {historyActivatedRef.current ? (
-                    <></>
-                  ) : (
-                    <span className="last-updated-text"><strong>Última atualização:</strong> {formattedLastUpdate}</span>
-                  )}
-                </span>
-              )}
+              <span className="ranking-last-update">
+                Última atualização: {formattedLastUpdate}
+              </span>
 
               <button
                 type="button"
-                className="ranking-refresh-button"
+                className={`ranking-refresh-button ${showSkeleton} ? "blocked" : ""`}
                 onClick={handleRefresh}
+                disabled={showSkeleton}
                 aria-label="Atualizar horário da última atualização"
                 title="Atualizar"
               >

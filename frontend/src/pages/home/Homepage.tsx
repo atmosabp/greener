@@ -16,6 +16,7 @@ import { Globe2, Map } from "lucide-react";
 
 import { port } from "../../utils/connection";
 import type { ServiceStatus, ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 
 interface HomepageProps {
   lastUpdated?: string;
@@ -29,7 +30,7 @@ const statusLabels: Record<ServiceStatus, string> = {
   incomplete: "Incompleto",
   inactive: "Inativo",
   deleted: "Deletado",
-  unavailable: "Indisponível"
+  unavailable: "Indisponível",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -94,6 +95,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
   return (
     <div className="homepage">
+      {showSkeleton && <Loading />}
       <AppHeader />
 
       <main className="homepage-main">
@@ -296,22 +298,28 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                 aria-label="Tipo de visualização"
               >
                 <button
+                  disabled={showSkeleton}
                   type="button"
-                  className={mode === "globe" ? "active" : ""}
+                  className={`${mode === "globe" ? "active" : ""}${showSkeleton ? "blocked": ""}`}
                   onClick={() => setMode("globe")}
                   aria-pressed={mode === "globe"}
                 >
-                  <span aria-hidden="true"><Globe2/></span>
+                  <span aria-hidden="true">
+                    <Globe2 />
+                  </span>
                   Globo
                 </button>
 
                 <button
+                  disabled={showSkeleton}
                   type="button"
-                  className={mode === "map" ? "active" : ""}
+                  className={`${mode === "map" ? "active" : ""}${showSkeleton ? "blocked": ""}`}
                   onClick={() => setMode("map")}
                   aria-pressed={mode === "map"}
                 >
-                  <span aria-hidden="true"><Map/></span>
+                  <span aria-hidden="true">
+                    <Map />
+                  </span>
                   Mapa
                 </button>
               </div>
