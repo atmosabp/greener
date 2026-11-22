@@ -32,8 +32,8 @@ const statusLabels: Record<ServiceStatus, string> = {
     active: "Ativo",
     incomplete: "Incompleto",
     inactive: "Inativo",
-    deleted: "Deletado",
-    unavailable: "Indisponível",
+    deleted: "",
+    unavailable: ""
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -108,14 +108,6 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
     const inactiveCount = services.filter(
         (service) => service.status === "inactive",
-    ).length;
-
-    const deletedCount = services.filter(
-        (service) => service.status === "deleted",
-    ).length;
-
-    const unavailableCount = services.filter(
-        (service) => service.status === "unavailable",
     ).length;
 
     return (
@@ -268,38 +260,6 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                             />
                                         ) : (
                                             inactiveCount
-                                        )}
-                                    </strong>
-                                </span>
-
-                                <span>
-                                    <i className="status-dot deleted" />
-                                    Deletados
-                                    <strong>
-                                        {showSkeleton ? (
-                                            <Skeleton
-                                                width={18}
-                                                height="0.9rem"
-                                                style={inlineSkeleton}
-                                            />
-                                        ) : (
-                                            deletedCount
-                                        )}
-                                    </strong>
-                                </span>
-
-                                <span>
-                                    <i className="status-dot unavailable" />
-                                    Indisponíveis
-                                    <strong>
-                                        {showSkeleton ? (
-                                            <Skeleton
-                                                width={18}
-                                                height="0.9rem"
-                                                style={inlineSkeleton}
-                                            />
-                                        ) : (
-                                            unavailableCount
                                         )}
                                     </strong>
                                 </span>
