@@ -57,12 +57,12 @@ export function DashboardGridSkeleton() {
 
       <section className="metric-card metric-card--data metric-energy">
         <p>Consumo energético</p>
-        <Skeleton width="60%" height="1.6rem" />
+        <Skeleton width="60%" height="2rem" />
       </section>
 
       <section className="metric-card metric-card--data metric-co2">
         <p>Emissão de CO₂e</p>
-        <Skeleton width="60%" height="1.6rem" />
+        <Skeleton width="60%" height="2rem" />
       </section>
 
       <div className="metrics-carousel">
@@ -79,7 +79,7 @@ export function DashboardGridSkeleton() {
             <section key={cls} className={`metric-card metric-card--usage ${cls}`}>
               <p>{label}</p>
               <span className="metric-counter">{counter}</span>
-              <Skeleton width="55%" height="1.6rem" />
+              <Skeleton width="55%" height="2rem" />
             </section>
           ))}
         </div>

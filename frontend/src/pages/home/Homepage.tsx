@@ -16,6 +16,7 @@ import { Globe2, Map } from "lucide-react";
 
 import { port } from "../../utils/connection";
 import type { ServiceStatus, ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 
 interface HomepageProps {
   lastUpdated?: string;
@@ -28,6 +29,8 @@ const statusLabels: Record<ServiceStatus, string> = {
   active: "Ativo",
   incomplete: "Incompleto",
   inactive: "Inativo",
+  deleted: "Deletado",
+  unavailable: "Indisponível",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -86,8 +89,13 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
     ? services.filter((service) => service.status === "inactive").length
     : 0;
 
+  const deletedCount = services
+    ? services.filter((service) => service.status === "deleted").length
+    : 0;
+
   return (
     <div className="homepage">
+      {showSkeleton && <Loading />}
       <AppHeader />
 
       <main className="homepage-main">
@@ -185,7 +193,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                   </strong>
                 </span>
 
-                <span>
+                {/* <span>
                   <i className="status-dot incomplete" />
                   Incompletos
                   <strong>
@@ -199,7 +207,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                       incompleteCount
                     )}
                   </strong>
-                </span>
+                </span> */}
 
                 <span>
                   <i className="status-dot inactive" />
@@ -213,6 +221,22 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                       />
                     ) : (
                       inactiveCount
+                    )}
+                  </strong>
+                </span>
+
+                <span>
+                  <i className="status-dot incomplete" />
+                  Deletados
+                  <strong>
+                    {showSkeleton ? (
+                      <Skeleton
+                        width={18}
+                        height="0.9rem"
+                        style={inlineSkeleton}
+                      />
+                    ) : (
+                      deletedCount
                     )}
                   </strong>
                 </span>
@@ -274,22 +298,28 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                 aria-label="Tipo de visualização"
               >
                 <button
+                  disabled={showSkeleton}
                   type="button"
-                  className={mode === "globe" ? "active" : ""}
+                  className={`${mode === "globe" ? "active" : ""}${showSkeleton ? "blocked": ""}`}
                   onClick={() => setMode("globe")}
                   aria-pressed={mode === "globe"}
                 >
-                  <span aria-hidden="true"><Globe2/></span>
+                  <span aria-hidden="true">
+                    <Globe2 />
+                  </span>
                   Globo
                 </button>
 
                 <button
+                  disabled={showSkeleton}
                   type="button"
-                  className={mode === "map" ? "active" : ""}
+                  className={`${mode === "map" ? "active" : ""}${showSkeleton ? "blocked": ""}`}
                   onClick={() => setMode("map")}
                   aria-pressed={mode === "map"}
                 >
-                  <span aria-hidden="true"><Map/></span>
+                  <span aria-hidden="true">
+                    <Map />
+                  </span>
                   Mapa
                 </button>
               </div>

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { port } from "../../utils/connection";
+import "./Comparison.css";
 
 import AppHeader from "../../components/header/AppHeader";
 
@@ -8,23 +10,18 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
-  PERIODS,
+  type CompareTarget
 } from "./components/comparisonData";
-
-import type { CompareTarget } from "./components/comparisonData";
 
 import {
   Chevron,
   Gauge,
   Popover,
-  SelectPill,
   StarIcon,
 } from "./components/ComparisonComponents";
 
 import ServiceCard from "./components/ServiceCard";
-
-import type { MetricsType, ServiceType } from '../../types/service';
-import Tooltip from '../../components/tooltip/tooltip';
+import Tooltip from "../../components/tooltip/Tooltip";
 
 import Greeting from "../../components/greetings/Greeting";
 
@@ -33,14 +30,31 @@ import {
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
 
-import "./Comparison.css";
+import {
+  timeFormatter,
+  type RankingPeriod,
+} from "../ranking/rankingData";
+
+import type { MetricsType, ServiceType } from "../../types/service";
+import RefreshButton from "../../components/refreshButton/RefreshButton";
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
+
+import Loading from "../../components/loading/Loading";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+import { toReadableTime } from "../../utils/history";
 
 export default function Comparison() {
-  const [period, setPeriod] = useState("today");
+  const [period, setPeriod] = useState<RankingPeriod>("now");
+  const historyActivatedRef = useRef(false);
+  const [lastUpdate, setLastUpdate] = useState(() => new Date());
+
+  const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [historyMessage, setHistoryMessage] = useState("");
 
   const [order, setOrder] = useState<string[]>([]);
 
@@ -54,12 +68,88 @@ export default function Comparison() {
 
   /* Buscar os serviços e suas métricas no backend. */
   useEffect(() => {
-    let ignore = false;
+    localStorage.setItem("last_page", '/comparison');
+    const t = setTimeout(() => setGaveUp(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
 
+  const calendar = useCalendar();
+
+  const [_gaveUp, setGaveUp] = useState(false);
+
+  async function fetchHistory(periodType: string, datePull: Date | string) {
+    try {
+      let formatedData: ServiceType[] = [];
+
+      const result = await fetch(
+        `http://localhost:${port}/collections/all-service-history`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+        },
+      );
+      const data: any[] = await result.json();
+
+      if (data && data.length > 0) {
+        for (let service of data) {
+          formatedData.push({
+            id: service.id,
+            name: service.name,
+            metrics: {
+              cpu_percent: service.cpu_percentage,
+              memory_gb: service.memory_gb,
+              disk_gb: service.disk_gb,
+              network_gb: service.network_gb,
+              co2e: service.co2e,
+              kwh: service.kwh,
+              carbon_intensity: service.co2e / service.kwh,
+            },
+            status: "active",
+          });
+        }
+
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
+
+        setServices(formatedData);
+        setOrder(formatedData.map((service) => service.id));
+        setSelected(new Set(formatedData.map((service) => service.id)));
+        setReferenceId(formatedData[0]?.id ?? null);
+        setError(null);
+        setLoading(false);
+      } else {
+        handleRefresh();
+        setHistoryMessage("Período escolhido não possui dado.");
+      }
+    } catch (e: any) {
+      console.error(
+        `Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`,
+      );
+      setHistoryMessage(
+        "Ocorreu um erro ao buscar dados do período selecionado.",
+      );
+    }
+  }
+
+  function handlePeriodChange(nextPeriod: RankingPeriod) {
+    if (nextPeriod == "now") {
+      handleRefresh();
+      setHistoryMessage("");
+    } else {
+      historyActivatedRef.current = true;
+    }
+    setPeriod(nextPeriod);
+    calendar.openCalendar(nextPeriod);
+  }
+
+  async function handleRefresh() {
+    setHistoryMessage("");
+    setPeriod("now");
+    historyActivatedRef.current = false;
     fetchServices()
       .then((data) => {
-        if (ignore) return;
-
         setServices(data);
         setOrder(data.map((service) => service.id));
         setSelected(new Set(data.map((service) => service.id)));
@@ -67,8 +157,6 @@ export default function Comparison() {
         setError(null);
       })
       .catch((error: unknown) => {
-        if (ignore) return;
-
         setError(
           error instanceof Error
             ? error.message
@@ -76,12 +164,15 @@ export default function Comparison() {
         );
       })
       .finally(() => {
-        if (!ignore) setLoading(false);
+        setLoading(false);
       });
 
-    return () => {
-      ignore = true;
-    };
+    setLastUpdate(new Date());
+  }
+
+  /* Buscar os serviços e suas métricas no backend. */
+  useEffect(() => {
+    handleRefresh();
   }, []);
 
   /* Serviços selecionados na ordem atual. */
@@ -164,6 +255,7 @@ export default function Comparison() {
 
   return (
     <div className="cmp-comparison">
+      {loading && <Loading/>}
       <AppHeader />
 
       <main className="cmp-page">
@@ -174,14 +266,29 @@ export default function Comparison() {
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
           </div>
-           <div className="cmp-intro-btns">
+          <div className="cmp-intro-btns"></div>
+
+          <span className="cmp-select">
+            <span className="ranking-last-update">
+              <strong>{historyMessage}</strong>&nbsp; &nbsp;
+              {historyActivatedRef.current ? (
+                <></>
+              ) : (
+                <span className="last-updated-text"><strong>Última atualização:</strong> {formattedLastUpdate}</span>
+              )}{" "}
+              &nbsp; &nbsp; &nbsp; &nbsp;
+            </span>
+
+            <RefreshButton handleRefresh={handleRefresh} />
+
             <Popover
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className="cmp-pill-outline"
+                  className={`cmp-pill-outline ${loading} ? "blocked": "" `}
                   aria-expanded={open}
                   onClick={toggle}
+                  disabled={loading}
                 >
                   Serviços selecionados
                   <Chevron size={22} />
@@ -205,14 +312,13 @@ export default function Comparison() {
                 </ul>
               )}
             </Popover>
-            <SelectPill
-              variant="dark"
-              label="Período"
-              value={period}
-              onChange={setPeriod}
-              options={PERIODS}
+            <PeriodSelect
+              showSkeleton={loading}
+              handlePeriodChange={handlePeriodChange}
+              period={period}
             />
-          </div>
+            
+          </span>
         </section>
 
         {/* ---------------------------------------------------------- */}
@@ -227,14 +333,16 @@ export default function Comparison() {
               Média indicadores
             </h2>
 
-          <button
-            type="button"
-            className="cmp-averages__help"
-            aria-label="Ajuda sobre os indicadores"
-            title="Média dos serviços selecionados"
-          >
-            <Tooltip text={"Média das métricas dos \n servicos selecionadas"} />  
-          </button>
+            <button
+              type="button"
+              className="cmp-averages__help"
+              aria-label="Ajuda sobre os indicadores"
+              title="Média dos serviços selecionados"
+            >
+              <Tooltip
+                text={"Média das métricas dos \n servicos selecionadas"}
+              />
+            </button>
 
             <div className="cmp-averages__content">
               <div className="cmp-averages__tiles">
@@ -374,6 +482,35 @@ export default function Comparison() {
             )}
           </div>
         </section>
+        {calendar.calendarOpen && (
+          <Calendar
+            period={period}
+            selectedMinute={calendar.selectedMinute}
+            selectedHour={calendar.selectedHour}
+            selectedDay={calendar.selectedDay}
+            selectedMonth={calendar.selectedMonth}
+            selectedYear={calendar.selectedYear}
+            viewMonth={calendar.viewMonth}
+            viewYear={calendar.viewYear}
+            currentYear={calendar.currentYear}
+            currentMonth={calendar.currentMonth}
+            currentDay={calendar.currentDay}
+            currentHour={calendar.currentHour}
+            calendarDays={calendar.calendarDays}
+            lastHourSlots={calendar.lastHourSlots}
+            onClose={calendar.closeCalendar}
+            onChangeMonth={(direction) =>
+              calendar.changeMonth(direction, period)
+            }
+            onConfirmMinute={calendar.confirmMinute}
+            onConfirmHour={calendar.confirmHour}
+            onConfirmDay={calendar.confirmDay}
+            onConfirmMonth={calendar.confirmMonth}
+            onConfirmYear={calendar.confirmYear}
+            handleFetch={fetchHistory}
+            handleCancel={handleRefresh}
+          />
+        )}
       </main>
 
       <footer className="cmp-footer">Desenvolvido por Atmos © 2026</footer>

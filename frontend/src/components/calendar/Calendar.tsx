@@ -1,167 +1,278 @@
-// Importações
 import { useState } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import "./Calendar.css";
-
-// Tipagem para o calendário
-interface CalendarProps {
-  onSelect: (date: string) => void;
+ 
+import { hours, monthNames, weekDays, type RankingPeriod } from "../../pages/ranking/rankingData";
+import { toLocalISOTime } from "../../utils/history";
+import ClockPicker, { type ClockValue } from "./ClockPicker";
+ 
+type LastHourSlotType = {
+  hour: number;
+  minute: number;
+  label: string;
+  date: Date;
+};
+ 
+type CalendarProps = {
+  period: RankingPeriod;
+  selectedMinute: number;
+  selectedHour: number;
+  selectedDay: number;
+  selectedMonth: number;
+  selectedYear: number;
+  viewMonth: number;
+  viewYear: number;
+  currentYear: number;
+  currentMonth: number;
+  currentDay: number;
+  currentHour: number;
+  calendarDays: (number | null)[];
+  lastHourSlots: LastHourSlotType[]; // agora cobre as últimas 2 horas
   onClose: () => void;
-}
-
-// Dias da semana (para aparecer bonitinho no calendário)
-const weekdays = ["D", "S", "T", "Q", "Q", "S", "S"];
-
-function Calendar({ onSelect, onClose }: CalendarProps) {
-  const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [selectedDate, setSelectedDate] = useState<string>("");
-
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  const monthNames = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ];
-
-  // Monta um array com todos os dias do mês, até os espaços vazios antes do dia 1 -> os dias do mês como um calendário mesmo
-  const days: (number | null)[] = [
-    ...Array<number | null>(firstDayOfMonth).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-
-  // Formata a data
-  function formatDate(day: number): string {
-    const month = String(currentMonth + 1).padStart(2, "0"); // padStart -> garante que tenha dois digitos, colocando um zero a esquerda
-    const formattedDay = String(day).padStart(2, "0");
-
-    return `${formattedDay}-${month}-${currentYear}`;
-  }
-
-  // função quando a pessoa clica na seta para voltar um mês.
-  function handlePreviousMonth(): void {
-    const date = new Date(currentYear, currentMonth - 1, 1);
-    setCurrentMonth(date.getMonth());
-    setCurrentYear(date.getFullYear());
-  }
-
-  // função quando a pessoa clica na seta para avançar um mês.
-
-  function handleNextMonth(): void {
-    const date = new Date(currentYear, currentMonth + 1, 1);
-    setCurrentMonth(date.getMonth());
-    setCurrentYear(date.getFullYear());
-  }
-
-  // Verifica se é o mês atual para bloquear a seta de avançar
-  const isCurrentMonth =
-    currentMonth === today.getMonth() && currentYear === today.getFullYear();
-
-  // Confirma a data selecionada
-  function handleConfirm(): void {
-    if (selectedDate) {
-      onSelect(selectedDate);
-      onClose();
+  onChangeMonth: (direction: number) => void;
+  onConfirmDay: (day: number) => void;
+  onConfirmMonth: (month: number) => void;
+  onConfirmYear: (year: number) => void;
+  onConfirmHour: (hour: number) => void;
+  onConfirmMinute: (minute: number, hour?: number) => void;
+  handleFetch: (periodType: string, datePull: Date | string) => void;
+  handleCancel: () => void;
+};
+ 
+export default function Calendar({
+  period,
+  selectedMinute,
+  selectedHour,
+  selectedDay,
+  selectedMonth,
+  viewMonth,
+  viewYear,
+  currentYear,
+  currentMonth,
+  currentDay,
+  calendarDays,
+  lastHourSlots,
+  onClose,
+  onConfirmMinute,
+  onConfirmHour,
+  onConfirmDay,
+  onConfirmMonth,
+  handleFetch,
+  handleCancel,
+}: CalendarProps) {
+  const [draftDay, setDraftDay] = useState(selectedDay);
+  const [draftHour, setDraftHour] = useState(selectedHour);
+  const [draftMonth, setDraftMonth] = useState(selectedMonth);
+  const [dayOffset, setDayOffset] = useState(0); // 0 = hoje, 7 = 7 dias atrás
+ 
+  // relógio: começa na seleção anterior, se ainda estiver dentro das últimas 2h;
+  // senão, no horário mais recente
+  const [draftClock, setDraftClock] = useState<ClockValue>(() => {
+    const previous = lastHourSlots.find(
+      (slot) => slot.hour === selectedHour && slot.minute === selectedMinute,
+    );
+    const slot = previous ?? lastHourSlots[lastHourSlots.length - 1];
+    return { hour: slot.hour, minute: slot.minute };
+  });
+ 
+  const oppeningDate = new Date(); // pega a data atual da abertura da pagina
+ 
+  const viewedDay = new Date(
+    oppeningDate.getFullYear(),
+    oppeningDate.getMonth(),
+    oppeningDate.getDate() - dayOffset,
+  );
+  const viewedDayLabel =
+    dayOffset === 0
+      ? "Hoje"
+      : dayOffset === 1
+        ? "Ontem"
+        : viewedDay.toLocaleDateString("pt-BR", {
+            weekday: "short",
+            day: "2-digit",
+            month: "2-digit",
+          });
+ 
+  const handleConfirm = () => {
+    const date = new Date();
+    if (period === "hour") {
+      const slot =
+        lastHourSlots.find(
+          (s) => s.hour === draftClock.hour && s.minute === draftClock.minute,
+        ) ?? lastHourSlots[lastHourSlots.length - 1];
+ 
+      const targetDate = new Date(slot.date);
+      targetDate.setSeconds(0, 0);
+ 
+      handleFetch("minute", toLocalISOTime(targetDate));
+      onConfirmMinute(slot.minute, slot.hour);
+    } else if (period === "today") {
+      handleFetch(
+        "hour",
+        new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate() - dayOffset,
+          draftHour,
+        ),
+      );
+      onConfirmHour(draftHour);
+    } else if (period === "month") {
+      handleFetch(
+        "day",
+        new Date(date.getFullYear(), date.getMonth(), draftDay),
+      );
+      onConfirmDay(draftDay);
+    } else if (period === "year") {
+      handleFetch("month", new Date(date.getFullYear(), draftMonth));
+      onConfirmMonth(draftMonth);
     }
-  }
-
+  };
+ 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div
-        className="calendar-modal"
-        onClick={(event) => event.stopPropagation()}
+    <div className="ranking-calendar-overlay">
+      <section
+        className="ranking-calendar-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ranking-calendar-title"
       >
         <button
           type="button"
-          className="close-modal"
-          onClick={onClose}
+          className="ranking-calendar-close"
+          onClick={() => {
+            onClose();
+            handleCancel();
+          }}
           aria-label="Fechar calendário"
         >
-          <X />
+          ×
         </button>
-
-        <h2>Escolha uma data</h2>
-
-        <div className="calendar-header">
-          <button
-            type="button"
-            onClick={handlePreviousMonth}
-            aria-label="Mês anterior"
-          >
-            <ChevronLeft />
-          </button>
-
-          <span>
-            {monthNames[currentMonth]} {currentYear}
-          </span>
-
-          <button
-            type="button"
-            onClick={handleNextMonth}
-            disabled={isCurrentMonth}
-            aria-label="Próximo mês"
-          >
-            <ChevronRight />
-          </button>
-        </div>
-
-        <div className="calendar">
-          {weekdays.map((day, index) => (
-            <span className="weekday" key={index}>
-              {day}
-            </span>
-          ))}
-
-          {days.map((day, index) => {
-            const dateValue = day ? formatDate(day) : "";
-
-            const isFutureDate =
-              day !== null && new Date(currentYear, currentMonth, day) > today;
-
-            const isSelected = dateValue === selectedDate;
-
-            return (
+ 
+        <h2 id="ranking-calendar-title">
+          {period === "hour" && "Escolha a hora e o minuto"}
+          {period === "today" && "Escolha um horário"}
+          {period === "month" && "Escolha uma data"}
+          {period === "year" && "Escolha um mês"}
+          {period === "other-years" && "Escolha um ano"}
+        </h2>
+ 
+        {period === "hour" && (
+          <div className="ranking-calendar-panel">
+            <ClockPicker
+              slots={lastHourSlots}
+              value={draftClock}
+              onChange={setDraftClock}
+            />
+          </div>
+        )}
+ 
+        {period === "today" && (
+          <div className="ranking-calendar-panel">
+            <div className="ranking-calendar-navigation ranking-calendar-day-nav">
               <button
                 type="button"
-                key={index}
-                className={`day ${isSelected ? "selected" : ""}`}
-                disabled={day === null || isFutureDate}
-                onClick={() => {
-                  if (day !== null && !isFutureDate) {
-                    setSelectedDate(dateValue);
-                  }
-                }}
+                className="ranking-calendar-day-nav-button"
+                onClick={() => setDayOffset((d) => Math.min(d + 1, 7))}
+                disabled={dayOffset >= 7}
+                aria-label="Dia anterior"
               >
-                {day ?? ""}
+                ‹
               </button>
-            );
-          })}
-        </div>
-
+              <strong>{viewedDayLabel}</strong>
+              <button
+                type="button"
+                className="ranking-calendar-day-nav-button"
+                onClick={() => setDayOffset((d) => Math.max(d - 1, 0))}
+                disabled={dayOffset <= 0}
+                aria-label="Próximo dia"
+              >
+                ›
+              </button>
+            </div>
+ 
+            <div className="ranking-calendar-options ranking-calendar-hour-options">
+              {hours.map((hour) => (
+                <button
+                  type="button"
+                  key={hour}
+                  className={draftHour === hour ? "is-selected" : ""}
+                  disabled={dayOffset === 0 && hour > oppeningDate.getHours()}
+                  onClick={() => setDraftHour(hour)}
+                >
+                  {String(hour).padStart(2, "0")}:00
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+ 
+        {period === "month" && (
+          <>
+            <div className="ranking-calendar-navigation">
+              <strong>
+                {monthNames[currentMonth]} {currentYear}
+              </strong>
+            </div>
+ 
+            <div className="ranking-calendar-panel">
+              <div className="ranking-calendar-days">
+                {weekDays.map((day, index) => (
+                  <span key={`${day}-${index}`}>{day}</span>
+                ))}
+ 
+                {calendarDays.map((day, index) =>
+                  day === null ? (
+                    <span
+                      className="ranking-calendar-empty"
+                      key={`empty-${index}`}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      key={day}
+                      disabled={
+                        viewYear === currentYear &&
+                        viewMonth === currentMonth &&
+                        day > currentDay
+                      }
+                      className={day === draftDay ? "is-selected" : ""}
+                      onClick={() => setDraftDay(day)}
+                    >
+                      {day}
+                    </button>
+                  ),
+                )}
+              </div>
+            </div>
+          </>
+        )}
+ 
+        {period === "year" && (
+          <div className="ranking-calendar-panel">
+            <div className="ranking-calendar-options ranking-calendar-month-options">
+              {monthNames.map((month, index) => (
+                <button
+                  type="button"
+                  key={month}
+                  className={draftMonth === index ? "is-selected" : ""}
+                  onClick={() => setDraftMonth(index)}
+                  disabled={index > oppeningDate.getMonth()}
+                >
+                  {month}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+ 
         <button
           type="button"
-          className="confirm-button"
+          className="ranking-calendar-confirm"
           onClick={handleConfirm}
-          disabled={!selectedDate}
         >
-          Ver dashboard
+          Confirmar seleção
         </button>
-      </div>
+      </section>
     </div>
   );
 }
-
-export default Calendar;

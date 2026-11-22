@@ -30,13 +30,18 @@
     justify-content: left;
 }
 
-.back-link{
+.back-link {
     text-decoration: none;
     color: var(--text);
+    align-items: center;
+    display: inline-flex;
+}
+
+.back-link span {
     position: relative;
 }
 
-.back-link::after {
+.back-link span::after {
     content: "";
     width: 0%;
     height: 1.5px;
@@ -48,8 +53,8 @@
     border-radius: 5px;
 }
 
-.back-link.active::after,
-.back-link:hover::after {
+.back-link.active span::after,
+.back-link span:hover::after {
     width: 100%;
 }
 
@@ -173,13 +178,13 @@
     transform: scale(0.96);
 }
 
- .btn-add:hover:not(:disabled) svg {
+.btn-add:hover:not(:disabled) svg {
     transform: rotate(90deg) scale(1.1);
 }
 
 .btn-delete:hover:not(:disabled) svg {
     animation: wiggle 0.5s ease-in-out;
-} 
+}
 
 .btn:disabled {
     background: var(--btn-disabled);
@@ -371,7 +376,7 @@
 
 .icon-btn-delete:hover:not(:disabled) svg {
     animation: wiggle 0.5s ease-in-out;
-} 
+}
 
 .icon-btn:active:not(:disabled) {
     transform: scale(0.92);
@@ -462,7 +467,7 @@
 
 .m-item.is-open .m-toggle {
     transform: rotate(180deg);
-} 
+}
 
 .m-label,
 .m-row {
@@ -743,6 +748,7 @@
 /* Keyframes -> NÃO SEI SE VAI FICAR, TESTANDO ANIMAÇÕES PARA O PROJETO -> TIREI PARA MANTER A PADRONIZAÇÂO MAS QUERO IMPLEMENAR*/
 
 @keyframes wiggle {
+
     0%,
     100% {
         transform: rotate(0);
@@ -788,6 +794,7 @@
 }
 
 @keyframes sway {
+
     0%,
     100% {
         transform: rotate(-4deg);
