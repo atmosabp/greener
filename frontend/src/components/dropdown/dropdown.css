@@ -1,17 +1,22 @@
-
 /* =========================================================
    GREEN ER - DROPDOWN GLOBAL
    Padrão visual baseado na tela de Comparação
 ========================================================= */
 
 .gr-dropdown {
-  --dropdown-bg: var(--background, #f9eedc);
-  --dropdown-ink: var(--text, #3a322c);
-  --dropdown-panel: var(--primary-light, #dacfba);
-  --dropdown-lime: var(--primary, #bec47d);
-  --dropdown-moss: var(--primary-dark, #6f8f5f);
-  --dropdown-moss-dark: var(--primary-dark, #4f7a5a);
-  --dropdown-muted: #81766b;
+  --dropdown-bg: var(--background);
+  --dropdown-ink: var(--text);
+
+  --dropdown-selected: color-mix(in srgb,
+      var(--primary-light) 80%,
+      var(--complementary));
+  --dropdown-panel: var(--primary-light);
+  --dropdown-lime: var(--primary);
+
+  --dropdown-moss: var(--primary-dark);
+  --dropdown-moss-dark: var(--primary-dark);
+
+  --dropdown-muted: var(--text-secondary);
 
   position: relative;
   display: inline-flex;
@@ -46,7 +51,7 @@
 
   padding: 0 0.9375rem;
 
-  border: 1px solid var(--dropdown-moss);
+  border: 0.1rem solid var(--dropdown-bg);
   border-radius: 1.2rem;
 
   background: var(--dropdown-bg);
@@ -72,13 +77,13 @@
 .gr-dropdown-trigger:hover,
 .gr-dropdown-trigger[aria-expanded="true"] {
   background: var(--dropdown-panel);
-  border-color: var(--dropdown-moss-dark);
+  border-color: var(--dropdown-panel);
 
   box-shadow: 0 0.1875rem 0.5625rem rgba(58, 50, 44, 0.12);
 }
 
 .gr-dropdown-trigger:focus-visible {
-  outline: 0.125rem solid var(--dropdown-moss);
+  outline: 0.125rem solid;
   outline-offset: 0.125rem;
 }
 
@@ -118,13 +123,11 @@
 .gr-dropdown-trigger.gr-dropdown-default {
   background: var(--dropdown-bg);
   color: var(--dropdown-ink);
-  border-color: var(--dropdown-moss);
 }
 
 .gr-dropdown-trigger.gr-dropdown-default:hover,
 .gr-dropdown-trigger.gr-dropdown-default[aria-expanded="true"] {
   background: var(--dropdown-panel);
-  border-color: var(--dropdown-moss-dark);
 }
 
 .gr-dropdown-trigger.gr-dropdown-default .gr-dropdown-chevron {
@@ -149,7 +152,7 @@
 
 .gr-dropdown-trigger.gr-dropdown-dark:hover,
 .gr-dropdown-trigger.gr-dropdown-dark[aria-expanded="true"] {
-  background: var(--dropdown-moss);
+  /* background: var(--dropdown-moss); */
   border-color: var(--dropdown-moss);
   color: var(--dropdown-bg);
 }
@@ -289,8 +292,7 @@
 
 .gr-dropdown-option:hover,
 .gr-dropdown-option.is-selected {
-  background: var(--dropdown-panel);
-  border-color: var(--dropdown-lime);
+  background: var(--dropdown-selected);
 }
 
 .gr-dropdown-option.is-selected {
@@ -333,7 +335,7 @@
   cursor: pointer;
 }
 
-.gr-dropdown-checkbox-option + .gr-dropdown-checkbox-option {
+.gr-dropdown-checkbox-option+.gr-dropdown-checkbox-option {
   margin-top: 0.5rem;
 }
 
@@ -370,7 +372,7 @@
   border-color: var(--dropdown-moss);
 }
 
-.gr-dropdown-checkbox-option input:focus-visible + .gr-dropdown-check {
+.gr-dropdown-checkbox-option input:focus-visible+.gr-dropdown-check {
   outline: 0.125rem solid var(--dropdown-moss);
   outline-offset: 0.125rem;
 }
@@ -410,6 +412,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .gr-dropdown *,
   .gr-dropdown *::before,
   .gr-dropdown *::after {

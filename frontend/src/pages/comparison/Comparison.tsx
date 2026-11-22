@@ -196,7 +196,7 @@ export default function Comparison() {
 
       <main className="cmp-page">
         <section className="cmp-intro">
-          <div>
+          <div className='greetings'>
             <h1>
               {greeting()}, {userName}.
             </h1>

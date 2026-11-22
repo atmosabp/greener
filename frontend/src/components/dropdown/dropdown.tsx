@@ -8,7 +8,7 @@ import {
 
 import { ChevronDown, Check } from "lucide-react";
 
-import "./Dropdown.css";
+import "./dropdown.css";
 
 export interface DropdownOption {
   label: string;
