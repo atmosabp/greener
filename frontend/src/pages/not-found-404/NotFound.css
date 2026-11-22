@@ -7,11 +7,7 @@
 }
 
 [data-theme="dark"] {
-    --smoke-bg: #46444f;
-}
-
-body{
-    background: linear-gradient(to bottom, var(--background), 80%, var(--smoke-bg));
+    --smoke-bg: #292524;
 }
 
 .not-found-page{
@@ -19,6 +15,7 @@ body{
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
     overflow: hidden;
+    background: linear-gradient(to bottom, var(--background), 80%, var(--smoke-bg));
 }
 
 .not-found{
