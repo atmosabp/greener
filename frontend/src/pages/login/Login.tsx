@@ -16,6 +16,8 @@ export default function Login() {
   );
 
   useEffect(() => {
+    localStorage.setItem("last_page", '/login');
+
     const handleResize = () => setIsMobile(window.innerWidth < 768);
 
     handleResize();

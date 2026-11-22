@@ -1,17 +1,14 @@
-import {
-  findServices,
-  addNewService,
-} from "../modules/collections/collections.repository";
+import type { CollectionsRepository } from "../modules/collections/collections.repository";
 import { connection } from "../config/env";
 
 const serviceApiUrl = "https://metrics.unilaunch.org/services";
 const pullTimer: number = 60000;
 
-export async function historyWorker() {
+export async function historyWorker(repository: CollectionsRepository) {
   console.log("Worker ativado");
   while (true) {
     await sleep(pullTimer);
-    await fetchServices();
+    await fetchServices(repository);
   }
 }
 
@@ -19,13 +16,13 @@ async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchServices() {
+async function fetchServices(repository: CollectionsRepository) {
   try {
-    const responseDb = await findServices();
+    const responseDb = await repository.findServices();
     const responseApi = await fetch(serviceApiUrl);
     const responseApiContent = await responseApi.json();
 
-    verifyService(responseDb, responseApiContent);
+    verifyService(repository, responseDb, responseApiContent);
     for (let i of responseDb) {
       fetchMetricsAddHistory(i.id);
     }
@@ -49,7 +46,11 @@ async function fetchMetricsAddHistory(serviceId: string) {
   }
 }
 
-async function verifyService(dbList: any[], apiList: any[]) {
+async function verifyService(
+  repository: CollectionsRepository,
+  dbList: any[],
+  apiList: any[],
+) {
   for (let i of apiList) {
     let verifyed: boolean = false;
     for (let j of dbList) {
@@ -60,7 +61,7 @@ async function verifyService(dbList: any[], apiList: any[]) {
     }
     if (!verifyed) {
       try {
-        addNewService(i.id, i.name);
+        repository.addNewService(i.id, i.name);
         fetchMetricsAddHistory(i.id);
       } catch (e: any) {
         console.error(e.message);

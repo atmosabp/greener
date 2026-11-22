@@ -1,223 +1,288 @@
-import {
-  reqCarbonValue,
-  reqRenewablePercent,
-} from "../../integrations/carbon-api";
-import {
-  reqInterval,
-  reqMetricsCPU,
-  reqMetricsDisk,
-  reqMetricsMemory,
-  reqMetricsNetwork,
-} from "../../integrations/metrics-api";
-import { reqServices } from "../../integrations/services-api";
+import { MetricsData } from "../../types/metrics-types";
 import { ServiceTypes } from "../../types/services-types";
-import { MetricsCalculator } from "../metrics-calculator";
-import {
-  addMinuteHistory,
-  findMinuteHistory,
-  findHourHistory,
-  findMonthHistory,
-  findServiceMinuteHistory,
-  findServiceHourHistory,
-  findServiceMonthHistory,
-  findHistory,
-  findDayHistory,
-  findServiceDayHistory,
-} from "./collections.repository";
+import type { MetricsProps } from "../metrics-calculator";
+import type { CarbonApi } from "../../integrations/carbon-api";
+import type { MetricsApi } from "../../integrations/metrics-api";
+import type { ServicesApi } from "../../integrations/services-api";
+import type { CollectionsRepository } from "./collections.repository";
+import { PassThrough } from "node:stream";
 
-export async function addHistory(serviceId: string) {
-  // TODO: fazer com que pegue todos os serviços da lista da API auxiliar, colocar em um json
-  // e depois colocar como segundo parâmetro da função abaixo.
-
-  // Provavelmente fazer um for loop que a cada serviço no json
-  // chame essa função.
-
-  const result = await addMinuteHistory(serviceId);
-
-  if (!result) return null;
-
-  return result;
+// Contrato do cálculo de métricas (a classe MetricsCalculator atende a ele).
+export interface MetricsCalculation {
+  calculateKWh(): number | null;
+  calculateCO2e(): number | null;
 }
 
-export async function getServiceMetrics(serviceId: string) {
-  let cpu,
-    memory,
-    collectionIntervalSeconds,
-    carbonIntensity,
-    renewablePercent,
-    disk,
-    network,
-    kwh,
-    co2e: number | undefined = undefined;
-  let service: ServiceTypes | undefined = undefined;
+// Função que cria um calculador a partir das métricas. É injetada no service.
+export type MetricsCalculatorFactory = (
+  metrics: MetricsProps,
+) => MetricsCalculation;
 
-  try {
-    service = (await reqServices()).find((value) => value.id == serviceId);
+export interface ICollectionsService {
+  addHistory(serviceId: string): Promise<any>;
+  getServiceMetrics(serviceId: string): Promise<any>;
+  getAllServicesMetrics(): Promise<any>;
+  searchAllHistory(): Promise<any>;
+  searchHistory(periodType: string, datePull: any): Promise<any>;
+  searchServiceHistory(
+    periodType: string,
+    datePull: any,
+    serviceId: string,
+  ): Promise<any>;
+}
 
-    cpu = await reqMetricsCPU(serviceId);
-    memory = await reqMetricsMemory(serviceId);
-    collectionIntervalSeconds = await reqInterval(serviceId);
-    carbonIntensity = await reqCarbonValue(serviceId);
-    renewablePercent = await reqRenewablePercent(serviceId);
-    disk = await reqMetricsDisk(serviceId);
-    network = await reqMetricsNetwork(serviceId);
+export class CollectionsService implements ICollectionsService {
+  constructor(
+    private readonly repository: CollectionsRepository,
+    private readonly carbonApi: CarbonApi,
+    private readonly metricsApi: MetricsApi,
+    private readonly servicesApi: ServicesApi,
+    private readonly createCalculator: MetricsCalculatorFactory,
+  ) {}
 
-    const metricsCalculator = new MetricsCalculator({
+  async addHistory(serviceId: string) {
+    const [
+      collectionIntervalSeconds,
+      carbonIntensity,
+      renewablePercent,
+      metricsEnergy,
+    ] = await Promise.all([
+      this.metricsApi.reqInterval(serviceId),
+      this.carbonApi.reqCarbonValue(serviceId),
+      this.carbonApi.reqRenewablePercent(serviceId),
+      this.metricsApi.reqMetrics(serviceId),
+    ]);
+
+    const metricsCalculator = this.createCalculator({
       collection_interval_seconds: collectionIntervalSeconds,
       metrics: {
-        cpu_percent: cpu,
-        memory_gb: memory,
-        disk_gb: disk,
-        network_gb: network,
+        cpu_percent: metricsEnergy?.cpu_percent,
+        memory_gb: metricsEnergy?.memory_gb,
+        disk_gb: metricsEnergy?.disk_gb,
+        network_gb: metricsEnergy?.network_gb,
       },
       carbon_intensity_gco2e_per_kwh: carbonIntensity,
       renewable_share_percent: renewablePercent,
     });
 
-    kwh = metricsCalculator.calculateKWh() || undefined;
-    co2e = metricsCalculator.calculateCO2e() || undefined;
-  } catch (error: any) {
-    console.error(error.message);
-  }
+    const kwh = metricsCalculator.calculateKWh();
+    const co2e = metricsCalculator.calculateCO2e();
 
-  const metrics = {
-    cpu_percent: cpu,
-    memory_gb: memory,
-    disk_gb: disk,
-    network_gb: network,
-    co2e: co2e,
-    kwh: kwh,
-    renewable_percent: renewablePercent,
-    carbon_intensity: carbonIntensity,
-  };
-
-  const result = {
-    name: service?.name,
-    status: service?.status,
-    location: service?.location,
-    metrics: metrics,
-  };
-
-  if (!result) return null;
-
-  return result;
-}
-
-export async function getAllServicesMetrics() {
-  let result: ServiceTypes[] | undefined = undefined;
-  let fetchedServices: any;
-
-  try {
-    result = await reqServices();
+    const result = await this.repository.addMinuteHistory(
+      serviceId,
+      metricsEnergy!,
+      renewablePercent,
+      kwh,
+      co2e,
+    );
 
     if (!result) return null;
 
-    fetchedServices = await Promise.all(
-      result.map(async (service) => {
-        const id = service.id!;
+    return result;
+  }
 
-        try {
-          const [cpu, memory, interval, carbon, renewable, disk, network] =
-            await Promise.all([
-              reqMetricsCPU(id),
-              reqMetricsMemory(id),
-              reqInterval(id),
-              reqCarbonValue(id),
-              reqRenewablePercent(id),
-              reqMetricsDisk(id),
-              reqMetricsNetwork(id),
-            ]);
+  async getServiceMetrics(serviceId: string) {
+    let collectionIntervalSeconds,
+      carbonIntensity,
+      renewablePercent,
+      kwh,
+      co2e: number | undefined = undefined;
+    let metricsEnergy: MetricsData | undefined = undefined;
+    let service: ServiceTypes | undefined = undefined;
 
-          const calc = new MetricsCalculator({
-            collection_interval_seconds: interval,
-            metrics: {
-              cpu_percent: cpu,
-              memory_gb: memory,
-              disk_gb: disk,
-              network_gb: network,
-            },
-            carbon_intensity_gco2e_per_kwh: carbon,
-            renewable_share_percent: renewable,
-          });
+    try {
+      service = (await this.servicesApi.reqServices(
+        await this.repository.findServices(),
+      ))!.find((value) => value.id == serviceId);
+      [collectionIntervalSeconds, carbonIntensity, renewablePercent] =
+        await Promise.all([
+          this.metricsApi.reqInterval(serviceId),
+          this.carbonApi.reqCarbonValue(serviceId),
+          this.carbonApi.reqRenewablePercent(serviceId),
+        ]);
 
-          service.metrics = {
-            cpu_percent: cpu,
-            memory_gb: memory,
-            disk_gb: disk,
-            network_gb: network,
-            co2e: calc.calculateCO2e() || undefined,
-            kwh: calc.calculateKWh() || undefined,
-          };
-        } catch (e: any) {
-          console.error(`Falha no serviço ${id}. Erro:`, e.message);
-          service.metrics = {};
-        }
+      metricsEnergy = await this.metricsApi.reqMetrics(serviceId);
 
-        return service;
-      }),
+      const metricsCalculator = this.createCalculator({
+        collection_interval_seconds: collectionIntervalSeconds,
+        metrics: {
+          cpu_percent: metricsEnergy?.cpu_percent,
+          memory_gb: metricsEnergy?.memory_gb,
+          disk_gb: metricsEnergy?.disk_gb,
+          network_gb: metricsEnergy?.network_gb,
+        },
+        carbon_intensity_gco2e_per_kwh: carbonIntensity,
+        renewable_share_percent: renewablePercent,
+      });
+
+      kwh = metricsCalculator.calculateKWh() || undefined;
+      co2e = metricsCalculator.calculateCO2e() || undefined;
+    } catch (error: any) {
+      console.error(error.message);
+    }
+
+    const statusResult = await fetch(
+      `https://metrics.unilaunch.org/metrics/${serviceId}`,
     );
-  } catch (e: any) {
-    // console.error(e.message);
+    const statusCode = statusResult.status;
+
+    if (statusCode == 404) {
+      service ? service.status = "deleted" : PassThrough;
+    }
+    if (statusCode == 500) {
+      service ? service.status = "inactive" : PassThrough;
+    }
+
+    const metrics = {
+      cpu_percent: metricsEnergy?.cpu_percent,
+      memory_gb: metricsEnergy?.memory_gb,
+      disk_gb: metricsEnergy?.disk_gb,
+      network_gb: metricsEnergy?.network_gb,
+      co2e: co2e,
+      kwh: kwh,
+      renewable_percent: renewablePercent,
+      carbon_intensity: carbonIntensity,
+    };
+
+    const result = {
+      name: service?.name,
+      status: service?.status,
+      location: service?.location,
+      metrics: metrics,
+    };
+
+    if (!result) return null;
+
+    return result;
   }
 
-  return fetchedServices;
-}
+  async getAllServicesMetrics() {
+    let result: ServiceTypes[] | undefined = undefined;
+    let fetchedServices: any;
 
-export async function searchAllHistory() {
-  const result = await findHistory();
+    try {
+      result = await this.servicesApi.reqServices(
+        await this.repository.findServices(),
+      );
 
-  if (!result || result.length == 0) return null;
+      if (!result) return null;
 
-  return result;
-}
+      fetchedServices = await Promise.all(
+        result.map(async (service) => {
+          const id = service.id!;
 
-export async function searchHistory(periodType: string, datePull: any) {
-  let result;
+          try {
+            const [metricsEnergy, interval, carbon, renewable] =
+              await Promise.all([
+                this.metricsApi.reqMetrics(id),
+                this.metricsApi.reqInterval(id),
+                this.carbonApi.reqCarbonValue(id),
+                this.carbonApi.reqRenewablePercent(id),
+              ]);
 
-  switch (periodType) {
-    case "minute":
-      result = await findMinuteHistory(datePull);
-      break;
-    case "hour":
-      result = await findHourHistory(datePull);
-      break;
-    case "day":
-      result = await findDayHistory(datePull);
-      break;
+            const calc = this.createCalculator({
+              collection_interval_seconds: interval,
+              metrics: {
+                cpu_percent: metricsEnergy?.cpu_percent,
+                memory_gb: metricsEnergy?.memory_gb,
+                disk_gb: metricsEnergy?.disk_gb,
+                network_gb: metricsEnergy?.network_gb,
+              },
+              carbon_intensity_gco2e_per_kwh: carbon,
+              renewable_share_percent: renewable,
+            });
 
-    case "month":
-      result = await findMonthHistory(datePull);
-      break;
+            service.metrics = {
+              cpu_percent: metricsEnergy?.cpu_percent,
+              memory_gb: metricsEnergy?.memory_gb,
+              disk_gb: metricsEnergy?.disk_gb,
+              network_gb: metricsEnergy?.network_gb,
+              co2e: calc.calculateCO2e() || undefined,
+              kwh: calc.calculateKWh() || undefined,
+            };
+          } catch (e: any) {
+            console.error(`Falha no serviço ${id}. Erro:`, e.message);
+            service.metrics = {};
+          }
+
+          return service;
+        }),
+      );
+    } catch (e: any) {
+      console.error(`Ocorreu um erro ao buscar todos os serviços. Erro: ${e.message}`);
+    }
+
+    return fetchedServices;
   }
 
-  if (!result) return null;
+  async searchAllHistory() {
+    const result = await this.repository.findHistory();
 
-  return result;
-}
+    if (!result || result.length == 0) return null;
 
-export async function searchServiceHistory(
-  periodType: string,
-  datePull: any,
-  serviceId: string,
-) {
-  let result;
-
-  switch (periodType) {
-    case "minute":
-      result = await findServiceMinuteHistory(datePull, serviceId);
-      break;
-    case "hour":
-      result = await findServiceHourHistory(datePull, serviceId);
-      break;
-    case "day":
-      result = await findServiceDayHistory(datePull, serviceId);
-      break;
-    case "month":
-      result = await findServiceMonthHistory(datePull, serviceId);
-      break;
+    return result;
   }
 
-  if (!result) return null;
+  async searchHistory(periodType: string, datePull: any) {
+    let result;
 
-  return result;
+    switch (periodType) {
+      case "minute":
+        result = await this.repository.findMinuteHistory(datePull);
+        break;
+      case "hour":
+        result = await this.repository.findHourHistory(datePull);
+        break;
+      case "day":
+        result = await this.repository.findDayHistory(datePull);
+        break;
+
+      case "month":
+        result = await this.repository.findMonthHistory(datePull);
+        break;
+    }
+
+    if (!result) return null;
+
+    return result;
+  }
+
+  async searchServiceHistory(
+    periodType: string,
+    datePull: any,
+    serviceId: string,
+  ) {
+    let result;
+
+    switch (periodType) {
+      case "minute":
+        result = await this.repository.findServiceMinuteHistory(
+          datePull,
+          serviceId,
+        );
+        break;
+      case "hour":
+        result = await this.repository.findServiceHourHistory(
+          datePull,
+          serviceId,
+        );
+        break;
+      case "day":
+        result = await this.repository.findServiceDayHistory(
+          datePull,
+          serviceId,
+        );
+        break;
+      case "month":
+        result = await this.repository.findServiceMonthHistory(
+          datePull,
+          serviceId,
+        );
+        break;
+    }
+
+    if (!result) return null;
+
+    return result;
+  }
 }

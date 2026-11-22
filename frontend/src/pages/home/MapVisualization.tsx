@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import { CircleMarker, MapContainer, TileLayer, useMap } from "react-leaflet";
-import type { Service } from "./Homepage";
 import "leaflet/dist/leaflet.css";
 import "./MapVisualization.css";
 import ServiceCard from "./ServiceCard";
+import type { ServiceType } from "../../types/service";
 
 interface MapVisualizationProps {
-  services: Service[];
+  services: ServiceType[];
   selectedServiceId: string | null;
   onSelectService: (id: string | null) => void;
 }
 
-const mapStatusColors: Record<Service["status"], string> = {
+const mapStatusColors: Record<ServiceType["status"], string> = {
   active: "#91bd79",
   incomplete: "#e0d344",
   inactive: "#df7779",
@@ -21,7 +21,7 @@ function MapController({
   selectedService,
   onSelectService,
 }: {
-  selectedService?: Service;
+  selectedService?: ServiceType;
   onSelectService: (id: string | null) => void;
 }) {
   const map = useMap();
@@ -163,7 +163,11 @@ export default function MapVisualization({
 
       {selectedMapService && (
         // Seria legal colocar isso e o card do globo em um componente separado
-        <ServiceCard viewType={"map"} selectedServicePoint={selectedMapService} onSelectService={onSelectService} />
+        <ServiceCard
+          viewType={"map"}
+          selectedServicePoint={selectedMapService}
+          onSelectService={onSelectService}
+        />
       )}
 
       {validMapServices.length === 0 && (

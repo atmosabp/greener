@@ -5,34 +5,20 @@ import AppHeader from "../../components/header/AppHeader";
 import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
+
+import { Skeleton } from "../../components/skeleton/Skeleton";
+import { useSkeleton } from "../../components/skeleton/useSkeleton";
+import {
+    ServicesListSkeleton,
+    StageSkeleton,
+    inlineSkeleton,
+} from "./HomepageSkeleton";
+
+import { Globe2, Map } from "lucide-react";
+
+import { port } from "../../utils/connection";
+import type { ServiceStatus, ServiceType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
-
-export type ServiceStatus = "active" | "incomplete" | "inactive";
-
-export interface Service {
-    id: string;
-    name: string;
-    location:
-        | {
-              city?: string;
-              country?: string;
-              latitude?: number;
-              longitude?: number;
-              region?: string;
-              region_code?: string;
-          }
-        | undefined;
-    metrics_path?: string;
-    metrics?: {
-        cpu_percent?: number;
-        memory_gb?: number;
-        disk_gb?: number;
-        network_gb?: number;
-        co2e?: number;
-        kwh?: number;
-    };
-    status: ServiceStatus;
-}
 
 interface HomepageProps {
     lastUpdated?: string;
@@ -46,6 +32,8 @@ const statusLabels: Record<ServiceStatus, string> = {
     active: "Ativo",
     incomplete: "Incompleto",
     inactive: "Inativo",
+    deleted: "Deletado",
+    unavailable: "Indisponível",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -54,44 +42,62 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
     const [globeVisualization, setGlobeVisualization] =
         useState<GlobeVisualization>("services");
 
+    const [services, setServices] = useState<ServiceType[]>([]);
     const [selectedService, setSelectedService] = useState<string | null>(null);
     const [timeUpdated, setTimeUpdated] = useState<string>("");
 
-    const [services, setServices] = useState<Service[]>([]);
-
+    // Atualiza os serviços vindos do backend.
     async function updateServices() {
         try {
             const result = await fetch(
-                `http://localhost:${import.meta.env.VITE_PORT}/collections/all-service-data`,
+                `http://localhost:${port}/collections/all-service-data`,
             );
 
             if (!result.ok) {
                 throw new Error("Não foi possível buscar os serviços.");
             }
 
-            const data: Service[] = await result.json();
+            const data: ServiceType[] = await result.json();
 
-            setTimeUpdated(new Date().toLocaleString());
             setServices(data);
+            setTimeUpdated(new Date().toLocaleString());
         } catch (error) {
             console.error("Erro ao atualizar serviços:", error);
         }
     }
 
+    // Controla o tempo máximo de exibição do skeleton.
+    // Caso o backend não responda em 15 segundos, exibe o estado vazio.
+    const [gaveUp, setGaveUp] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setGaveUp(true), 15000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
+
+    // Atualização inicial e intervalo automático.
     useEffect(() => {
         updateServices();
 
         const refreshInterval = localStorage.getItem("refresh_interval");
-
-        const interval = refreshInterval
+        const configuredInterval = refreshInterval
             ? Number(refreshInterval) * 1000
             : updateTime * 1000;
+
+        const interval =
+            Number.isFinite(configuredInterval) && configuredInterval > 0
+                ? configuredInterval
+                : updateTime * 1000;
 
         const fetchTimer = setInterval(updateServices, interval);
 
         return () => clearInterval(fetchTimer);
-    }, []);
+    }, [updateTime]);
 
+    // Contagem dos serviços por status.
     const activeCount = services.filter(
         (service) => service.status === "active",
     ).length;
@@ -104,9 +110,17 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
         (service) => service.status === "inactive",
     ).length;
 
+    const deletedCount = services.filter(
+        (service) => service.status === "deleted",
+    ).length;
+
+    const unavailableCount = services.filter(
+        (service) => service.status === "unavailable",
+    ).length;
+
     return (
         <div className="homepage">
-            <Loading data={services} />
+            {showSkeleton && <Loading />}
             <AppHeader />
 
             <main className="homepage-main">
@@ -117,12 +131,22 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                     <aside className="services-panel">
                         <div className="panel-heading">
                             <div>
-                                <span className="section-kicker">EXPLORADOR</span>
+                                <span className="section-kicker">
+                                    EXPLORADOR
+                                </span>
                                 <h2>Seus serviços</h2>
                             </div>
 
                             <span className="service-count">
-                                {String(services.length).padStart(2, "0")}
+                                {showSkeleton ? (
+                                    <Skeleton
+                                        width={24}
+                                        height="1rem"
+                                        style={inlineSkeleton}
+                                    />
+                                ) : (
+                                    String(services.length).padStart(2, "0")
+                                )}
                             </span>
                         </div>
 
@@ -132,7 +156,9 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                         </p>
 
                         <div className="services-list">
-                            {services.length === 0 ? (
+                            {showSkeleton ? (
+                                <ServicesListSkeleton />
+                            ) : services.length === 0 ? (
                                 <p className="services-empty">
                                     Nenhum serviço foi encontrado.
                                 </p>
@@ -201,19 +227,81 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                 <span>
                                     <i className="status-dot active" />
                                     Ativos
-                                    <strong>{activeCount}</strong>
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            activeCount
+                                        )}
+                                    </strong>
                                 </span>
 
                                 <span>
                                     <i className="status-dot incomplete" />
                                     Incompletos
-                                    <strong>{incompleteCount}</strong>
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            incompleteCount
+                                        )}
+                                    </strong>
                                 </span>
 
                                 <span>
                                     <i className="status-dot inactive" />
                                     Inativos
-                                    <strong>{inactiveCount}</strong>
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            inactiveCount
+                                        )}
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    <i className="status-dot deleted" />
+                                    Deletados
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            deletedCount
+                                        )}
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    <i className="status-dot unavailable" />
+                                    Indisponíveis
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            unavailableCount
+                                        )}
+                                    </strong>
                                 </span>
                             </div>
                         </div>
@@ -281,7 +369,15 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
 
                             <div className="last-update">
                                 <span>Última atualização:</span>
-                                <strong>{timeUpdated || "-"}</strong>
+
+                                {showSkeleton ? (
+                                    <Skeleton
+                                        width="10rem"
+                                        height="1rem"
+                                    />
+                                ) : (
+                                    <strong>{timeUpdated || "-"}</strong>
+                                )}
                             </div>
 
                             <div className="visualization-controls">
@@ -291,26 +387,36 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                     aria-label="Tipo de visualização"
                                 >
                                     <button
+                                        disabled={showSkeleton}
                                         type="button"
                                         className={
-                                            mode === "globe" ? "active" : ""
+                                            mode === "globe"
+                                                ? "active"
+                                                : ""
                                         }
                                         onClick={() => setMode("globe")}
                                         aria-pressed={mode === "globe"}
                                     >
-                                        <span aria-hidden="true">◎</span>
+                                        <span aria-hidden="true">
+                                            <Globe2 />
+                                        </span>
                                         Globo
                                     </button>
 
                                     <button
+                                        disabled={showSkeleton}
                                         type="button"
                                         className={
-                                            mode === "map" ? "active" : ""
+                                            mode === "map"
+                                                ? "active"
+                                                : ""
                                         }
                                         onClick={() => setMode("map")}
                                         aria-pressed={mode === "map"}
                                     >
-                                        <span aria-hidden="true">▦</span>
+                                        <span aria-hidden="true">
+                                            <Map />
+                                        </span>
                                         Mapa
                                     </button>
                                 </div>
@@ -322,6 +428,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                         aria-label="Visualização do globo"
                                     >
                                         <button
+                                            disabled={showSkeleton}
                                             type="button"
                                             className={
                                                 globeVisualization === "services"
@@ -340,6 +447,7 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                                         </button>
 
                                         <button
+                                            disabled={showSkeleton}
                                             type="button"
                                             className={
                                                 globeVisualization === "emissions"
@@ -362,7 +470,9 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                         </div>
 
                         <div className={`visualization-stage mode-${mode}`}>
-                            {mode === "globe" ? (
+                            {showSkeleton ? (
+                                <StageSkeleton mode={mode} />
+                            ) : mode === "globe" ? (
                                 <InteractiveGlobe
                                     services={services}
                                     selectedServiceId={selectedService}

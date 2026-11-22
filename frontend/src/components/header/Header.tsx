@@ -18,6 +18,24 @@ export default function Header({
     () => window.matchMedia(compact_query).matches,
   );
 
+  const [_isUserAdmin, _setIsUserAdmin] = useState<boolean>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return false;
+    try {
+      const parsedUser = JSON.parse(storedUser);
+
+      //caso o usuário não seja administrador, adiciona um link para a página de cadastro
+      if (parsedUser.isAdm && links.length != 0 && links.length < 4) { //também garante que não seja o header de cadastro
+        links[links.length] = { to: "/admin", label: "Gerenciamento" };
+      } else if (links.length > 3 && !parsedUser.isAdm) {
+        delete links[links.length - 1];
+      }
+      return parsedUser.isAdm;
+    } catch (e: any) {
+      return false;
+    }
+  });
+
   useEffect(() => {
     const mediaQuery = window.matchMedia(compact_query);
 
@@ -41,7 +59,7 @@ export default function Header({
       {/* Tablet: barra fixa sempre visível - Celular: só o botão (fixo no canto) */}
       <div className="tablet-bar">
         <Link to="/home">
-          <img src={logo} alt="Logo Greener" className="trigger-logo" />]
+          <img src={logo} alt="Logo Greener" className="trigger-logo" />
         </Link>
 
         <div className="trigger-btns">

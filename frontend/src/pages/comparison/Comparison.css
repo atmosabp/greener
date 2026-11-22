@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .cmp-comparison {
     --bg: var(--background, #f9eedc);
@@ -8,7 +7,7 @@
     --lime: var(--primary, #bec47d);
     --moss: var(--primary-dark, #6f8f5f);
     --moss-dark: var(--primary-dark, #4f7a5a);
-    --brown: #b38a6e;
+    --brown: #ffc1b2;
     --muted: #81766b;
     --theme-transition: 0.5s ease-in-out;
 
@@ -17,7 +16,7 @@
     text-align: left;
     background: var(--bg);
     color: var(--ink);
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
 
     transition:
@@ -25,10 +24,31 @@
         color var(--theme-transition);
 }
 
+[data-theme="light"][data-palette="green"] {
+    --reference-border: #198359;
+}
+
+[data-theme="light"][data-palette="blue"] {
+    --reference-border: #195383;
+}
+
+[data-theme="dark"][data-palette="green"] {
+    --reference-border: #dff5de;
+}
+
+[data-theme="dark"][data-palette="blue"] {
+    --reference-border: #dfeaf6;
+}
+
 .cmp-comparison *,
 .cmp-comparison *::before,
 .cmp-comparison *::after {
     box-sizing: border-box;
+}
+
+.btn-star {
+    border: none;
+    background-color: transparent;
 }
 
 .cmp-comparison * {
@@ -136,7 +156,7 @@
     padding: 0.5rem 0.75rem 0;
 }
 
-.cmp-intro > div:first-child {
+.cmp-intro>div:first-child {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -148,6 +168,13 @@
     line-height: 1.15;
     letter-spacing: -0.02em;
     color: var(--ink);
+}
+
+.cmp-intro-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
 }
 
 .cmp-intro__sub {
@@ -163,15 +190,16 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    gap: 1rem;
     min-width: 0;
+    height: 2.625rem;
 }
 
 .cmp-select select {
     appearance: none;
     -webkit-appearance: none;
-    min-width: 0;
-    border: 1px solid var(--moss);
-    border-radius: 1.375rem;
+    border: none;
+    border-radius: 99px;
     font: inherit;
     font-size: 0.9375rem;
     font-weight: 500;
@@ -183,23 +211,19 @@
         border-color var(--theme-transition);
 }
 
+.last-updated-text{
+    color: var(--text);
+    font-size: 1rem;
+}
+
 .cmp-select option {
     background: var(--bg);
     color: var(--ink);
 }
 
-.cmp-select svg {
-    position: absolute;
-    right: 0.8125rem;
-    width: 0.875rem;
-    height: 0.875rem;
-    pointer-events: none;
-    color: var(--ink);
-}
-
 .cmp-select--dark select,
 .cmp-select--green select {
-    height: 2.5rem;
+    height: 2.625rem;
     padding: 0 2.375rem 0 1rem;
 }
 
@@ -208,8 +232,9 @@
     color: var(--bg);
 }
 
-.cmp-select--dark svg {
-    color: var(--bg);
+[data-theme="dark"] .cmp-select--dark select {
+    background: var(--primary-light);
+    color: var(--on-primary-light);
 }
 
 .cmp-select--green select {
@@ -223,25 +248,23 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.625rem;
-    min-height: 2.625rem;
+    gap: 1rem;
+    height: 2.625rem;
     max-width: 100%;
-    margin: 0.875rem 0 0 0.1875rem;
-    padding: 0 0.9375rem;
-    border: 1px solid var(--moss);
-    border-radius: 0.875rem;
-    background: var(--bg);
-    color: var(--ink);
+    margin: 0;
+    padding: 0 0.95rem;
+    border: none;
+    border-radius: 99px;
+    background: var(--primary-light);
+    color: var(--on-primary-light);
     font-size: 0.9375rem;
     font-weight: 500;
-    box-shadow: 0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
 }
 
 .cmp-pill-outline:hover,
 .cmp-pill-outline[aria-expanded='true'] {
     background: var(--panel);
     border-color: var(--moss-dark);
-    box-shadow: 0 0.1875rem 0.5625rem rgba(58, 50, 44, 0.12);
 }
 
 .cmp-pill-outline svg {
@@ -257,9 +280,12 @@
 /* ---------- Popovers e menus ---------- */
 
 .cmp-popover {
+    display: flex;
+    gap: 1rem;
     position: relative;
     display: inline-block;
     max-width: 100%;
+    align-items: center;
 }
 
 .cmp-popover__menu {
@@ -296,7 +322,7 @@
     scrollbar-color: var(--moss) var(--bg);
 }
 
-.cmp-menu li + li {
+.cmp-menu li+li {
     margin-top: 0.1875rem;
 }
 
@@ -350,8 +376,8 @@
     margin-top: 1.375rem;
     padding: 3.625rem 1.5rem 1.25rem;
     border-radius: 1.375rem;
-    background: var(--lime);
-    color: var(--ink);
+    background: var(--primary-light);
+    color: var(--on-primary-light);
 }
 
 .cmp-averages__title {
@@ -366,8 +392,8 @@
     height: 2.625rem;
     transform: translateX(-50%);
     border-radius: 0 0 1.125rem 1.125rem;
-    background: var(--moss);
-    color: var(--bg);
+    background: var(--primary-dark);
+    color: var(--on-primary-darker);
     font-size: 1.5625rem;
     font-weight: 500;
     text-align: center;
@@ -375,8 +401,8 @@
 
 .cmp-averages__help {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
+    top: 1.5rem;
+    right: 2.4rem;
     display: grid;
     place-items: center;
     padding: 0;
@@ -388,9 +414,7 @@
 .cmp-averages__content {
     display: grid;
     grid-template-columns:
-        minmax(0, 1.65fr)
-        minmax(0, 0.9fr)
-        minmax(0, 0.9fr);
+        minmax(0, 1.65fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
     align-items: stretch;
     gap: 1.125rem;
 }
@@ -409,6 +433,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    text-align: left;
     min-width: 0;
     padding: 0.75rem;
     border-radius: 0.9375rem;
@@ -431,6 +456,7 @@
 }
 
 .cmp-gauge-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -465,8 +491,15 @@
 }
 
 .cmp-gauge__fill {
-    stroke: var(--moss);
+    stroke: var(--primary);
 }
+
+/* skeleton */
+.cmp-gauge--skeleton .cmp-gauge__track {
+    stroke: var(--skeleton-base, rgba(128, 128, 128, 0.15));
+}
+
+/* fim skeleton */
 
 .cmp-gauge__scale {
     display: flex;
@@ -520,17 +553,30 @@
     border: 0;
     border-radius: 1.125rem;
     background: var(--lime);
-    color: var(--ink);
+    color: var(--on-primary);
     font-size: 0.9375rem;
     white-space: nowrap;
+}
+
+[data-theme="dark"] .cmp-chip {
+    color: var(--on-primary-darker);
 }
 
 .cmp-chip:hover {
     background: var(--panel);
 }
 
+[data-theme="dark"] .cmp-chip:hover {
+    background: var(--primary-darker);
+    color: var(--on-primary-darker);
+}
+
 .cmp-chip svg {
-    color: var(--ink);
+    color: var(--on-primary);
+}
+
+[data-theme="dark"] .cmp-chip svg {
+    color: var(--on-primary-darker);
 }
 
 .cmp-chip--wide {
@@ -556,7 +602,7 @@
     border: 0;
     border-radius: 1.125rem;
     background: var(--moss);
-    color: var(--bg);
+    color: var(--on-primary-dark);
     font: inherit;
     text-align: center;
 }
@@ -578,7 +624,9 @@
 
 .cmp-services__scroll {
     scrollbar-width: thin;
-    scrollbar-color: var(--moss-dark) var(--lime);
+    scrollbar-color: var(--moss-dark) color-mix(in srgb,
+            var(--background) 70%,
+            var(--primary-light));
 }
 
 .cmp-services__scroll::-webkit-scrollbar {
@@ -608,32 +656,69 @@
     flex: 0 0 auto;
     min-height: 13.4375rem;
     padding: 3.875rem 1.125rem 1.125rem 3.625rem;
-    border: 0.09375rem solid transparent;
+    border: 2px solid transparent;
     border-radius: 1.375rem;
-    background: var(--panel);
+    background: color-mix(in srgb,
+            var(--background) 50%,
+            var(--primary-light));
     color: var(--ink);
+    transition: all 0.2s;
+}
+
+[data-theme="dark"] .cmp-service {
+    background: var(--primary-light);
 }
 
 .cmp-service--reference {
-    border-color: var(--brown);
+    border-color: var(--primary-darker);
 }
 
 .cmp-service__name {
     position: absolute;
-    top: -0.09375rem;
-    left: 3.5rem;
+    top: 0rem;
+    left: 3.8rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 11.25rem;
+    padding: 0.4rem 1.2rem;
+    width: 15.2rem;
     height: 2.125rem;
-    border-radius: 0 0 1rem 1rem;
+    border-radius: 0 0 1.6rem 1.6rem;
     background: var(--panel);
     color: var(--ink);
-    font-size: 1.0625rem;
+    font-size: 1.2rem;
     font-weight: 500;
     line-height: 1.2;
     white-space: nowrap;
+}
+
+.cmp-service__name .cmp-service-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    color: var(--on-primary);
+    transition: all 0.2s;
+    position: relative;
+}
+
+.cmp-service__name .cmp-service-link::before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background-color: var(--on-primary);
+    left: 0;
+    bottom: 0px;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.cmp-service-link:hover::before {
+    width: 100%;
+}
+
+.redirect-link-icon {
+    color: var(--link-icon-color);
 }
 
 .cmp-service--reference .cmp-service__name {
@@ -699,15 +784,13 @@
 .cmp-service__body {
     display: grid;
     grid-template-columns:
-        minmax(0, 0.95fr)
-        minmax(0, 0.95fr)
-        minmax(0, 1fr)
-        minmax(0, 1.25fr);
+        minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 1fr) minmax(0, 1.25fr);
     gap: 0.75rem;
     height: 8.125rem;
 }
 
 .cmp-energy {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -715,7 +798,8 @@
     padding: 0.625rem;
     border-radius: 0.9375rem;
     background: var(--moss);
-    color: var(--bg);
+    color: var(--on-primary-darker);
+    text-align: left;
 }
 
 .cmp-energy__label {
@@ -752,12 +836,13 @@
     padding: 0.4375rem;
     border-radius: 0.875rem;
     background: var(--lime);
-    color: var(--ink);
+    color: var(--on-primary);
 }
 
 .cmp-tile__label {
     font-size: 1.0625rem;
     line-height: 1.15;
+    text-align: left;
 }
 
 .cmp-tile__value {
@@ -820,41 +905,96 @@
     line-height: 1.2;
 }
 
+/* Estrutura da escala */
+
 .cmp-carbon__bar {
     position: relative;
-    width: min(100%, 10.625rem);
-    height: 0.25rem;
+    width: min(100%, 17rem);
+    height: 1.5rem;
+    min-width: 0;
+    box-sizing: border-box;
     margin-top: 0.625rem;
-    border-radius: 0.125rem;
-    background: var(--panel);
+    border-radius: 999px;
+    background: transparent;
+    flex-shrink: 0;
 }
+
+/* Linha de fundo */
+
+.cmp-carbon__track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background-color: color-mix(
+        in srgb,
+        var(--text) 14%,
+        var(--complementary)
+    );
+    z-index: 0;
+}
+
+/* Preenchimento */
 
 .cmp-carbon__fill {
     position: absolute;
-    top: -0.1875rem;
     left: 0;
-    height: 0.625rem;
-    border-radius: 0.3125rem;
-    background: linear-gradient(90deg, var(--moss), var(--lime));
+    top: 0;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 999px;
+    z-index: 1;
 }
+
+.cmp-carbon__bar[data-level="low"] .cmp-carbon__fill {
+    width: 38%;
+    background: linear-gradient(90deg, #94c47d 45%, #e3d26f);
+}
+
+.cmp-carbon__bar[data-level="medium"] .cmp-carbon__fill {
+    width: 58%;
+    background: linear-gradient(90deg, #94c47d 30%, #e3d26f);
+}
+
+.cmp-carbon__bar[data-level="high"] .cmp-carbon__fill {
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #94c47d 20%,
+        #e3d26f 55%,
+        #db7b7b
+    );
+}
+
+/* Marcadores */
 
 .cmp-carbon__dot {
     position: absolute;
-    top: -0.4375rem;
-    width: 1.125rem;
-    height: 1.125rem;
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
-    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.cmp-carbon__dot--low {
+    left: 0;
+    background-color: #94c47d;
 }
 
 .cmp-carbon__dot--mid {
-    left: 51%;
-    background: var(--lime);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #e3d26f;
+    color: var(--on-primary-light);
 }
 
 .cmp-carbon__dot--high {
-    left: 100%;
-    background: var(--brown);
+    right: 0;
+    background-color: #db7b7b;
 }
 
 .cmp-carbon__value {
@@ -1000,10 +1140,6 @@
         padding-left: 0.125rem;
     }
 
-    .cmp-intro h1 {
-        font-size: 1.875rem;
-    }
-
     .cmp-intro__sub {
         font-size: 0.875rem;
     }
@@ -1112,6 +1248,7 @@
 /* ---------- Acessibilidade ---------- */
 
 @media (prefers-reduced-motion: reduce) {
+
     .cmp-comparison *,
     .cmp-comparison *::before,
     .cmp-comparison *::after {
