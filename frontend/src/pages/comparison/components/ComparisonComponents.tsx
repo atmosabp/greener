@@ -199,7 +199,6 @@ export function SelectPill({
                 ))}
             </select>
 
-            <Chevron size={20} />
         </span>
     );
 }

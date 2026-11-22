@@ -3,17 +3,17 @@ import { Sun, Moon, Palette, RotateCcw } from "lucide-react";
 import "./ThemeToggle.css";
 import useTheme from "../../hooks/useTheme";
 
-type PaletteName = "green" | "blue" | "custom";
+type PaletteName = "green" | "custom";
 
 // verde e azul usam as paletas do index.css -> as demais são personalizadas (hsl)
 const presets: {
   name: string;
   hue: number;
   sat: number;
-  palette?: "green" | "blue";
+  palette?: "green";
 }[] = [
   { name: "green", hue: 100, sat: 38, palette: "green" },
-  { name: "blue", hue: 210, sat: 38, palette: "blue" },
+  { name: "blue", hue: 210, sat: 38 },
   { name: "pink", hue: 345, sat: 38 },
   { name: "purple", hue: 261, sat: 38 },
   { name: "orange", hue: 25, sat: 38 },
@@ -163,7 +163,7 @@ export default function ThemeToggle() {
 
   const [palette, setPalette] = useState<PaletteName>(() => {
     const saved = localStorage.getItem("palette");
-    return saved === "green" || saved === "blue" || saved === "custom"
+    return saved === "green" || saved === "custom"
       ? saved
       : default_palette;
   });

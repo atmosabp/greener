@@ -260,13 +260,12 @@ export default function Comparison() {
 
       <main className="cmp-page">
         <section className="cmp-intro">
-          <div>
+          <div className="greeting">
             <Greeting />
             <p className="cmp-intro__sub">
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
           </div>
-          <div className="cmp-intro-btns"></div>
 
           <span className="cmp-select">
             <span className="ranking-last-update">
@@ -276,7 +275,7 @@ export default function Comparison() {
               ) : (
                 <span className="last-updated-text"><strong>Última atualização:</strong> {formattedLastUpdate}</span>
               )}{" "}
-              &nbsp; &nbsp; &nbsp; &nbsp;
+              &nbsp; &nbsp;
             </span>
 
             <RefreshButton handleRefresh={handleRefresh} />
@@ -285,12 +284,12 @@ export default function Comparison() {
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className={`cmp-pill-outline ${loading} ? "blocked": "" `}
+                  className={`cmp-pill-outline ${loading ? "blocked" : ""}`}
                   aria-expanded={open}
                   onClick={toggle}
                   disabled={loading}
                 >
-                  Serviços selecionados
+                  Serviços
                   <Chevron size={22} />
                 </button>
               )}

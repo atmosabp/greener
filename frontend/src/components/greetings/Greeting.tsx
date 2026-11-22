@@ -19,7 +19,7 @@ export default function Greeting() {
     } catch (e) {
       return "usuário";
     }
-  });
+  }); 
   
   return (
     <h1>

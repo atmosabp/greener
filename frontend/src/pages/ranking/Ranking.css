@@ -106,7 +106,14 @@
     font-size: 1rem;
     font-weight: 500;
     white-space: nowrap;
+    transition: transform 0.3s ease;
 }
+
+.ranking-period:hover{
+    transform: translateY(-0.15rem);
+}
+
+
 .ranking-period select {
     width: 100%;
     height: 2.65rem;
@@ -152,6 +159,8 @@
 [data-theme="dark"] .ranking-page select {
     background-color: var(--primary-light);
 }
+
+
 
 
 .ranking-page .update-select option {
@@ -270,8 +279,14 @@
     color: var(--on-primary-light);
     font-size: 1rem;
     font-weight: 500;
+    transition: transform 0.3s ease;
     white-space: nowrap;
 }
+
+.ranking-update:hover{
+    transform: translateY(-0.15rem);
+}
+
 
 .ranking-update select {
     width: 6.8rem;

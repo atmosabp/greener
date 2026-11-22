@@ -82,7 +82,12 @@
     font-size: 14px;
     justify-content: center;
     text-decoration: none;
-}
+    transition: transform 0.3s ease;
+    }
+
+    .btn-logout:hover{
+        transform: translateY(-0.15rem);
+    }   
 
 /* 
 -=-=-=-=-=-=-=-

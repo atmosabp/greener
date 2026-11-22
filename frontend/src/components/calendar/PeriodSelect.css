@@ -7,7 +7,12 @@
     padding-right: 0;
     border-radius: 2rem;
     background-color: var(--primary-light);
-    color: var(--text);
+    color: var(--on-primary-light);
+    transition: transform 0.3s ease !important;
+}
+
+.period-select-container:hover {
+    transform: translateY(-0.15rem);
 }
 
 select {
@@ -40,7 +45,7 @@ option {
 }
 
 .ranking-period label,
-.ranking-classification > span {
+.ranking-classification>span {
     display: block;
     text-align: center;
     font-size: 1rem;

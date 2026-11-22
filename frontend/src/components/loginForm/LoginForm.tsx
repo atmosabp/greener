@@ -117,6 +117,7 @@ export default function LoginForm() {
 
       {/* Campo de e-mail */}
       <div className="form-field">
+         <h4>Fazer login</h4>
         <div className="label-row">
           <label htmlFor="email" title="Campo obrigatório">
             E-mail*

@@ -1,7 +1,7 @@
 .form-login {
     padding: 30px;
     background-color: var(--primary);
-    color: var(--on-primary);
+    color: var(--on-primary-darker);
     border-radius: 10px;
     border: 2px solid var(--primary-dark);
     width: fit-content;
@@ -15,6 +15,10 @@
 .form-field {
     display: flex;
     flex-direction: column;
+}
+
+.form-field h4{
+    margin-bottom: 15px;
 }
 
 .form-link {
@@ -120,6 +124,11 @@
     justify-content: center;
     font-weight: 600;
     cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.btn-login:hover{
+    transform: translateY(-0.15rem);
 }
 
 [data-theme="light"] .btn-login {
