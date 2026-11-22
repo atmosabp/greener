@@ -178,7 +178,7 @@ export function SelectPill({
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
-    disabled?:boolean;
+    disabled?: boolean;
 }) {
     return (
         <span className={`cmp-select cmp-select--${variant}`}>
@@ -261,10 +261,9 @@ export function Gauge({
 
     return (
         <div className="cmp-gauge-card">
-        
-         
             <h3 className="cmp-gauge-card__title">{title}</h3>
-            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} /> 
+            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} />
+
             <svg
                 className="cmp-gauge"
                 viewBox="0 0 160 82"
@@ -300,18 +299,29 @@ export function Gauge({
 export function CarbonCard({ intensity }: { intensity?: number }) {
     const level = carbonLevel(intensity);
 
+    const dataLevel =
+        intensity === undefined || intensity <= 100
+            ? 'low'
+            : intensity > 500
+                ? 'high'
+                : 'medium';
+
     return (
         <div className="cmp-carbon">
             <p className="cmp-carbon__title">Intensidade de carbono</p>
 
             <p className="cmp-carbon__level">{level.label}</p>
 
-            <div className="cmp-carbon__bar" aria-hidden="true">
-                <span
-                    className="cmp-carbon__fill"
-                    style={{ width: level.bar }}
-                />
+            <div
+                className="cmp-carbon__bar"
+                data-level={dataLevel}
+                aria-hidden="true"
+            >
+                <span className="cmp-carbon__track" />
 
+                <span className="cmp-carbon__fill" />
+
+                <span className="cmp-carbon__dot cmp-carbon__dot--low" />
                 <span className="cmp-carbon__dot cmp-carbon__dot--mid" />
                 <span className="cmp-carbon__dot cmp-carbon__dot--high" />
             </div>
@@ -341,7 +351,6 @@ export function Delta({ value }: { value: number }) {
 
     return (
         <span className="cmp-delta">
-            
             <ArrowIcon dir={rounded > 0 ? 'up' : 'down'} />
             {formatNumber(Math.abs(rounded))}%
         </span>
@@ -413,7 +422,6 @@ export function EnergyTile({
 
     return (
         <div className="cmp-energy" title={deltaTitle(delta)}>
-            
             <span className="cmp-energy__label">
                 {label}
 

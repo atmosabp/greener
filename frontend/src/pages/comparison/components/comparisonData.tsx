@@ -133,8 +133,8 @@ export function carbonLevel(intensity?: number) {
   /* Escala de 0 a 200 gCO₂e/kWh; acima disso a barra fica cheia. */
   const bar = `${Math.min(intensity / 2, 100)}%`;
 
-  if (intensity < 100) return { label: "Baixo", bar };
-  if (intensity < 200) return { label: "Médio", bar };
+  if (intensity <= 100) return { label: "Baixo", bar };
+  if (intensity < 500) return { label: "Médio", bar };
   return { label: "Alto", bar };
 }
 
