@@ -1,3 +1,4 @@
+
 import { memo, useEffect } from "react";
 import Globe from "react-globe.gl";
 
@@ -23,26 +24,36 @@ interface GlobeEmissionsProps {
     } | null;
 }
 
-const emissionColor = (t: number) => {
-    const intensity = Math.max(0, Math.min(t, 1));
+// =========================================
+// CORES DO HEATMAP
+// =========================================
 
-    if (intensity < 0.15) {
+const emissionColor = (value: number): string => {
+    const intensity = Math.max(0, Math.min(value * 2.5, 1));
+
+    // Transparência somente em áreas sem densidade.
+    if (intensity < 0.04) {
         return "rgba(0, 0, 0, 0)";
     }
 
-    if (intensity < 0.35) {
-        return `rgba(49, 130, 189, ${intensity})`;
+    const opacity = Math.min(
+        0.95,
+        0.25 + intensity * 0.75,
+    );
+
+    if (intensity < 0.25) {
+        return `rgba(49, 130, 189, ${opacity})`;
     }
 
-    if (intensity < 0.60) {
-        return `rgba(80, 190, 130, ${intensity})`;
+    if (intensity < 0.50) {
+        return `rgba(55, 180, 125, ${opacity})`;
     }
 
-    if (intensity < 0.80) {
-        return `rgba(255, 190, 50, ${intensity})`;
+    if (intensity < 0.75) {
+        return `rgba(255, 190, 50, ${opacity})`;
     }
 
-    return `rgba(220, 55, 55, ${intensity})`;
+    return `rgba(225, 55, 55, ${opacity})`;
 };
 
 function GlobeEmissions({
@@ -53,6 +64,10 @@ function GlobeEmissions({
     datasets,
     selectedPoint,
 }: GlobeEmissionsProps) {
+
+    // =========================================
+    // INICIALIZAÇÃO DO GLOBO
+    // =========================================
 
     const handleGlobeReady = () => {
         if (!globeRef.current) return;
@@ -75,11 +90,17 @@ function GlobeEmissions({
                     lng: 0,
                     altitude: 1.75,
                 },
-            0
+            0,
         );
+
+        console.log("Globo de emissões inicializado.");
+        console.log("Datasets:", datasets);
     };
 
-    // Centraliza e trava a visualização na emissão selecionada.
+    // =========================================
+    // CENTRALIZAÇÃO DA REGIÃO SELECIONADA
+    // =========================================
+
     useEffect(() => {
         if (!globeRef.current) return;
 
@@ -94,12 +115,35 @@ function GlobeEmissions({
                     lng: selectedPoint.lng,
                     altitude: 0.8,
                 },
-                1000
+                1000,
             );
         } else {
             controls.autoRotate = true;
         }
     }, [selectedPoint, globeRef]);
+
+    // =========================================
+    // VERIFICAÇÃO DOS DADOS
+    // =========================================
+
+    useEffect(() => {
+        const points = datasets.flatMap(
+            (dataset) => dataset.points,
+        );
+
+        console.log("===== GLOBO DE EMISSÕES =====");
+        console.log("Datasets:", datasets.length);
+        console.log("Pontos:", points.length);
+        console.log(
+            "Pesos:",
+            points.map((point) => point.weight),
+        );
+        console.log("=============================");
+    }, [datasets]);
+
+    // =========================================
+    // RENDERIZAÇÃO
+    // =========================================
 
     return (
         <Globe
@@ -107,7 +151,7 @@ function GlobeEmissions({
             width={width}
             height={height}
 
-            // Reduz a complexidade geométrica do planeta.
+            // PLANETA
             globeCurvatureResolution={8}
 
             backgroundColor="rgba(0,0,0,0)"
@@ -118,24 +162,39 @@ function GlobeEmissions({
                     : "//unpkg.com/three-globe/example/img/earth-day.jpg"
             }
 
-            // Heatmap
+            // =================================
+            // HEATMAP
+            // =================================
+
             heatmapsData={datasets}
+
             heatmapPoints="points"
             heatmapPointLat="lat"
             heatmapPointLng="lng"
             heatmapPointWeight="weight"
 
-            // Largura padrão para evitar concentração excessivamente estreita.
+            // Distribuição dos picos.
             heatmapBandwidth={2.5}
 
-            heatmapColorSaturation={1.8}
+            // Realce da intensidade.
+            heatmapColorSaturation={3.2}
+
+            // Função de interpolação de cores.
             heatmapColorFn={() => emissionColor}
 
-            heatmapBaseAltitude={0.005}
-            heatmapTopAltitude={0.10}
+            // =================================
+            // ALTITUDE DOS PICOS
+            // =================================
 
-            // Remove a animação de construção do heatmap.
+            heatmapBaseAltitude={0.005}
+            heatmapTopAltitude={0.16}
+
+            // Atualização do heatmap.
             heatmapsTransitionDuration={0}
+
+            // =================================
+            // ATMOSFERA
+            // =================================
 
             atmosphereColor={
                 mode === "dark" ? "#ffffff" : "#000000"
@@ -143,6 +202,7 @@ function GlobeEmissions({
 
             atmosphereAltitude={0.12}
 
+            // INICIALIZAÇÃO
             onGlobeReady={handleGlobeReady}
         />
     );
