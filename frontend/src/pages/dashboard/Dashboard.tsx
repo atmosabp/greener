@@ -5,6 +5,9 @@ import "./Dashboard.css";
 
 import AppHeader from "../../components/header/AppHeader";
 
+import Toast from "../../components/toast/Toast";
+import RefreshButton from "../../components/refreshButton/RefreshButton";
+
 import type {
   CoordinatesType,
   MetricsType,
@@ -22,7 +25,6 @@ import {
   ServiceListSkeleton,
 } from "./DashboardSkeleton";
 
-import Toast from "../../components/toast/Toast";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
 
@@ -333,7 +335,7 @@ export default function Dashboard() {
         <div className="start-section">
           <div className="text">
             <Greeting />
-
+            
             {showSkeleton ? (
               <p>
                 <Skeleton width="15rem" height="1rem" />
@@ -360,6 +362,9 @@ export default function Dashboard() {
                 )}
               </span>
             )}
+
+            <RefreshButton handleRefresh={updateMetrics} />
+
             {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
 
             {isCompact ? (
@@ -692,7 +697,7 @@ export default function Dashboard() {
             <div>
               <br />
               <br />
-              O serviço está inativo ou não foi recolher as suas métricas dentro
+              O serviço está inativo ou não foi possível recolher as suas métricas dentro
               do tempo esperado.
               <br />
               <br />

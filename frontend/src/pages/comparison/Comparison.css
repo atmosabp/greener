@@ -190,6 +190,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    gap: 1rem;
     min-width: 0;
     height: 2.625rem;
 }
@@ -197,7 +198,6 @@
 .cmp-select select {
     appearance: none;
     -webkit-appearance: none;
-
 
     border: none;
     border-radius: 99px;
@@ -222,15 +222,6 @@
     color: var(--ink);
 }
 
-.cmp-select svg {
-    position: absolute;
-    right: 0.8125rem;
-    width: 0.875rem;
-    height: 0.875rem;
-    pointer-events: none;
-    color: var(--ink);
-}
-
 .cmp-select--dark select,
 .cmp-select--green select {
     height: 2.625rem;
@@ -247,10 +238,6 @@
     color: var(--on-primary-light);
 }
 
-.cmp-select--dark svg {
-    color: var(--bg);
-}
-
 .cmp-select--green select {
     background: var(--lime);
     color: var(--ink);
@@ -262,11 +249,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.625rem;
+    gap: 1rem;
     height: 2.625rem;
     max-width: 100%;
     margin: 0;
-    padding: 0 0.9375rem;
+    padding: 0 0.95rem;
     border: none;
     border-radius: 99px;
     background: var(--primary-light);
@@ -294,6 +281,8 @@
 /* ---------- Popovers e menus ---------- */
 
 .cmp-popover {
+    display: flex;
+    gap: 1rem;
     position: relative;
     display: inline-block;
     max-width: 100%;

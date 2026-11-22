@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink } from "lucide-react";
+import { port } from "../../utils/connection";
 import { Link } from "react-router-dom";
 import "./Ranking.css";
 
@@ -20,11 +21,13 @@ import {
 import { RankingTableSkeletonRows } from "./RankingSkeleton";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
-import { port } from "../../utils/connection";
 import type { ServiceType } from "../../types/service";
-import Loading from "../../components/loading/Loading";
+
 import Toast from "../../components/toast/Toast";
 import Greeting from "../../components/greetings/Greeting";
+
+import RefreshButton from "../../components/refreshButton/RefreshButton";
+import Loading from "../../components/loading/Loading";
 
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
@@ -69,9 +72,9 @@ export default function Ranking() {
   async function handleRefresh() {
     setHistoryMessage("");
     setPeriod("now");
-    setLastUpdate(new Date());
     historyActivatedRef.current = false;
     await fetchServices();
+    setLastUpdate(new Date());
   }
 
   async function fetchHistory(periodType: string, datePull: Date | string) {
@@ -327,35 +330,22 @@ export default function Ranking() {
             </div>
 
             <div className="ranking-toolbar-info">
-              <span className="ranking-last-update">
-                Última atualização: {formattedLastUpdate}
-              </span>
+              {showSkeleton ? (
+                <p>
+                  <Skeleton width="10rem" height="1rem" />
+                </p>
+              ) : (
+                <span className="ranking-last-update">
+                  <strong>{historyMessage}</strong>&nbsp; &nbsp;
+                  {historyActivatedRef.current ? (
+                    <></>
+                  ) : (
+                    <>Última atualização: {formattedLastUpdate}</>
+                  )}
+                </span>
+              )}
 
-              <button
-                type="button"
-                className={`ranking-refresh-button ${showSkeleton} ? "blocked" : ""`}
-                onClick={handleRefresh}
-                disabled={showSkeleton}
-                aria-label="Atualizar horário da última atualização"
-                title="Atualizar"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="17"
-                  height="17"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M20 7v5h-5" />
-                  <path d="M4 17v-5h5" />
-                  <path d="M5.6 9a7 7 0 0 1 11.6-2L20 12" />
-                  <path d="M4 12l2.8 5a7 7 0 0 0 11.6-2" />
-                </svg>
-              </button>
+              <RefreshButton handleRefresh={handleRefresh} />
             </div>
           </section>
         </div>

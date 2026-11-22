@@ -21,6 +21,7 @@ import {
 } from "./components/ComparisonComponents";
 
 import ServiceCard from "./components/ServiceCard";
+import Tooltip from "../../components/tooltip/Tooltip";
 
 import Greeting from "../../components/greetings/Greeting";
 
@@ -28,20 +29,20 @@ import {
   CmpAveragesSkeleton,
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
-import { useSkeleton } from "../../components/skeleton/useSkeleton";
 
 import {
   timeFormatter,
   type RankingPeriod,
 } from "../ranking/rankingData";
+
+import type { MetricsType, ServiceType } from "../../types/service";
+import RefreshButton from "../../components/refreshButton/RefreshButton";
 import useCalendar from "../../components/calendar/useCalendar";
 import Calendar from "../../components/calendar/Calendar";
 
-import type { MetricsType, ServiceType } from "../../types/service";
 import Loading from "../../components/loading/Loading";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
-import Tooltip from "../../components/tooltip/Tooltip";
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
@@ -74,10 +75,7 @@ export default function Comparison() {
 
   const calendar = useCalendar();
 
-  const [gaveUp, setGaveUp] = useState(false);
-
-  const metricsDone = undefined;
-  const showSkeleton = useSkeleton(!metricsDone && !gaveUp);
+  const [_gaveUp, setGaveUp] = useState(false);
 
   async function fetchHistory(periodType: string, datePull: Date | string) {
     try {
@@ -149,7 +147,6 @@ export default function Comparison() {
   async function handleRefresh() {
     setHistoryMessage("");
     setPeriod("now");
-    setLastUpdate(new Date());
     historyActivatedRef.current = false;
     fetchServices()
       .then((data) => {
@@ -169,6 +166,8 @@ export default function Comparison() {
       .finally(() => {
         setLoading(false);
       });
+
+    setLastUpdate(new Date());
   }
 
   /* Buscar os serviços e suas métricas no backend. */
@@ -267,8 +266,9 @@ export default function Comparison() {
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
           </div>
-          
-          <div className="cmp-intro-btns">
+          <div className="cmp-intro-btns"></div>
+
+          <span className="cmp-select">
             <span className="ranking-last-update">
               <strong>{historyMessage}</strong>&nbsp; &nbsp;
               {historyActivatedRef.current ? (
@@ -278,6 +278,9 @@ export default function Comparison() {
               )}{" "}
               &nbsp; &nbsp; &nbsp; &nbsp;
             </span>
+
+            <RefreshButton handleRefresh={handleRefresh} />
+
             <Popover
               trigger={({ open, toggle }) => (
                 <button
@@ -314,7 +317,8 @@ export default function Comparison() {
               handlePeriodChange={handlePeriodChange}
               period={period}
             />
-          </div>
+            
+          </span>
         </section>
 
         {/* ---------------------------------------------------------- */}
@@ -329,14 +333,16 @@ export default function Comparison() {
               Média indicadores
             </h2>
 
-          <button
-            type="button"
-            className="cmp-averages__help"
-            aria-label="Ajuda sobre os indicadores"
-            title="Média dos serviços selecionados"
-          >
-            <Tooltip text={"Média das métricas dos \n servicos selecionadas"} />  
-          </button>
+            <button
+              type="button"
+              className="cmp-averages__help"
+              aria-label="Ajuda sobre os indicadores"
+              title="Média dos serviços selecionados"
+            >
+              <Tooltip
+                text={"Média das métricas dos \n servicos selecionadas"}
+              />
+            </button>
 
             <div className="cmp-averages__content">
               <div className="cmp-averages__tiles">
