@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { carbonLevel, formatNumber } from './comparisonData';
-import type { RankingPeriod } from '../../ranking/rankingData';
 import Tooltip from '../../../components/tooltip/Tooltip';
+import type { RankingPeriod } from '../../ranking/rankingData';
 
 /* ------------------------------------------------------------------ */
 /* Fechar menus ao clicar fora ou pressionar Escape                    */

@@ -62,6 +62,8 @@ export default function Dashboard() {
 
   const calendar = useCalendar();
 
+  // const { showToast } = useToast();
+
   /* Carrossel de métricas (só aparece no mobile) */
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -252,6 +254,7 @@ export default function Dashboard() {
 
   //useEffect para rodar na inicialização e iniciar o refresh de dados
   useEffect(() => {
+    localStorage.setItem("last_page", `/dashboard/${serviceId}`);
     if (!historyActivatedRef.current) {
       updateMetrics();
     }
@@ -316,7 +319,6 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
-  const metricsDone = timeUpdated !== "" || serviceList.length > 0;
   const showSkeleton = useSkeleton(!metricsLoaded && !gaveUp);
 
   // A lista "Outros serviços" vem em outra requisição, depois das métricas.

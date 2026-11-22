@@ -65,13 +65,16 @@ export default function Comparison() {
     {},
   );
 
-  const calendar = useCalendar();
-
-  const [gaveUp, setGaveUp] = useState(false);
+  /* Buscar os serviços e suas métricas no backend. */
   useEffect(() => {
+    localStorage.setItem("last_page", '/comparison');
     const t = setTimeout(() => setGaveUp(true), 2000);
     return () => clearTimeout(t);
   }, []);
+
+  const calendar = useCalendar();
+
+  const [gaveUp, setGaveUp] = useState(false);
 
   const metricsDone = undefined;
   const showSkeleton = useSkeleton(!metricsDone && !gaveUp);

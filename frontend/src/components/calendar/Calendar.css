@@ -246,6 +246,42 @@
     }
 }
 
+.ranking-calendar-day-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+ 
+.ranking-calendar-day-nav strong {
+  min-width: 7rem;
+  text-align: center;
+  color: var(--text);
+}
+ 
+.ranking-calendar-day-nav-button {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+}
+ 
+.ranking-calendar-day-nav-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+ 
+.ranking-calendar-day-nav-button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
 /* ==== RESPONSIVO ==== */
 
 @media (max-width: 640px) {
