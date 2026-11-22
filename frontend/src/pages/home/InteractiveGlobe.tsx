@@ -1,29 +1,26 @@
+
 import {
     useEffect,
     useMemo,
     useRef,
     useState,
 } from "react";
-import Globe from "react-globe.gl";
+
 import type { Service } from "./Homepage";
-import "./InteractiveGlobe.css";
 import useTheme from "../../hooks/useTheme";
 import ServiceCard from "./ServiceCard";
+import Globe3D, { type GlobePoint } from "./globes/Globe3D";
+import GlobeEmissions, {
+    type EmissionDataset,
+} from "./globes/GlobeEmissions";
+
+import "./InteractiveGlobe.css";
 
 interface InteractiveGlobeProps {
     services: Service[];
     selectedServiceId: string | null;
     onSelectService: (id: string | null) => void;
-}
-
-interface GlobePoint {
-    id: string;
-    name: string;
-    status: Service["status"];
-    lat: number | undefined;
-    lng: number | undefined;
-    color: string;
-    cpu_percent: number;
+    visualization: "services" | "emissions";
 }
 
 const statusColors: Record<Service["status"], string> = {
@@ -36,6 +33,7 @@ export default function InteractiveGlobe({
     services,
     selectedServiceId,
     onSelectService,
+    visualization,
 }: InteractiveGlobeProps) {
     const globeRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -47,54 +45,138 @@ export default function InteractiveGlobe({
 
     const { mode } = useTheme();
 
-    // Prepara os pontos que possuem coordenadas válidas.
+    // Dados utilizados na visualização de serviços.
     const globeData = useMemo<GlobePoint[]>(() => {
-        return services
-            .filter((service) => {
-                const lat = service.location ? service.location.latitude : undefined;
-                const lng = service.location ? service.location.longitude : undefined;
+        return services.flatMap((service) => {
+            const lat = service.location?.latitude;
+            const lng = service.location?.longitude;
 
-                return (
-                    typeof lat === "number" &&
-                    typeof lng === "number" &&
-                    Number.isFinite(lat) &&
-                    Number.isFinite(lng) &&
-                    lat >= -90 &&
-                    lat <= 90 &&
-                    lng >= -180 &&
-                    lng <= 180
-                );
-            })
-            .map((service) => ({
+            const validCoordinates =
+                typeof lat === "number" &&
+                typeof lng === "number" &&
+                Number.isFinite(lat) &&
+                Number.isFinite(lng) &&
+                lat >= -90 &&
+                lat <= 90 &&
+                lng >= -180 &&
+                lng <= 180;
+
+            if (!validCoordinates) return [];
+
+            return [{
                 id: service.id,
                 name: service.name,
-                status: service.status,
-                lat: service.location ? service.location.latitude : 0,
-                lng: service.location ? service.location.longitude : 0,
+                lat,
+                lng,
                 color: statusColors[service.status] ?? "#999999",
                 cpu_percent:
-                    typeof service.metrics?.cpu_percent=== "number" &&
-                        Number.isFinite(service.metrics.cpu_percent)
+                    typeof service.metrics?.cpu_percent === "number" &&
+                    Number.isFinite(service.metrics.cpu_percent)
                         ? service.metrics.cpu_percent
                         : 0,
-            }));
+            }];
+        });
     }, [services]);
 
-    const validMapServices = services.filter(
-    (service) =>
-      service.location &&
-      service.location.latitude !== undefined &&
-      service.location.longitude !== undefined &&
-      Number.isFinite(service.location.latitude) &&
-      Number.isFinite(service.location.longitude) &&
-      service.location.latitude >= -90 &&
-      service.location.latitude <= 90 &&
-      service.location.longitude >= -180 &&
-      service.location.longitude <= 180,
-  );
+    // Dados utilizados na visualização de emissões.
+    const emissionDatasets = useMemo<EmissionDataset[]>(() => {
+        const points = services.flatMap((service) => {
+            const lat = service.location?.latitude;
+            const lng = service.location?.longitude;
+            const co2e = service.metrics?.co2e;
 
-    const selectedService = validMapServices.find(
-        (service) => service.id === selectedServiceId,
+            const validCoordinates =
+                typeof lat === "number" &&
+                typeof lng === "number" &&
+                Number.isFinite(lat) &&
+                Number.isFinite(lng) &&
+                lat >= -90 &&
+                lat <= 90 &&
+                lng >= -180 &&
+                lng <= 180;
+
+            const validEmission =
+                typeof co2e === "number" &&
+                Number.isFinite(co2e) &&
+                co2e > 0;
+
+            if (!validCoordinates || !validEmission) {
+                return [];
+            }
+
+            return [{
+                lat,
+                lng,
+                weight: co2e,
+            }];
+        });
+
+        return points.length > 0 ? [{ points }] : [];
+    }, [services]);
+
+    // Diagnóstico dos dados recebidos pela visualização de emissões.
+    useEffect(() => {
+        const servicesWithCoordinates = services.filter((service) => {
+            const lat = service.location?.latitude;
+            const lng = service.location?.longitude;
+
+            return (
+                typeof lat === "number" &&
+                typeof lng === "number" &&
+                Number.isFinite(lat) &&
+                Number.isFinite(lng) &&
+                lat >= -90 &&
+                lat <= 90 &&
+                lng >= -180 &&
+                lng <= 180
+            );
+        });
+
+        const servicesWithValidEmissions = services.filter((service) => {
+            const lat = service.location?.latitude;
+            const lng = service.location?.longitude;
+            const co2e = service.metrics?.co2e;
+
+            return (
+                typeof lat === "number" &&
+                typeof lng === "number" &&
+                Number.isFinite(lat) &&
+                Number.isFinite(lng) &&
+                lat >= -90 &&
+                lat <= 90 &&
+                lng >= -180 &&
+                lng <= 180 &&
+                typeof co2e === "number" &&
+                Number.isFinite(co2e) &&
+                co2e > 0
+            );
+        });
+
+        const totalPoints = emissionDatasets.reduce(
+            (total, dataset) => total + dataset.points.length,
+            0
+        );
+
+        console.log("===== DIAGNÓSTICO DO HEATMAP =====");
+        console.log("Total de serviços recebidos:", services.length);
+        console.log(
+            "Serviços com coordenadas válidas:",
+            servicesWithCoordinates.length
+        );
+        console.log(
+            "Serviços com emissões válidas:",
+            servicesWithValidEmissions.length
+        );
+        console.log("Pontos enviados ao heatmap:", totalPoints);
+        console.log("=================================");
+    }, [services, emissionDatasets]);
+
+    const selectedService = useMemo(
+        () =>
+            services.find(
+                (service) => service.id === selectedServiceId
+            ),
+        [services, selectedServiceId]
     );
 
     const selectedPoint = useMemo(
@@ -105,34 +187,39 @@ export default function InteractiveGlobe({
         [globeData, selectedServiceId]
     );
 
-    // Pausa a rotação automática quando o cursor entra no globo.
+    // Para a rotação quando o mouse entra no globo.
     const handleMouseEnter = () => {
-        if (globeRef.current) {
-            globeRef.current.controls().autoRotate = false;
-        }
+        if (!globeRef.current) return;
+
+        globeRef.current.controls().autoRotate = false;
     };
 
-    // Retoma a rotação quando o cursor sai, desde que nada esteja selecionado.
+    // Retoma a rotação quando o mouse sai do globo.
+    // Mantém o globo parado enquanto houver um serviço selecionado.
     const handleMouseLeave = () => {
-        if (globeRef.current) {
-            globeRef.current.controls().autoRotate =
-                !selectedServiceId;
-        }
+        if (!globeRef.current) return;
+
+        globeRef.current.controls().autoRotate =
+            !selectedServiceId;
     };
 
-    // Fecha o card quando o usuário clica fora do componente.
+    // Fecha o cartão quando o usuário clica fora do globo.
     useEffect(() => {
-        if (!selectedServiceId) return;
+        if (
+            !selectedServiceId ||
+            visualization !== "services"
+        ) {
+            return;
+        }
 
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target;
 
             if (!(target instanceof Node)) return;
 
-            // Trocar entre Globo e Mapa não deve limpar a seleção.
             if (
                 target instanceof Element &&
-                target.closest(".view-switch")
+                target.closest(".view-switch, .globe-view-switch")
             ) {
                 return;
             }
@@ -148,11 +235,18 @@ export default function InteractiveGlobe({
         document.addEventListener("mousedown", handleClickOutside);
 
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
         };
-    }, [selectedServiceId, onSelectService]);
+    }, [
+        selectedServiceId,
+        visualization,
+        onSelectService,
+    ]);
 
-    // Ajusta as dimensões do globo ao tamanho do contêiner.
+    // Atualiza as dimensões do globo conforme o container.
     useEffect(() => {
         const container = containerRef.current;
 
@@ -173,17 +267,29 @@ export default function InteractiveGlobe({
         return () => observer.disconnect();
     }, []);
 
-    // Posição inicial do globo.
+    // Posicionamento inicial da visualização de serviços.
     useEffect(() => {
+        if (visualization !== "services") return;
+
         globeRef.current?.pointOfView(
             { lat: 20, lng: 0, altitude: 1.75 },
             0
         );
-    }, [dimensions.width, dimensions.height]);
+    }, [
+        dimensions.width,
+        dimensions.height,
+        visualization,
+    ]);
 
-    // Centraliza o ponto selecionado sem posicionar o card sobre ele.
+    // Centraliza o globo no serviço selecionado.
     useEffect(() => {
-        if (!selectedPoint || !globeRef.current) return;
+        if (
+            visualization !== "services" ||
+            !selectedPoint ||
+            !globeRef.current
+        ) {
+            return;
+        }
 
         globeRef.current.pointOfView(
             {
@@ -195,9 +301,8 @@ export default function InteractiveGlobe({
         );
 
         globeRef.current.controls().autoRotate = false;
-    }, [selectedPoint]);
+    }, [selectedPoint, visualization]);
 
-    // Mantém o globo e o card como elementos independentes.
     return (
         <div
             ref={containerRef}
@@ -205,177 +310,56 @@ export default function InteractiveGlobe({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <Globe
-                ref={globeRef}
-                width={dimensions.width}
-                height={dimensions.height}
-                backgroundColor="rgba(0,0,0,0)"
-                globeImageUrl={
-                    mode === "dark"
-                        ? "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-                        : "//unpkg.com/three-globe/example/img/earth-day.jpg"
-                }
-                pointsData={[
-                    ...globeData.map((point) => ({
-                        ...point,
-                        isOutline: true,
-                    })),
-                    ...globeData.map((point) => ({
-                        ...point,
-                        isOutline: false,
-                    })),
-                ]}
-                pointLat="lat"
-                pointLng="lng"
-                onPointHover={(point) => {
-                    const canvas =
-                        containerRef.current?.querySelector("canvas");
+            {visualization === "services" ? (
+                <>
+                    <Globe3D
+                        globeRef={globeRef}
+                        points={globeData}
+                        width={dimensions.width}
+                        height={dimensions.height}
+                        mode={mode}
+                        selectedPointId={selectedServiceId}
+                        onSelectPoint={(id) => {
+                            onSelectService(
+                                id === selectedServiceId ? null : id
+                            );
+                        }}
+                        onPointHover={(hovered) => {
+                            const canvas =
+                                containerRef.current?.querySelector("canvas");
 
-                    if (canvas) {
-                        canvas.style.cursor = point ? "pointer" : "";
-                    }
-                }}
-                pointAltitude={(point: object) => {
-                    const service = point as GlobePoint & { isOutline?: boolean };
+                            if (canvas) {
+                                canvas.style.cursor = hovered
+                                    ? "pointer"
+                                    : "";
+                            }
+                        }}
+                    />
 
-                    if (service.isOutline) {
-                        return service.id === selectedServiceId ? 0.001 : 0.001;
-                    }
-
-                    return service.id === selectedServiceId ? 0.005 : 0.003;
-                }}
-                pointsMerge={false}
-                pointColor={(point: object) => {
-                    const service = point as GlobePoint & { isOutline?: boolean };
-
-                    if (service.isOutline) {
-                        return "#111111";
-                    }
-
-                    return service.id === selectedServiceId
-                        ? "#ffffff"
-                        : service.color;
-                }}
-                pointRadius={(point: object) => {
-                    const service = point as GlobePoint & { isOutline?: boolean };
-
-                    if (service.isOutline) {
-                        return service.id === selectedServiceId ? 2.2 : 1.6;
-                    }
-
-                    return service.id === selectedServiceId ? 1.8 : 1.2;
-                }}
-                onPointClick={(point: object) => {
-                    const service = point as GlobePoint;
-
-                    onSelectService(
-                        service.id === selectedServiceId
-                            ? null
-                            : service.id
-                    );
-                }}
-                onGlobeReady={() => {
-                    if (!globeRef.current) return;
-
-                    const controls = globeRef.current.controls();
-
-                    controls.enablePan = false;
-                    controls.autoRotate = !selectedServiceId;
-                    controls.autoRotateSpeed = 0.7;
-                }}
-                atmosphereColor={
-                    mode === "dark" ? "#ffffff" : "#000000"
-                }
-                atmosphereAltitude={0.2}
-            />
-
-            {selectedPoint && selectedService && (
-                <div>
-                    <ServiceCard viewType={"globe"} selectedServicePoint={selectedService} onSelectService={onSelectService}/>
-                {/* <div
-                    className="globe-service-card"
-                    role="dialog"
-                    aria-label={`Detalhes de ${selectedPoint.name}`}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    onMouseDown={(event) => event.stopPropagation()}
-                >
-                    <div className="globe-service-card__header">
-                        <span
-                            className="globe-service-card__status-dot"
-                            style={{
-                                backgroundColor: selectedPoint.color,
-                            }}
+                    {selectedPoint && selectedService && (
+                        <ServiceCard
+                            viewType="globe"
+                            selectedServicePoint={selectedService}
+                            onSelectService={onSelectService}
                         />
-
-                        <strong className="globe-service-card__title">
-                            {selectedPoint.name}
-                        </strong>
-
-                        <button
-                            type="button"
-                            className="globe-service-card__close"
-                            aria-label="Fechar detalhes"
-                            onClick={() => onSelectService(null)}
-                        >
-                            ×
-                        </button>
-                    </div>
-
-                    <div className="globe-service-card__location">
-                        {(selectedPoint.lat != undefined && selectedPoint.lng != undefined) 
-                        ? 
-                            <span>Lat: {selectedPoint.lat!.toFixed(3)}| Long:{" "}
-                            {selectedPoint.lng!.toFixed(3)}</span> 
-                            :
-                            <p>oie</p>
-                        }
-                    </div>
-
-                    <div className="globe-service-card__metrics">
-                        <div className="globe-service-card__metric-col">
-                            <div className="globe-service-card__metric">
-                                <span>CPU</span>
-                                <strong>
-                                    {selectedPoint.cpu_percent.toLocaleString(
-                                        "pt-BR"
-                                    )}{" "}
-                                    %
-                                </strong>
-                            </div>
-
-                            <div className="globe-service-card__metric">
-                                <span>CO₂e</span>
-                                <strong>
-                                    {selectedPoint.cpu_percent.toLocaleString(
-                                        "pt-BR"
-                                    )}{" "}
-                                    kg
-                                </strong>
-                            </div>
-                        </div>
-
-                        <div className="globe-service-card__metric-col">
-                            <div className="globe-service-card__metric">
-                                <span>RAM</span>
-                                <strong>0%</strong>
-                            </div>
-
-                            <div className="globe-service-card__metric">
-                                <span>Energia (kWh)</span>
-                                <strong>0 kWh</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <Link
-                        to="/dashboard"
-                        className="globe-service-card__details-button"
-                    >
-                        Ver detalhes
-                    </Link>
-                </div> */}
-                </div>
+                    )}
+                </>
+            ) : (
+                <GlobeEmissions
+                    globeRef={globeRef}
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    mode={mode}
+                    datasets={emissionDatasets}
+                    selectedPoint={
+                        selectedPoint
+                            ? {
+                                lat: selectedPoint.lat,
+                                lng: selectedPoint.lng,
+                            }
+                            : null
+                    }
+                />
             )}
         </div>
     );
