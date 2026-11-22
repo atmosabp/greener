@@ -28,6 +28,8 @@ export default function NotFound() {
   });
 
   useEffect(() => {
+    document.body.style.overflow = "hidden";
+        
     if (isUserLogged) {
       if (isUserAdmin) {
         setLastPage(localStorage.getItem("last_page") || "/");
@@ -40,6 +42,9 @@ export default function NotFound() {
       }
     } else {
       setLastPage("/");
+    }
+    return () => {
+      document.body.style.overflow = "visible";
     }
   }, [isUserLogged, isUserAdmin]);
 
