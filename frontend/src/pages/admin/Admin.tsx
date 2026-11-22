@@ -22,6 +22,7 @@ import {
 import type { FormValues } from "../../types/form";
 import "./Admin.css";
 import { port } from "../../utils/connection";
+import Loading from "../../components/loading/Loading.tsx";
 import Greeting from "../../components/greetings/Greeting";
 import { NavLink } from "react-router-dom";
 
@@ -450,6 +451,7 @@ export default function Admin() {
     <>
       {isUserAdmin ? (
         <div className="admin-page">
+          {showSkeleton && <Loading/>}
           {/* Modais de cada ação. */}
 
           {openCadModal && (
@@ -480,7 +482,7 @@ export default function Admin() {
 
           <main className="admin">
             <NavLink to={"/home"} className="back-link">
-              ← Voltar para tela principal
+              <ChevronLeft /> <span>Voltar para tela principal</span> 
             </NavLink>
 
             <div className="start-section">

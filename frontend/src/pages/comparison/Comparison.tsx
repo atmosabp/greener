@@ -38,6 +38,7 @@ import useCalendar from "../../components/calendar/useCalendar";
 import Calendar from "../../components/calendar/Calendar";
 
 import type { MetricsType, ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
 import Tooltip from "../../components/tooltip/Tooltip";
@@ -252,6 +253,7 @@ export default function Comparison() {
 
   return (
     <div className="cmp-comparison">
+      {loading && <Loading/>}
       <AppHeader />
 
       <main className="cmp-page">
@@ -277,9 +279,10 @@ export default function Comparison() {
               trigger={({ open, toggle }) => (
                 <button
                   type="button"
-                  className="cmp-pill-outline"
+                  className={`cmp-pill-outline ${loading} ? "blocked": "" `}
                   aria-expanded={open}
                   onClick={toggle}
+                  disabled={loading}
                 >
                   Serviços selecionados
                   <Chevron size={22} />
@@ -304,7 +307,7 @@ export default function Comparison() {
               )}
             </Popover>
             <PeriodSelect
-              showSkeleton={showSkeleton}
+              showSkeleton={loading}
               handlePeriodChange={handlePeriodChange}
               period={period}
             />
