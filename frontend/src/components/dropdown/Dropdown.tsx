@@ -1,10 +1,4 @@
-
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { ChevronDown, Check } from "lucide-react";
 
@@ -41,10 +35,7 @@ interface DropdownMenuProps extends BaseProps {
   value: string;
   options: DropdownOption[];
   onChange: (value: string) => void;
-  renderOption?: (
-    option: DropdownOption,
-    selected: boolean
-  ) => ReactNode;
+  renderOption?: (option: DropdownOption, selected: boolean) => ReactNode;
 }
 
 function useDropdown() {
@@ -91,12 +82,9 @@ function useDropdown() {
 function getSelectedLabel(
   value: string,
   options: DropdownOption[],
-  placeholder: string
+  placeholder: string,
 ) {
-  return (
-    options.find((option) => option.value === value)?.label ??
-    placeholder
-  );
+  return options.find((option) => option.value === value)?.label ?? placeholder;
 }
 
 function getVariantClass(variant: BaseProps["variant"]) {
@@ -118,17 +106,10 @@ export function Select({
 }: SelectProps) {
   const { open, setOpen, containerRef } = useDropdown();
 
-  const selectedLabel = getSelectedLabel(
-    value,
-    options,
-    placeholder
-  );
+  const selectedLabel = getSelectedLabel(value, options, placeholder);
 
   return (
-    <div
-      ref={containerRef}
-      className={`gr-dropdown ${className}`}
-    >
+    <div ref={containerRef} className={`gr-dropdown ${className}`}>
       <button
         type="button"
         className={`gr-dropdown-trigger ${getVariantClass(variant)}`}
@@ -137,23 +118,16 @@ export function Select({
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="gr-dropdown-value">
-          {selectedLabel}
-        </span>
+        <span className="gr-dropdown-value">{selectedLabel}</span>
 
         <ChevronDown
           size={17}
-          className={`gr-dropdown-chevron ${
-            open ? "is-open" : ""
-          }`}
+          className={`gr-dropdown-chevron ${open ? "is-open" : ""}`}
         />
       </button>
 
       {open && (
-        <div
-          className="gr-dropdown-panel"
-          role="listbox"
-        >
+        <div className="gr-dropdown-panel" role="listbox">
           {options.map((option) => {
             const selected = option.value === value;
 
@@ -203,22 +177,18 @@ export function MultiSelect({
   const { open, setOpen, containerRef } = useDropdown();
 
   const selectedOptions = options.filter((option) =>
-    value.includes(option.value)
+    value.includes(option.value),
   );
 
   function toggleOption(optionValue: string) {
-    const option = options.find(
-      (item) => item.value === optionValue
-    );
+    const option = options.find((item) => item.value === optionValue);
 
     if (option?.disabled) return;
 
     const alreadySelected = value.includes(optionValue);
 
     if (alreadySelected) {
-      onChange(
-        value.filter((item) => item !== optionValue)
-      );
+      onChange(value.filter((item) => item !== optionValue));
     } else {
       onChange([...value, optionValue]);
     }
@@ -232,10 +202,7 @@ export function MultiSelect({
         : `${selectedOptions.length} serviços selecionados`;
 
   return (
-    <div
-      ref={containerRef}
-      className={`gr-dropdown ${className}`}
-    >
+    <div ref={containerRef} className={`gr-dropdown ${className}`}>
       <button
         type="button"
         className={`gr-dropdown-trigger ${getVariantClass(variant)}`}
@@ -244,23 +211,16 @@ export function MultiSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="gr-dropdown-value">
-          {triggerLabel}
-        </span>
+        <span className="gr-dropdown-value">{triggerLabel}</span>
 
         <ChevronDown
           size={17}
-          className={`gr-dropdown-chevron ${
-            open ? "is-open" : ""
-          }`}
+          className={`gr-dropdown-chevron ${open ? "is-open" : ""}`}
         />
       </button>
 
       {open && (
-        <div
-          className="gr-dropdown-panel gr-dropdown-multi-panel"
-          role="group"
-        >
+        <div className="gr-dropdown-panel gr-dropdown-multi-panel" role="group">
           {options.map((option) => {
             const selected = value.includes(option.value);
 
@@ -288,9 +248,7 @@ export function MultiSelect({
           })}
 
           {selectedOptions.length === 0 && (
-            <span className="gr-dropdown-empty">
-              {emptyLabel}
-            </span>
+            <span className="gr-dropdown-empty">{emptyLabel}</span>
           )}
         </div>
       )}
@@ -314,17 +272,10 @@ export function DropdownMenu({
 }: DropdownMenuProps) {
   const { open, setOpen, containerRef } = useDropdown();
 
-  const selectedLabel = getSelectedLabel(
-    value,
-    options,
-    placeholder
-  );
+  const selectedLabel = getSelectedLabel(value, options, placeholder);
 
   return (
-    <div
-      ref={containerRef}
-      className={`gr-dropdown ${className}`}
-    >
+    <div ref={containerRef} className={`gr-dropdown ${className}`}>
       <button
         type="button"
         className={`gr-dropdown-trigger ${getVariantClass(variant)}`}
@@ -333,23 +284,16 @@ export function DropdownMenu({
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="gr-dropdown-value">
-          {selectedLabel}
-        </span>
+        <span className="gr-dropdown-value">{selectedLabel}</span>
 
         <ChevronDown
           size={17}
-          className={`gr-dropdown-chevron ${
-            open ? "is-open" : ""
-          }`}
+          className={`gr-dropdown-chevron ${open ? "is-open" : ""}`}
         />
       </button>
 
       {open && (
-        <div
-          className="gr-dropdown-panel"
-          role="listbox"
-        >
+        <div className="gr-dropdown-panel" role="listbox">
           {options.map((option) => {
             const selected = option.value === value;
 

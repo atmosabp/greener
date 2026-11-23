@@ -20,6 +20,7 @@ const periodOptions = [
 export default function PeriodSelect({
   handlePeriodChange,
   period,
+  showSkeleton
 }: PeriodSelectProps) {
   return (
     <div className="period-select-container">
@@ -27,6 +28,7 @@ export default function PeriodSelect({
         className=""
         variant="default"
         value={period}
+        disabled={showSkeleton}
         options={periodOptions}
         onChange={(value) =>
           handlePeriodChange(value as RankingPeriod)

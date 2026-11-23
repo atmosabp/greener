@@ -2,14 +2,19 @@ import "./RefreshButton.css";
 
 interface RefreshButtonProps {
   handleRefresh: () => void;
+  loading: any;
 }
 
-export default function RefreshButton({ handleRefresh }: RefreshButtonProps) {
+export default function RefreshButton({
+  handleRefresh,
+  loading,
+}: RefreshButtonProps) {
   return (
     <button
       type="button"
-      className="refresh-button"
+      className={`refresh-button ${loading} ? "blocked" : ""`}
       onClick={handleRefresh}
+      disabled={loading}
       aria-label="Atualizar horário da última atualização"
       title="Atualizar"
     >

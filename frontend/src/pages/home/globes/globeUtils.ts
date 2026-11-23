@@ -1,11 +1,11 @@
 
 import { useEffect, useState } from "react";
-import type { Service } from "../Homepage";
+import type { ServiceType } from "../../../types/service";
 
 export interface GlobePoint {
     id: string;
     name: string;
-    status: Service["status"];
+    status: ServiceType["status"];
     lat: number;
     lng: number;
     co2e: number;
@@ -16,12 +16,12 @@ export interface GlobePoint {
 }
 
 export interface GlobeModelProps {
-    services: Service[];
+    services: ServiceType[];
     selectedServiceId: string | null;
     onSelectService: (id: string | null) => void;
 }
 
-export function getServicePoints(services: Service[]): GlobePoint[] {
+export function getServicePoints(services: ServiceType[]): GlobePoint[] {
     return services.flatMap((service) => {
         const latitude = service.location?.latitude;
         const longitude = service.location?.longitude;

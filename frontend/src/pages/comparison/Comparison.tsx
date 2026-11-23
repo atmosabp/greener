@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import { port } from "../../utils/connection";
@@ -12,10 +11,7 @@ import useCalendar from "../../components/calendar/useCalendar";
 import Calendar from "../../components/calendar/Calendar";
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 
-import {
-  MultiSelect,
-  DropdownMenu,
-} from "../../components/dropdown";
+import { MultiSelect, DropdownMenu } from "../../components/dropdown";
 
 import {
   calculateAverages,
@@ -35,19 +31,13 @@ import {
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
 
-import {
-  timeFormatter,
-  type RankingPeriod,
-} from "../ranking/rankingData";
+import { timeFormatter, type RankingPeriod } from "../ranking/rankingData";
 
-import type {
-  MetricsType,
-  ServiceType,
-} from "../../types/service";
+import type { MetricsType, ServiceType } from "../../types/service";
 
 import { toReadableTime } from "../../utils/history";
 
-import "./comparison.css";
+import "./Comparison.css";
 
 type HistoryService = {
   id: string;
@@ -75,15 +65,13 @@ export default function Comparison() {
 
   const [order, setOrder] = useState<string[]>([]);
 
-  const [selected, setSelected] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
 
   const [referenceId, setReferenceId] = useState<string | null>(null);
 
-  const [compareMap, setCompareMap] = useState<
-    Record<string, CompareTarget>
-  >({});
+  const [compareMap, setCompareMap] = useState<Record<string, CompareTarget>>(
+    {},
+  );
 
   const MIN_SERVICES = 2;
 
@@ -133,10 +121,7 @@ export default function Comparison() {
      BUSCAR DADOS HISTÓRICOS
   ========================================================== */
 
-  async function fetchHistory(
-    periodType: string,
-    datePull: Date | string,
-  ) {
+  async function fetchHistory(periodType: string, datePull: Date | string) {
     setLoading(true);
     setError(null);
 
@@ -172,9 +157,7 @@ export default function Comparison() {
             network_gb: service.network_gb,
             co2e: service.co2e,
             kwh: service.kwh,
-            carbon_intensity: service.kwh
-              ? service.co2e / service.kwh
-              : 0,
+            carbon_intensity: service.kwh ? service.co2e / service.kwh : 0,
           },
           status: "active",
         }));
@@ -187,9 +170,7 @@ export default function Comparison() {
 
         setServices(formattedData);
         setOrder(formattedData.map((service) => service.id));
-        setSelected(
-          new Set(formattedData.map((service) => service.id)),
-        );
+        setSelected(new Set(formattedData.map((service) => service.id)));
         setReferenceId(formattedData[0]?.id ?? null);
         setError(null);
       } else {
@@ -234,9 +215,7 @@ export default function Comparison() {
   const visible = order
     .filter((id) => selected.has(id))
     .map((id) => services.find((service) => service.id === id))
-    .filter(
-      (service): service is ServiceType => service !== undefined,
-    );
+    .filter((service): service is ServiceType => service !== undefined);
 
   /* ==========================================================
      OPÇÕES DOS DROPDOWNS
@@ -262,9 +241,7 @@ export default function Comparison() {
   const maxEmissao = calculateMax(visible, "co2e");
 
   const gaugeFill = (value?: number, max?: number) =>
-    value === undefined || !max
-      ? "0"
-      : String((value / max) * 100);
+    value === undefined || !max ? "0" : String((value / max) * 100);
 
   const referenceService = services.find(
     (service) => service.id === referenceId,
@@ -274,9 +251,7 @@ export default function Comparison() {
      BASE DE COMPARAÇÃO DE CADA CARD
   ========================================================== */
 
-  const baseMetricsFor = (
-    service: ServiceType,
-  ): MetricsType | undefined => {
+  const baseMetricsFor = (service: ServiceType): MetricsType | undefined => {
     if (service.id === referenceId) return undefined;
 
     const target = compareMap[service.id] ?? "reference";
@@ -303,9 +278,7 @@ export default function Comparison() {
   ========================================================== */
 
   const toggleReference = (id: string) => {
-    setReferenceId((current) =>
-      current === id ? null : id,
-    );
+    setReferenceId((current) => (current === id ? null : id));
   };
 
   /* ==========================================================
@@ -313,9 +286,7 @@ export default function Comparison() {
   ========================================================== */
 
   const move = (id: string, direction: -1 | 1) => {
-    const visibleIndex = visible.findIndex(
-      (service) => service.id === id,
-    );
+    const visibleIndex = visible.findIndex((service) => service.id === id);
 
     const neighbor = visible[visibleIndex + direction];
 
@@ -343,76 +314,55 @@ export default function Comparison() {
   return (
     <div className="cmp-comparison">
       {loading && <Loading />}
-
       <AppHeader />
 
       <main className="cmp-page">
-
-        {/* INTRODUÇÃO E CONTROLES */}
-
         <section className="cmp-intro">
-
           <div className="cmp-intro__content">
             <Greeting />
-
             <p className="cmp-intro__sub">
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
+          </div>
+
+          <div className="cmp-intro__controls">
+            {historyMessage ? (
+              <strong className="cmp-history-message">{historyMessage}</strong>
+            ) : !historyActivated ? (
+              <span className="last-updated-text">
+                <strong>Última atualização:</strong> {formattedLastUpdate}
+              </span>
+            ) : null}
+
+            <RefreshButton handleRefresh={handleRefresh} loading={loading} />
 
             <div className="cmp-selection-dropdown">
               <MultiSelect
                 value={Array.from(selected)}
                 onChange={handleSelectedChange}
                 options={serviceOptions}
+                disabled={loading}
                 placeholder="Serviços selecionados"
                 emptyLabel="Nenhum serviço selecionado"
               />
             </div>
-          </div>
-
-          <div className="cmp-intro__actions">
-
-            <div className="cmp-intro__status">
-              {historyMessage ? (
-                <strong className="cmp-history-message">
-                  {historyMessage}
-                </strong>
-              ) : !historyActivated ? (
-                <span className="last-updated-text">
-                  <strong>Última atualização:</strong>{" "}
-                  {formattedLastUpdate}
-                </span>
-              ) : null}
-            </div>
-
-            <div className="cmp-intro__controls">
-              <RefreshButton handleRefresh={handleRefresh} />
-
-              <div className="cmp-intro__period">
-                <PeriodSelect
-                  showSkeleton={loading}
-                  handlePeriodChange={handlePeriodChange}
-                  period={period}
-                />
-              </div>
-            </div>
-
+            <PeriodSelect
+              showSkeleton={loading}
+              handlePeriodChange={handlePeriodChange}
+              period={period}
+            />
           </div>
         </section>
 
-        {/* MÉDIAS DOS INDICADORES */}
+        {/* ---------------------------------------------------------- */}
+        {/* Médias dos indicadores                                     */}
+        {/* ---------------------------------------------------------- */}
 
         {loading ? (
           <CmpAveragesSkeleton />
         ) : (
-          <section
-            className="cmp-averages"
-            aria-labelledby="avg-title"
-          >
-            <h2
-              id="avg-title"
-              className="cmp-averages__title"
-            >
+          <section className="cmp-averages" aria-labelledby="avg-title">
+            <h2 id="avg-title" className="cmp-averages__title">
               Média indicadores
             </h2>
 
@@ -423,49 +373,32 @@ export default function Comparison() {
             </div>
 
             <div className="cmp-averages__content">
-
               <div className="cmp-averages__tiles">
-
                 <div className="cmp-avg-tile">
                   <span>Rede</span>
                   <strong>
-                    {formatMetric(
-                      "network_gb",
-                      averages.network_gb,
-                    )}
+                    {formatMetric("network_gb", averages.network_gb)}
                   </strong>
                 </div>
 
                 <div className="cmp-avg-tile">
                   <span>CPU</span>
                   <strong>
-                    {formatMetric(
-                      "cpu_percent",
-                      averages.cpu_percent,
-                    )}
+                    {formatMetric("cpu_percent", averages.cpu_percent)}
                   </strong>
                 </div>
 
                 <div className="cmp-avg-tile">
                   <span>Armazenamento</span>
-                  <strong>
-                    {formatMetric(
-                      "disk_gb",
-                      averages.disk_gb,
-                    )}
-                  </strong>
+                  <strong>{formatMetric("disk_gb", averages.disk_gb)}</strong>
                 </div>
 
                 <div className="cmp-avg-tile">
                   <span>Memória</span>
                   <strong>
-                    {formatMetric(
-                      "memory_gb",
-                      averages.memory_gb,
-                    )}
+                    {formatMetric("memory_gb", averages.memory_gb)}
                   </strong>
                 </div>
-
               </div>
 
               <Gauge
@@ -483,20 +416,14 @@ export default function Comparison() {
                 fill={gaugeFill(averages.co2e, maxEmissao)}
                 max={formatNumber(maxEmissao)}
               />
-
             </div>
           </section>
         )}
 
         {/* SERVIÇOS */}
 
-        <section
-          className="cmp-services"
-          aria-labelledby="services-title"
-        >
-
+        <section className="cmp-services" aria-labelledby="services-title">
           <div className="cmp-services__head">
-
             <h2 id="services-title">Serviços</h2>
 
             <div className="cmp-services__tools">
@@ -505,15 +432,14 @@ export default function Comparison() {
                   value={referenceId ?? ""}
                   onChange={setReferenceId}
                   options={referenceOptions}
+                  disabled={loading}
                   placeholder="Escolher serviço referência"
                 />
               </div>
             </div>
-
           </div>
 
           <div className="cmp-services__scroll">
-
             {loading ? (
               <ComparisonServicesSkeleton quantity={8} />
             ) : (
@@ -526,20 +452,13 @@ export default function Comparison() {
                     isFirst={index === 0}
                     isLast={index === visible.length - 1}
                     isReference={service.id === referenceId}
-                    compareWith={
-                      compareMap[service.id] ?? "reference"
-                    }
+                    compareWith={compareMap[service.id] ?? "reference"}
                     hasReference={
-                      referenceId !== null &&
-                      referenceId !== service.id
+                      referenceId !== null && referenceId !== service.id
                     }
                     baseMetrics={baseMetricsFor(service)}
-                    onMove={(direction) =>
-                      move(service.id, direction)
-                    }
-                    onToggleReference={() =>
-                      toggleReference(service.id)
-                    }
+                    onMove={(direction) => move(service.id, direction)}
+                    onToggleReference={() => toggleReference(service.id)}
                     onCompareChange={(target) =>
                       setCompareMap((previous) => ({
                         ...previous,
@@ -551,17 +470,14 @@ export default function Comparison() {
               </>
             )}
 
-            {!loading && error && (
-              <p className="cmp-empty">{error}</p>
-            )}
+            {!loading && error && <p className="cmp-empty">{error}</p>}
 
             {!loading && !error && visible.length === 0 && (
               <p className="cmp-empty">
-                Nenhum serviço selecionado. Escolha ao menos um em
-                “Serviços selecionados”.
+                Nenhum serviço selecionado. Escolha ao menos um em “Serviços
+                selecionados”.
               </p>
             )}
-
           </div>
         </section>
 
@@ -596,12 +512,9 @@ export default function Comparison() {
             handleCancel={handleRefresh}
           />
         )}
-
       </main>
 
-      <footer className="cmp-footer">
-        Desenvolvido por Atmos © 2026
-      </footer>
+      <footer className="cmp-footer">Desenvolvido por Atmos © 2026</footer>
     </div>
   );
 }

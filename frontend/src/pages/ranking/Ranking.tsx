@@ -313,6 +313,7 @@ export default function Ranking() {
                 <label>Atualizações:</label>
 
                 <Select
+                  disabled={showSkeleton}
                   className="ranking-update-dropdown"
                   variant="default"
                   value={String(updateInterval)}
@@ -341,8 +342,8 @@ export default function Ranking() {
                     <>
                       {!historyActivatedRef.current && (
                         <>
-                          <strong>Última atualização:</strong>{" "}
-                          {formattedLastUpdate}
+                          <strong>Última atualização: </strong>
+                          <span>{formattedLastUpdate}</span>
                         </>
                       )}
                     </>
@@ -350,7 +351,10 @@ export default function Ranking() {
                 </span>
               )}
 
-              <RefreshButton handleRefresh={handleRefresh} />
+              <RefreshButton
+                handleRefresh={handleRefresh}
+                loading={showSkeleton}
+              />
             </div>
           </section>
         </div>

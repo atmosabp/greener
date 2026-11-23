@@ -423,15 +423,12 @@ export default function Dashboard() {
                 {historyMessage ? (
                   <strong>{historyMessage}</strong>
                 ) : (
-                  <span className="last-updated-text">
-                    <strong>Última atualização:</strong>{" "}
-                    {timeUpdated || "-"}
-                  </span>
+                  <span className="last-updated-text"><strong>Última atualização:</strong> <span>{timeUpdated || "-"}</span></span>
                 )}
               </span>
             )}
 
-            <RefreshButton handleRefresh={updateMetrics} />
+            <RefreshButton handleRefresh={updateMetrics} loading={showSkeleton}/>
 
             {isCompact ? (
               <div className="alter-btns">
@@ -441,6 +438,7 @@ export default function Dashboard() {
                   </label>
 
                   <Select
+                  disabled={showSkeleton}
                     className="dashboard-dropdown-update"
                     variant="dark"
                     value={String(updateInterval)}
@@ -463,6 +461,7 @@ export default function Dashboard() {
                   </label>
 
                   <Select
+                  disabled={showSkeleton}
                     className=""
                     value={String(updateInterval)}
                     options={UPDATE_OPTIONS}
@@ -534,12 +533,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-energy">
-                <Tooltip
-                  text={
-                    "Soma de consumo de: \n CPU, Rede, Disco e Memórias \n convertidos em Kilowatt/hora"
-                  }
-                />
-
+                <Tooltip text={"Soma de consumo de: \n CPU, Rede, Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
 
                 <h4>

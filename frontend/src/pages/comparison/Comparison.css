@@ -1,8 +1,3 @@
-
-/* ==========================================================
-   VARIÁVEIS E CONFIGURAÇÕES GLOBAIS
-========================================================== */
-
 .cmp-comparison {
     --bg: var(--background, #f9eedc);
     --ink: var(--text, #3a322c);
@@ -15,13 +10,16 @@
     --muted: #81766b;
     --theme-transition: 0.5s ease-in-out;
 
-    width: 100%;
     min-height: 100vh;
-    text-align: left;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
-    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--background);
+    color: var(--text);
+    font-family: "Roboto", sans-serif;
 
     transition:
         background-color var(--theme-transition),
@@ -32,30 +30,24 @@
     --reference-border: #198359;
 }
 
-[data-theme="light"][data-palette="blue"] {
-    --reference-border: #195383;
-}
-
 [data-theme="dark"][data-palette="green"] {
     --reference-border: #dff5de;
 }
-
-[data-theme="dark"][data-palette="blue"] {
-    --reference-border: #dfeaf6;
-}
-
-.cmp-comparison .gr-dropdown-trigger {
-    background-color: var(--lime);
-}
-
-/* ==========================================================
-   RESET E BASE
-========================================================== */
 
 .cmp-comparison *,
 .cmp-comparison *::before,
 .cmp-comparison *::after {
     box-sizing: border-box;
+}
+
+.btn-star {
+    border: none;
+    background-color: transparent;
+}
+
+
+.cmp-comparison svg {
+    transition: transform 0.2s ease;
 }
 
 :where(.cmp-comparison) :where(h1, h2, h3, p, ul) {
@@ -79,181 +71,313 @@
     outline-offset: 0.125rem;
 }
 
-.cmp-comparison .cmp-card,
-.cmp-comparison .cmp-panel,
-.cmp-comparison .cmp-header,
-.cmp-comparison .cmp-indicator,
-.cmp-comparison .cmp-chart,
-.cmp-comparison .cmp-section {
-    transition:
-        background-color var(--theme-transition),
-        color var(--theme-transition),
-        border-color var(--theme-transition),
-        box-shadow var(--theme-transition);
-}
+/* ---------- Topbar ---------- */
 
-.cmp-comparison svg {
-    transition: transform 0.2s ease;
-}
-
-/* ==========================================================
-   PÁGINA
-========================================================== */
-
-.cmp-page {
+.cmp-topbar {
     position: relative;
-    display: block;
-    width: auto;
-    max-width: none;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    height: 3.75rem;
     margin: 0;
-    margin-top: 5.3125rem;
-    padding: 0 1.8125rem 1.375rem;
+    padding: 0 2.25rem;
     background: var(--bg);
     color: var(--ink);
 }
 
-/* ==========================================================
-   INTRODUÇÃO
-========================================================== */
-
-.cmp-intro {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 0.5rem 0.75rem 0;
+.cmp-topbar__logo {
+    display: inline-flex;
+    width: fit-content;
 }
 
-.cmp-intro__content {
+.cmp-topbar__nav {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    min-width: 0;
-    flex: 1;
+    align-items: center;
+    gap: 2.75rem;
+    font-size: 0.875rem;
 }
 
-.cmp-intro h1 {
-    font-size: 2.25rem;
+.cmp-topbar__nav a[aria-current='page'] {
     font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--ink);
 }
 
-.cmp-intro__sub {
-    margin-top: 0.3125rem;
-    font-size: 1rem;
-    line-height: 1.45;
-    color: var(--ink);
-}
-
-.cmp-intro__actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-start;
-    gap: 0.625rem;
-    flex-shrink: 0;
-    max-width: 55%;
-}
-
-.cmp-intro__status {
+.cmp-topbar__user {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    min-height: 1.25rem;
-    max-width: 100%;
-    text-align: right;
+    gap: 1rem;
+    font-size: 0.875rem;
 }
 
-.last-updated-text {
-    color: var(--text);
-    font-size: 0.875rem;
-    white-space: nowrap;
+.cmp-btn-dark {
+    min-height: 2.125rem;
+    padding: 0 1.125rem;
+    border: 0;
+    border-radius: 1.25rem;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.8125rem;
 }
 
-.cmp-history-message {
-    color: var(--text);
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-align: right;
+/* ---------- Página ---------- */
+
+.cmp-page {
+    background: var(--bg);
+    color: var(--ink);
+    width: 90%;
+    flex: 0 0 auto;
+    min-height: 0;
+    margin-top: 5rem;
+    padding: 1rem 2.5rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    overflow: visible;
+}
+
+
+.cmp-intro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.5rem 0.75rem 0;
+    margin-top: 1.5rem;
+}
+
+.cmp-intro h1 {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 0.4rem;
+    font-size: 2.5rem;
+    letter-spacing: -0.035em;
+}
+
+.cmp-intro__sub {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    text-align: left;
 }
 
 .cmp-intro__controls {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.75rem;
 }
+/* ---------- Dropdowns ---------- */
 
-/* ==========================================================
-   SELECTS E DROPDOWNS
-========================================================== */
+.cmp-select {
+    position: relative;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+    height: 2.625rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.625rem;
+    height: auto;
+    min-height: 2.625rem;
+}
 
-.cmp-selection-dropdown {
+.cmp-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 99px;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    transition:
+        background-color var(--theme-transition),
+        color var(--theme-transition),
+        border-color var(--theme-transition);
+}
+
+.last-updated-text {
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.cmp-select option {
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.cmp-select--dark select,
+.cmp-select--green select {
+    height: 2rem;
+    padding: 0 2.375rem 0 1rem;
+}
+
+.cmp-select--dark select {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+[data-theme="dark"] .cmp-select--dark select {
+    background: var(--primary-light);
+    color: var(--on-primary-light);
+}
+
+.cmp-select--green select {
+    background: var(--primary);
+    color: var(--on-primary);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+[data-theme="dark"] .cmp-select--green select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.cmp-select--green select:hover {
+    transform: translateY(-0.15rem);
+}
+
+
+/* ---------- Dropdown de serviços selecionados ---------- */
+
+.cmp-pill-outline {
     display: inline-flex;
-    width: fit-content;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 2.625rem;
     max-width: 100%;
-    margin-top: 0.875rem;
-    margin-left: 0.1875rem;
+    margin: 0;
+    padding: 0 0.95rem;
+    border: none;
+    border-radius: 99px;
+    background: var(--primary-light);
+    color: var(--on-primary-light);
+    font-size: 0.9375rem;
+    font-weight: 500;
 }
 
-.cmp-selection-dropdown .gr-dropdown {
-    width: auto;
-    min-width: 15rem;
-    max-width: min(22rem, calc(100vw - 2rem));
+.cmp-pill-outline:hover,
+.cmp-pill-outline[aria-expanded='true'] {
+    background: var(--panel);
+    border-color: var(--moss-dark);
 }
 
-.cmp-reference-dropdown {
-    display: inline-flex;
-    width: fit-content;
+.cmp-pill-outline svg {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+}
+
+.cmp-pill-outline[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+}
+
+/* ---------- Popovers e menus ---------- */
+
+.cmp-popover {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+    display: inline-block;
     max-width: 100%;
+    align-items: center;
+    transition: transform 0.3s ease;
 }
 
-.cmp-reference-dropdown .gr-dropdown {
-    width: auto;
-    min-width: 13rem;
-    max-width: 20rem;
+.cmp-popover:hover {
+
+    transform: translateY(-0.15rem);
 }
 
-.cmp-reference-dropdown .gr-dropdown-panel {
+.cmp-popover__menu {
+    position: absolute;
+    top: calc(100% + 0.4375rem);
+    z-index: 100;
+    min-width: max(100%, 14.375rem);
+    max-width: min(20rem, calc(100vw - 2rem));
+    padding: 0.375rem;
+    overflow: hidden;
+    border: 1px solid var(--panel);
+    border-radius: 0.75rem;
+    background: var(--bg);
+    color: var(--ink);
+
+    box-shadow:
+        0 0.5rem 1.5rem rgba(58, 50, 44, 0.14),
+        0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
+}
+
+.cmp-popover__menu--left {
+    left: 0.1875rem;
+}
+
+.cmp-popover__menu--right {
     right: 0;
-    left: auto;
 }
 
-.cmp-intro__period {
-    display: inline-flex;
+.cmp-menu {
+    list-style: none;
+    max-height: min(18.75rem, 55vh);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--moss) var(--bg);
+}
+
+.cmp-menu li+li {
+    margin-top: 0.1875rem;
+}
+
+.cmp-menu label,
+.cmp-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.5625rem;
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cmp-menu label {
+    cursor: pointer;
+}
+
+.cmp-menu label:hover,
+.cmp-menu button:hover,
+.cmp-menu button.cmp-is-active {
+    background: var(--panel);
+    border-color: var(--lime);
+}
+
+.cmp-menu button.cmp-is-active {
+    font-weight: 600;
+}
+
+.cmp-menu input[type='checkbox'] {
     flex: 0 0 auto;
-    min-width: 8.5rem;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--moss);
+    cursor: pointer;
 }
 
-.cmp-intro__period .gr-dropdown {
-    width: auto;
-    min-width: 8.5rem;
-}
-
-.cmp-intro__period .gr-dropdown-trigger {
-    width: 12rem;
-    min-width: 8.5rem;
-}
-
-.cmp-comparison .cmp-selection-dropdown .gr-dropdown-checkbox-option {
-    transition:
-        background-color 0.12s ease,
-        color 0.12s ease;
-}
-
-.cmp-comparison .cmp-selection-dropdown .gr-dropdown-check {
-    transition:
-        background-color 0.12s ease,
-        border-color 0.12s ease,
-        transform 0.12s ease;
-}
-
-/* ==========================================================
-   MÉDIA DOS INDICADORES
-========================================================== */
+/* ---------- Média dos indicadores ---------- */
 
 .cmp-averages {
     position: relative;
@@ -285,21 +409,20 @@
 
 .cmp-averages__help {
     position: absolute;
-    top: 0.75rem;
-    right: 1.25rem;
+    top: 1.5rem;
+    right: 2.4rem;
     display: grid;
     place-items: center;
     padding: 0;
+    border: 0;
+    background: transparent;
     color: var(--ink);
-    z-index: 2;
 }
 
 .cmp-averages__content {
     display: grid;
     grid-template-columns:
-        minmax(0, 1.65fr)
-        minmax(0, 0.9fr)
-        minmax(0, 0.9fr);
+        minmax(0, 1.65fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
     align-items: stretch;
     gap: 1.125rem;
 }
@@ -318,6 +441,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    text-align: left;
     min-width: 0;
     padding: 0.75rem;
     border-radius: 0.9375rem;
@@ -338,10 +462,6 @@
     font-weight: 600;
     line-height: 1.15;
 }
-
-/* ==========================================================
-   GAUGES
-========================================================== */
 
 .cmp-gauge-card {
     position: relative;
@@ -378,13 +498,23 @@
     stroke: var(--ink);
 }
 
-.cmp-gauge__fill {
-    stroke: var(--primary);
+@keyframes gauge-fill {
+    from {
+        stroke-dasharray: 0 100;
+    }
 }
 
+.cmp-gauge__fill {
+    stroke: var(--primary);
+    animation: gauge-fill 1.2s ease-out;
+}
+
+/* skeleton */
 .cmp-gauge--skeleton .cmp-gauge__track {
     stroke: var(--skeleton-base, rgba(128, 128, 128, 0.15));
 }
+
+/* fim skeleton */
 
 .cmp-gauge__scale {
     display: flex;
@@ -403,9 +533,7 @@
     font-weight: 600;
 }
 
-/* ==========================================================
-   SERVIÇOS
-========================================================== */
+/* ---------- Serviços ---------- */
 
 .cmp-services {
     margin-top: 1.5rem;
@@ -431,9 +559,70 @@
     gap: 0.75rem;
 }
 
-/* ==========================================================
-   LISTA DE SERVIÇOS
-========================================================== */
+.cmp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2rem;
+    padding: 0 0.75rem;
+    border: 0;
+    border-radius: 1.125rem;
+    background: var(--lime);
+    color: var(--on-primary);
+    font-size: 0.9375rem;
+    white-space: nowrap;
+    transition: transform 0.3s ease;
+}
+
+.cmp-chip:hover {
+    transform: translateY(-0.15rem);
+}
+
+[data-theme="dark"] .cmp-chip {
+    color: var(--on-primary-darker);
+}
+
+
+.cmp-chip svg {
+    color: var(--on-primary);
+}
+
+[data-theme="dark"] .cmp-chip svg {
+    color: var(--on-primary-darker);
+}
+
+.cmp-chip--wide {
+    gap: 0.75rem;
+}
+
+.cmp-threshold {
+    display: inline-flex;
+    align-items: center;
+    width: 4.25rem;
+    height: 2rem;
+    border-radius: 1.125rem;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.cmp-threshold input {
+    width: 2.5rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 1.125rem;
+    background: var(--moss);
+    color: var(--on-primary-dark);
+    font: inherit;
+    text-align: center;
+}
+
+.cmp-threshold span {
+    flex: 1;
+    text-align: center;
+}
 
 .cmp-services__scroll {
     display: flex;
@@ -443,10 +632,13 @@
     margin-top: 0.875rem;
     padding: 0 1.125rem 0.25rem 0;
     overflow-y: auto;
+}
+
+.cmp-services__scroll {
     scrollbar-width: thin;
-    scrollbar-color:
-        var(--moss-dark)
-        color-mix(in srgb, var(--background) 70%, var(--primary-light));
+    scrollbar-color: var(--moss-dark) color-mix(in srgb,
+            var(--background) 70%,
+            var(--primary-light));
 }
 
 .cmp-services__scroll::-webkit-scrollbar {
@@ -469,24 +661,18 @@
     text-align: center;
 }
 
-/* ==========================================================
-   CARD DE SERVIÇO
-========================================================== */
+/* ---------- Card de serviço ---------- */
 
 .cmp-service {
     position: relative;
-    display: flex;
-    flex-direction: column;
     flex: 0 0 auto;
-    min-height: 15rem;
-    padding: 2.75rem 1.125rem 1.125rem 3.625rem;
-    border: 0.2rem solid transparent;
+    min-height: 13.4375rem;
+    padding: 3.875rem 1.125rem 1.125rem 3.625rem;
+    border: 2px solid transparent;
     border-radius: 1.375rem;
-    background: color-mix(
-        in srgb,
-        var(--background) 50%,
-        var(--primary-light)
-    );
+    background: color-mix(in srgb,
+            var(--background) 50%,
+            var(--primary-light));
     color: var(--ink);
     transition: all 0.2s;
 }
@@ -496,21 +682,18 @@
 }
 
 .cmp-service--reference {
-    border-color: var(--reference-border);
+    border-color: var(--primary-darker);
 }
-
-/* Nome do serviço */
 
 .cmp-service__name {
     position: absolute;
-    top: 0;
+    top: 0rem;
     left: 3.8rem;
     display: flex;
     align-items: center;
-    width: auto;
-    max-width: calc(100% - 5rem);
+    padding: 0.4rem 1.2rem;
+    width: 15.2rem;
     height: 2.125rem;
-    padding: 0.4rem 0.75rem;
     border-radius: 0 0 1.6rem 1.6rem;
     background: var(--panel);
     color: var(--ink);
@@ -521,17 +704,13 @@
 }
 
 .cmp-service__name .cmp-service-link {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    gap: 0.6rem;
     color: var(--on-primary);
     transition: all 0.2s;
+    position: relative;
 }
 
 .cmp-service__name .cmp-service-link::before {
@@ -541,7 +720,7 @@
     height: 2px;
     background-color: var(--on-primary);
     left: 0;
-    bottom: 0;
+    bottom: 0px;
     border-radius: 5px;
     transition: width 0.5s ease;
 }
@@ -558,8 +737,6 @@
     background: var(--lime);
 }
 
-/* Referência */
-
 .cmp-service__star {
     position: absolute;
     top: 0.75rem;
@@ -572,67 +749,19 @@
     color: var(--primary-dark);
 }
 
-/* ==========================================================
-   AÇÕES DO SERVIÇO
-========================================================== */
-
 .cmp-service__actions {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
     gap: 0.625rem;
-    width: 100%;
-    min-width: 0;
-    margin-bottom: 0.875rem;
-}
-
-.cmp-service__actions .cmp-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-
-    min-height: 2rem;
-    padding: 0.375rem 0.75rem;
-
-    border: 1px solid var(--moss-dark);
-    border-radius: 10rem;
-
-    background: var(--panel);
-    color: var(--ink);
-
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1;
-
-    white-space: nowrap;
-
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease;
-}
-
-.cmp-service__actions .cmp-chip:hover {
-    background: var(--lime);
-    border-color: var(--moss);
-}
-
-.cmp-service__actions .cmp-chip svg {
-    flex-shrink: 0;
 }
 
 .cmp-service__compare-label {
-    margin-left: 0;
+    margin-left: 1.75rem;
     font-size: 0.9375rem;
-    white-space: nowrap;
 }
-
-/* ==========================================================
-   ORDENAÇÃO
-========================================================== */
 
 .cmp-rank {
     position: absolute;
@@ -664,24 +793,13 @@
     line-height: 1.1;
 }
 
-/* ==========================================================
-   CORPO DO CARD
-========================================================== */
-
 .cmp-service__body {
     display: grid;
     grid-template-columns:
-        minmax(0, 0.95fr)
-        minmax(0, 0.95fr)
-        minmax(0, 1fr)
-        minmax(0, 1.25fr);
+        minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 1fr) minmax(0, 1.25fr);
     gap: 0.75rem;
     height: 8.125rem;
 }
-
-/* ==========================================================
-   INDICADOR DE ENERGIA
-========================================================== */
 
 .cmp-energy {
     position: relative;
@@ -713,10 +831,6 @@
     font-weight: 600;
     white-space: nowrap;
 }
-
-/* ==========================================================
-   INDICADORES SECUNDÁRIOS
-========================================================== */
 
 .cmp-tiles {
     display: grid;
@@ -751,16 +865,16 @@
 }
 
 .cmp-tile--unavailable {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.125rem;
-    background: var(--panel);
-    color: var(--ink);
     text-align: center;
 }
 
 .cmp-tile--unavailable .cmp-tile__label {
-    font-size: 1.0625rem;
+    font-size: 0.9rem;
+    color: var(--on-primary-darker);
     font-weight: 500;
 }
 
@@ -778,9 +892,7 @@
     margin-right: 0.25rem;
 }
 
-/* ==========================================================
-   INTENSIDADE DE CARBONO
-========================================================== */
+/* ---------- Intensidade de carbono ---------- */
 
 .cmp-carbon {
     display: flex;
@@ -829,11 +941,9 @@
     height: 2px;
     transform: translateY(-50%);
     border-radius: 999px;
-    background-color: color-mix(
-        in srgb,
-        var(--text) 14%,
-        var(--complementary)
-    );
+    background-color: color-mix(in srgb,
+            var(--text) 14%,
+            var(--complementary));
     z-index: 0;
 }
 
@@ -847,6 +957,8 @@
     box-sizing: border-box;
     border-radius: 999px;
     z-index: 1;
+    animation: scale-fill 1s ease-out;
+    transition: width 0.4s ease-out;
 }
 
 .cmp-carbon__bar[data-level="low"] .cmp-carbon__fill {
@@ -861,12 +973,10 @@
 
 .cmp-carbon__bar[data-level="high"] .cmp-carbon__fill {
     width: 100%;
-    background: linear-gradient(
-        90deg,
-        #94c47d 20%,
-        #e3d26f 55%,
-        #db7b7b
-    );
+    background: linear-gradient(90deg,
+            #94c47d 20%,
+            #e3d26f 55%,
+            #db7b7b);
 }
 
 /* Marcadores */
@@ -908,33 +1018,31 @@
     font-weight: 400;
 }
 
-/* ==========================================================
-   RESPONSIVIDADE - TABLETS
-========================================================== */
+/* ---------- Rodapé ---------- */
+
+.cmp-footer {
+    padding: 1.125rem 0 1.25rem;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    text-align: center;
+}
+
+/* ---------- Responsividade: tablets ---------- */
 
 @media (max-width: 1120px) {
-
-    .cmp-page {
-        padding-right: 1.5rem;
-        padding-left: 1.5rem;
+    .cmp-topbar {
+        padding: 0 1.25rem;
     }
 
-    /* Introdução */
-
-    .cmp-intro__actions {
-        max-width: 55%;
+    .cmp-topbar__nav {
+        gap: 1.625rem;
     }
-
-    .cmp-intro__controls {
-        gap: 0.5rem;
-    }
-
-    /* Médias */
 
     .cmp-averages {
         padding: 3.625rem 1.125rem 1.125rem;
     }
 
+    /* Organização dos indicadores e gauges */
     .cmp-averages__content {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -942,6 +1050,7 @@
         gap: 1rem;
     }
 
+    /* Os quatro indicadores ocupam toda a largura */
     .cmp-averages__tiles {
         grid-column: 1 / -1;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -951,6 +1060,7 @@
         gap: 0.75rem;
     }
 
+    /* Cada gauge ocupa metade da largura */
     .cmp-gauge-card {
         width: 100%;
         min-width: 0;
@@ -962,22 +1072,13 @@
         max-width: 90%;
     }
 
-    /* Serviços */
-
     .cmp-services__scroll {
         height: auto;
         max-height: 40rem;
     }
 
-    /* Cards */
-
     .cmp-service {
-        padding-top: 2.75rem;
-    }
-
-    .cmp-service__actions {
-        justify-content: flex-end;
-        gap: 0.5rem;
+        padding-top: 3.75rem;
     }
 
     .cmp-service__body {
@@ -1001,98 +1102,66 @@
     .cmp-carbon {
         padding-bottom: 0.875rem;
     }
+
+    .cmp-service__actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        left: 6.875rem;
+    }
+
+    .cmp-service__compare-label {
+        margin-left: 0;
+    }
 }
 
-/* ==========================================================
-   RESPONSIVIDADE - CELULARES
-========================================================== */
+/* ---------- Responsividade: celulares ---------- */
 
 @media (max-width: 720px) {
+    .cmp-topbar {
+        grid-template-columns: 1fr auto;
+        height: auto;
+        padding: 0.75rem 1rem;
+        row-gap: 0.625rem;
+    }
 
-    /* Página */
+    .cmp-topbar__nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-content: space-between;
+        gap: 0.75rem;
+        font-size: 0.8125rem;
+    }
+
+    .cmp-topbar__user {
+        gap: 0.5rem;
+        font-size: 0.75rem;
+    }
 
     .cmp-page {
-        margin-top: 5rem;
+        margin-top: 1.5rem;
         padding-right: 1rem;
         padding-left: 1rem;
     }
 
-    /* Introdução */
-
     .cmp-intro {
         flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
+        gap: 0.875rem;
         padding-right: 0.125rem;
         padding-left: 0.125rem;
-    }
-
-    .cmp-intro__content {
-        width: 100%;
-    }
-
-    .cmp-intro h1 {
-        font-size: 1.875rem;
     }
 
     .cmp-intro__sub {
         font-size: 0.875rem;
     }
 
-    .cmp-intro__actions {
-        width: 100%;
-        max-width: none;
-        align-items: stretch;
-        gap: 0.625rem;
-    }
-
-    .cmp-intro__status {
-        justify-content: flex-start;
-        text-align: left;
-    }
-
-    .last-updated-text,
-    .cmp-history-message {
-        font-size: 0.8125rem;
-        white-space: normal;
-        text-align: left;
-    }
-
-    .cmp-intro__controls {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-
-    .cmp-intro__period {
-        min-width: 0;
-        flex: 1;
-    }
-
-    .cmp-intro__period .gr-dropdown {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .cmp-intro__period .gr-dropdown-trigger {
-        width: 100%;
-        min-width: 0;
-    }
-
-    /* Dropdown de serviços */
-
-    .cmp-selection-dropdown {
-        width: 85%;
+    .cmp-pill-outline {
         max-width: 100%;
+        font-size: 0.875rem;
     }
 
-    .cmp-selection-dropdown .gr-dropdown {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
+    .cmp-popover__menu {
+        max-width: calc(100vw - 2rem);
     }
-
-    /* Médias */
 
     .cmp-averages {
         padding-right: 0.875rem;
@@ -1102,10 +1171,6 @@
     .cmp-averages__title {
         max-width: 90%;
         font-size: 1.375rem;
-    }
-
-    .cmp-averages__help {
-        right: 0.875rem;
     }
 
     .cmp-averages__tiles {
@@ -1130,8 +1195,6 @@
         width: 100%;
     }
 
-    /* Cabeçalho dos serviços */
-
     .cmp-services__head {
         flex-direction: column;
         align-items: flex-start;
@@ -1146,48 +1209,11 @@
     .cmp-services__tools {
         flex-wrap: wrap;
         gap: 0.5rem;
-        width: 100%;
         max-width: 100%;
     }
-
-    .cmp-reference-dropdown {
-        width: 100%;
-    }
-
-    .cmp-reference-dropdown .gr-dropdown {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
-    }
-
-    /* Cards */
 
     .cmp-service {
-        padding: 2.75rem 0.75rem 0.875rem 2.75rem;
-    }
-
-    .cmp-service__name {
-        left: 2.625rem;
-        right: 0.75rem;
-        width: auto;
-        max-width: none;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .cmp-service__name .cmp-service-link {
-        justify-content: center;
-    }
-
-    .cmp-service__actions {
-        justify-content: center;
-        align-items: center;
-        gap: 0.375rem;
-    }
-
-    .cmp-service__compare-label {
-        margin-left: 0;
-        text-align: center;
+        padding: 5.625rem 0.75rem 0.875rem 2.75rem;
     }
 
     .cmp-service__body {
@@ -1195,46 +1221,21 @@
         height: auto;
     }
 
+    .cmp-service__name {
+        left: 2.625rem;
+    }
+
+    .cmp-service__actions {
+        left: 0.625rem;
+        right: 0.625rem;
+    }
+
     .cmp-rank {
         left: 0.375rem;
     }
-
-    /* Centralização dos indicadores */
-
-    .cmp-energy {
-        align-items: center;
-        text-align: center;
-    }
-
-    .cmp-energy__label {
-        text-align: center;
-    }
-
-    .cmp-energy__value {
-        align-self: center;
-    }
-
-    .cmp-tile {
-        align-items: center;
-        text-align: center;
-    }
-
-    .cmp-tile__value {
-        align-self: center;
-    }
-
-    .cmp-carbon {
-        align-items: center;
-        text-align: center;
-    }
 }
 
-/* ==========================================================
-   RESPONSIVIDADE - CELULARES PEQUENOS
-========================================================== */
-
 @media (max-width: 600px) {
-
     .cmp-averages__content {
         display: flex;
         flex-direction: column;
@@ -1252,15 +1253,9 @@
         min-width: 0;
         box-sizing: border-box;
     }
-
-    .cmp-intro__controls {
-        gap: 0.5rem;
-    }
 }
 
-/* ==========================================================
-   ACESSIBILIDADE
-========================================================== */
+/* ---------- Acessibilidade ---------- */
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -1272,107 +1267,250 @@
     }
 }
 
-/* ==========================================================
-   SELECT PILL - COMPARAÇÃO DE SERVIÇOS
-========================================================== */
-
-.cmp-comparison .cmp-select {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 8.5rem;
-    height: 2.125rem;
-}
-
-/* Select nativo */
-
-.cmp-comparison .cmp-select select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    display: block;
+/* ---------- Ajustes de layout ---------- */
+.cmp-comparison {
     width: 100%;
-    height: 100%;
     min-width: 0;
+}
 
-    padding: 0.375rem 2rem 0.375rem 0.75rem;
+.cmp-page {
+    width: min(94%, 1440px);
+    margin: 2.5rem auto 0;
+    padding: 1rem clamp(1rem, 2.5vw, 2.5rem) 1.5rem;
+    gap: 1.5rem;
+}
 
-    border: 1px solid var(--moss-dark);
-    border-radius: 0.5rem;
+.cmp-intro>div:first-child {
+    min-width: min(100%, 18rem);
+    flex: 1 1 20rem;
+}
 
-    background-color: var(--panel);
-    color: var(--ink);
+.cmp-intro-btns {
+    flex-wrap: wrap;
+}
 
-    font-family: inherit;
+.cmp-select .ranking-last-update {
+    flex: 1 1 15rem;
+    min-width: 0;
     font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.2;
-
-    cursor: pointer;
-    outline: none;
+    line-height: 1.5;
+    text-align: right;
 }
 
-/* Seta personalizada */
-
-.cmp-comparison .cmp-select > svg {
-    position: absolute;
-    top: 50%;
-    right: 0.5rem;
-
-    width: 1.125rem;
-    height: 1.125rem;
-
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--ink);
+.cmp-averages {
+    margin-top: 0.25rem;
 }
 
-/* Hover */
-
-.cmp-comparison .cmp-select select:hover {
-    background-color: var(--lime);
-    border-color: var(--moss);
+.cmp-averages__content {
+    min-width: 0;
 }
 
-/* Foco */
-
-.cmp-comparison .cmp-select select:focus-visible {
-    outline: 2px solid var(--moss);
-    outline-offset: 2px;
+.cmp-averages__tiles,
+.cmp-avg-tile,
+.cmp-gauge-card,
+.cmp-service,
+.cmp-service__body,
+.cmp-energy,
+.cmp-tiles,
+.cmp-carbon {
+    min-width: 0;
 }
 
-/* Opções */
-
-.cmp-comparison .cmp-select select option {
-    background-color: var(--panel);
-    color: var(--ink);
+.cmp-services {
+    margin-top: 0.25rem;
 }
 
-/* Desabilitado */
-
-.cmp-comparison .cmp-select select:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+.cmp-services__head {
+    flex-wrap: wrap;
+    padding-inline: 0.25rem;
 }
-/* =========================================
-   RODAPÉ
-========================================= */
+
+/* A página passa a controlar a rolagem, evitando um scroll aninhado
+   dentro da lista de serviços. */
+.cmp-services__scroll {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0 0.125rem 0.25rem;
+    gap: 1rem;
+}
+
+.cmp-service {
+    width: 100%;
+}
+
+.cmp-service__name {
+    max-width: calc(100% - 5.25rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .cmp-footer {
-    flex-shrink: 0;
+    width: 100%;
     margin-top: auto;
-    padding: 0.8rem 1rem 0.9rem;
-    color: #b28b72;
-    font-size: 0.8rem;
-    text-align: center;
 }
 
-@media (max-width: 640px) {
-    .cmp-footer {
-        padding: 0.8rem;
-        font-size: 0.75rem;
+@media (min-width: 1121px) {
+    .cmp-service__body {
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 1fr) minmax(0, 1.25fr);
+    }
+}
+
+@media (max-width: 1120px) {
+    .cmp-page {
+        width: min(96%, 960px);
+        margin-top: 2rem;
+    }
+
+    .cmp-averages__content {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cmp-averages__tiles {
+        grid-column: 1 / -1;
+    }
+
+    .cmp-service__body {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .cmp-page {
+        width: 100%;
+        margin-top: 1.25rem;
+        padding: 0.75rem 1rem 1rem;
+        gap: 1.25rem;
+    }
+
+    .cmp-intro {
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .cmp-intro h1 {
+        font-size: clamp(1.65rem, 7vw, 2.1rem);
+    }
+
+    .cmp-select {
+        justify-content: flex-start;
+    }
+
+    .cmp-select .ranking-last-update {
+        flex-basis: 100%;
+    }
+
+    .cmp-averages {
+        margin-top: 0.5rem;
+        padding: 3.5rem 0.875rem 1rem;
+    }
+
+    .cmp-averages__title {
+        width: min(20rem, 90%);
+        font-size: 1.25rem;
+    }
+
+    .cmp-services__head {
+        align-items: flex-start;
+    }
+
+    .cmp-services__tools {
+        width: 100%;
+    }
+
+    .cmp-chip {
+        max-width: 100%;
+        white-space: normal;
+        text-align: left;
+    }
+
+    .cmp-service {
+        padding: 5.25rem 0.75rem 0.875rem 2.5rem;
+    }
+
+    .cmp-service__name {
+        left: 2.5rem;
+        max-width: calc(100% - 3.25rem);
+        font-size: 1rem;
+    }
+
+    .cmp-service__actions {
+        left: 0.5rem;
+        right: 0.5rem;
+        gap: 0.375rem;
+    }
+
+    .cmp-service__compare-label {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .cmp-averages__tiles {
+        grid-template-columns: minmax(0, 1fr);
+        grid-auto-rows: minmax(5rem, auto);
+    }
+
+    .cmp-avg-tile {
+        min-height: 5rem;
+    }
+
+    .cmp-gauge-card {
+        min-height: 12.5rem;
+    }
+
+    .cmp-service__body {
+        gap: 0.625rem;
+    }
+}
+
+/* Correção final: manter a seção de serviços com a mesma largura
+   durante o carregamento e depois que os dados são renderizados. */
+.cmp-page {
+    width: min(94%, 1440px);
+    margin: 2.5rem auto 0;
+    align-items: stretch;
+}
+
+.cmp-services {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    align-self: stretch;
+}
+
+.cmp-services__head,
+.cmp-services__scroll {
+    width: 100%;
+    min-width: 0;
+}
+
+.cmp-services__scroll {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.cmp-services__scroll>.cmp-service {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
+    align-self: stretch;
+}
+
+.cmp-services__scroll>.cmp-service .cmp-service__body {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 720px) {
+    .cmp-page {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .cmp-services__head {
+        align-items: flex-start;
     }
 }

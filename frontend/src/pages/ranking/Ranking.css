@@ -6,11 +6,9 @@
     --ranking-border: var(--primary-light);
     --ranking-row-alt: var(--background);
     --ranking-row-main: var(--complementary);
-    --ranking-muted: color-mix(
-        in srgb,
-        var(--text) 55%,
-        var(--background)
-    );
+    --ranking-muted: color-mix(in srgb,
+            var(--text) 55%,
+            var(--background));
 
     min-height: 100vh;
     min-height: 100dvh;
@@ -144,22 +142,22 @@
     font-family: inherit;
     font-size: 1rem;
     font-weight: 500;
-}
-
-.ranking-period .gr-dropdown-trigger:hover,
-.ranking-period .gr-dropdown-trigger[aria-expanded="true"] {
-    background-color: var(--primary-darker);
-}
-
-.ranking-period .gr-dropdown-chevron {
-    color: var(--background);
-}
-
-.ranking-period .gr-dropdown-value {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    transition: transform 0.3s ease;
+}
+
+.ranking-period:hover {
+    transform: translateY(-0.15rem);
+}
+
+
+.ranking-period select {
+    width: 100%;
+    height: 2.65rem;
+    padding: 0 2.5rem 0 0.85rem;
+    font-size: 1rem;
+    text-align: left;
+    text-align-last: left;
 }
 
 
@@ -188,6 +186,39 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 
+[data-theme="dark"] .ranking-page select {
+    background-color: var(--primary-light);
+}
+
+
+
+
+.ranking-page .update-select option {
+    background-color: var(--background);
+    color: var(--text);
+}
+
+.ranking-page .update-select:focus-visible,
+.ranking-page button:focus-visible {
+    outline: 0.12rem solid var(--text);
+    outline-offset: 0.15rem;
+}
+
+.ranking-period .update-select {
+    display: flex;
+    width: 100%;
+    height: 2.65rem;
+    padding: 0 2.5rem 0 0.85rem;
+    font-size: 1rem;
+    text-align: left;
+    text-align-last: left;
+}
+
+.ranking-period .ranking-year-select {
+    border: 0.08rem solid var(--primary-dark);
+    background-color: var(--background);
+    color: var(--text);
+}
 
 /* =========================================
    CLASSIFICAÇÃO
@@ -230,7 +261,7 @@
     padding: 0.45rem 0.65rem;
     border: 0.1rem solid transparent;
     border-radius: 1.2rem;
-    background-color: var(--primary-dark);
+    background-color: transparent;
     color: var(--background);
     font: inherit;
     font-size: 0.9rem;
@@ -248,11 +279,11 @@
     filter: brightness(1.06);
 }
 
-.ranking-metric-button.is-active {
+/* .ranking-metric-button.is-active {
     background-color: var(--primary-darker);
     border-color: #ECDEC7;
     color: #ECDEC7;
-}
+} */
 
 .ranking-metric-button:disabled {
     cursor: not-allowed;
@@ -273,9 +304,9 @@
     flex-shrink: 0;
 }
 
-.ranking-toolbar .left-side{
+.ranking-toolbar .left-side {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
 }
 
@@ -289,33 +320,26 @@
     color: var(--on-primary-light);
     font-size: 1rem;
     font-weight: 500;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
 }
 
-.ranking-update-dropdown {
-    max-width: 8rem;
-    flex-shrink: 0;
+.ranking-update:hover {
+    transform: translateY(-0.15rem);
 }
 
-.ranking-update .gr-dropdown-trigger {
-    width: 100%;
-    min-height: 2.65rem;
-    padding: 0 2.25rem 0 0.8rem;
-    border: 0;
-    border-radius: 999px;
-    background-color: var(--primary-dark);
-    color: var(--background);
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.ranking-update .gr-dropdown-trigger:hover,
-.ranking-update .gr-dropdown-trigger[aria-expanded="true"] {
-    background-color: var(--primary-darker);
+.ranking-update-dropdown:hover {
+    transform: translateY(0) !important;
 }
 
 .ranking-update .gr-dropdown-chevron {
     color: var(--background);
+}
+
+.ranking-update:has(.gr-dropdown-trigger[aria-expanded="true"]) {
+    z-index: 1000;
 }
 
 .ranking-toolbar-info {
@@ -329,22 +353,23 @@
 }
 
 .ranking-last-update {
-    color: var(--ranking-muted);
-    font-size: 0.8rem;
-    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 11.875rem;
+    font-size: 0.8125rem;
 }
 
 .ranking-last-update strong {
+    font-size: 0.875rem;
     font-weight: 600;
 }
 
-.ranking-page button:focus-visible,
-.ranking-page .gr-dropdown-trigger:focus-visible,
-.ranking-page .ranking-year-select:focus-visible {
-    outline: 0.12rem solid var(--text);
-    outline-offset: 0.15rem;
+.ranking-last-update span {
+    font-size: 0.875rem;
+    font-weight: 400;
 }
-
 
 /* =========================================
    TABELA
@@ -449,7 +474,7 @@
     overflow-wrap: anywhere;
 }
 
-.ranking-table td + td {
+.ranking-table td+td {
     border-left: 0.1rem solid var(--ranking-border);
 }
 
@@ -549,11 +574,9 @@
     gap: 1rem;
     padding: 2rem;
     overflow-y: auto;
-    border: 1px solid color-mix(
-        in srgb,
-        var(--text) 8%,
-        transparent
-    );
+    border: 1px solid color-mix(in srgb,
+            var(--text) 8%,
+            transparent);
     border-radius: 1.8rem;
     background-color: var(--primary-light);
     color: var(--text);
@@ -580,11 +603,9 @@
 }
 
 .ranking-calendar-close:hover {
-    background-color: color-mix(
-        in srgb,
-        var(--text) 10%,
-        transparent
-    );
+    background-color: color-mix(in srgb,
+            var(--text) 10%,
+            transparent);
 }
 
 .ranking-calendar-modal h2 {
@@ -644,7 +665,7 @@
     align-items: center;
 }
 
-.ranking-calendar-days > span:not(.ranking-calendar-empty) {
+.ranking-calendar-days>span:not(.ranking-calendar-empty) {
     display: grid;
     place-items: center;
     min-height: 1.8rem;
@@ -653,7 +674,7 @@
     font-weight: 600;
 }
 
-.ranking-calendar-days > button {
+.ranking-calendar-days>button {
     aspect-ratio: 1;
     min-width: 0;
     display: grid;
@@ -671,17 +692,17 @@
         color 0.15s ease;
 }
 
-.ranking-calendar-days > button:hover:not(:disabled) {
+.ranking-calendar-days>button:hover:not(:disabled) {
     filter: brightness(0.94);
 }
 
-.ranking-calendar-days > button:disabled {
+.ranking-calendar-days>button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.ranking-calendar-days > button.is-selected,
-.ranking-calendar-options > button.is-selected {
+.ranking-calendar-days>button.is-selected,
+.ranking-calendar-options>button.is-selected {
     background-color: var(--primary-dark);
     color: var(--background);
     font-weight: 700;
@@ -696,7 +717,7 @@
     gap: 0.55rem;
 }
 
-.ranking-calendar-options > button {
+.ranking-calendar-options>button {
     min-width: 0;
     min-height: 2.5rem;
     padding: 0.55rem 0.65rem;
@@ -712,7 +733,7 @@
         color 0.15s ease;
 }
 
-.ranking-calendar-options > button:hover {
+.ranking-calendar-options>button:hover {
     filter: brightness(0.94);
 }
 
@@ -892,7 +913,7 @@
     }
 
     .ranking-period label,
-    .ranking-classification > span {
+    .ranking-classification>span {
         font-size: 0.9rem;
     }
 
@@ -1013,7 +1034,7 @@
         gap: 0.25rem;
     }
 
-    .ranking-calendar-days > button {
+    .ranking-calendar-days>button {
         font-size: 0.8rem;
     }
 
@@ -1026,7 +1047,7 @@
         gap: 0.4rem;
     }
 
-    .ranking-calendar-options > button {
+    .ranking-calendar-options>button {
         min-height: 2.3rem;
         padding: 0.45rem 0.3rem;
         font-size: 0.8rem;
@@ -1045,6 +1066,7 @@
 ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
     .ranking-page *,
     .ranking-page *::before,
     .ranking-page *::after {

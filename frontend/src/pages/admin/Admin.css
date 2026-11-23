@@ -14,6 +14,16 @@
     flex-direction: column;
     background: var(--background);
     color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--background);
+    color: var(--text);
+    font-family: "Roboto", sans-serif;
 }
 
 [data-theme="dark"] .admin-page {
@@ -22,9 +32,13 @@
 }
 
 .admin {
-    flex: 1;
-    margin-top: 100px;
-    padding: 0 30px 0 30px;
+    width: 90%;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 1rem 2.5rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 70px;
     height: 100%;
     align-items: start;
     justify-content: left;
@@ -167,19 +181,20 @@
 .btn svg {
     width: 22px;
     height: 22px;
-    transition: transform 0.4s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .btn:hover:not(:disabled) {
-    transform: scale(1.025);
+    transform: translateY(-0.15rem);
 }
 
 .btn:active:not(:disabled) {
-    transform: scale(0.96);
+    transform: scale(0.95);
+    background-color: color-mix(in srgb, var(--primary-light) 90%, var(--on-primary-light) 40%);
 }
 
 .btn-add:hover:not(:disabled) svg {
-    transform: rotate(90deg) scale(1.1);
+    transform: rotate(-15deg);
 }
 
 .btn-delete:hover:not(:disabled) svg {
@@ -242,7 +257,7 @@
 }
 
 .check:hover .check-box {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .check input:checked+.check-box {
@@ -367,7 +382,6 @@
 
 .icon-btn:hover:not(:disabled) {
     background: var(--primary);
-    transform: scale(1.12);
 }
 
 .icon-btn-edit:hover:not(:disabled) svg {
@@ -379,7 +393,8 @@
 }
 
 .icon-btn:active:not(:disabled) {
-    transform: scale(0.92);
+    transform: scale(0.95);
+    background-color: color-mix(in srgb, var(--primary-light) 90%, var(--on-primary-light) 40%);
 }
 
 .icon-btn:disabled {
@@ -804,3 +819,62 @@
         transform: rotate(4deg);
     }
 }
+
+@media (min-width: 1121px) {
+    .admin-page {
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .admin {
+        flex: 0 0 auto;
+        min-height: 0;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 1120px) {
+    .admin-page {
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .admin {
+        flex: 0 0 auto;
+        min-height: 0;
+        gap: 1.25rem;
+        margin-top: 5rem;
+        padding: 1.25rem 1.5rem 0.75rem;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-page {
+        min-height: 100dvh;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .admin {
+        flex: 0 0 auto;
+        gap: 1rem;
+        margin-top: 5rem;
+        padding: 1.1rem 1rem 0.75rem;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin {
+        margin-top: 2.2rem;
+    }
+}
+

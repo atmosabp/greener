@@ -11,17 +11,38 @@
   <script>
     (function () {
       try {
-        var MODE_KEY = "theme-mode";      // ← a chave que você viu no Local Storage
-        var PALETTE_KEY = "theme-palette"; // ← idem
-        var el = document.documentElement; // ← o elemento que recebe data-theme
+        var MODE_KEY = "theme-mode"; // confirme no Local Storage
+        var el = document.documentElement;
 
         var mode =
           localStorage.getItem(MODE_KEY) ||
           (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         el.setAttribute("data-theme", mode);
 
-        var palette = localStorage.getItem(PALETTE_KEY);
-        if (palette) el.setAttribute("data-palette", palette);
+        var palette = localStorage.getItem("palette");
+        var hue = Number(localStorage.getItem("custom-hue") || 100);
+        var sat = Number(localStorage.getItem("custom-sat") || 38);
+        var s = el.style;
+
+        if (palette === "custom") {
+          var dark = mode === "dark";
+          s.setProperty("--primary", "hsl(" + hue + "," + sat + "%," + (dark ? 65 : 48) + "%)");
+          s.setProperty("--primary-light", "hsl(" + hue + "," + sat + "%,75%)");
+          s.setProperty("--primary-dark", "hsl(" + hue + "," + sat + "%," + (dark ? 45 : 35) + "%)");
+          s.setProperty("--primary-darker", "hsl(" + hue + "," + sat + "%,25%)");
+          s.setProperty("--focus-ring", "hsl(" + hue + "," + sat + "%," + (dark ? 75 : 30) + "%)");
+          if (dark) {
+            var tint = Math.round(sat * 0.25);
+            s.setProperty("--background", "hsl(" + hue + "," + tint + "%,18%)");
+            s.setProperty("--background-transparent", "hsla(" + hue + "," + tint + "%,12%,0.5)");
+            s.setProperty("--complementary", "hsl(" + hue + "," + tint + "%,14%)");
+          }
+        } else if (palette) {
+          el.setAttribute("data-palette", palette);
+        }
+
+        var c = JSON.parse(localStorage.getItem("contrast-vars") || "{}");
+        for (var k in c) s.setProperty(k, c[k]);
       } catch (e) { }
     })();
   </script>

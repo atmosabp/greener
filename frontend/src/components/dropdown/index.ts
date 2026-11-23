@@ -4,5 +4,5 @@ export {
     MultiSelect,
     DropdownMenu,
     type DropdownOption
-} from "./Dropdown";
+} from "./dropdown";
 

@@ -105,8 +105,12 @@
     font-weight: 500;
     justify-content: center;
     text-decoration: none;
-    transition: width 0.3s ease-in-out, height 0.3s ease-in-out, font-size 0.3s ease-in-out;
-}
+    transition: width 0.3s ease, height 0.3s ease, font-size 0.3s ease;
+    }
+
+    .btn-logout:hover{
+        transform: translateY(-0.15rem);
+    }   
 
 /* Animação de entrada dos itens dos menus responsivos */
 @keyframes menu-item-in {

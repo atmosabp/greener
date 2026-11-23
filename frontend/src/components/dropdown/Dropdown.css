@@ -1,17 +1,27 @@
+/* =========================================================
+   DROPDOWN — pílula escura (mesma estética do Ranking/Header)
+   Todas as cores vêm dos tokens do tema, então funcionam
+   em qualquer paleta (verde, azul, marrom...) e no modo escuro.
+========================================================= */
+
 .gr-dropdown {
-  --dropdown-bg: var(--background);
-  --dropdown-ink: var(--text);
+  /* Botão */
+  --dd-trigger-bg: var(--text);
+  --dd-trigger-bg-hover: var(--primary-darker, var(--primary-dark));
+  --dd-trigger-ink: var(--background);
 
-  --dropdown-selected: color-mix(in srgb,
-      var(--primary-light) 80%,
-      var(--complementary));
-  --dropdown-panel: var(--primary-light);
-  --dropdown-lime: var(--primary);
+  /* Painel */
+  --dd-panel-bg: var(--background);
+  --dd-panel-border: var(--primary-light);
 
-  --dropdown-moss: var(--primary-dark);
-  --dropdown-moss-dark: var(--primary-dark);
+  /* Opções */
+  --dd-option-ink: var(--text);
+  --dd-option-hover-bg: var(--primary-light);
+  --dd-option-hover-ink: var(--on-primary-light, var(--text));
+  --dd-option-selected-bg: var(--primary-dark);
+  --dd-option-selected-ink: var(--background);
 
-  --dropdown-muted: var(--text-secondary);
+  --dd-muted: var(--text-secondary);
 
   position: relative;
   display: inline-flex;
@@ -20,21 +30,29 @@
   min-width: 0;
   font-family: inherit;
   text-align: left;
-  box-sizing: border-box;
   color: var(--text);
 }
 
+.gr-dropdown,
 .gr-dropdown *,
 .gr-dropdown *::before,
 .gr-dropdown *::after {
   box-sizing: border-box;
 }
 
+/* Quando aberto (ou com foco dentro), o dropdown inteiro sobe de camada.
+   Isso garante que o painel fique SEMPRE por cima de tabelas, cards e
+   seções vizinhas, sem depender de z-index gigante em cada filho. */
+.gr-dropdown:focus-within,
+.gr-dropdown:has(.gr-dropdown-trigger[aria-expanded="true"]) {
+  z-index: 1000;
+}
+
 /* =========================================================
    BOTÃO PRINCIPAL
 ========================================================= */
 
-.gr-dropdown-trigger {
+.gr-dropdown .gr-dropdown-trigger {
   position: relative;
   display: flex;
   align-items: center;
@@ -43,50 +61,43 @@
 
   width: 100%;
   min-width: 0;
-  min-height: 2.625rem;
+  min-height: 2.5rem;
+  padding: 0 0.875rem 0 1.1rem;
 
-  padding: 0 0.9375rem;
-
-  border: 0.1rem solid var(--dropdown-bg);
+  border: 0.1rem solid transparent;
+  /* nunca muda de tamanho no hover */
   border-radius: 999px;
 
-  background-color: var(--primary);
-  color: var(--text);
+  background-color: var(--dd-trigger-bg);
+  color: var(--dd-trigger-ink);
 
   font-family: inherit;
   font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1.2;
   text-align: left;
-
-  box-shadow: 0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
+  white-space: nowrap;
 
   cursor: pointer;
+  user-select: none;
 
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
-.gr-dropdown-trigger:hover,
-.gr-dropdown-trigger[aria-expanded="true"] {
-  background: var(--dropdown-moss);
-  border-color: var(--dropdown-moss);
-
-  box-shadow: 0 0.1875rem 0.5625rem rgba(58, 50, 44, 0.12);
+.gr-dropdown{
+  transition: transform 0.3s ease;
 }
 
-.gr-dropdown-trigger:focus-visible {
-  outline: 0.125rem solid;
+.gr-dropdown:hover {
+  transform: translateY(-0.15rem);
+}
+
+.gr-dropdown .gr-dropdown-trigger:focus-visible {
+  outline: 0.125rem solid var(--dd-trigger-bg);
   outline-offset: 0.125rem;
-}
-
-.gr-dropdown-trigger:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  box-shadow: none;
 }
 
 .gr-dropdown-value {
@@ -101,27 +112,14 @@
   flex: 0 0 auto;
   width: 1rem;
   height: 1rem;
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease;
+  color: currentColor;
+  opacity: 0.85;
+  transition: transform 0.2s ease;
 }
 
 .gr-dropdown-chevron.is-open {
   transform: rotate(180deg);
 }
-
-/* VARIANTES */
-
-.gr-dropdown-trigger .gr-dropdown-default {
-  /* background: var(--dropdown-bg); */
-}
-
-.gr-dropdown-trigger.gr-dropdown-dark {
-}
-
-.gr-dropdown-trigger.gr-dropdown-green {
-}
-
 
 /* =========================================================
    PAINEL DE OPÇÕES
@@ -129,12 +127,13 @@
 
 .gr-dropdown-panel {
   position: absolute;
-  top: calc(100% + 0.4375rem);
+  top: calc(100% + 0.4rem);
   left: 0;
   z-index: 1000;
 
   display: flex;
   flex-direction: column;
+  gap: 0.125rem;
 
   width: max-content;
   min-width: 100%;
@@ -145,17 +144,16 @@
   overflow-x: hidden;
   overflow-y: auto;
 
-  border: 1px solid var(--dropdown-panel);
-  border-radius: 0.75rem;
-
-  background: var(--dropdown-bg);
+  border: 0.1rem solid var(--dd-panel-border);
+  border-radius: 1rem;
+  background: var(--dd-panel-bg);
 
   box-shadow:
-    0 0.5rem 1.5rem rgba(58, 50, 44, 0.14),
-    0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
+    0 0.75rem 1.75rem rgba(0, 0, 0, 0.18),
+    0 0.125rem 0.375rem rgba(0, 0, 0, 0.08);
 
   scrollbar-width: thin;
-  scrollbar-color: var(--dropdown-moss) var(--dropdown-bg);
+  scrollbar-color: var(--dd-trigger-bg) transparent;
 
   animation: gr-dropdown-enter 0.16s ease-out;
 }
@@ -165,12 +163,11 @@
 }
 
 .gr-dropdown-panel::-webkit-scrollbar-track {
-  background: var(--dropdown-bg);
-  border-radius: 0.5rem;
+  background: transparent;
 }
 
 .gr-dropdown-panel::-webkit-scrollbar-thumb {
-  background: var(--dropdown-moss);
+  background: var(--dd-trigger-bg);
   border-radius: 0.5rem;
 }
 
@@ -199,14 +196,13 @@
   width: 100%;
   min-width: 0;
   min-height: 2.25rem;
+  padding: 0.5rem 0.75rem;
 
-  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: 0.75rem;
 
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
-
-  background: var(--dropdown-bg);
-  color: var(--dropdown-ink);
+  background: transparent;
+  color: var(--dd-option-ink);
 
   font-family: inherit;
   font-size: 0.875rem;
@@ -218,16 +214,23 @@
 
   transition:
     background-color 0.12s ease,
-    color 0.12s ease,
-    border-color 0.12s ease;
+    color 0.12s ease;
 }
 
-.gr-dropdown-option:hover,
-.gr-dropdown-option.is-selected {
-  background: var(--dropdown-selected);
+.gr-dropdown-option:hover {
+  background: var(--dd-option-hover-bg);
+  color: var(--dd-option-hover-ink);
 }
 
-.gr-dropdown-option.is-selected {
+.gr-dropdown-option:focus-visible {
+  outline: 0.125rem solid var(--dd-trigger-bg);
+  outline-offset: -0.125rem;
+}
+
+.gr-dropdown-option.is-selected,
+.gr-dropdown-option.is-selected:hover {
+  background: var(--dd-option-selected-bg);
+  color: var(--dd-option-selected-ink);
   font-weight: 500;
 }
 
@@ -239,15 +242,15 @@
 
 .gr-dropdown-option:disabled:hover,
 .gr-dropdown-option.is-disabled:hover {
-  background: var(--dropdown-bg);
-  border-color: transparent;
+  background: transparent;
+  color: var(--dd-option-ink);
 }
 
 .gr-dropdown-option svg {
   flex: 0 0 auto;
   width: 1rem;
   height: 1rem;
-  color: var(--dropdown-moss);
+  color: currentColor;
 }
 
 /* =========================================================
@@ -262,13 +265,7 @@
 
 .gr-dropdown-checkbox-option {
   justify-content: flex-start;
-  gap: 0.5625rem;
-  margin-top: 0;
-  cursor: pointer;
-}
-
-.gr-dropdown-checkbox-option+.gr-dropdown-checkbox-option {
-  margin-top: 0.5rem;
+  gap: 0.625rem;
 }
 
 .gr-dropdown-checkbox-option input[type="checkbox"] {
@@ -284,28 +281,39 @@
   flex: 0 0 auto;
   place-items: center;
 
-  width: 1rem;
-  height: 1rem;
+  width: 1.0625rem;
+  height: 1.0625rem;
 
-  border: 1px solid var(--dropdown-moss);
-  border-radius: 0.25rem;
+  border: 0.1rem solid var(--dd-trigger-bg);
+  border-radius: 0.3rem;
 
   background: transparent;
-  color: var(--dropdown-bg);
+  color: var(--dd-trigger-ink);
 
   transition:
     background-color 0.12s ease,
-    border-color 0.12s ease,
-    transform 0.12s ease;
+    border-color 0.12s ease;
 }
 
 .gr-dropdown-checkbox-option.is-selected .gr-dropdown-check {
-  background: var(--dropdown-moss);
-  border-color: var(--dropdown-moss);
+  background: var(--dd-trigger-bg);
+  border-color: var(--dd-trigger-bg);
+}
+
+/* Opção marcada no multiselect: não pinta a linha inteira, só o checkbox */
+.gr-dropdown-checkbox-option.is-selected,
+.gr-dropdown-checkbox-option.is-selected:hover {
+  background: transparent;
+  color: var(--dd-option-ink);
+}
+
+.gr-dropdown-checkbox-option.is-selected:hover {
+  background: var(--dd-option-hover-bg);
+  color: var(--dd-option-hover-ink);
 }
 
 .gr-dropdown-checkbox-option input:focus-visible+.gr-dropdown-check {
-  outline: 0.125rem solid var(--dropdown-moss);
+  outline: 0.125rem solid var(--dd-trigger-bg);
   outline-offset: 0.125rem;
 }
 
@@ -316,7 +324,7 @@
 .gr-dropdown-empty {
   display: block;
   padding: 0.625rem;
-  color: var(--dropdown-muted);
+  color: var(--dd-muted);
   font-size: 0.875rem;
 }
 
@@ -325,17 +333,9 @@
 ========================================================= */
 
 @media (max-width: 600px) {
-  .gr-dropdown-trigger {
-    min-height: 2.5rem;
+  .gr-dropdown .gr-dropdown-trigger {
+    min-height: 2.375rem;
     font-size: 0.875rem;
-  }
-
-  .gr-dropdown-trigger.gr-dropdown-dark {
-    min-height: 2.5rem;
-  }
-
-  .gr-dropdown-trigger.gr-dropdown-green {
-    min-height: 2.25rem;
   }
 
   .gr-dropdown-panel {
