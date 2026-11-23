@@ -65,7 +65,7 @@ Nesse dia, a integrante Mariana voltou para o desenvolvimento depois de um compr
 #### 17/nov
 Hoje, foram feitas muitas coisas, para acelerar um pouco mais o desenvolvimento, entre elas: o skeleton foi terminado, trazendo uma cara nova para a aplicação, permitindo o usuário saber o estilo de cada página antes de tudo ser completamente carregado.  
 Também foi iniciada a implementação de um framework para dropdown, unificando os estilos de todos eles em um só.  
-Foi feito a tarefa `esquema de cores`, trazendo também a padronização de estilo de diversas telas, enquanto permite o usuário escolher a cor que quiser nas suas telas, por meio de um color picker!
+Foi feito a tarefa de esquema de cores, trazendo também a padronização de estilo de diversas telas, enquanto permite o usuário escolher a cor que quiser nas suas telas, por meio de um color picker!
 
 **Beatriz** -> Finaliza skeleton e faz alteração do esquema de cores     
 **Darcy** -> Finaliza implementação do histórico     

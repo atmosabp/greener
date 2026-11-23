@@ -1,4 +1,15 @@
 ## Sprint 1 - GreenER
+
+<div align="center">
+
+[Objetivo](#objetivo-da-sprint) - [O que foi entregue](#o-que-foi-entregue) - [Itens concluídos e pendentes](#itens-concluídos-e-pendentes) - [Sprint Backlog](#sprint-backlog) - [Verificações realizadas](#verificações-realizadas) - [Sprint Review](#sprint-review) - [Sprint Retrospective](#sprint-retrospective)
+
+</div>
+
+---
+
+<br>
+
 Esta sprint ocorreu entre os dias **29/09/2026** e **19/10/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 15 dias.
 
 ### Objetivo da sprint
