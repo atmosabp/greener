@@ -1,7 +1,7 @@
 ## Endpoints
 Esse documento tem como objetivo descrever os endpoints mapeados pela nossa aplicação.  
-Todos os endpoints descritos abaixo estão aplicados nos arquivos `.routes.ts` do diretório `backend/src/modules/`.  
-Você também pode acessar essa pasta [aqui](https://github.com/atmosabp/greener/tree/develop/backend/src/modules).
+Todos os endpoints descritos abaixo estão aplicados nos arquivos `*.routes.ts` do diretório `backend/src/modules/`.  
+Você pode acessar essa pasta [nesse link](https://github.com/atmosabp/greener/tree/develop/backend/src/modules).
 
 A URL principal de todas as rotas é `http://localhost:3000/`. Sendo 3000 o número da porta, que pode ser alterado no arquivo .env (variável `PORT`).
 
@@ -47,14 +47,14 @@ Todas as requisições e respostas usam JSON. Em caso de erro, o corpo é sempre
 
 ---
 
+<br>
+
 ## Rota de verificação
 
 `GET /health`: Retorna `{ "status": "ok" }`. É usada pelo *healthcheck* do Docker Compose para saber se o backend já está pronto.  
 Exemplo da URL: `http://localhost:3000/health`
 
 <br>
-
----
 
 ## Rotas para autenticação
 Serão usados para o login e para verificar se o usuário continua autenticado.  
@@ -95,7 +95,7 @@ Resposta de sucesso (`200`):
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token": "eyJhbG...",
   "user": { "id": 1, "name": "Administrador", "email": "admin@email.com", "isAdm": true }
 }
 ```
@@ -105,6 +105,8 @@ Resposta de sucesso (`200`):
 | `400` | E-mail ou senha ausentes ou que não são texto |
 | `401` | E-mail ou senha incorretos |
 | `500` | Erro interno (por exemplo, `JWT_SECRET` não configurado) |
+
+<br>
 
 **Rota tipo GET:**
 
@@ -126,8 +128,6 @@ Retorna `401` se o token não for enviado, for inválido ou tiver expirado.
 
 <br>
 
----
-
 ## Rotas para usuários 
 Serão usados para qualquer ação relativa ao(s) usuário(s).  
 A URL principal dessa rota é http://localhost:3000/users/. Sendo 3000 o número da porta, que pode ser alterado no arquivo .env.
@@ -139,6 +139,8 @@ Os usuários são devolvidos neste formato (a senha nunca é retornada):
 ```json
 { "id": 2, "name": "Teste", "email": "teste@email.com", "is_adm": false }
 ```
+
+<br>
 
 **Rotas tipo GET:** 
 
@@ -157,6 +159,8 @@ Exemplo da URL: `http://localhost:3000/users/1`
 curl http://localhost:3000/users/get-users \
   -H "Authorization: Bearer SEU_TOKEN"
 ```
+
+<br>
 
 **Rota tipo POST:**
 
@@ -200,6 +204,8 @@ async function test(token) {
 | `400` | Campos obrigatórios ausentes, tipos inválidos ou senha com menos de 6 caracteres |
 | `409` | Já existe um usuário com o e-mail informado |
 
+<br>
+
 **Rota tipo PATCH:**
 
 `/:id`: Atualiza usuário baseado no id. Apenas os campos enviados são alterados, mas é necessário enviar **ao menos um**.  
@@ -236,6 +242,8 @@ async function test(id, data, token) {
 | `404` | Usuário não encontrado |
 | `409` | O novo e-mail já pertence a outro usuário |
 
+<br>
+
 **Rota tipo DELETE:**
 
 `/:id`: Deleta usuário baseado no id.  
@@ -265,13 +273,12 @@ async function test(id, token) {
 
 <br>
 
----
-
 ## Rotas para coleta de métricas
 Serão usados para qualquer ação relativa a(s) coleta(s) de dados proveniente das API auxiliares.  
 A URL principal dessa rota é http://localhost:3000/collections/. Sendo 3000 o número da porta, que pode ser alterado no arquivo .env.
 
-> No momento, as rotas de `/collections` não exigem token.
+As rotas de histórico respondem `500` em caso de erro interno.  
+Para datas recentes, a média é calculada na hora a partir da tabela de granularidade menor. Para datas antigas, é lida a linha já comprimida pelos triggers do banco (veja o [README do banco de dados](https://github.com/atmosabp/greener/blob/develop/database/README.md)).
 
 <br>
 
@@ -293,6 +300,8 @@ Exemplo da URL: `http://localhost:3000/collections/all-service-data`.
 ```
 
 O `status` pode ser `active`, `incomplete` ou `inactive`. Caso as métricas de um serviço não possam ser coletadas, o campo `metrics` volta vazio (`{}`) para aquele serviço. Os valores acima são apenas ilustrativos.
+
+<br>
 
 `/service-metrics/:serviceId`: Retorna as métricas atuais de um serviço, direto das APIs auxiliares, **sem gravar nada no banco**. É a rota usada pelo dashboard.  
 Exemplo da URL: `http://localhost:3000/collections/service-metrics/inventory-sync`.
@@ -322,10 +331,12 @@ Resposta (`200`):
 }
 ```
 
+<br>
+
 `/get-history`: Rota de teste, usada pelo teste do worker. Retorna os registros de `hour_data` do serviço `billing-api`.  
 Exemplo da URL: `http://localhost:3000/collections/get-history`.
 
----
+<br>
 
 **Rotas tipo POST:** 
 
@@ -350,6 +361,8 @@ async function test(serviceId) {
 }
 ```
 
+<br>
+
 `/all-service-history`: Retorna o histórico de todos os serviços em um período (usado para o ranking). A resposta é uma única linha, com a média das métricas do período.  
 Exemplo da URL: `http://localhost:3000/collections/all-service-history`.
 
@@ -366,6 +379,8 @@ curl -X POST http://localhost:3000/collections/all-service-history \
   -d '{"periodType": "day", "datePull": "2026-10-17"}'
 ```
 
+<br>
+
 `/service-history`: Retorna o histórico de um serviço, no mesmo formato da rota anterior. O corpo da requisição também usa `periodType` e `datePull`.  
 Exemplo da URL: `http://localhost:3000/collections/service-history`
 
@@ -375,9 +390,9 @@ curl -X POST http://localhost:3000/collections/service-history \
   -d '{"periodType": "hour", "datePull": "2026-10-17"}'
 ```
 
-> **Atenção:** o controller desta rota lê o id do serviço de `req.params.id`, mas a rota está declarada sem o parâmetro `:id`. Enquanto isso não for ajustado no backend, o id do serviço não chega à consulta. Veja as pendências no [README do backend](https://github.com/atmosabp/greener/blob/develop/backend/README.md#status-e-pendências).
+**Atenção:** o controller desta rota lê o id do serviço de `req.params.id`, mas a rota está declarada sem o parâmetro `:id`. Enquanto isso não for ajustado no backend, o id do serviço não chega à consulta. Veja as pendências no [README do backend](https://github.com/atmosabp/greener/blob/develop/backend/README.md#status-e-pendências).
 
-As rotas de histórico respondem `500` em caso de erro interno, e as consultas funcionam assim: para datas recentes, a média é calculada na hora a partir da tabela de granularidade menor; para datas antigas, é lida a linha já comprimida pelos triggers do banco (veja o [README do banco de dados](https://github.com/atmosabp/greener/blob/develop/database/README.md)).
+<br>
 
 ---
 

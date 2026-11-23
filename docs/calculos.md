@@ -1,7 +1,6 @@
 ## Cálculos
 Esse documento tem como objetivo descrever os cálculos realizados pelo servidor da aplicação com as métricas vindas das APIs do GreenER.  
-Todos os cálculos descritos abaixo são feitos pela classe `MetricsCalculator`, no arquivo `backend/src/modules/metrics-calculator.ts`, usando os dados obtidos pelos arquivos do diretório `backend/src/integrations/`.  
-Você também pode acessar essas pastas [aqui](https://github.com/atmosabp/greener/tree/develop/backend/src/modules) e [aqui](https://github.com/atmosabp/greener/tree/develop/backend/src/integrations).
+Todos os cálculos descritos abaixo são feitos pela classe `MetricsCalculator`, no arquivo [`backend/src/modules/metrics-calculator.ts`](https://github.com/atmosabp/greener/tree/develop/backend/src/modules), usando os dados obtidos pelos arquivos do diretório [`backend/src/integrations/`](https://github.com/atmosabp/greener/tree/develop/backend/src/integrations).  
 
 Os cálculos de potência, energia e CO₂e são executados a cada coleta de métricas: tanto quando o frontend consulta os serviços (`/collections/all-service-data` e `/collections/service-metrics/:serviceId`) quanto quando o worker grava o histórico (`/collections/add-history`).
 

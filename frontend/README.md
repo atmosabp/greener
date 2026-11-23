@@ -20,16 +20,9 @@
 
 ## Sobre
 
-Este diretório contém a interface web do **GreenER**, plataforma que monitora serviços de software, estima seu consumo energético e calcula suas emissões aproximadas de CO₂ equivalente (CO₂e).
+Este diretório contém a interface web do **GreenER**.
 
-O frontend é uma *Single Page Application* (SPA) feita com **React**, **TypeScript** e **Vite**. Ele é responsável por:
-
-- apresentar o projeto na **landing page**;
-- autenticar o usuário por e-mail corporativo (tela de **login**), mantendo a sessão por **token JWT**;
-- exibir os serviços monitorados em um **globo 3D** ou em um **mapa 2D** interativos;
-- oferecer telas de **dashboard** de um serviço, **ranking**, **comparação** e **administração** de usuários;
-- proteger as telas internas, deixando a de administração disponível apenas para **administradores**;
-- permitir alternar entre **tema claro/escuro** e **paleta verde/azul**.
+O frontend é uma *Single Page Application* (SPA) feita com **React**, **TypeScript** e **Vite**.  
 
 Os dados são fornecidos pelo servidor em `backend/`, que por sua vez consome as APIs auxiliares do cliente.
 
@@ -37,21 +30,19 @@ Os dados são fornecidos pelo servidor em `backend/`, que por sua vez consome as
 
 ## Tecnologias utilizadas
 
-| Tecnologia | Versão | Uso no projeto |
-| ---------- | ------ | -------------- |
-| [React](https://react.dev/) | ^19.2 | Biblioteca de construção da interface |
-| [TypeScript](https://www.typescriptlang.org/) | ~6.0 | Tipagem estática |
-| [Vite](https://vite.dev/) | ^8.3 | Servidor de desenvolvimento e build |
-| [React Router](https://reactrouter.com/) (`react-router-dom`) | ^7.18 | Roteamento entre páginas e proteção de rotas |
-| [react-globe.gl](https://github.com/vasturiano/react-globe.gl) | ^2.38 | Globo 3D interativo |
-| [Three.js](https://threejs.org/), [@react-three/fiber](https://r3f.docs.pmnd.rs/) e [drei](https://github.com/pmndrs/drei) | ^0.186 / ^9.8 / ^10.7 | Renderização 3D (base do globo) |
-| [Leaflet](https://leafletjs.com/) e [react-leaflet](https://react-leaflet.js.org/) | ^1.9 / ^5.0 | Mapa 2D interativo (tiles do OpenStreetMap) |
-| [lucide-react](https://lucide.dev/) | ^1.52 | Ícones |
-| [Bootstrap Icons](https://icons.getbootstrap.com/) | 1.13.2 (CDN) | Ícones complementares, carregados via `index.html` |
-| [ESLint](https://eslint.org/) + typescript-eslint | ^10 / ^8 | Padronização e análise estática do código |
-| [Docker](https://www.docker.com/) | - | Empacotamento e entrega da aplicação |
-
-> O pacote `react-loader-spinner` está listado no `package.json`, mas não é importado por nenhum arquivo atualmente.
+| Tecnologia | Uso no projeto |
+| ---------- | -------------- |
+| [React](https://react.dev/) | Biblioteca de construção da interface |
+| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática |
+| [Vite](https://vite.dev/) | Servidor de desenvolvimento e build |
+| [React Router](https://reactrouter.com/) (`react-router-dom`) | Roteamento entre páginas e proteção de rotas |
+| [react-globe.gl](https://github.com/vasturiano/react-globe.gl)| Globo 3D interativo |
+| [Three.js](https://threejs.org/), [@react-three/fiber](https://r3f.docs.pmnd.rs/) e [drei](https://github.com/pmndrs/drei) | Renderização 3D (base do globo) |
+| [Leaflet](https://leafletjs.com/) e [react-leaflet](https://react-leaflet.js.org/) | Mapa 2D interativo (tiles do OpenStreetMap) |
+| [lucide-react](https://lucide.dev/) | Ícones |
+| [Bootstrap Icons](https://icons.getbootstrap.com/) | Ícones complementares, carregados via `index.html` |
+| [ESLint](https://eslint.org/) + typescript-eslint | Padronização e análise estática do código |
+| [Docker](https://www.docker.com/) | Empacotamento e entrega da aplicação |
 
 <br>
 
@@ -102,7 +93,6 @@ frontend/
 │ └ main.tsx                  # Ponto de entrada, providers e definição das rotas
 ├ Dockerfile                  # Imagem usada pelo compose (executa o servidor do Vite)
 ├ Dockerfile.dev              # Imagem alternativa de desenvolvimento
-├ nginx.conf                  # Configuração do Nginx para produção (ainda não usada)
 ├ eslint.config.js            # Regras de lint
 ├ index.html                  # HTML base da SPA
 ├ vite.config.ts              # Configuração do Vite
@@ -345,8 +335,6 @@ A variável `VITE_PORT` é lida do `.env` da raiz do projeto (o `vite.config.ts`
 | `Comparison` | `GET /collections/all-service-data` | Uma vez, ao abrir a tela |
 | `Dashboard` | `GET /collections/service-metrics/:serviceId` e `GET /collections/all-service-data` | Atualização automática; a segunda alimenta a lista "Outros serviços" |
 
-> Os seletores de data e período do Dashboard, do Ranking e da Comparação ainda não buscam o histórico gravado no banco. Veja [Status atual e próximos passos](#status-atual-e-próximos-passos).
-
 <br>
 
 ## Carregamento: skeleton e loading
@@ -369,10 +357,10 @@ O componente `Loading` (tela cheia, com a logo) existe e recebe `data` como prop
 
 A aplicação suporta **2 modos** (`light` e `dark`) e **2 paletas** (`green` e `blue`), combinados em 4 temas.
 
-- `ThemeProvider` guarda o modo e a paleta no `localStorage` (chaves `theme-mode` e `theme-palette`). Por padrão, usa modo claro e paleta verde;
-- o `index.html` possui um pequeno script que aplica o tema salvo **antes** do React carregar (se não houver tema salvo, usa a preferência de modo escuro do sistema), evitando que a tela "pisque" com o tema errado;
-- os valores são aplicados no elemento `<html>` pelos atributos `data-theme` e `data-palette`;
-- as cores ficam em variáveis CSS em `src/index.css` (`--primary`, `--primary-light`, `--primary-dark`, `--primary-darker`, entre outras), uma definição para cada combinação;
+- `ThemeProvider` guarda o modo e a paleta no `localStorage` (chaves `theme-mode` e `theme-palette`). Por padrão, usa modo claro e paleta verde.
+- o `index.html` possui um pequeno script que aplica o tema salvo **antes** do React carregar (se não houver tema salvo, usa a preferência de modo escuro do sistema), evitando que a tela "pisque" com o tema errado.
+- os valores são aplicados no elemento `<html>` pelos atributos `data-theme` e `data-palette`.
+- as cores ficam em variáveis CSS em `src/index.css` (`--primary`, `--primary-light`, `--primary-dark`, `--primary-darker`, entre outras), uma definição para cada combinação.
 - o globo 3D também troca de visual conforme o modo;
 - para ler ou alterar o tema em qualquer componente, use o hook:
 
@@ -388,7 +376,7 @@ O hook lança um erro caso seja usado fora do `ThemeProvider`, que envolve toda 
 
 ## Instruções para execução
 
-O frontend ficará disponível na porta definida em `FRONT_PORT`. Exemplo: `localhost:8080`. Sem Docker, o Vite usa a porta `5173`.
+O frontend fica disponível na porta definida em `FRONT_PORT`. Exemplo: `localhost:8080`. Sem Docker, o Vite usa a porta `5173`.
 
 Para o login e as telas funcionarem, o backend precisa estar rodando e o `.env` da raiz precisa ter `VITE_PORT` com a mesma porta do backend (`PORT`). Além disso, o backend só aceita requisições vindas de `localhost:5173` e `localhost:8080`.
 
@@ -398,8 +386,6 @@ Para o login e as telas funcionarem, o backend precisa estar rodando e o `.env` 
 | ------- | --------- |
 | `npm run dev` | Inicia o servidor de desenvolvimento com recarregamento automático (HMR), acessível pela rede (`--host`) |
 | `npm run build` | Verifica os tipos (`tsc -b`) e gera a versão de produção na pasta `dist/` |
-| `npm run preview` | Serve localmente a versão gerada pelo build |
-| `npm run lint` | Executa o ESLint em todo o projeto |
 
 <br>
 
@@ -413,8 +399,11 @@ No `compose.yaml`, o serviço `frontend` é construído a partir de `frontend/Do
 | `Dockerfile.dev` | Versão alternativa para desenvolvimento, baseada em `node:22-alpine`, que copia todo o projeto |
 | `.dockerignore` | Evita copiar `node_modules`, `dist`, `.git` e outros arquivos desnecessários para a imagem |
 
-> No `vite.config.ts`, o monitoramento de arquivos usa *polling* (`usePolling`), o que garante a recarga automática dentro do container Docker, inclusive no WSL.
+No `vite.config.ts`, o monitoramento de arquivos usa *polling* (`usePolling`), o que garante a recarga automática dentro do container Docker, inclusive no WSL.
 
+<br>
+
+---
 
 <br>
 

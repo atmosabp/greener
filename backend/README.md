@@ -35,7 +35,7 @@ Além disso, ele cuida da **autenticação** (login com token JWT) e do **gerenc
 | Node.js 24 (imagem Docker) | Ambiente de execução |
 | TypeScript 5 | Linguagem, compilada com `tsc` para a pasta `dist/` |
 | Express 5 | Servidor HTTP e rotas |
-| PostgreSQL (`pg`) | Banco de dados e conexão por *pool* |
+| PostgreSQL | Banco de dados e conexão por *pool* |
 | bcrypt | Criptografia (*hash*) das senhas dos usuários |
 | jsonwebtoken | Criação e verificação dos tokens de login (JWT) |
 | cors | Controle de quais origens podem acessar o servidor |
@@ -94,8 +94,10 @@ Cada módulo (`auth`, `users` e `collections`) segue a mesma divisão em camadas
 ```
 requisição → routes → controller → service → repository → PostgreSQL
                                                  ↓
-                                  integrations (APIs externas) + metrics-calculator
+                        integrations (APIs externas) + metrics-calculator
 ```
+
+<br>
 
 | Camada | Responsabilidade |
 | ------ | ---------------- |
@@ -106,8 +108,6 @@ requisição → routes → controller → service → repository → PostgreSQL
 | `integrations/` | Requisições às APIs externas |
 | `middlewares/` | Funções executadas antes do controller (autenticação e permissão) |
 | `metrics-calculator.ts` | Classe `MetricsCalculator`, que calcula energia e emissão |
-
-> O módulo `auth` não possui `repository` próprio: ele reutiliza `findUserByEmail`, do repository de usuários.
 
 <br>
 
@@ -126,7 +126,7 @@ O arquivo `src/modules/index.ts` registra os módulos nos seguintes prefixos. Qu
 
 ### CORS
 
-Em `src/app.ts`, o servidor só aceita requisições vindas de `http://localhost:5173` e `http://localhost:8080` (as portas padrão do frontend), além de requisições sem origem (como as do terminal, `curl` e Supertest). Qualquer outra origem recebe o erro `Caminho bloqueado pelo CORS.`. Caso o frontend rode em outra porta, ela precisa ser adicionada na lista `allowedOrigins`.
+No arquivo `src/app.ts`, o servidor só aceita requisições vindas de `http://localhost:5173` e `http://localhost:8080` (as portas padrão do frontend), além de requisições sem origem (como as do terminal, `curl` e Supertest). Qualquer outra origem recebe o erro `Caminho bloqueado pelo CORS.`. Caso o frontend rode em outra porta, ela precisa ser adicionada na lista `allowedOrigins`.
 
 <br>
 
@@ -141,7 +141,7 @@ O fluxo é o seguinte:
 3. Se estiver correto, o servidor devolve o `token` e os dados do usuário.
 4. Nas rotas protegidas, o frontend envia o cabeçalho `Authorization: Bearer <token>`.
 
-Os dois middlewares ficam em `src/middlewares/middleware.ts`:
+Os dois middlewares ficam em `src/middlewares/middleware.ts`.
 
 | Middleware | O que faz | Respostas de erro |
 | ---------- | --------- | ----------------- |
@@ -173,28 +173,23 @@ O backend lê o arquivo `.env` que fica na **raiz do projeto** (e não dentro de
 | `ADMIN_EMAIL` | E-mail do administrador inicial (usado também para fazer login) |
 | `ADMIN_PASSWORD` | Senha do administrador inicial |
 
-> **Nota:** usuário, senha e nome do banco precisam ser os mesmos usados quando o container do banco foi criado pela primeira vez, senão a autenticação falha.
+**Nota:** usuário, senha e nome do banco precisam ser os mesmos usados quando o container do banco foi criado pela primeira vez, senão a autenticação falha.
 
-> **Importante:** sem `JWT_SECRET`, o login e todas as rotas protegidas respondem erro `500`. Sem as variáveis `ADMIN_*`, o administrador não é criado e ninguém consegue acessar a tela de gerenciamento.
 
 <br>
 
 ## Instruções para execução
 Caso queira utilizar o backend, há instruções para rodar o projeto com e sem Docker no README do projeto. Você pode acessar ele clicando [aqui](https://github.com/atmosabp/greener#instru%C3%A7%C3%B5es-para-execu%C3%A7%C3%A3o).
 
-<br>
 
 ### Scripts disponíveis
 
 | Comando | O que faz |
 | ------- | --------- |
 | `npm run dev` | Inicia o servidor em modo desenvolvimento, com recarga automática (`tsx watch`) |
-| `npm run db:dev` | Executa `db:init` (cria as tabelas e o administrador) e depois inicia o servidor em modo desenvolvimento |
 | `npm run build` | Compila o TypeScript para a pasta `dist/` |
 | `npm start` | Executa a versão compilada (`dist/server.js`) |
 | `npm test` | Roda os testes com Jest (precisa do banco de dados rodando) |
-
-> O script `db:dev` chama `npm run db:init`, que executa o arquivo `src/db/init.ts`. Veja a situação desse script em [Pendências](#status-e-pendências).
 
 <br>
 
@@ -229,24 +224,7 @@ Todas as requisições e respostas usam JSON. Os controllers respondem com os se
 
 Em caso de erro, o corpo da resposta é sempre `{ "message": "..." }`. Rotas que não existem respondem `404` com `{ "message": "Rota inexistente!" }`.
 
-Resumo das rotas (o detalhamento de cada uma, com exemplos, está em [`docs/endpoints.md`](https://github.com/atmosabp/greener/blob/develop/docs/endpoints.md)):
-
-| Método | Rota | Proteção | Função |
-| ------ | ---- | -------- | ------ |
-| `GET` | `/health` | Pública | Verifica se o servidor está no ar |
-| `POST` | `/auth/login` | Pública | Faz login e devolve o token |
-| `GET` | `/auth/me` | Token | Devolve o usuário do token (verificação de sessão) |
-| `POST` | `/users` | Administrador | Cadastra um usuário |
-| `GET` | `/users/get-users` | Administrador | Lista todos os usuários |
-| `GET` | `/users/:id` | Administrador | Busca um usuário pelo id |
-| `PATCH` | `/users/:id` | Administrador | Altera dados de um usuário |
-| `DELETE` | `/users/:id` | Administrador | Remove um usuário |
-| `GET` | `/collections/all-service-data` | Sem proteção | Todos os serviços com status, localização e métricas atuais |
-| `GET` | `/collections/service-metrics/:serviceId` | Sem proteção | Métricas atuais de um serviço (não grava no banco) |
-| `POST` | `/collections/add-history` | Sem proteção | Calcula e grava uma coleta no histórico |
-| `GET` | `/collections/get-history` | Sem proteção | Rota de teste: devolve registros de `hour_data` |
-| `POST` | `/collections/all-service-history` | Sem proteção | Média das métricas de todos os serviços em um período (ranking) |
-| `POST` | `/collections/service-history` | Sem proteção | Média das métricas de um serviço em um período |
+Resumo das rotas (o detalhamento de cada uma, com exemplos, está em [`docs/endpoints.md`](https://github.com/atmosabp/greener/blob/develop/docs/endpoints.md)).
 
 <br>
 
@@ -330,4 +308,12 @@ As consultas de `POST /collections/all-service-history` e `POST /collections/ser
 3
 
 <br>
+
+---
+
+<br>
+
+<div align="center">
+    <i> Desenvolvido por Atmos <br>2026</i>
+</div>
 
