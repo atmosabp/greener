@@ -113,6 +113,12 @@ function applyContrastVars() {
     root.style.setProperty(onVar, pickTextFromRgb(...rgb));
   }
 
+  const cache: Record<string, string> = {};
+  for (const [, onVar] of contrast_pairs) {
+    cache[onVar] = root.style.getPropertyValue(onVar);
+  }
+  localStorage.setItem("contrast-vars", JSON.stringify(cache));
+  
   probe.remove();
 }
 
@@ -163,9 +169,7 @@ export default function ThemeToggle() {
 
   const [palette, setPalette] = useState<PaletteName>(() => {
     const saved = localStorage.getItem("palette");
-    return saved === "green" || saved === "custom"
-      ? saved
-      : default_palette;
+    return saved === "green" || saved === "custom" ? saved : default_palette;
   });
 
   const [hue, setHue] = useState(() =>

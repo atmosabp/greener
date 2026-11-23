@@ -919,18 +919,24 @@
     /* Introdução */
 
     .intro-section {
-        align-items: flex-start;
+        align-items: center;
+        justify-content: center;
         flex-direction: column;
+        text-align: center;
+        padding: 0;
+        margin-left: 0;
         gap: 1rem;
         margin-bottom: 1.75rem;
+        width: 100%;
     }
 
     .intro-copy {
         max-width: 100%;
+        text-align: center;
     }
 
-    .intro-copy h2 {
-        font-size: clamp(1.9375rem, 8vw, 2.625rem);
+    .intro-copy h1 {
+        padding: 0;
     }
 
     /* Estrutura do explorador */

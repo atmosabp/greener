@@ -126,7 +126,8 @@
 
 @media (max-width: 480px) {
     .palette-panel {
-        right: 0;
+        right: 20px;
+        top: -250px;
         width: 240px;
     }
 }
