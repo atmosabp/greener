@@ -242,9 +242,8 @@ export class PgCollectionsRepository implements CollectionsRepository {
   }
 
   async findHourHistory(datePull: Date | string) {
-    const agora = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
-    
     let result;
+    
     if (differenceInHours(Date(), datePull) < 2) {
       result = await this.db.query(
         `select 

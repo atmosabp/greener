@@ -1,5 +1,15 @@
 ## Sprint 3 - GreenER
 
+<div align="center">
+
+[Objetivo](#objetivo-da-sprint) - [O que foi entregue](#o-que-foi-entregue) - [Itens concluídos e pendentes](#itens-concluídos-e-pendentes) - [Sprint Backlog](#sprint-backlog) - [Verificações realizadas](#verificações-realizadas) - [Sprint retrospective](#sprint-retrospective)
+
+</div>
+
+---
+
+<br>
+
 Esta sprint ocorreu entre os dias **10/11/2026** e **23/11/2026**. Excluindo os dias que foram decididos não serem dias de desenvolvimento, teve a duração total de 9 dias.
 
 ### Objetivo da sprint
@@ -15,19 +25,30 @@ Aqui está todos os objetivos em mais detalhes:
 <br>
 
 ### O que foi entregue
-***Essa seção será adicionada ao final da sprint.***
+O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui](https://www.youtube.com/watch?v=oMrqTTUGP-I).  
+Ele mostra visualmente o que foi feito durante a sprint das telas e backend, e o que está planejado para o próximo ciclo de entrega.
+
+A seguir está o burndown da sprint 3.  
+Ele demonstra a evolução das tarefas ao longo dos dias. Assim como a relação entre o esforço real de cada dia e o planejado.  
+No início da sprint, foi definido um esforço total de 101 pontos. E para cada dia, uma média de 11 pontos esperados.
+
+![Burndown da sprint 3](burndown-sprint-3.png)
 
 <br>
 
 Lista do que foi entregue:
-- [ ✔ ] ***Fazer lista de itens aqui***
+- [ ✔ ] Melhoria de desempenho da aplicação
+- [ ✔ ] Telas padronizadas e estilo da aplicação como um todo melhorada
+- [ ✔ ] Documentação finalizada
+- [ ✔ ] Bugs funcionais e visuais corrigidos
 
 <br>
 
 ### Itens concluídos e pendentes
-***Colocar aqui caso houver itens pendentes ou não.***
+Todos os itens definidos no backlog foram concluídos, portanto, não houve itens pendentes.
 
 É possível acessar o Kanban da sprint [neste link](https://github.com/users/atmosabp/projects/5).
+
 
 <details>
 
