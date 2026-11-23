@@ -865,16 +865,16 @@
 }
 
 .cmp-tile--unavailable {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.125rem;
-    background: var(--panel);
-    color: var(--ink);
     text-align: center;
 }
 
 .cmp-tile--unavailable .cmp-tile__label {
-    font-size: 1.0625rem;
+    font-size: 0.9rem;
+    color: var(--on-primary-darker);
     font-weight: 500;
 }
 
