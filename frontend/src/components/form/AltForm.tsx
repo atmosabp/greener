@@ -33,7 +33,11 @@ const fields: FieldConfig[] = [
     required: false,
     validate: (v, values) =>
       values.password
-        ? matches("password", "As senhas não coincidem*")(v, values)
+        ? matches("password", {
+            title: "Senhas diferentes",
+            message:
+              "Não foi possível alterar sua senha, senhas não coincidem.",
+          })(v, values)
         : undefined,
   },
 ];

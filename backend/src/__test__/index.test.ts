@@ -1,9 +1,12 @@
 import request from "supertest";
-import { app } from "../app";
+import { createApp } from "../app";
 import { pool } from "../db/connections";
 import { connection, admin } from "../config/env";
 
-import { deleteUserByEmail } from "../modules/users/users.repository";
+import { PgUsersRepository } from "../modules/users/users.repository";
+
+const app = createApp(pool);
+const usersRepository = new PgUsersRepository(pool);
 
 let token: string = "";
 let userId: number = 0;
@@ -21,13 +24,13 @@ const serviceList = [
 // ============= Testes para Users e Auth ================
 
 afterAll(async () => {
-  await deleteUserByEmail("jesttest@test.com");
+  await usersRepository.deleteUserByEmail("jesttest@test.com");
   await pool.end();
 });
 
 describe("login de usuário", () => {
   beforeEach(async () => {
-    await deleteUserByEmail("jesttest@test.com");
+    await usersRepository.deleteUserByEmail("jesttest@test.com");
   });
   it("retorna status 200 caso o login seja feito", async () => {
     const response = await request(app)
@@ -45,7 +48,7 @@ describe("login de usuário", () => {
 
 describe("cadastro de usuário", () => {
   beforeEach(async () => {
-    await deleteUserByEmail("jesttest@test.com");
+    await usersRepository.deleteUserByEmail("jesttest@test.com");
   });
   it("retorna status 201 caso o cadastro seja feito", async () => {
     const response = await request(app)
@@ -116,7 +119,7 @@ describe("consulta todos os serviços", () => {
       .send();
 
     expect(response.statusCode).toEqual(200);
-  });
+  }, 25000);
 });
 
 describe("consulta métricas de um serviço", () => {

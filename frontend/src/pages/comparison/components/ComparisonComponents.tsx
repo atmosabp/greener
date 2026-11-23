@@ -2,18 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { carbonLevel, formatNumber } from './comparisonData';
-
-/* ------------------------------------------------------------------ */
-/* Saudação                                                            */
-/* ------------------------------------------------------------------ */
-
-export function greeting() {
-    const hour = new Date().getHours();
-
-    if (hour < 12) return 'Bom dia';
-    if (hour < 18) return 'Boa tarde';
-    return 'Boa noite';
-}
+import Tooltip from '../../../components/tooltip/Tooltip';
+import type { RankingPeriod } from '../../ranking/rankingData';
 
 /* ------------------------------------------------------------------ */
 /* Fechar menus ao clicar fora ou pressionar Escape                    */
@@ -181,19 +171,22 @@ export function SelectPill({
     options,
     variant,
     label,
+    disabled = false
 }: {
     value: string;
-    onChange: (value: string) => void;
+    onChange: (value: RankingPeriod) => void;
     options: SelectOption[];
     variant: 'dark' | 'green';
     label: string;
+    disabled?: boolean;
 }) {
     return (
         <span className={`cmp-select cmp-select--${variant}`}>
             <select
                 value={value}
-                onChange={(event) => onChange(event.target.value)}
+                onChange={(event) => onChange(event.target.value as RankingPeriod)}
                 aria-label={label}
+                disabled={disabled}
             >
                 {options.map((option) => (
                     <option
@@ -206,7 +199,6 @@ export function SelectPill({
                 ))}
             </select>
 
-            <Chevron size={20} />
         </span>
     );
 }
@@ -269,6 +261,7 @@ export function Gauge({
     return (
         <div className="cmp-gauge-card">
             <h3 className="cmp-gauge-card__title">{title}</h3>
+            <Tooltip text={"Comparação da média dos \n dados com o maior dado"} />
 
             <svg
                 className="cmp-gauge"
@@ -305,18 +298,29 @@ export function Gauge({
 export function CarbonCard({ intensity }: { intensity?: number }) {
     const level = carbonLevel(intensity);
 
+    const dataLevel =
+        intensity === undefined || intensity <= 100
+            ? 'low'
+            : intensity > 500
+                ? 'high'
+                : 'medium';
+
     return (
         <div className="cmp-carbon">
             <p className="cmp-carbon__title">Intensidade de carbono</p>
 
             <p className="cmp-carbon__level">{level.label}</p>
 
-            <div className="cmp-carbon__bar" aria-hidden="true">
-                <span
-                    className="cmp-carbon__fill"
-                    style={{ width: level.bar }}
-                />
+            <div
+                className="cmp-carbon__bar"
+                data-level={dataLevel}
+                aria-hidden="true"
+            >
+                <span className="cmp-carbon__track" />
 
+                <span className="cmp-carbon__fill" />
+
+                <span className="cmp-carbon__dot cmp-carbon__dot--low" />
                 <span className="cmp-carbon__dot cmp-carbon__dot--mid" />
                 <span className="cmp-carbon__dot cmp-carbon__dot--high" />
             </div>

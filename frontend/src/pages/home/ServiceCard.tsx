@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
-import type { Service } from "./Homepage";
+import type { ServiceType } from "../../types/service";
 
-const mapStatusColors: Record<Service["status"], string> = {
+const mapStatusColors: Record<ServiceType["status"], string> = {
   active: "#91bd79",
+  deleted: "#e0d344",
   incomplete: "#e0d344",
+  unavailable: "#df7779",
   inactive: "#df7779",
 };
 
 interface ServiceCardProps {
   viewType?: string;
-  selectedServicePoint: Service;
+  selectedServicePoint: ServiceType;
   onSelectService: (id: string | null) => void;
 }
 
@@ -103,16 +105,19 @@ export default function ServiceCard({
             <strong>
               {typeof selectedServicePoint.metrics?.kwh === "number" &&
               Number.isFinite(selectedServicePoint.metrics.kwh)
-                ? `${selectedServicePoint.metrics.kwh.toLocaleString(
-                    "pt-BR", {maximumSignificantDigits: 2}
-                  )} KWh`
+                ? `${selectedServicePoint.metrics.kwh.toLocaleString("pt-BR", {
+                    maximumSignificantDigits: 2,
+                  })} KWh`
                 : "—"}
             </strong>
           </div>
         </div>
       </div>
 
-      <Link to={`/dashboard/${selectedServicePoint.id}`} className="map-service-details-button">
+      <Link
+        to={`/dashboard/${selectedServicePoint.id}`}
+        className="map-service-details-button"
+      >
         Ver detalhes
       </Link>
     </div>

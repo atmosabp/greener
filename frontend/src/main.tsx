@@ -1,7 +1,6 @@
-
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
 
 import App from "./App.tsx";
@@ -13,16 +12,20 @@ import Comparison from "./pages/comparison/Comparison.tsx";
 import Admin from "./pages/admin/Admin.tsx";
 
 import ThemeProvider from "./providers/ThemeProvider.tsx";
+import ToastProvider from "./providers/ToastProvider.tsx";
 import ProtectedRoute from "./components/protectRoute/ProtectedRoute.tsx";
+import NotFound from "./pages/not-found-404/NotFound.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           {/* Rotas públicas */}
           <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/not-found" element={<NotFound />} />
 
           {/* Rotas que exigem autenticação */}
           <Route element={<ProtectedRoute />}>
@@ -36,8 +39,11 @@ createRoot(document.getElementById("root")!).render(
           <Route element={<ProtectedRoute requireAdmin />}>
             <Route path="/admin" element={<Admin />} />
           </Route>
+
+          <Route path="*" element={<Navigate to="/not-found" replace={true} />} />
         </Routes>
       </BrowserRouter>
+      </ToastProvider>
     </ThemeProvider>
   </StrictMode>
 );

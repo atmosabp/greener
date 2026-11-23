@@ -13,6 +13,7 @@ header {
   width: 100%;
   background-color: var(--background);
   backdrop-filter: blur(5px);
+  z-index: 5;
 }
 
 .header-btns {
@@ -101,8 +102,9 @@ main {
   margin-top: 40px;
 }
 
-.login{
+.login {
   padding: 30px;
+  margin-top: 70px;
 }
 
 .login span {
@@ -127,6 +129,7 @@ main .logo {
   color: var(--background);
   width: 2.75rem;
   height: 2.75rem;
+  transition: color 0.3s ease;
 }
 
 .info-txt {
