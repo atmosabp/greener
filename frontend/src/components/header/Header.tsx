@@ -13,10 +13,32 @@ export default function Header({
   activeHref,
 }: HeaderProps) {
   const compact_query = "(max-width: 1024px)";
+  const scroll_offset = 10;
   const [openMenu, setOpenMenu] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(
+    () => window.scrollY > scroll_offset,
+  );
   const [isCompact, setIsCompact] = useState(
     () => window.matchMedia(compact_query).matches,
   );
+
+  const [_isUserAdmin, _setIsUserAdmin] = useState<boolean>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return false;
+    try {
+      const parsedUser = JSON.parse(storedUser);
+
+      //caso o usuário não seja administrador, adiciona um link para a página de cadastro
+      if (parsedUser.isAdm && links.length != 0 && links.length < 4) { //também garante que não seja o header de cadastro
+        links[links.length] = { to: "/admin", label: "Gerenciamento" };
+      } else if (links.length > 3 && !parsedUser.isAdm) {
+        delete links[links.length - 1];
+      }
+      return parsedUser.isAdm;
+    } catch (e: any) {
+      return false;
+    }
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(compact_query);
@@ -31,6 +53,13 @@ export default function Header({
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > scroll_offset);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const headerImage = isCompact ? logoText : logo;
@@ -69,7 +98,10 @@ export default function Header({
         aria-hidden="true"
       />
 
-      <header id="main-menu" className={`menu ${openMenu ? "active" : ""}`}>
+      <header
+        id="main-menu"
+        className={`menu ${openMenu ? "active" : ""} ${isScrolled ? "scrolled" : ""}`}
+      >
         <Link to="/home">
           <img src={headerImage} alt="Logo Greener" className="logo" />
         </Link>

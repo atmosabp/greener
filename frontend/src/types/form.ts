@@ -1,13 +1,18 @@
 import type { ReactNode } from "react";
 
 export type FormValues = Record<string, string>;
-export type FormErrors = Record<string, string | undefined>;
+
+// Erro com título próprio para o toast (ex.: "Senhas diferentes")
+export type FieldError = { title: string; message: string };
+export type ValidationResult = string | FieldError | undefined;
+
+export type FormErrors = Record<string, ValidationResult>;
 
 // Recebe o valor do campo e todos os valores (útil p/ "confirmar senha")
 export type Validator = (
   value: string,
   values: FormValues,
-) => string | undefined;
+) => ValidationResult;
 
 export type FieldConfig = {
   name: string; // chave usada em values/errors

@@ -2,7 +2,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 1005;
     display: flex;
     width: 100%;
     height: 70px;
@@ -10,7 +10,8 @@
     align-items: center;
     justify-content: space-between;
     background-color: var(--background);
-    transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    transition: box-shadow 0.8s cubic-bezier(0.45, 0, 0.15, 1), background-color 0.3s ease-in-out, height 0.8s cubic-bezier(0.45, 0, 0.15, 1), padding 0.8s cubic-bezier(0.45, 0, 0.15, 1), width 0.8s cubic-bezier(0.45, 0, 0.15, 1), left 0.8s cubic-bezier(0.45, 0, 0.15, 1), margin-top 0.8s cubic-bezier(0.45, 0, 0.15, 1), border-radius 0.8s cubic-bezier(0.45, 0, 0.15, 1), border-color 0.8s cubic-bezier(0.45, 0, 0.15, 1);
 }
 
 
@@ -26,11 +27,16 @@
 .menu .logo {
     height: 40px;
     width: auto;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.3s ease-in-out;
 }
 
+.menu .logo:hover {
+    transform: scale(1.06);
+}
 
 .menu-btns span {
     color: var(--text);
+    font-weight: 500;
 }
 
 .menu-trigger,
@@ -43,23 +49,39 @@
     text-decoration: none;
     color: var(--text);
     position: relative;
+    padding: 6px 2px;
+    transition: opacity 0.3s ease-in-out, font-size 0.3s ease-in-out;
 }
 
+/* Sublinhado animado: entra pela esquerda e sai pela direita */
 .menu-links a::after {
     content: "";
-    width: 0%;
-    height: 1.5px;
+    width: 100%;
+    height: 2px;
     position: absolute;
     background-color: var(--text);
     left: 0;
-    bottom: -2px;
-    transition: width 0.5s ease-in-out;
+    bottom: 0;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
     border-radius: 5px;
 }
 
 .menu-links a.active::after,
 .menu-links a:hover::after {
-    width: 100%;
+    transform: scaleX(1);
+    transform-origin: left center;
+}
+
+/* Acessibilidade: foco visível ao navegar pelo teclado */
+.menu-links a:focus-visible,
+.btn-logout:focus-visible,
+.menu-trigger:focus-visible,
+.menu .logo:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 4px;
+    border-radius: 6px;
 }
 
 .menu-btns {
@@ -80,8 +102,82 @@
     background-color: var(--text);
     color: var(--background);
     font-size: 14px;
+    font-weight: 500;
     justify-content: center;
     text-decoration: none;
+    transition: width 0.3s ease, height 0.3s ease, font-size 0.3s ease;
+    }
+
+    .btn-logout:hover{
+        transform: translateY(-0.15rem);
+    }   
+
+/* Animação de entrada dos itens dos menus responsivos */
+@keyframes menu-item-in {
+    from {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 
+-=-=-=-=-=-=-=-
+DESKTOP
+-=-=-=-=-=-=-=-
+
+*/
+
+@media (min-width: 1025px) {
+
+    /* Links não ativos ficam mais suaves; ativo/hover/foco ganham destaque */
+    .menu-links a {
+        opacity: 0.7;
+    }
+
+    .menu-links a.active,
+    .menu-links a:hover,
+    .menu-links a:focus-visible {
+        opacity: 1;
+    }
+
+    /* Borda completa (transparente) para poder animar até a barra flutuante */
+    .menu {
+        border: 1px solid transparent;
+        border-bottom-color: color-mix(in srgb, var(--text) 12%, transparent);
+    }
+
+    /* Header encolhido ao rolar a página (classe .scrolled vem do Header.tsx):
+       fica mais estreito, afastado do topo e com bordas arredondadas */
+    .menu.scrolled {
+        width: 92%;
+        left: 4%;
+        height: 54px;
+        margin-top: 12px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-radius: 27px;
+        border-color: color-mix(in srgb, var(--text) 15%, transparent);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .menu.scrolled .logo {
+        height: 30px;
+    }
+
+    .menu.scrolled .menu-links a {
+        font-size: 0.92rem;
+    }
+
+    .menu.scrolled .btn-logout {
+        height: 32px;
+        width: 60px;
+        font-size: 13px;
+    }
 }
 
 /* 
@@ -107,16 +203,17 @@ RESPONSIVIDADE
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(2px);
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.2s ease-out, visibility 0s linear 0.2s;
+        transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
         z-index: 998;
     }
 
     .scrim.show {
         opacity: 1;
         visibility: visible;
-        transition: opacity 0.2s ease-out, visibility 0s;
+        transition: opacity 0.25s ease-out, visibility 0s;
     }
 
     .menu-trigger {
@@ -136,6 +233,11 @@ RESPONSIVIDADE
         border-radius: 50%;
         background: var(--text);
         cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .menu-trigger:active {
+        transform: scale(0.92);
     }
 
     .menu-trigger span {
@@ -163,7 +265,7 @@ RESPONSIVIDADE
         top: 0;
         right: 0;
         left: auto;
-        width: 50%;
+        width: min(70%, 300px);
         height: 100dvh;
         min-height: 100dvh;
         flex-direction: column;
@@ -172,9 +274,12 @@ RESPONSIVIDADE
         padding: 75px 24px 30px;
         text-align: center;
         background: var(--background);
+        border-bottom: none;
+        border-left: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
         justify-content: space-between;
         transform: translateX(100%);
-        transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        visibility: hidden;
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.35s ease-in-out, visibility 0s linear 0.35s;
         z-index: 999;
         box-shadow: none;
     }
@@ -182,7 +287,9 @@ RESPONSIVIDADE
 
     .menu.active {
         transform: translateX(0);
-
+        visibility: visible;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+        transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.35s ease-in-out, visibility 0s;
     }
 
     .menu .logo {
@@ -194,16 +301,59 @@ RESPONSIVIDADE
         width: 100%;
         flex-direction: column;
         align-items: stretch;
-        gap: 30px;
+        gap: 8px;
         transform: none;
     }
 
     .menu-links a {
         font-size: 16px;
+        padding: 12px 8px;
+        border-radius: 10px;
+        transition: background-color 0.25s ease-in-out;
+    }
+
+    .menu-links a:hover,
+    .menu-links a:active {
+        background-color: color-mix(in srgb, var(--text) 8%, transparent);
+    }
+
+    .menu-links a.active {
+        font-weight: 700;
+        background-color: color-mix(in srgb, var(--text) 12%, transparent);
     }
 
     .menu-links a::after {
         display: none;
+    }
+
+    /* Itens entram em sequência quando o menu abre */
+    .menu.active .menu-links a,
+    .menu.active .menu-btns {
+        animation: menu-item-in 0.4s ease-out backwards;
+    }
+
+    .menu.active .menu-links a:nth-child(1) {
+        animation-delay: 0.10s;
+    }
+
+    .menu.active .menu-links a:nth-child(2) {
+        animation-delay: 0.16s;
+    }
+
+    .menu.active .menu-links a:nth-child(3) {
+        animation-delay: 0.22s;
+    }
+
+    .menu.active .menu-links a:nth-child(4) {
+        animation-delay: 0.28s;
+    }
+
+    .menu.active .menu-links a:nth-child(5) {
+        animation-delay: 0.34s;
+    }
+
+    .menu.active .menu-btns {
+        animation-delay: 0.4s;
     }
 
     .menu-btns {
@@ -234,12 +384,17 @@ RESPONSIVIDADE
         padding: 0 24px;
         background-color: var(--background);
         border-bottom: 2px solid var(--text);
-        z-index: 1000;
+        z-index: 1005;
     }
 
     .trigger-logo {
         height: 35px;
         width: auto;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .trigger-logo:hover {
+        transform: scale(1.06);
     }
 
     .trigger-btns {
@@ -248,8 +403,9 @@ RESPONSIVIDADE
         gap: 20px;
     }
 
-    .trigger-btns span{
+    .trigger-btns span {
         color: var(--text);
+        font-weight: 500;
     }
 
     .menu-trigger {
@@ -263,6 +419,15 @@ RESPONSIVIDADE
         border: none;
         border-radius: 50%;
         cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .menu-trigger:hover {
+        transform: scale(1.06);
+    }
+
+    .menu-trigger:active {
+        transform: scale(0.92);
     }
 
     .menu-trigger span {
@@ -292,16 +457,17 @@ RESPONSIVIDADE
         position: fixed;
         inset: 64px 0 0 0;
         background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(2px);
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.2s ease-out, visibility 0s linear 0.2s;
+        transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
         z-index: 998;
     }
 
     .scrim.show {
         opacity: 1;
         visibility: visible;
-        transition: opacity 0.2s ease-out, visibility 0s;
+        transition: opacity 0.25s ease-out, visibility 0s;
     }
 
     .menu {
@@ -319,7 +485,7 @@ RESPONSIVIDADE
         transform-origin: top center;
         transform: translateY(-100%);
         visibility: hidden;
-        transition: transform 0.5s ease-in-out, visibility 0s linear 0.5s;
+        transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.5s ease-in-out, visibility 0s linear 0.5s;
         z-index: 999;
     }
 
@@ -330,7 +496,8 @@ RESPONSIVIDADE
     .menu.active {
         transform: translateY(0);
         visibility: visible;
-        transition: transform 0.5s ease-in-out, visibility 0s;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+        transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.5s ease-in-out, visibility 0s;
     }
 
     .menu .logo,
@@ -351,8 +518,16 @@ RESPONSIVIDADE
         display: flex;
         align-items: center;
         min-height: 56px;
+        padding: 0 8px;
         font-size: 1.25rem;
         border-bottom: 1px solid color-mix(in srgb, var(--text) 20%, transparent);
+        border-radius: 8px 8px 0 0;
+        transition: background-color 0.25s ease-in-out, transform 0.25s ease-in-out;
+    }
+
+    .menu-links a:hover {
+        background-color: color-mix(in srgb, var(--text) 7%, transparent);
+        transform: translateX(4px);
     }
 
     .menu-links a::after,
@@ -371,5 +546,43 @@ RESPONSIVIDADE
         margin-right: 12px;
         border-radius: 50%;
         background-color: var(--text);
+    }
+
+    /* Links aparecem em sequência quando o menu abre */
+    .menu.active .menu-links a {
+        animation: menu-item-in 0.4s ease-out backwards;
+    }
+
+    .menu.active .menu-links a:nth-child(1) {
+        animation-delay: 0.10s;
+    }
+
+    .menu.active .menu-links a:nth-child(2) {
+        animation-delay: 0.16s;
+    }
+
+    .menu.active .menu-links a:nth-child(3) {
+        animation-delay: 0.22s;
+    }
+
+    .menu.active .menu-links a:nth-child(4) {
+        animation-delay: 0.28s;
+    }
+
+    .menu.active .menu-links a:nth-child(5) {
+        animation-delay: 0.34s;
+    }
+}
+
+/* Respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+
+    .menu,
+    .menu *,
+    .scrim,
+    .tablet-bar * {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
     }
 }

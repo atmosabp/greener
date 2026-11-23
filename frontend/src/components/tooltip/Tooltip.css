@@ -1,0 +1,25 @@
+.tooltip-element {
+  position: absolute;
+  left: 90%;
+  height: 1rem;
+  width: 1rem;
+  cursor: default;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: color-mix(in srgb, var(--text) 90%, var(--background) 10%);
+  color: var(--background);
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  bottom: 20px;
+  right: 0;
+  width: max-content;
+  pointer-events: none;
+  padding: 10px;
+}
+
+.tooltip-element:hover .tooltip {
+  opacity: 1;
+}

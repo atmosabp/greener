@@ -16,6 +16,8 @@ export default function Login() {
   );
 
   useEffect(() => {
+    localStorage.setItem("last_page", '/login');
+
     const handleResize = () => setIsMobile(window.innerWidth < 768);
 
     handleResize();
@@ -45,7 +47,6 @@ export default function Login() {
       </header>
       <main className="login">
         <img src={logoFull} alt="Logo Greener" className="logo" />
-        <span>Faça login com seu e-mail corporativo.</span>
 
         <LoginForm />
 
