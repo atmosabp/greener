@@ -1,14 +1,16 @@
-* {
-    box-sizing: border-box;
-}
+/* =========================================
+   RANKING — ESTRUTURA PRINCIPAL
+========================================= */
 
 .ranking-page {
     --ranking-border: var(--primary-light);
     --ranking-row-alt: var(--background);
     --ranking-row-main: var(--complementary);
-    --ranking-muted: color-mix(in srgb,
-            var(--text) 55%,
-            var(--background));
+    --ranking-muted: color-mix(
+        in srgb,
+        var(--text) 55%,
+        var(--background)
+    );
 
     min-height: 100vh;
     min-height: 100dvh;
@@ -20,6 +22,11 @@
     background-color: var(--background);
     color: var(--text);
     font-family: "Roboto", sans-serif;
+}
+
+.ranking-page,
+.ranking-page * {
+    box-sizing: border-box;
 }
 
 .ranking-main {
@@ -36,7 +43,7 @@
 
 
 /* =========================================
-   TÍTULO E FILTROS
+   TÍTULO E FILTROS SUPERIORES
 ========================================= */
 
 .ranking-intro-box {
@@ -45,18 +52,24 @@
 
 .ranking-intro {
     width: 100%;
-    display: flex;
-    /* grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr); */
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr);
     align-items: center;
     gap: 1.5rem;
 }
 
 .ranking-heading {
-    width: 100%;
+    min-width: 0;
+}
+
+.ranking-heading h1 {
     display: flex;
-    flex-direction: column;
-    align-items: baseline;
+    justify-content: flex-start;
+    margin: 0 0 0.4rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
 }
 
 .ranking-heading p {
@@ -88,11 +101,6 @@
     color: var(--on-primary-light);
 }
 
-[data-theme="dark"] .ranking-update {
-    background-color: var(--primary-dark);
-    color: var(--on-primary-darker);
-}
-
 .ranking-classification>span {
     display: block;
     text-align: center;
@@ -101,89 +109,90 @@
     line-height: 1.25;
 }
 
-.ranking-period {
+
+/* =========================================
+   PERÍODO — DROPDOWN PERSONALIZADO
+========================================= */
+
+.ranking-period .period-select-container {
+    width: 100%;
+    min-width: 0;
+    height: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0;
+    border-radius: 2rem;
+    background-color: transparent;
+    color: var(--text);
+}
+
+.ranking-period .gr-dropdown {
+    width: 100%;
+    min-width: 0;
+}
+
+.ranking-period .gr-dropdown-trigger {
+    width: 100%;
+    min-height: 2.3rem;
+    padding: 0 2.5rem 0 0.85rem;
+    border: 0;
     border-radius: 999px;
+    background-color: var(--primary-dark);
+    color: var(--background);
+    font-family: inherit;
     font-size: 1rem;
     font-weight: 500;
-    white-space: nowrap;
 }
-.ranking-period select {
-    width: 100%;
-    height: 2.65rem;
-    padding: 0 2.5rem 0 0.85rem;
-    font-size: 1rem;
-    text-align: left;
-    text-align-last: left;
+
+.ranking-period .gr-dropdown-trigger:hover,
+.ranking-period .gr-dropdown-trigger[aria-expanded="true"] {
+    background-color: var(--primary-darker);
+}
+
+.ranking-period .gr-dropdown-chevron {
+    color: var(--background);
+}
+
+.ranking-period .gr-dropdown-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 
 /* =========================================
-   SELECTS
+   SELECT NATIVO DO CALENDÁRIO
 ========================================= */
 
-.last-updated-text {
-    color: var(--text);
-    font-size: 1rem;
-}
-
-.ranking-page .update-select {
+.ranking-page .ranking-year-select {
     appearance: none;
     -webkit-appearance: none;
     min-width: 0;
-    border: 0;
+    border: 0.08rem solid var(--primary-dark);
     outline: none;
     border-radius: 999px;
-    background-color: var(--text);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-color: var(--background);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1rem;
-    color: var(--background);
+    background-position: right 0.85rem center;
+    background-size: 0.95rem;
+    color: var(--text);
     font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 500;
     cursor: pointer;
 }
 
-[data-theme="dark"] .ranking-page select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+[data-theme="dark"] .ranking-page .ranking-year-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
 }
 
-[data-theme="dark"] .ranking-page select {
-    background-color: var(--primary-light);
-}
-
-
-.ranking-page .update-select option {
-    background-color: var(--background);
-    color: var(--text);
-}
-
-.ranking-page .update-select:focus-visible,
-.ranking-page button:focus-visible {
-    outline: 0.12rem solid var(--text);
-    outline-offset: 0.15rem;
-}
-
-.ranking-period .update-select {
-    display: flex;
-    width: 100%;
-    height: 2.65rem;
-    padding: 0 2.5rem 0 0.85rem;
-    font-size: 1rem;
-    text-align: left;
-    text-align-last: left;
-}
-
-.ranking-period .ranking-year-select {
-    border: 0.08rem solid var(--primary-dark);
-    background-color: var(--background);
-    color: var(--text);
-}
 
 /* =========================================
    CLASSIFICAÇÃO
 ========================================= */
+
 .ranking-classification-buttons {
     display: inline-grid;
     grid-template-columns: 1fr 1fr;
@@ -218,31 +227,41 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.45rem 0.85rem;
-    border: none;
-    border-radius: 100%;
-    background-color: transparent;
-    color: var(--on-primary-darker);
+    padding: 0.45rem 0.65rem;
+    border: 0.1rem solid transparent;
+    border-radius: 1.2rem;
+    background-color: var(--primary-dark);
+    color: var(--background);
     font: inherit;
     font-size: 0.9rem;
-    font-weight: 400;
+    font-weight: 600;
     line-height: 1.15;
     text-align: center;
-    white-space: nowrap;
     cursor: pointer;
-    transition: color 0.3s linear font-weight 0.3s linear;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.ranking-metric-button:hover:not(:disabled) {
+    filter: brightness(1.06);
 }
 
 .ranking-metric-button.is-active {
-    background-color: transparent;
-    color: var(--background);
-    font-weight: 600;
+    background-color: var(--primary-darker);
+    border-color: #ECDEC7;
+    color: #ECDEC7;
+}
+
+.ranking-metric-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 
-
 /* =========================================
-   ATUALIZAÇÃO
+   BARRA DE ATUALIZAÇÃO
 ========================================= */
 
 .ranking-toolbar {
@@ -254,9 +273,9 @@
     flex-shrink: 0;
 }
 
-.ranking-toolbar-buttons {
+.ranking-toolbar .left-side{
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     align-items: center;
 }
 
@@ -270,16 +289,33 @@
     color: var(--on-primary-light);
     font-size: 1rem;
     font-weight: 500;
-    white-space: nowrap;
 }
 
-.ranking-update select {
-    width: 6.8rem;
-    height: 2.65rem;
+.ranking-update-dropdown {
+    max-width: 8rem;
+    flex-shrink: 0;
+}
+
+.ranking-update .gr-dropdown-trigger {
+    width: 100%;
+    min-height: 2.65rem;
     padding: 0 2.25rem 0 0.8rem;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--primary-dark);
+    color: var(--background);
+    font-family: inherit;
     font-size: 1rem;
-    border-radius: 2rem;
-    border: none;
+    font-weight: 500;
+}
+
+.ranking-update .gr-dropdown-trigger:hover,
+.ranking-update .gr-dropdown-trigger[aria-expanded="true"] {
+    background-color: var(--primary-darker);
+}
+
+.ranking-update .gr-dropdown-chevron {
+    color: var(--background);
 }
 
 .ranking-toolbar-info {
@@ -288,15 +324,30 @@
     gap: 0.6rem;
 }
 
+.ranking-toolbar-info p {
+    margin: 0;
+}
+
 .ranking-last-update {
     color: var(--ranking-muted);
     font-size: 0.8rem;
     white-space: nowrap;
 }
 
+.ranking-last-update strong {
+    font-weight: 600;
+}
+
+.ranking-page button:focus-visible,
+.ranking-page .gr-dropdown-trigger:focus-visible,
+.ranking-page .ranking-year-select:focus-visible {
+    outline: 0.12rem solid var(--text);
+    outline-offset: 0.15rem;
+}
+
 
 /* =========================================
-   TABELA — ROLAGEM INDEPENDENTE
+   TABELA
 ========================================= */
 
 .ranking-page .ranking-table-section {
@@ -342,9 +393,8 @@
 }
 
 .table-border {
-    border: 2px solid var(--primary-light);
-    border-radius: 5px;
-    overflow: hidden;
+    width: 100%;
+    min-width: 0;
 }
 
 .ranking-table {
@@ -369,7 +419,7 @@
     height: 2rem;
     padding: 0.45rem 0.6rem;
     background-color: var(--primary-light);
-    color: var(--on-primary-light);
+    color: var(--text);
     font-size: 1.3rem;
     font-weight: 600;
     line-height: 1.2;
@@ -399,7 +449,7 @@
     overflow-wrap: anywhere;
 }
 
-.ranking-table td+td {
+.ranking-table td + td {
     border-left: 0.1rem solid var(--ranking-border);
 }
 
@@ -428,26 +478,13 @@
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
+    color: var(--text);
     transition: all 0.2s;
     text-decoration: none;
-    color: var(--text);
-    position: relative;
 }
 
-.service-link-text::before {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 1px;
-    background-color: var(--primary);
-    left: 0;
-    bottom: -2px;
-    border-radius: 5px;
-    transition: width 0.5s ease;
-}
-
-.service-link-text:hover::before {
-    width: 100%;
+.service-link-text:hover {
+    text-decoration: underline;
 }
 
 .redirect-link-icon {
@@ -474,21 +511,26 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.85rem;
+    border-top: 0.08rem solid var(--ranking-border);
     background-color: var(--background);
     color: var(--ranking-muted);
     font-size: 0.75rem;
     flex-shrink: 0;
 }
 
+.ranking-table-caption p {
+    margin: 0;
+}
+
 
 /* =========================================
-   CALENDÁRIO SUSPENSO
+   CALENDÁRIO
 ========================================= */
 
 .ranking-calendar-overlay {
     position: fixed;
     inset: 0;
-    z-index: 1010;
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -507,12 +549,14 @@
     gap: 1rem;
     padding: 2rem;
     overflow-y: auto;
-    border: 1px solid color-mix(in srgb,
-            var(--text) 8%,
-            transparent);
+    border: 1px solid color-mix(
+        in srgb,
+        var(--text) 8%,
+        transparent
+    );
     border-radius: 1.8rem;
     background-color: var(--primary-light);
-    color: var(--on-primary-light);
+    color: var(--text);
     box-shadow: 0 1.25rem 4rem rgb(0 0 0 / 25%);
     animation: ranking-calendar-appear 0.16s ease-out;
 }
@@ -529,16 +573,18 @@
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: var(--on-primary-light);
+    color: var(--text);
     font-size: 1.8rem;
     line-height: 1;
     cursor: pointer;
 }
 
 .ranking-calendar-close:hover {
-    background-color: color-mix(in srgb,
-            var(--text) 10%,
-            transparent);
+    background-color: color-mix(
+        in srgb,
+        var(--text) 10%,
+        transparent
+    );
 }
 
 .ranking-calendar-modal h2 {
@@ -551,12 +597,10 @@
 }
 
 .ranking-calendar-navigation {
-    display: flex;
+    display: grid;
     grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
-    width: 100%;
 }
 
 .ranking-calendar-navigation strong {
@@ -600,7 +644,7 @@
     align-items: center;
 }
 
-.ranking-calendar-days>span:not(.ranking-calendar-empty) {
+.ranking-calendar-days > span:not(.ranking-calendar-empty) {
     display: grid;
     place-items: center;
     min-height: 1.8rem;
@@ -609,7 +653,7 @@
     font-weight: 600;
 }
 
-.ranking-calendar-days>button {
+.ranking-calendar-days > button {
     aspect-ratio: 1;
     min-width: 0;
     display: grid;
@@ -618,7 +662,7 @@
     border: 0;
     border-radius: 50%;
     background-color: var(--primary-light);
-    color: var(--on-primary-light);
+    color: var(--text);
     font: inherit;
     font-size: 0.9rem;
     cursor: pointer;
@@ -627,25 +671,19 @@
         color 0.15s ease;
 }
 
-.ranking-calendar-days>button:hover:not(:disabled) {
+.ranking-calendar-days > button:hover:not(:disabled) {
     filter: brightness(0.94);
 }
 
-.ranking-calendar-days>button:disabled {
+.ranking-calendar-days > button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.ranking-calendar-minute-options {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-}
-
-.ranking-calendar-days>button.is-selected,
-.ranking-calendar-options>button.is-selected {
+.ranking-calendar-days > button.is-selected,
+.ranking-calendar-options > button.is-selected {
     background-color: var(--primary-dark);
-    color: var(--on-primary-dark);
+    color: var(--background);
     font-weight: 700;
 }
 
@@ -658,14 +696,14 @@
     gap: 0.55rem;
 }
 
-.ranking-calendar-options>button {
+.ranking-calendar-options > button {
     min-width: 0;
     min-height: 2.5rem;
     padding: 0.55rem 0.65rem;
     border: 1px solid transparent;
     border-radius: 999px;
     background-color: var(--primary-light);
-    color: var(--on-primary-light);
+    color: var(--text);
     font: inherit;
     font-size: 0.9rem;
     cursor: pointer;
@@ -674,12 +712,7 @@
         color 0.15s ease;
 }
 
-.ranking-calendar-options>button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.ranking-calendar-options>button:hover {
+.ranking-calendar-options > button:hover {
     filter: brightness(0.94);
 }
 
@@ -689,12 +722,6 @@
 
 .ranking-calendar-month-options {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.ranking-calendar-hour-options:hover:disabled {
-    cursor: not-allowed;
-
-
 }
 
 .ranking-calendar-year-options {
@@ -711,7 +738,7 @@
     border: 0;
     border-radius: 999px;
     background-color: var(--primary-dark);
-    color: var(--on-primary-dark);
+    color: var(--background);
     font: inherit;
     font-size: 0.9rem;
     font-weight: 600;
@@ -744,7 +771,7 @@
     flex-shrink: 0;
     margin-top: auto;
     padding: 0.8rem 1rem 0.9rem;
-    color: var(--text-muted);
+    color: #b28b72;
     font-size: 0.8rem;
     text-align: center;
 }
@@ -798,9 +825,18 @@
         gap: 1rem;
     }
 
+    .ranking-filters {
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+        gap: 0.85rem;
+    }
+
     .ranking-period,
     .ranking-classification {
         min-width: 0;
+    }
+
+    .ranking-heading h1 {
+        font-size: 2.25rem;
     }
 
     .ranking-table th {
@@ -833,8 +869,18 @@
         overflow: visible;
     }
 
+    .ranking-heading h1 {
+        margin-bottom: 0.35rem;
+        font-size: 2rem;
+    }
+
     .ranking-heading p {
         font-size: 0.9rem;
+    }
+
+    .ranking-filters {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
     }
 
     .ranking-period,
@@ -846,12 +892,16 @@
     }
 
     .ranking-period label,
-    .ranking-classification>span {
+    .ranking-classification > span {
         font-size: 0.9rem;
     }
 
-    .ranking-period select {
+    .ranking-period .period-select-container {
         height: 2.35rem;
+    }
+
+    .ranking-period .gr-dropdown-trigger {
+        min-height: 2.35rem;
         font-size: 0.9rem;
     }
 
@@ -877,9 +927,12 @@
         font-size: 0.9rem;
     }
 
-    .ranking-update .update-select {
+    .ranking-update-dropdown {
         width: 5.5rem;
-        height: 2.4rem;
+    }
+
+    .ranking-update .gr-dropdown-trigger {
+        min-height: 2.4rem;
         font-size: 0.9rem;
     }
 
@@ -890,6 +943,7 @@
 
     .ranking-last-update {
         font-size: 0.75rem;
+        white-space: normal;
     }
 
     .ranking-page .ranking-table-section {
@@ -959,7 +1013,7 @@
         gap: 0.25rem;
     }
 
-    .ranking-calendar-days>button {
+    .ranking-calendar-days > button {
         font-size: 0.8rem;
     }
 
@@ -972,7 +1026,7 @@
         gap: 0.4rem;
     }
 
-    .ranking-calendar-options>button {
+    .ranking-calendar-options > button {
         min-height: 2.3rem;
         padding: 0.45rem 0.3rem;
         font-size: 0.8rem;
@@ -989,3 +1043,13 @@
 /* =========================================
    ACESSIBILIDADE
 ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .ranking-page *,
+    .ranking-page *::before,
+    .ranking-page *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

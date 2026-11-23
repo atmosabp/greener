@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { ExternalLink } from "lucide-react";
-import { port } from "../../utils/connection";
 import { Link } from "react-router-dom";
+
+import { port } from "../../utils/connection";
 import "./Ranking.css";
 
 import AppHeader from "../../components/header/AppHeader";
@@ -23,36 +24,80 @@ import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import type { ServiceType } from "../../types/service";
 
-import Toast from "../../components/toast/Toast";
 import Greeting from "../../components/greetings/Greeting";
-
 import RefreshButton from "../../components/refreshButton/RefreshButton";
 import Loading from "../../components/loading/Loading";
 
 import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
 
+import { Select } from "../../components/dropdown";
+
+const updateOptions = [
+  { label: "05s", value: "5" },
+  { label: "10s", value: "10" },
+  { label: "15s", value: "15" },
+  { label: "30s", value: "30" },
+  { label: "60s", value: "60" },
+  { label: "120s", value: "120" },
+];
+
 export default function Ranking() {
   const [initialServices, setInitialServices] = useState<RankingService[]>([]);
   const [period, setPeriod] = useState<RankingPeriod>("now");
   const [metric, setMetric] = useState<RankingMetric>("energy");
-  const [updateInterval, setUpdateInterval] = useState(5);
+
+  const [updateInterval, setUpdateInterval] = useState<number>(() => {
+    const storedInterval = Number(localStorage.getItem("refresh_interval"));
+
+    return storedInterval || 5;
+  });
+
   const [lastUpdate, setLastUpdate] = useState(() => new Date());
   const [historyMessage, setHistoryMessage] = useState("");
-  const [timeUpdated, setTimeUpdated] = useState<string>("");
+  const [timeUpdated, setTimeUpdated] = useState("");
 
-  //variáveis como ref para se atualizar entre os Timeouts (pois estava dando erro)
   const historyActivatedRef = useRef(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  var metricUsed: RankingMetric = "energy";
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const calendar = useCalendar();
 
+  function sortRanking(
+    data: RankingService[],
+    selectedMetric: RankingMetric = metric,
+  ) {
+    const dataHolder = [...data].sort((a, b) => {
+      const aValue = selectedMetric === "energy" ? a.energy : a.co2e;
+
+      const bValue = selectedMetric === "energy" ? b.energy : b.co2e;
+
+      if (aValue === undefined && bValue === undefined) return 0;
+      if (aValue === undefined) return 1;
+      if (bValue === undefined) return -1;
+
+      return bValue - aValue;
+    });
+
+    setInitialServices(dataHolder);
+  }
+
+  function handleParamChange(param: RankingMetric) {
+    setMetric(param);
+    sortRanking(initialServices, param);
+  }
+
   function handlePeriodChange(nextPeriod: RankingPeriod) {
-    if (nextPeriod == "now") {
+    if (nextPeriod === "now") {
       historyActivatedRef.current = false;
       setHistoryMessage("");
+
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     } else {
       historyActivatedRef.current = true;
+
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -63,162 +108,110 @@ export default function Ranking() {
     calendar.openCalendar(nextPeriod);
   }
 
-  function handleUpdateIntervalChange(newTime: number) {
-    setUpdateInterval(newTime);
-    localStorage.setItem("refresh_interval", String(newTime));
+  function handleUpdateIntervalChange(newTime: string) {
+    const interval = Number(newTime);
+
+    if (!interval) return;
+
+    setUpdateInterval(interval);
+    localStorage.setItem("refresh_interval", String(interval));
+
     window.location.reload();
+  }
+
+  async function fetchHistory(periodType: string, datePull: Date | string) {
+    try {
+      const result = await fetch(
+        `http://localhost:${port}/collections/all-service-history`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            periodType,
+            datePull,
+          }),
+        },
+      );
+
+      if (!result.ok) {
+        throw new Error(`Erro HTTP: ${result.status}`);
+      }
+
+      const data = await result.json();
+
+      if (data && data.length > 0) {
+        const formattedData: RankingService[] = data.map((service: any) => ({
+          id: service.id,
+          name: service.name,
+          energy: service.kwh,
+          co2e: service.co2e,
+          status: "active",
+        }));
+
+        setLastUpdate(new Date(datePull));
+        setHistoryMessage(
+          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
+        );
+
+        sortRanking(formattedData);
+      } else {
+        setHistoryMessage("Período escolhido não possui dados.");
+      }
+    } catch (error) {
+      console.error("Ocorreu um erro ao buscar o histórico:", error);
+
+      setHistoryMessage(
+        "Não foi possível obter dados para o período selecionado.",
+      );
+    }
+  }
+
+  async function fetchServices() {
+    try {
+      const result = await fetch(
+        `http://localhost:${port}/collections/all-service-data`,
+      );
+
+      if (!result.ok) {
+        throw new Error(`Erro HTTP: ${result.status}`);
+      }
+
+      const data: ServiceType[] = await result.json();
+
+      const formattedData: RankingService[] = data.map((service) => ({
+        id: service.id,
+        name: service.name,
+        energy: service.metrics?.kwh ?? undefined,
+        co2e: service.metrics?.co2e ?? undefined,
+        status: service.status,
+      }));
+
+      setTimeUpdated(new Date().toLocaleString());
+      setLastUpdate(new Date());
+
+      sortRanking(formattedData);
+    } catch (error) {
+      console.error("Ocorreu um erro ao buscar os serviços:", error);
+    }
+
+    if (!historyActivatedRef.current) {
+      timerRef.current = setTimeout(fetchServices, updateInterval * 1000);
+    }
   }
 
   async function handleRefresh() {
     setHistoryMessage("");
     setPeriod("now");
     historyActivatedRef.current = false;
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
     await fetchServices();
-    setLastUpdate(new Date());
-  }
-
-  async function fetchHistory(periodType: string, datePull: Date | string) {
-    try {
-      var formatedData: RankingService[] = [];
-
-      const result = await fetch(
-        `http://localhost:${port}/collections/all-service-history`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
-        },
-      );
-
-      const data = await result.json();
-
-      if (data && data.length > 0) {
-        for (let service of data) {
-          formatedData.push({
-            id: service.id,
-            name: service.name,
-            energy: service.kwh,
-            co2e: service.co2e,
-            status: "active",
-          });
-        }
-        setLastUpdate(new Date(datePull));
-        setHistoryMessage(
-          `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
-        );
-
-        sortRanking(formatedData);
-      } else {
-        handleRefresh();
-        <Toast
-          icon="error"
-          title="Histórico"
-          message="Não há dados para o período selecionado."
-        />;
-        setHistoryMessage("Período escolhido não possui dados.");
-      }
-    } catch (e: any) {
-      console.error(`Ocorreu um erro ao buscar o histórico: ${e.message}`);
-      <Toast
-        icon="error"
-        title="Histórico"
-        message="Não foi possível obter dados para o peíodo selecionado."
-      />;
-      setHistoryMessage(
-        "Não foi possível obter dados para o peíodo selecionado.",
-      );
-    }
-  }
-
-  async function fetchServices() {
-    setUpdateInterval(Number(localStorage.getItem("refresh_interval")));
-
-    var formatedData: RankingService[] = [];
-
-    const result = await fetch(
-      `http://localhost:${port}/collections/all-service-data`,
-    );
-    const data: ServiceType[] = await result.json();
-
-    setTimeUpdated(new Date().toLocaleString());
-
-    for (let service of data) {
-      formatedData.push({
-        id: service.id,
-        name: service.name,
-        energy:
-          service.metrics && service.metrics.kwh
-            ? service.metrics.kwh
-            : undefined,
-        co2e:
-          service.metrics && service.metrics.co2e
-            ? service.metrics.co2e
-            : undefined,
-        status: service.status,
-      });
-    }
-
-    setLastUpdate(new Date());
-
-    sortRanking(formatedData);
-
-    //caso o histórico não esteja ativado, chama outro timer
-    if (!historyActivatedRef.current) {
-      timerRef.current = setTimeout(fetchServices, updateInterval * 1000);
-    }
-  }
-
-  async function handleParamChange(param: RankingMetric) {
-    setMetric(param);
-    metricUsed = param;
-    sortRanking(initialServices);
-  }
-
-  function sortRanking(data: RankingService[]) {
-    var key: (x: undefined | number) => undefined | number = (x) => x;
-    setInitialServices(
-      data.sort((a, b) => {
-        if (metric === "energy") {
-          const xKey = key(a.energy),
-            yKey = key(b.energy);
-          if (typeof xKey === "undefined") {
-            return typeof yKey === "string" ? 0 : 1;
-          } else {
-            return typeof yKey === "string" ? -1 : yKey! - xKey!;
-          }
-        } else {
-          const xKey = key(a.co2e),
-            yKey = key(b.co2e);
-          if (typeof xKey === "undefined") {
-            return typeof yKey === "string" ? 0 : 1;
-          } else {
-            return typeof yKey === "string" ? -1 : yKey! - xKey!;
-          }
-        }
-      }),
-    );
-    var key: (x: undefined | number) => undefined | number = (x) => x; //pega um parametro e retorna o tipo
-    let dataHolder = data.sort((a, b) => {
-      if (metricUsed === "energy") {
-        const xKey = key(a.energy),
-          yKey = key(b.energy);
-        if (typeof xKey === "undefined") {
-          return typeof yKey === "string" ? 0 : 1;
-        } else {
-          return typeof yKey === "string" ? -1 : yKey! - xKey!;
-        }
-      } else {
-        const xKey = key(a.co2e),
-          yKey = key(b.co2e);
-        if (typeof xKey === "undefined") {
-          return typeof yKey === "string" ? 0 : 1;
-        } else {
-          return typeof yKey === "string" ? -1 : yKey! - xKey!;
-        }
-      }
-    });
-
-    setInitialServices(dataHolder);
   }
 
   const periodLabel: Record<RankingPeriod, string> = {
@@ -235,22 +228,36 @@ export default function Ranking() {
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   useEffect(() => {
-    localStorage.setItem("last_page", '/ranking');
+    localStorage.setItem("last_page", "/ranking");
+
     if (!historyActivatedRef.current) {
       fetchServices();
     }
-  }, [historyActivatedRef.current]);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [updateInterval]);
 
   const [gaveUp, setGaveUp] = useState(false);
+
   useEffect(() => {
-    const t = setTimeout(() => setGaveUp(true), 15000);
-    return () => clearTimeout(t);
+    const timeout = setTimeout(() => {
+      setGaveUp(true);
+    }, 15000);
+
+    return () => clearTimeout(timeout);
   }, []);
+
   const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
 
   return (
     <div className="ranking-page">
       {showSkeleton && <Loading />}
+
       <AppHeader />
 
       <main className="ranking-main">
@@ -261,6 +268,7 @@ export default function Ranking() {
               <p>Veja o ranking de desempenho dos serviços.</p>
             </div>
 
+            {/* Filtros superiores: período e classificação */}
             <div className="ranking-filters">
               <div className="ranking-classification">
                 <span>Classificar por:</span>
@@ -298,35 +306,26 @@ export default function Ranking() {
             </div>
           </section>
 
+          {/* Barra inferior: intervalo e atualização */}
           <section className="ranking-toolbar">
-            <div className="ranking-toolbar-buttons">
+            <div className="left-side">
               <div className="ranking-update">
-                <label htmlFor="ranking-update-select">Atualizações:</label>
+                <label>Atualizações:</label>
 
-                <select
-                  id="ranking-update-select"
-                  disabled={showSkeleton}
-                  className={`${showSkeleton} ? "blocked" : ""`}
-                  value={Number(updateInterval)}
-                  onChange={(event) =>
-                    handleUpdateIntervalChange(Number(event.target.value))
-                  }
-                >
-                  <option value={5}>05s</option>
-                  <option value={10}>10s</option>
-                  <option value={15}>15s</option>
-                  <option value={30}>30s</option>
-                  <option value={60}>60s</option>
-                  <option value={120}>120s</option>
-                </select>
-              </div>
-              <div className="ranking-period">
-                <PeriodSelect
-                  showSkeleton={showSkeleton}
-                  handlePeriodChange={handlePeriodChange}
-                  period={period}
+                <Select
+                  className="ranking-update-dropdown"
+                  variant="default"
+                  value={String(updateInterval)}
+                  options={updateOptions}
+                  onChange={handleUpdateIntervalChange}
                 />
               </div>
+
+              <PeriodSelect
+                showSkeleton={showSkeleton}
+                handlePeriodChange={handlePeriodChange}
+                period={period}
+              />
             </div>
 
             <div className="ranking-toolbar-info">
@@ -336,11 +335,17 @@ export default function Ranking() {
                 </p>
               ) : (
                 <span className="ranking-last-update">
-                  <strong>{historyMessage}</strong>&nbsp; &nbsp;
-                  {historyActivatedRef.current ? (
-                    <></>
+                  {historyMessage ? (
+                    <strong>{historyMessage}</strong>
                   ) : (
-                    <>Última atualização: {formattedLastUpdate}</>
+                    <>
+                      {!historyActivatedRef.current && (
+                        <>
+                          <strong>Última atualização:</strong>{" "}
+                          {formattedLastUpdate}
+                        </>
+                      )}
+                    </>
                   )}
                 </span>
               )}
@@ -374,68 +379,56 @@ export default function Ranking() {
                 <tbody>
                   {showSkeleton ? (
                     <RankingTableSkeletonRows rows={8} />
+                  ) : initialServices.length > 0 ? (
+                    initialServices.map((service, index) => (
+                      <tr key={service.id}>
+                        <td>
+                          <span
+                            className={
+                              index < 3
+                                ? `ranking-position ranking-position--${index + 1}`
+                                : "ranking-position"
+                            }
+                          >
+                            #{index + 1}
+                          </span>
+                        </td>
+
+                        <td className="ranking-service-name">
+                          {service.status === "active" ? (
+                            <Link
+                              className="service-link-text"
+                              to={`/dashboard/${service.id}`}
+                            >
+                              {service.name}
+                              <ExternalLink className="redirect-link-icon" />
+                            </Link>
+                          ) : (
+                            <>{service.name}</>
+                          )}
+                        </td>
+
+                        <td>
+                          {service.energy !== undefined &&
+                          service.energy !== null &&
+                          !Number.isNaN(Number(service.energy))
+                            ? `${numberFormatter.format(Number(service.energy))} kWh`
+                            : "Indisponível"}
+                        </td>
+
+                        <td>
+                          {service.co2e !== undefined &&
+                          service.co2e !== null &&
+                          !Number.isNaN(Number(service.co2e))
+                            ? `${numberFormatter.format(Number(service.co2e))} kg CO₂e`
+                            : "Indisponível"}
+                        </td>
+                      </tr>
+                    ))
                   ) : (
-                    <>
-                      {initialServices
-                        ? initialServices.map((service, index) => (
-                            <tr key={service.id}>
-                              <td>
-                                <span
-                                  className={
-                                    index < 3
-                                      ? `ranking-position ranking-position--${index + 1}`
-                                      : "ranking-position"
-                                  }
-                                >
-                                  #{index + 1}
-                                </span>
-                              </td>
-
-                              <td className="ranking-service-name">
-                                {service.status == "active" ? (
-                                  <Link
-                                    className="service-link-text"
-                                    to={`/dashboard/${service.id}`}
-                                  >
-                                    {service.name}
-                                    <ExternalLink className="redirect-link-icon" />
-                                  </Link>
-                                ) : (
-                                  <>{service.name}</>
-                                )}
-                              </td>
-
-                              <td>
-                                {service.energy ? (
-                                  <>
-                                    {numberFormatter.format(service.energy) !=
-                                    "NaN"
-                                      ? numberFormatter.format(service.energy) +
-                                        " kWh"
-                                      : "Indisponível"}{" "}
-                                  </>
-                                ) : (
-                                  "Indisponível"
-                                )}
-                              </td>
-
-                              <td>
-                                {service.co2e ? (
-                                  <>
-                                    {numberFormatter.format(service.co2e) !=
-                                    "NaN"
-                                      ? numberFormatter.format(service.co2e) +
-                                        " kg CO₂e"
-                                      : "Indisponível"}{" "}
-                                  </>
-                                ) : (
-                                  "Indisponível"
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        : "não foi possível pegar os serviços"}
-                    </>
+                    <tr>
+                      <td colSpan={4}>Não foi possível encontrar serviços.</td>
+                    </tr>
                   )}
                 </tbody>
               </table>
@@ -456,10 +449,7 @@ export default function Ranking() {
                 <Skeleton width="10rem" height="1rem" />
               </p>
             ) : (
-              <span>
-                {initialServices ? initialServices.length : 0} serviços
-                encontrados
-              </span>
+              <span>{initialServices.length} serviços encontrados</span>
             )}
           </div>
         </section>

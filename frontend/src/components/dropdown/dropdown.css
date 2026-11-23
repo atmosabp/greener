@@ -1,0 +1,354 @@
+.gr-dropdown {
+  --dropdown-bg: var(--background);
+  --dropdown-ink: var(--text);
+
+  --dropdown-selected: color-mix(in srgb,
+      var(--primary-light) 80%,
+      var(--complementary));
+  --dropdown-panel: var(--primary-light);
+  --dropdown-lime: var(--primary);
+
+  --dropdown-moss: var(--primary-dark);
+  --dropdown-moss-dark: var(--primary-dark);
+
+  --dropdown-muted: var(--text-secondary);
+
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  font-family: inherit;
+  text-align: left;
+  box-sizing: border-box;
+  color: var(--text);
+}
+
+.gr-dropdown *,
+.gr-dropdown *::before,
+.gr-dropdown *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   BOTÃO PRINCIPAL
+========================================================= */
+
+.gr-dropdown-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 2.625rem;
+
+  padding: 0 0.9375rem;
+
+  border: 0.1rem solid var(--dropdown-bg);
+  border-radius: 999px;
+
+  background-color: var(--primary);
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+
+  box-shadow: 0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.gr-dropdown-trigger:hover,
+.gr-dropdown-trigger[aria-expanded="true"] {
+  background: var(--dropdown-moss);
+  border-color: var(--dropdown-moss);
+
+  box-shadow: 0 0.1875rem 0.5625rem rgba(58, 50, 44, 0.12);
+}
+
+.gr-dropdown-trigger:focus-visible {
+  outline: 0.125rem solid;
+  outline-offset: 0.125rem;
+}
+
+.gr-dropdown-trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.gr-dropdown-value {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gr-dropdown-chevron {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.gr-dropdown-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* VARIANTES */
+
+.gr-dropdown-trigger .gr-dropdown-default {
+  /* background: var(--dropdown-bg); */
+}
+
+.gr-dropdown-trigger.gr-dropdown-dark {
+}
+
+.gr-dropdown-trigger.gr-dropdown-green {
+}
+
+
+/* =========================================================
+   PAINEL DE OPÇÕES
+========================================================= */
+
+.gr-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 0.4375rem);
+  left: 0;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+
+  width: max-content;
+  min-width: 100%;
+  max-width: min(20rem, calc(100vw - 2rem));
+  max-height: min(18.75rem, 55vh);
+
+  padding: 0.375rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  border: 1px solid var(--dropdown-panel);
+  border-radius: 0.75rem;
+
+  background: var(--dropdown-bg);
+
+  box-shadow:
+    0 0.5rem 1.5rem rgba(58, 50, 44, 0.14),
+    0 0.125rem 0.3125rem rgba(58, 50, 44, 0.06);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--dropdown-moss) var(--dropdown-bg);
+
+  animation: gr-dropdown-enter 0.16s ease-out;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar-track {
+  background: var(--dropdown-bg);
+  border-radius: 0.5rem;
+}
+
+.gr-dropdown-panel::-webkit-scrollbar-thumb {
+  background: var(--dropdown-moss);
+  border-radius: 0.5rem;
+}
+
+@keyframes gr-dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   OPÇÕES
+========================================================= */
+
+.gr-dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5625rem;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 2.25rem;
+
+  padding: 0.5rem 0.625rem;
+
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+
+  background: var(--dropdown-bg);
+  color: var(--dropdown-ink);
+
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.gr-dropdown-option:hover,
+.gr-dropdown-option.is-selected {
+  background: var(--dropdown-selected);
+}
+
+.gr-dropdown-option.is-selected {
+  font-weight: 500;
+}
+
+.gr-dropdown-option:disabled,
+.gr-dropdown-option.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gr-dropdown-option:disabled:hover,
+.gr-dropdown-option.is-disabled:hover {
+  background: var(--dropdown-bg);
+  border-color: transparent;
+}
+
+.gr-dropdown-option svg {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  color: var(--dropdown-moss);
+}
+
+/* =========================================================
+   MULTISELECT
+========================================================= */
+
+.gr-dropdown-multi-panel {
+  width: max-content;
+  min-width: 100%;
+  max-width: min(22rem, calc(100vw - 2rem));
+}
+
+.gr-dropdown-checkbox-option {
+  justify-content: flex-start;
+  gap: 0.5625rem;
+  margin-top: 0;
+  cursor: pointer;
+}
+
+.gr-dropdown-checkbox-option+.gr-dropdown-checkbox-option {
+  margin-top: 0.5rem;
+}
+
+.gr-dropdown-checkbox-option input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gr-dropdown-check {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+
+  width: 1rem;
+  height: 1rem;
+
+  border: 1px solid var(--dropdown-moss);
+  border-radius: 0.25rem;
+
+  background: transparent;
+  color: var(--dropdown-bg);
+
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
+}
+
+.gr-dropdown-checkbox-option.is-selected .gr-dropdown-check {
+  background: var(--dropdown-moss);
+  border-color: var(--dropdown-moss);
+}
+
+.gr-dropdown-checkbox-option input:focus-visible+.gr-dropdown-check {
+  outline: 0.125rem solid var(--dropdown-moss);
+  outline-offset: 0.125rem;
+}
+
+.gr-dropdown-checkbox-option.is-disabled {
+  cursor: not-allowed;
+}
+
+.gr-dropdown-empty {
+  display: block;
+  padding: 0.625rem;
+  color: var(--dropdown-muted);
+  font-size: 0.875rem;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 600px) {
+  .gr-dropdown-trigger {
+    min-height: 2.5rem;
+    font-size: 0.875rem;
+  }
+
+  .gr-dropdown-trigger.gr-dropdown-dark {
+    min-height: 2.5rem;
+  }
+
+  .gr-dropdown-trigger.gr-dropdown-green {
+    min-height: 2.25rem;
+  }
+
+  .gr-dropdown-panel {
+    max-width: min(20rem, calc(100vw - 2rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .gr-dropdown *,
+  .gr-dropdown *::before,
+  .gr-dropdown *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
