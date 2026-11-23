@@ -340,7 +340,7 @@ export default function Ranking() {
                   {historyActivatedRef.current ? (
                     <></>
                   ) : (
-                    <>Última atualização: {formattedLastUpdate}</>
+                    <> <strong>Última atualização: </strong><span>{formattedLastUpdate}</span></>
                   )}
                 </span>
               )}

@@ -358,7 +358,7 @@ export default function Dashboard() {
                 {historyMessage ? (
                   <strong>{historyMessage}</strong>
                 ) : (
-                  <span className="last-updated-text"><strong>Última atualização:</strong> {timeUpdated || "-"}</span>
+                  <span className="last-updated-text"><strong>Última atualização:</strong> <span>{timeUpdated || "-"}</span></span>
                 )}
               </span>
             )}

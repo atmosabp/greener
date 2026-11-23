@@ -111,8 +111,22 @@
 }
 
 .last-updated-text {
-    color: var(--text);
-    font-size: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 11.875rem;
+    font-size: 0.8125rem;
+}
+
+.last-updated-text strong {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.last-updated-text span {
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
 .home-back-link {

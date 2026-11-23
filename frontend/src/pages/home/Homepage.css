@@ -25,9 +25,20 @@
 /* Área principal */
 
 .homepage-main {
-    width: calc(100% - 3rem);
+    width: calc(100% - 6rem);
+    max-width: 96.875rem;
+    margin: 80px auto 0;
     flex: 1;
-    margin-top: 80px;
+    --cols: minmax(15rem, 1fr) minmax(0, 1.2fr);
+    --col-gap: 3.25rem;
+
+}
+
+.intro-section,
+.explorer-layout {
+    display: grid;
+    grid-template-columns: var(--cols);
+    column-gap: var(--col-gap);
 }
 
 /* ========================================
@@ -35,12 +46,14 @@
 ======================================== */
 
 .intro-section {
+    /* linha ~37 */
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    width: calc(100% - 3rem);
+    width: 100%;
 }
+
 
 .intro-copy {
     max-width: 43.125rem;
@@ -54,7 +67,6 @@
     font-weight: 600;
     line-height: 1.1;
     letter-spacing: -0.035em;
-    padding-left: 2rem;
 }
 
 /* ========================================
@@ -62,15 +74,14 @@
 ======================================== */
 
 .explorer-layout {
+    /* linha ~64 */
     display: grid;
     grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.2fr);
     grid-template-rows: auto;
     align-items: stretch;
     column-gap: 3.25rem;
     row-gap: 0;
-    width: calc(100% - 6rem);
-    max-width: 96.875rem;
-    margin: 0 auto;
+    width: 100%;
 }
 
 /* Painel de serviços */
@@ -747,12 +758,11 @@
 
 @media (max-width: 75rem) and (min-width: 56.3125rem) {
     .homepage-main {
-        width: calc(100% - 3rem);
+        width: calc(100% - 2rem);
         margin-top: 5.5rem;
     }
 
     .explorer-layout {
-        width: calc(100% - 2rem);
         grid-template-columns: minmax(16rem, 0.9fr) minmax(0, 1.4fr);
         column-gap: 2rem;
     }
@@ -806,6 +816,7 @@
         width: calc(100% - 2.5rem);
         margin: 5.5rem auto 0;
         padding: 0;
+        max-width: 48rem;
     }
 
     .intro-section {
@@ -827,8 +838,6 @@
         flex-direction: column;
         gap: 1.5rem;
         width: 100%;
-        max-width: 48rem;
-        margin: 0 auto;
     }
 
     .visualization-column {
