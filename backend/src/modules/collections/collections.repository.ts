@@ -1,6 +1,11 @@
 import type { Database } from "../../db/connections";
 import type { PoolClient } from "pg";
 import type { MetricsData } from "../../types/metrics-types";
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMonths,
+} from "date-fns";
 
 export interface ServiceRow {
   id: string;
@@ -237,30 +242,12 @@ export class PgCollectionsRepository implements CollectionsRepository {
   }
 
   async findHourHistory(datePull: Date | string) {
-    var result = await this.db.query(
-      `SELECT 
-          name,
-          service_id as id,
-          AVG(co2e) as co2e,
-          AVG(kwh) as kwh,
-          AVG(cpu_percentage) as cpu_percentage,
-          AVG(memory_gb) as memory_gb,
-          AVG(disk_gb) as disk_gb,
-          AVG(network_gb) as network_gb,
-          AVG(renewable_percent) as renewable_percent 
-          FROM hour_data 
-          inner join services as s on service_id = s.id
-          WHERE date_pull between $1 :: timestamptz - interval '59 minutes' and $1 :: timestamptz + interval '59 minutes' 
-          group by name, service_id`,
-      [datePull],
-    );
-
-    return result.rows || null;
-  }
-
-  async findServiceHourHistory(datePull: Date | string, serviceId: string) {
-    var result = await this.db.query(
-      `SELECT 
+    const agora = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
+    
+    let result;
+    if (differenceInHours(Date(), datePull) < 2) {
+      result = await this.db.query(
+        `select 
           name,
           service_id as id,
           AVG(co2e) as co2e,
@@ -270,13 +257,75 @@ export class PgCollectionsRepository implements CollectionsRepository {
           AVG(disk_gb) as disk_gb,
           AVG(network_gb) as network_gb,
           AVG(renewable_percent) as renewable_percent
-          FROM hour_data h
+          from minute_data 
           inner join services as s on service_id = s.id
-          WHERE service_id = $1 and date_pull between $2 :: timestamptz - interval '59 minutes' and $2 :: timestamptz + interval '59 minutes' 
-          group by name, service_id
-          limit 1`,
-      [serviceId, datePull],
-    );
+          where date_pull <= date_trunc('hour',current_timestamp)
+          group by name, service_id`
+      );
+    } else {
+      result = await this.db.query(
+        `SELECT 
+            name,
+            service_id as id,
+            AVG(co2e) as co2e,
+            AVG(kwh) as kwh,
+            AVG(cpu_percentage) as cpu_percentage,
+            AVG(memory_gb) as memory_gb,
+            AVG(disk_gb) as disk_gb,
+            AVG(network_gb) as network_gb,
+            AVG(renewable_percent) as renewable_percent 
+            FROM hour_data 
+            inner join services as s on service_id = s.id
+            WHERE date_pull between $1 :: timestamptz - interval '59 minutes' and $1 :: timestamptz + interval '59 minutes' 
+            group by name, service_id`,
+        [datePull],
+      );
+    }
+
+    return result.rows || null;
+  }
+
+  async findServiceHourHistory(datePull: Date | string, serviceId: string) {
+    let result;
+    if(differenceInHours(Date(), datePull) < 2){
+      result = await this.db.query(
+        `select 
+          name,
+          service_id as id,
+          AVG(co2e) as co2e,
+          AVG(kwh) as kwh,
+          AVG(cpu_percentage) as cpu_percentage,
+          AVG(memory_gb) as memory_gb,
+          AVG(disk_gb) as disk_gb,
+          AVG(network_gb) as network_gb,
+          AVG(renewable_percent) as renewable_percent
+          from minute_data 
+          inner join services as s on service_id = s.id
+          where service_id = $1
+          and date_pull <= date_trunc('hour',current_timestamp)
+          group by name, service_id`,
+        [serviceId],
+      );
+    } else {
+      result = await this.db.query(
+        `SELECT 
+            name,
+            service_id as id,
+            AVG(co2e) as co2e,
+            AVG(kwh) as kwh,
+            AVG(cpu_percentage) as cpu_percentage,
+            AVG(memory_gb) as memory_gb,
+            AVG(disk_gb) as disk_gb,
+            AVG(network_gb) as network_gb,
+            AVG(renewable_percent) as renewable_percent
+            FROM hour_data h
+            inner join services as s on service_id = s.id
+            WHERE service_id = $1 and date_pull between $2 :: timestamptz - interval '59 minutes' and $2 :: timestamptz + interval '59 minutes' 
+            group by name, service_id
+            limit 1`,
+        [serviceId, datePull],
+      );
+    }
 
     return result.rows[0] || null;
   }

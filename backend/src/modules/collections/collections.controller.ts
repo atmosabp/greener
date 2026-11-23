@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import type { ICollectionsService } from "./collections.service";
+import { differenceInHours } from "date-fns";
 
 export interface ICollectionsController {
   getHistory(req: Request, res: Response): Promise<Response>;
@@ -72,6 +73,12 @@ export class CollectionsController implements ICollectionsController {
     const { periodType, datePull } = req.body;
 
     try {
+      const date = new Date(datePull);
+      if (isNaN(date.getTime())) {
+        return res
+          .status(400)
+          .json({ message: "O padrão da data enviada é inválido." });
+      }
       const result = await this.service.searchHistory(periodType, datePull);
       return res.status(200).json(result);
     } catch (error: any) {
@@ -88,7 +95,18 @@ export class CollectionsController implements ICollectionsController {
     const { periodType, datePull } = req.body;
 
     try {
-      const result = await this.service.searchServiceHistory(periodType, datePull, serviceId);
+      const date = new Date(datePull);
+      if (isNaN(date.getTime())) {
+        return res
+          .status(400)
+          .json({ message: "O padrão da data enviada é inválido." });
+      }
+
+      const result = await this.service.searchServiceHistory(
+        periodType,
+        datePull,
+        serviceId,
+      );
       return res.status(200).json(result);
     } catch (error: any) {
       return res.status(500).json({
