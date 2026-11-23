@@ -1,8 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { port } from "../../utils/connection";
-import "./Comparison.css";
+import { useEffect, useState } from "react";
 
+import { port } from "../../utils/connection";
 import AppHeader from "../../components/header/AppHeader";
+import Loading from "../../components/loading/Loading";
+import RefreshButton from "../../components/refreshButton/RefreshButton";
+import Greeting from "../../components/greetings/Greeting";
+import Tooltip from "../../components/tooltip/Tooltip";
+
+import useCalendar from "../../components/calendar/useCalendar";
+import Calendar from "../../components/calendar/Calendar";
+import PeriodSelect from "../../components/calendar/PeriodSelect";
+
+import { MultiSelect, DropdownMenu } from "../../components/dropdown";
 
 import {
   calculateAverages,
@@ -10,45 +19,43 @@ import {
   fetchServices,
   formatMetric,
   formatNumber,
-  type CompareTarget
+  type CompareTarget,
 } from "./components/comparisonData";
 
-import {
-  Chevron,
-  Gauge,
-  Popover,
-  StarIcon,
-} from "./components/ComparisonComponents";
+import { Gauge } from "./components/ComparisonComponents";
 
 import ServiceCard from "./components/ServiceCard";
-import Tooltip from "../../components/tooltip/Tooltip";
-
-import Greeting from "../../components/greetings/Greeting";
 
 import {
   CmpAveragesSkeleton,
   ComparisonServicesSkeleton,
 } from "./ComparisonSkeleton";
 
-import {
-  timeFormatter,
-  type RankingPeriod,
-} from "../ranking/rankingData";
+import { timeFormatter, type RankingPeriod } from "../ranking/rankingData";
 
 import type { MetricsType, ServiceType } from "../../types/service";
-import RefreshButton from "../../components/refreshButton/RefreshButton";
-import useCalendar from "../../components/calendar/useCalendar";
-import Calendar from "../../components/calendar/Calendar";
 
-import Loading from "../../components/loading/Loading";
-import PeriodSelect from "../../components/calendar/PeriodSelect";
 import { toReadableTime } from "../../utils/history";
+
+import "./Comparison.css";
+
+type HistoryService = {
+  id: string;
+  name: string;
+  cpu_percentage: number;
+  memory_gb: number;
+  disk_gb: number;
+  network_gb: number;
+  co2e: number;
+  kwh: number;
+};
 
 export default function Comparison() {
   const [period, setPeriod] = useState<RankingPeriod>("now");
-  const historyActivatedRef = useRef(false);
-  const [lastUpdate, setLastUpdate] = useState(() => new Date());
 
+  const [historyActivated, setHistoryActivated] = useState(false);
+
+  const [lastUpdate, setLastUpdate] = useState(() => new Date());
   const formattedLastUpdate = timeFormatter.format(lastUpdate);
 
   const [services, setServices] = useState<ServiceType[]>([]);
@@ -66,123 +73,170 @@ export default function Comparison() {
     {},
   );
 
-  /* Buscar os serviços e suas métricas no backend. */
-  useEffect(() => {
-    localStorage.setItem("last_page", '/comparison');
-    const t = setTimeout(() => setGaveUp(true), 2000);
-    return () => clearTimeout(t);
-  }, []);
+  const MIN_SERVICES = 2;
 
   const calendar = useCalendar();
 
-  const [_gaveUp, setGaveUp] = useState(false);
+  /* ==========================================================
+     CARREGAMENTO INICIAL
+  ========================================================== */
+
+  useEffect(() => {
+    localStorage.setItem("last_page", "/comparison");
+    handleRefresh();
+  }, []);
+
+  /* ==========================================================
+     ATUALIZAR DADOS ATUAIS
+  ========================================================== */
+
+  async function handleRefresh() {
+    setLoading(true);
+    setError(null);
+    setHistoryMessage("");
+    setHistoryActivated(false);
+    setPeriod("now");
+
+    try {
+      const data = await fetchServices();
+
+      setServices(data);
+      setOrder(data.map((service) => service.id));
+      setSelected(new Set(data.map((service) => service.id)));
+      setReferenceId(data[0]?.id ?? null);
+      setError(null);
+    } catch (error: unknown) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível carregar os serviços. Tente novamente mais tarde.",
+      );
+    } finally {
+      setLoading(false);
+      setLastUpdate(new Date());
+    }
+  }
+
+  /* ==========================================================
+     BUSCAR DADOS HISTÓRICOS
+  ========================================================== */
 
   async function fetchHistory(periodType: string, datePull: Date | string) {
-    try {
-      let formatedData: ServiceType[] = [];
+    setLoading(true);
+    setError(null);
 
+    try {
       const result = await fetch(
         `http://localhost:${port}/collections/all-service-history`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ periodType: periodType, datePull: datePull }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            periodType,
+            datePull,
+          }),
         },
       );
-      const data: any[] = await result.json();
+
+      if (!result.ok) {
+        throw new Error("Não foi possível buscar o histórico.");
+      }
+
+      const data: HistoryService[] = await result.json();
 
       if (data && data.length > 0) {
-        for (let service of data) {
-          formatedData.push({
-            id: service.id,
-            name: service.name,
-            metrics: {
-              cpu_percent: service.cpu_percentage,
-              memory_gb: service.memory_gb,
-              disk_gb: service.disk_gb,
-              network_gb: service.network_gb,
-              co2e: service.co2e,
-              kwh: service.kwh,
-              carbon_intensity: service.co2e / service.kwh,
-            },
-            status: "active",
-          });
-        }
+        const formattedData: ServiceType[] = data.map((service) => ({
+          id: service.id,
+          name: service.name,
+          metrics: {
+            cpu_percent: service.cpu_percentage,
+            memory_gb: service.memory_gb,
+            disk_gb: service.disk_gb,
+            network_gb: service.network_gb,
+            co2e: service.co2e,
+            kwh: service.kwh,
+            carbon_intensity: service.kwh ? service.co2e / service.kwh : 0,
+          },
+          status: "active",
+        }));
 
         setHistoryMessage(
           `Você está vendo dados do passado: ${toReadableTime(datePull)}`,
         );
 
-        setServices(formatedData);
-        setOrder(formatedData.map((service) => service.id));
-        setSelected(new Set(formatedData.map((service) => service.id)));
-        setReferenceId(formatedData[0]?.id ?? null);
+        setHistoryActivated(true);
+
+        setServices(formattedData);
+        setOrder(formattedData.map((service) => service.id));
+        setSelected(new Set(formattedData.map((service) => service.id)));
+        setReferenceId(formattedData[0]?.id ?? null);
         setError(null);
-        setLoading(false);
       } else {
-        handleRefresh();
+        await handleRefresh();
+
         setHistoryMessage("Período escolhido não possui dado.");
       }
-    } catch (e: any) {
+    } catch (error: unknown) {
       console.error(
-        `Ocorreu um erro ao buscar dados do período selecionado. Erro: ${e.message}`,
+        "Ocorreu um erro ao buscar dados do período selecionado.",
+        error,
       );
+
+      setHistoryActivated(true);
+
       setHistoryMessage(
         "Ocorreu um erro ao buscar dados do período selecionado.",
       );
+    } finally {
+      setLoading(false);
     }
   }
+
+  /* ==========================================================
+     ALTERAR PERÍODO DE VISUALIZAÇÃO
+  ========================================================== */
 
   function handlePeriodChange(nextPeriod: RankingPeriod) {
-    if (nextPeriod == "now") {
+    if (nextPeriod === "now") {
       handleRefresh();
-      setHistoryMessage("");
     } else {
-      historyActivatedRef.current = true;
+      setHistoryActivated(true);
+      setPeriod(nextPeriod);
+      calendar.openCalendar(nextPeriod);
     }
-    setPeriod(nextPeriod);
-    calendar.openCalendar(nextPeriod);
   }
 
-  async function handleRefresh() {
-    setHistoryMessage("");
-    setPeriod("now");
-    historyActivatedRef.current = false;
-    fetchServices()
-      .then((data) => {
-        setServices(data);
-        setOrder(data.map((service) => service.id));
-        setSelected(new Set(data.map((service) => service.id)));
-        setReferenceId(data[0]?.id ?? null);
-        setError(null);
-      })
-      .catch((error: unknown) => {
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Não foi possível carregar os serviços. Tente novamente mais tarde.",
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  /* ==========================================================
+     SERVIÇOS SELECIONADOS
+  ========================================================== */
 
-    setLastUpdate(new Date());
-  }
-
-  /* Buscar os serviços e suas métricas no backend. */
-  useEffect(() => {
-    handleRefresh();
-  }, []);
-
-  /* Serviços selecionados na ordem atual. */
   const visible = order
     .filter((id) => selected.has(id))
     .map((id) => services.find((service) => service.id === id))
     .filter((service): service is ServiceType => service !== undefined);
 
-  /* Médias dos serviços selecionados e escala dos medidores. */
+  /* ==========================================================
+     OPÇÕES DOS DROPDOWNS
+  ========================================================== */
+
+  const serviceOptions = services.map((service) => ({
+    label: service.name,
+    value: service.id,
+  }));
+
+  const referenceOptions = visible.map((service) => ({
+    label: service.name,
+    value: service.id,
+  }));
+
+  /* ==========================================================
+     MÉDIAS E ESCALAS DOS INDICADORES
+  ========================================================== */
+
   const averages = calculateAverages(visible);
+
   const maxConsumo = calculateMax(visible, "kwh");
   const maxEmissao = calculateMax(visible, "co2e");
 
@@ -193,7 +247,10 @@ export default function Comparison() {
     (service) => service.id === referenceId,
   );
 
-  /* Base de comparação de cada cartão: referência ou média. */
+  /* ==========================================================
+     BASE DE COMPARAÇÃO DE CADA CARD
+  ========================================================== */
+
   const baseMetricsFor = (service: ServiceType): MetricsType | undefined => {
     if (service.id === referenceId) return undefined;
 
@@ -206,32 +263,28 @@ export default function Comparison() {
     return averages;
   };
 
-  /* Selecionar ou desmarcar serviços. */
-  const MIN_SERVICES = 2;
+  /* ==========================================================
+     SELECIONAR OU DESELECIONAR SERVIÇOS
+  ========================================================== */
 
-  const toggleSelected = (id: string) => {
-    setSelected((previous) => {
-      const next = new Set(previous);
+  const handleSelectedChange = (values: string[]) => {
+    if (values.length < MIN_SERVICES) return;
 
-      if (next.has(id)) {
-        // não deixa ficar com menos de MIN_SERVICES
-        if (previous.size <= MIN_SERVICES) return previous;
-
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-
-      return next;
-    });
+    setSelected(new Set(values));
   };
 
-  /* Marcar ou remover a referência de um cartão. */
+  /* ==========================================================
+     MARCAR OU REMOVER REFERÊNCIA
+  ========================================================== */
+
   const toggleReference = (id: string) => {
     setReferenceId((current) => (current === id ? null : id));
   };
 
-  /* Mover um cartão para cima ou para baixo. */
+  /* ==========================================================
+     REORDENAR CARDS
+  ========================================================== */
+
   const move = (id: string, direction: -1 | 1) => {
     const visibleIndex = visible.findIndex((service) => service.id === id);
 
@@ -241,6 +294,7 @@ export default function Comparison() {
 
     setOrder((previous) => {
       const next = [...previous];
+
       const currentIndex = next.indexOf(id);
       const neighborIndex = next.indexOf(neighbor.id);
 
@@ -253,71 +307,51 @@ export default function Comparison() {
     });
   };
 
+  /* ==========================================================
+     RENDERIZAÇÃO
+  ========================================================== */
+
   return (
     <div className="cmp-comparison">
-      {loading && <Loading/>}
+      {loading && <Loading />}
       <AppHeader />
 
       <main className="cmp-page">
         <section className="cmp-intro">
-          <div className="greeting">
+          <div className="cmp-intro__content">
             <Greeting />
             <p className="cmp-intro__sub">
               Selecione dois ou mais serviços para comparar suas métricas.
             </p>
           </div>
 
-          <span className="cmp-select">
-            <span className="ranking-last-update">
-              <strong>{historyMessage}</strong>&nbsp; &nbsp;
-              {historyActivatedRef.current ? (
-                <></>
-              ) : (
-                <span className="last-updated-text"><strong>Última atualização:</strong> {formattedLastUpdate}</span>
-              )}{" "}
-              &nbsp; &nbsp;
-            </span>
+          <div className="cmp-intro__controls">
+            {historyMessage ? (
+              <strong className="cmp-history-message">{historyMessage}</strong>
+            ) : !historyActivated ? (
+              <span className="last-updated-text">
+                <strong>Última atualização:</strong> {formattedLastUpdate}
+              </span>
+            ) : null}
 
             <RefreshButton handleRefresh={handleRefresh} loading={loading} />
 
-            <Popover
-              trigger={({ open, toggle }) => (
-                <button
-                  type="button"
-                  className={`cmp-pill-outline ${loading ? "blocked" : ""}`}
-                  aria-expanded={open}
-                  onClick={toggle}
-                  disabled={loading}
-                >
-                  Serviços
-                  <Chevron size={22} />
-                </button>
-              )}
-            >
-              {() => (
-                <ul className="cmp-menu">
-                  {services.map((service) => (
-                    <li key={service.id}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selected.has(service.id)}
-                          onChange={() => toggleSelected(service.id)}
-                        />
-                        {service.name}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Popover>
+            <div className="cmp-selection-dropdown">
+              <MultiSelect
+                value={Array.from(selected)}
+                onChange={handleSelectedChange}
+                options={serviceOptions}
+                disabled={loading}
+                placeholder="Serviços selecionados"
+                emptyLabel="Nenhum serviço selecionado"
+              />
+            </div>
             <PeriodSelect
               showSkeleton={loading}
               handlePeriodChange={handlePeriodChange}
               period={period}
             />
-            
-          </span>
+          </div>
         </section>
 
         {/* ---------------------------------------------------------- */}
@@ -332,16 +366,11 @@ export default function Comparison() {
               Média indicadores
             </h2>
 
-            <button
-              type="button"
-              className="cmp-averages__help"
-              aria-label="Ajuda sobre os indicadores"
-              title="Média dos serviços selecionados"
-            >
+            <div className="cmp-averages__help">
               <Tooltip
-                text={"Média das métricas dos \n servicos selecionadas"}
+                text={"Média das métricas dos \n serviços selecionados"}
               />
-            </button>
+            </div>
 
             <div className="cmp-averages__content">
               <div className="cmp-averages__tiles">
@@ -391,56 +420,26 @@ export default function Comparison() {
           </section>
         )}
 
-        {/* ---------------------------------------------------------- */}
-        {/* Serviços                                                    */}
-        {/* ---------------------------------------------------------- */}
+        {/* SERVIÇOS */}
 
         <section className="cmp-services" aria-labelledby="services-title">
           <div className="cmp-services__head">
             <h2 id="services-title">Serviços</h2>
 
             <div className="cmp-services__tools">
-              <Popover
-                align="right"
-                trigger={({ open, toggle }) => (
-                  <button
-                    type="button"
-                    className={`cmp-chip cmp-chip--wide ${loading ? "blocked" : ""}`}
-                    aria-expanded={open}
-                    onClick={toggle}
-                    disabled={loading}
-                  >
-                    Escolher serviço referência
-                    <StarIcon size={24} />
-                  </button>
-                )}
-              >
-                {(close) => (
-                  <ul className="cmp-menu">
-                    {visible.map((service) => (
-                      <li key={service.id}>
-                        <button
-                          type="button"
-                          className={
-                            service.id === referenceId ? "cmp-is-active" : ""
-                          }
-                          onClick={() => {
-                            setReferenceId(service.id);
-                            close();
-                          }}
-                        >
-                          {service.name}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Popover>
+              <div className="cmp-reference-dropdown">
+                <DropdownMenu
+                  value={referenceId ?? ""}
+                  onChange={setReferenceId}
+                  options={referenceOptions}
+                  disabled={loading}
+                  placeholder="Escolher serviço referência"
+                />
+              </div>
             </div>
           </div>
 
           <div className="cmp-services__scroll">
-            {/* {!loading && error && <p className="cmp-empty">{error}</p>} */}
             {loading ? (
               <ComparisonServicesSkeleton quantity={8} />
             ) : (
@@ -481,6 +480,9 @@ export default function Comparison() {
             )}
           </div>
         </section>
+
+        {/* CALENDÁRIO DO HISTÓRICO */}
+
         {calendar.calendarOpen && (
           <Calendar
             period={period}

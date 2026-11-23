@@ -136,38 +136,38 @@
     overflow: visible;
 }
 
+
 .cmp-intro {
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 0.5rem 0.75rem 0;
-    margin-top: 30px;
-}
-
-.cmp-intro .greeting {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    width: 100%;
-}
-
-.cmp-intro-btns {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.5rem 0.75rem 0;
+    margin-top: 1.5rem;
+}
+
+.cmp-intro h1 {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 0.4rem;
+    font-size: 2.5rem;
+    letter-spacing: -0.035em;
 }
 
 .cmp-intro__sub {
-    margin-top: 0.3125rem;
+    margin: 0;
+    padding: 0;
     font-size: 1rem;
-    line-height: 1.45;
-    color: var(--ink);
+    text-align: left;
 }
 
+.cmp-intro__controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
 /* ---------- Dropdowns ---------- */
 
 .cmp-select {
@@ -507,7 +507,7 @@
 .cmp-gauge__fill {
     stroke: var(--primary);
     animation: gauge-fill 1.2s ease-out;
-}s
+}
 
 /* skeleton */
 .cmp-gauge--skeleton .cmp-gauge__track {

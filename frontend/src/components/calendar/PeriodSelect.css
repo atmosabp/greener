@@ -1,19 +1,4 @@
-.period-select-container {
-    height: 2.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.8rem;
-    padding-right: 0;
-    border-radius: 2rem;
-    background-color: var(--primary-light);
-    color: var(--on-primary-light);
-    transition: transform 0.3s ease !important;
-}
 
-.period-select-container:hover {
-    transform: translateY(-0.15rem);
-}
 
 select {
     appearance: none;
