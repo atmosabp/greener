@@ -363,7 +363,7 @@ export default function Dashboard() {
               </span>
             )}
 
-            <RefreshButton handleRefresh={updateMetrics} />
+            <RefreshButton handleRefresh={updateMetrics} loading={showSkeleton}/>
 
             {/* backend: última atualização -> Lógica para que, se ultima atualização for > que o valor selecionado para atualização, ficar em vermelho */}
 
@@ -471,7 +471,7 @@ export default function Dashboard() {
               </section>
 
               <section className="metric-card metric-card--data metric-energy">
-                <Tooltip text={"Soma de consumo de: \n CPU,Rede,Disco e Memórias \n convertidos em Kilowatt/hora"} />
+                <Tooltip text={"Soma de consumo de: \n CPU, Rede, Disco e Memórias \n convertidos em Kilowatt/hora"} />
                 <p>Consumo energético</p>
                 <h4>
                   {serviceMetrics.metrics?.kwh ? (

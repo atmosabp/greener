@@ -278,7 +278,7 @@ export default function Comparison() {
               &nbsp; &nbsp;
             </span>
 
-            <RefreshButton handleRefresh={handleRefresh} />
+            <RefreshButton handleRefresh={handleRefresh} loading={loading} />
 
             <Popover
               trigger={({ open, toggle }) => (

@@ -498,9 +498,16 @@
     stroke: var(--ink);
 }
 
+@keyframes gauge-fill {
+    from {
+        stroke-dasharray: 0 100;
+    }
+}
+
 .cmp-gauge__fill {
     stroke: var(--primary);
-}
+    animation: gauge-fill 1.2s ease-out;
+}s
 
 /* skeleton */
 .cmp-gauge--skeleton .cmp-gauge__track {
@@ -950,6 +957,8 @@
     box-sizing: border-box;
     border-radius: 999px;
     z-index: 1;
+    animation: scale-fill 1s ease-out;
+    transition: width 0.4s ease-out;
 }
 
 .cmp-carbon__bar[data-level="low"] .cmp-carbon__fill {
@@ -1271,7 +1280,7 @@
     gap: 1.5rem;
 }
 
-.cmp-intro > div:first-child {
+.cmp-intro>div:first-child {
     min-width: min(100%, 18rem);
     flex: 1 1 20rem;
 }
@@ -1482,7 +1491,7 @@
     align-items: stretch;
 }
 
-.cmp-services__scroll > .cmp-service {
+.cmp-services__scroll>.cmp-service {
     display: block;
     width: 100%;
     min-width: 0;
@@ -1490,7 +1499,7 @@
     align-self: stretch;
 }
 
-.cmp-services__scroll > .cmp-service .cmp-service__body {
+.cmp-services__scroll>.cmp-service .cmp-service__body {
     width: 100%;
     min-width: 0;
 }

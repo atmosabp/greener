@@ -345,7 +345,7 @@ export default function Ranking() {
                 </span>
               )}
 
-              <RefreshButton handleRefresh={handleRefresh} />
+              <RefreshButton handleRefresh={handleRefresh} loading={showSkeleton} />
             </div>
           </section>
         </div>

@@ -79,13 +79,13 @@
 .clouds-container .cloud-small {
     width: 8%;
     height: auto;
-    animation: float-small 3s ease-in-out infinite alternate;
+    animation: float-small 2s ease-in-out infinite alternate;
 }
 
 .clouds-container .cloud-medium {
     width: 13%;
     height: auto;
-    animation: float-medium 5s ease-in-out infinite alternate;
+    animation: float-medium 3s ease-in-out infinite alternate;
 
 }
 
@@ -93,7 +93,7 @@
     width: 16%;
     height: auto;
     opacity: 0.7;
-    animation: float-big 7s ease-in-out infinite alternate;
+    animation: float-big 5s ease-in-out infinite alternate;
 
 }
 
