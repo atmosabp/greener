@@ -301,11 +301,7 @@ A conexão é feita pelo `Pool` do `pg` em `src/db/connections.ts`, com os dados
 
 ### Consultas de histórico
 
-As consultas de `POST /collections/all-service-history` e `POST /collections/service-history` recebem `periodType` (`minute`, `hour`, `day` ou `month`) e `datePull` (a data desejada) e devolvem **uma única linha** com a média das métricas. Existem dois caminhos:
-
-- **Data recente** (menos de 2 unidades do período, ex.: menos de 2 horas para `hour`): como os dados mais novos ainda não foram comprimidos, a média é calculada na hora a partir da tabela de granularidade menor (`minute_data` para hora, `hour_data` para dia, `day_data` para mês).
-- **Data antiga:** a linha já comprimida é lida diretamente da tabela do período (`hour_data`, `day_data` ou `month_data`). Para `minute`, a leitura de datas antigas também é feita em `hour_data`, pois os minutos antigos já foram comprimidos.
-3
+As consultas de `POST /collections/all-service-history` e `POST /collections/service-history` recebem `periodType` (`minute`, `hour`, `day` ou `month`) e `datePull` (a data desejada) e devolvem **uma única linha** com a média das métricas.
 
 <br>
 
