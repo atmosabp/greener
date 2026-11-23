@@ -82,7 +82,7 @@ Para cada diretório como `frontend/`, `backend/` e `database/`, também há arq
 | --------- | ----------- | ------------ | --------- | ------ |
 | 1         | 28/09/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-1.md) | [Link](https://youtu.be/no3dPzF96Jo) |
 | 2         | 19/10/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-2.md)         | [Link](https://youtu.be/JRwsLX7Vka0)      |
-| 3         | 09/11/2026  | Não iniciada | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-3.md)         | [Link](https://www.youtube.com/watch?v=oMrqTTUGP-I)      |
+| 3         | 09/11/2026  | Concluída | [Link](https://github.com/atmosabp/greener/blob/develop/docs/sprints/sprint-3.md)         | [Link](https://www.youtube.com/watch?v=oMrqTTUGP-I)      |
 
 <br>
 
