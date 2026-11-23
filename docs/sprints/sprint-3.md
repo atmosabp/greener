@@ -25,7 +25,7 @@ Aqui está todos os objetivos em mais detalhes:
 <br>
 
 ### O que foi entregue
-O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui - ATUALIZAR LINK](https://youtu.be/JRwsLX7Vka0).  
+O **vídeo** desenvolvido pela equipe para a sprint pode ser acessado nesse link: [clique aqui](https://www.youtube.com/watch?v=oMrqTTUGP-I).  
 Ele mostra visualmente o que foi feito durante a sprint das telas e backend, e o que está planejado para o próximo ciclo de entrega.
 
 A seguir está o burndown da sprint 3.  
