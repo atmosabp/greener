@@ -265,15 +265,9 @@ O tipo `HeaderLink` (`types/header.ts`) permite que um link seja interno (`to`, 
 
 ### Formulários e validação
 
-O `Form` é genérico: cada formulário apenas declara uma lista de campos (`FieldConfig`) com `name`, `label`, `type`, `placeholder`, `required` e uma função `validate`. Os validadores podem ser combinados:
+O `Form` é genérico: cada formulário apenas declara uma lista de campos (`FieldConfig`) com `name`, `label`, `type`, `placeholder`, `required` e uma função `validate`. 
 
-```ts
-validate: compose(required, email)                       // roda em ordem e retorna o primeiro erro
-validate: optional(minLength(6))                         // só valida se o campo foi preenchido
-validate: matches("password", { title: "Senhas diferentes", message: "..." })
-```
-
-Ao enviar, todos os campos são validados e **apenas um toast** é exibido, com o primeiro erro na ordem dos campos. Cada erro pode ser um texto simples ou um objeto `{ title, message }`, para o toast ter um título próprio.
+Ao enviar, todos os campos são validados e apenas um toast é exibido, com o primeiro erro na ordem dos campos. Cada erro pode ser um texto simples ou um objeto `{ title, message }`, para o toast ter um título próprio.
 
 <br>
 

@@ -66,46 +66,64 @@
 }
 
 .dashboard .last-update {
-    padding: 0;
-    color: var(--text);
-    font-size: 0.95rem;
-    font-weight: 500;
+    color: color-mix(in srgb,
+            var(--text) 55%,
+            var(--background));
+        ;
+    font-size: 0.8rem;
     white-space: nowrap;
+}
+
+.last-updated-text{
+    color: var(--text);
+    font-size: 1rem;
 }
 
 .btn-update {
+    min-width: 0;
+    height: 2.5rem;
+
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 15px;
+
+    gap: 0.8rem;
     padding-left: 15px;
-    background-color: var(--primary-light);
-    border-radius: 999px;
+    padding-right: 0;
+
+    border-radius: 2rem;
+    background-color: var(--primary) !important;
+    color: var(--text);
     font-weight: 500;
     white-space: nowrap;
-    height: 40px;
 }
 
-.dashboard select {
-    appearance: none;
-    -webkit-appearance: none;
-    height: 40px;
-    font-weight: 400;
-    padding: 0 2.75rem 0 1.25rem;
-    border: 0;
-    border-radius: 999px;
+.dashboard-dropdown-update {
+    max-width: 10rem;
+}
+
+.home-back-link {
+    color: var(--link-icon-color);
+    font-weight: 700;
+    text-decoration: none;
+    position: relative;
+}
+
+.home-back-link::after {
+    content: "";
+    width: 0%;
+    height: 1.5px;
+    position: absolute;
     background-color: var(--text);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf0dc' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1rem;
-    color: var(--background);
-    font-size: 1.15rem;
-    cursor: pointer;
-    outline: none;
+    left: 0;
+    bottom: -2px;
+    transition: width 0.5s ease-in-out;
+    border-radius: 5px;
 }
 
-[data-theme="dark"] .dashboard select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338322E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+.home-back-link.active::after,
+.home-back-link:hover::after {
+    width: 100%;
 }
 
 .dashboard select option {
@@ -219,7 +237,6 @@
     display: none;
 }
 
-
 .metrics-carousel,
 .metrics-track {
     display: contents;
@@ -252,11 +269,12 @@
 
 .metric-card--data {
     background-color: var(--primary-dark);
-    color: var(--background);
+    color: var(--on-primary-dark);
 }
 
 .metric-card--usage {
     background-color: var(--primary-light);
+    color: var(--on-primary-light);
 }
 
 
@@ -293,6 +311,7 @@
 }
 
 .analytics-card--renewable {
+    position: relative;
     flex: 1.2;
     justify-content: space-between;
 }
@@ -337,6 +356,7 @@
 
 /* Intensidade de carbono */
 .analytics-card--carbon {
+    position: relative;
     justify-content: space-between;
     gap: 0.5rem;
 }
@@ -438,8 +458,8 @@
     border: 2px solid var(--text);
     border-radius: 1.25rem;
     background-color: color-mix(in srgb,
-            var(--primary-light) 55%,
-            var(--background));
+            var(--background) 50%,
+            var(--primary-light));
     min-height: 0;
     transition: border 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
@@ -478,7 +498,7 @@
     border-radius: 999px;
 }
 
-ul{
+ul {
     display: flex;
     flex-direction: column;
 }
@@ -500,7 +520,7 @@ ul{
     transition: transform 0.3s ease-in-out;
 }
 
-.service-link-url{
+.service-link-url {
     color: inherit;
     text-decoration: none;
 }
@@ -686,8 +706,6 @@ ul{
     .btn-update select {
         font-size: 1.05rem;
     }
-
-
 
     .dashboard-grid {
         grid-template-columns: 1fr;

@@ -13,7 +13,11 @@ export default function Header({
   activeHref,
 }: HeaderProps) {
   const compact_query = "(max-width: 1024px)";
+  const scroll_offset = 10;
   const [openMenu, setOpenMenu] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(
+    () => window.scrollY > scroll_offset,
+  );
   const [isCompact, setIsCompact] = useState(
     () => window.matchMedia(compact_query).matches,
   );
@@ -49,6 +53,13 @@ export default function Header({
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > scroll_offset);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const headerImage = isCompact ? logoText : logo;
@@ -87,7 +98,10 @@ export default function Header({
         aria-hidden="true"
       />
 
-      <header id="main-menu" className={`menu ${openMenu ? "active" : ""}`}>
+      <header
+        id="main-menu"
+        className={`menu ${openMenu ? "active" : ""} ${isScrolled ? "scrolled" : ""}`}
+      >
         <Link to="/home">
           <img src={headerImage} alt="Logo Greener" className="logo" />
         </Link>

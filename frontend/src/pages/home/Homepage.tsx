@@ -1,336 +1,482 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AppHeader from "../../components/header/AppHeader";
 import InteractiveGlobe from "./InteractiveGlobe";
 import MapVisualization from "./MapVisualization";
 import "./Homepage.css";
+
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import { useSkeleton } from "../../components/skeleton/useSkeleton";
 import {
-  ServicesListSkeleton,
-  StageSkeleton,
-  inlineSkeleton,
+    ServicesListSkeleton,
+    StageSkeleton,
+    inlineSkeleton,
 } from "./HomepageSkeleton";
+
+import {
+    Globe2,
+    Map,
+    ChartNoAxesColumn,
+    GitCompareArrows,
+} from "lucide-react";
 
 import { port } from "../../utils/connection";
 import type { ServiceStatus, ServiceType } from "../../types/service";
+import Loading from "../../components/loading/Loading";
 
 interface HomepageProps {
-  lastUpdated?: string;
-  updateTime?: number;
+    lastUpdated?: string;
+    updateTime?: number;
 }
 
 type VisualizationMode = "globe" | "map";
+type GlobeVisualization = "services" | "emissions";
 
 const statusLabels: Record<ServiceStatus, string> = {
-  active: "Ativo",
-  incomplete: "Incompleto",
-  inactive: "Inativo",
+    active: "Ativo",
+    incomplete: "Incompleto",
+    inactive: "Inativo",
+    deleted: "",
+    unavailable: "",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
-  const [mode, setMode] = useState<VisualizationMode>("globe");
-  const [selectedService, setSelectedService] = useState<string | null>(null);
-  const [timeUpdated, setTimeUpdated] = useState<string>("");
+    const [mode, setMode] = useState<VisualizationMode>("globe");
 
-  const [services, setServices] = useState<ServiceType[]>([]);
+    const [globeVisualization, setGlobeVisualization] =
+        useState<GlobeVisualization>("services");
 
-  async function updateServices() {
-    const result = await fetch(
-      `http://localhost:${port}/collections/all-service-data`,
-    );
-    const data: ServiceType[] = await result.json();
-    setTimeUpdated(new Date().toLocaleString());
-    setServices(data);
-  }
+    const [services, setServices] = useState<ServiceType[]>([]);
+    const [selectedService, setSelectedService] = useState<string | null>(null);
+    const [timeUpdated, setTimeUpdated] = useState<string>("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await updateServices();
-    };
+    // Atualiza os serviços vindos do backend.
+    async function updateServices() {
+        try {
+            const result = await fetch(
+                `http://localhost:${port}/collections/all-service-data`,
+            );
 
-    fetchData();
+            if (!result.ok) {
+                throw new Error("Não foi possível buscar os serviços.");
+            }
 
-    const fetchTimer = setInterval(
-      () => {
-        fetchData();
-      },
-      localStorage.getItem("refresh_interval")
-        ? Number(localStorage.getItem("refresh_interval")) * 1000
-        : updateTime * 1000,
-    );
+            const data: ServiceType[] = await result.json();
 
-    return () => clearInterval(fetchTimer);
-  }, []);
+            setServices(data);
+            setTimeUpdated(new Date().toLocaleString());
+        } catch (error) {
+            console.error("Erro ao atualizar serviços:", error);
+        }
+    }
 
-  // Skeleton-> carregando enquanto a 1ª resposta não chegou (timeUpdated ainda vazio).
-  // Se o back nunca responder, desiste após 15s e mostra o estado vazio normal.
-  const [gaveUp, setGaveUp] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setGaveUp(true), 15000);
-    return () => clearTimeout(t);
-  }, []);
-  const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
+    // Controla o tempo máximo de exibição do skeleton.
+    const [gaveUp, setGaveUp] = useState(false);
 
-  const activeCount = services
-    ? services.filter((service) => service.status === "active").length
-    : 0;
+    useEffect(() => {
+        const timer = setTimeout(() => setGaveUp(true), 15000);
 
-  const incompleteCount = services
-    ? services.filter((service) => service.status === "incomplete").length
-    : 0;
+        return () => clearTimeout(timer);
+    }, []);
 
-  const inactiveCount = services
-    ? services.filter((service) => service.status === "inactive").length
-    : 0;
+    const showSkeleton = useSkeleton(timeUpdated === "" && !gaveUp);
 
-  return (
-    <div className="homepage">
-      <AppHeader />
+    // Atualização inicial e intervalo automático.
+    useEffect(() => {
+        updateServices();
 
-      <main className="homepage-main">
-        <section
-          className="explorer-layout"
-          aria-label="Explorador de serviços"
-        >
-          <aside className="services-panel">
-            <div className="panel-heading">
-              <div>
-                <span className="section-kicker">EXPLORADOR</span>
-                <h2>Seus serviços</h2>
-              </div>
+        const refreshInterval = localStorage.getItem("refresh_interval");
+        const configuredInterval = refreshInterval
+            ? Number(refreshInterval) * 1000
+            : updateTime * 1000;
 
-              <span className="service-count">
-                {showSkeleton ? (
-                  <Skeleton width={24} height="1rem" style={inlineSkeleton} />
-                ) : (
-                  String(services.length).padStart(2, "0")
-                )}
-              </span>
-            </div>
+        const interval =
+            Number.isFinite(configuredInterval) && configuredInterval > 0
+                ? configuredInterval
+                : updateTime * 1000;
 
-            <p className="panel-description">
-              Selecione um ponto para explorar sua localização e seus dados.
-            </p>
+        const fetchTimer = setInterval(updateServices, interval);
 
-            <div className="services-list">
-              {showSkeleton ? (
-                <ServicesListSkeleton />
-              ) : services.length === 0 ? (
-                <>
-                  <p className="services-empty">
-                    Nenhum serviço foi encontrado.
-                  </p>
-                </>
-              ) : (
-                services.map((service, index) => {
-                  const isSelected = selectedService === service.id;
+        return () => clearInterval(fetchTimer);
+    }, [updateTime]);
 
-                  return (
-                    <button
-                      key={`${service.id}-${index}`}
-                      type="button"
-                      className={`service-item ${
-                        isSelected ? "service-item-selected" : ""
-                      }`}
-                      onClick={() =>
-                        setSelectedService((current) =>
-                          current === service.id ? null : service.id,
-                        )
-                      }
-                      aria-pressed={isSelected}
-                    >
-                      <span className="service-index">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+    // Contagem dos serviços por status.
+    const activeCount = services.filter(
+        (service) => service.status === "active",
+    ).length;
 
-                      <span className={`status-dot ${service.status}`} />
+    const incompleteCount = services.filter(
+        (service) => service.status === "incomplete",
+    ).length;
 
-                      <span className="service-content">
-                        <span className="service-name">{service.name}</span>
+    const inactiveCount = services.filter(
+        (service) => service.status === "inactive",
+    ).length;
 
-                        <span className="service-status">
-                          {statusLabels[service.status]}
+    return (
+        <div className="homepage">
+            {showSkeleton && <Loading />}
+            <AppHeader />
+
+            <main className="homepage-main">
+                {/* Introdução principal da página */}
+                <section className="intro-section">
+                    <div className="intro-copy">
+                        <span className="section-kicker">
+                            VISÃO GLOBAL
                         </span>
-                      </span>
 
-                      <span className="service-arrow" aria-hidden="true">
-                        {isSelected ? "−" : "↗"}
-                      </span>
-                    </button>
-                  );
-                })
-              )}
-            </div>
+                        <h2>Explore o planeta</h2>
+                    </div>
+                </section>
 
-            <div className="services-legend">
-              <span className="legend-title">STATUS DOS SERVIÇOS</span>
-
-              <div className="legend-items">
-                <span>
-                  <i className="status-dot active" />
-                  Ativos
-                  <strong>
-                    {showSkeleton ? (
-                      <Skeleton
-                        width={18}
-                        height="0.9rem"
-                        style={inlineSkeleton}
-                      />
-                    ) : (
-                      activeCount
-                    )}
-                  </strong>
-                </span>
-
-                <span>
-                  <i className="status-dot incomplete" />
-                  Incompletos
-                  <strong>
-                    {showSkeleton ? (
-                      <Skeleton
-                        width={18}
-                        height="0.9rem"
-                        style={inlineSkeleton}
-                      />
-                    ) : (
-                      incompleteCount
-                    )}
-                  </strong>
-                </span>
-
-                <span>
-                  <i className="status-dot inactive" />
-                  Inativos
-                  <strong>
-                    {showSkeleton ? (
-                      <Skeleton
-                        width={18}
-                        height="0.9rem"
-                        style={inlineSkeleton}
-                      />
-                    ) : (
-                      inactiveCount
-                    )}
-                  </strong>
-                </span>
-              </div>
-            </div>
-          </aside>
-
-          <nav className="homepage-actions" aria-label="Outras análises">
-            <Link to="/ranking" className="analysis-link">
-              <span className="analysis-link-icon" aria-hidden="true">
-                ↗
-              </span>
-
-              <span className="analysis-link-content">
-                <strong>Ranking de emissões</strong>
-                <small>Compare os serviços por impacto</small>
-              </span>
-
-              <span className="analysis-link-arrow" aria-hidden="true">
-                →
-              </span>
-            </Link>
-
-            <Link to="/comparison" className="analysis-link">
-              <span className="analysis-link-icon" aria-hidden="true">
-                ⇄
-              </span>
-
-              <span className="analysis-link-content">
-                <strong>Comparação</strong>
-                <small>Analise diferenças entre operações</small>
-              </span>
-
-              <span className="analysis-link-arrow" aria-hidden="true">
-                →
-              </span>
-            </Link>
-          </nav>
-
-          <section className="visualization-column">
-            <div className="visualization-topline">
-              <div className="visualization-heading">
-                <span className="section-kicker">VISÃO GLOBAL</span>
-                <h2>Explore o planeta</h2>
-              </div>
-
-              <div className="last-update">
-                <span>Última atualização:</span>
-                {showSkeleton ? (
-                  <Skeleton width="10rem" height="1rem" />
-                ) : (
-                  <strong>{timeUpdated || "-"}</strong>
-                )}
-              </div>
-
-              <div
-                className="view-switch"
-                role="group"
-                aria-label="Tipo de visualização"
-              >
-                <button
-                  type="button"
-                  className={mode === "globe" ? "active" : ""}
-                  onClick={() => setMode("globe")}
-                  aria-pressed={mode === "globe"}
+                <section
+                    className="explorer-layout"
+                    aria-label="Explorador de serviços"
                 >
-                  <span aria-hidden="true">◎</span>
-                  Globo
-                </button>
+                    <aside className="services-panel">
+                        <div className="panel-heading">
+                            <div>
+                                <span className="section-kicker">
+                                    EXPLORADOR
+                                </span>
+                                <h2>Seus serviços</h2>
+                            </div>
 
-                <button
-                  type="button"
-                  className={mode === "map" ? "active" : ""}
-                  onClick={() => setMode("map")}
-                  aria-pressed={mode === "map"}
-                >
-                  <span aria-hidden="true">▦</span>
-                  Mapa
-                </button>
-              </div>
-            </div>
+                            <span className="service-count">
+                                {showSkeleton ? (
+                                    <Skeleton
+                                        width={24}
+                                        height="1rem"
+                                        style={inlineSkeleton}
+                                    />
+                                ) : (
+                                    String(services.length).padStart(2, "0")
+                                )}
+                            </span>
+                        </div>
 
-            <div className={`visualization-stage mode-${mode}`}>
-              {showSkeleton ? (
-                <StageSkeleton mode={mode} />
-              ) : mode === "globe" ? (
-                <InteractiveGlobe
-                  services={services}
-                  selectedServiceId={selectedService}
-                  onSelectService={setSelectedService}
-                />
-              ) : (
-                <MapVisualization
-                  services={services}
-                  selectedServiceId={selectedService}
-                  onSelectService={setSelectedService}
-                />
-              )}
-            </div>
+                        <p className="panel-description">
+                            Selecione um ponto para explorar sua localização e
+                            seus dados.
+                        </p>
 
-            <div className="visualization-caption">
-              <span className="caption-symbol" aria-hidden="true">
-                ✳
-              </span>
+                        <div className="services-list">
+                            {showSkeleton ? (
+                                <ServicesListSkeleton />
+                            ) : services.length === 0 ? (
+                                <p className="services-empty">
+                                    Nenhum serviço foi encontrado.
+                                </p>
+                            ) : (
+                                services.map((service, index) => {
+                                    const isSelected =
+                                        selectedService === service.id;
 
-              <p>
-                {mode === "globe"
-                  ? "Gire o globo e selecione os pontos para explorar cada operação."
-                  : "Explore o mapa, aproxime as regiões e selecione um ponto para ver seus dados."}
-              </p>
+                                    return (
+                                        <button
+                                            key={`${service.id}-${index}`}
+                                            type="button"
+                                            className={`service-item ${
+                                                isSelected
+                                                    ? "service-item-selected"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                setSelectedService((current) =>
+                                                    current === service.id
+                                                        ? null
+                                                        : service.id,
+                                                )
+                                            }
+                                            aria-pressed={isSelected}
+                                        >
+                                            <span className="service-index">
+                                                {String(index + 1).padStart(
+                                                    2,
+                                                    "0",
+                                                )}
+                                            </span>
 
-              <span className="coordinate-note">ATMOS ° / CO₂e</span>
-            </div>
-          </section>
-        </section>
-      </main>
+                                            <span
+                                                className={`status-dot ${service.status}`}
+                                            />
 
-      <footer className="homepage-footer">
-        Desenvolvido por Atmos © {new Date().getFullYear()}
-      </footer>
-    </div>
-  );
+                                            <span className="service-content">
+                                                <span className="service-name">
+                                                    {service.name}
+                                                </span>
+
+                                                <span className="service-status">
+                                                    {statusLabels[service.status]}
+                                                </span>
+                                            </span>
+
+                                            <span
+                                                className="service-arrow"
+                                                aria-hidden="true"
+                                            >
+                                                {isSelected ? "−" : "↗"}
+                                            </span>
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
+
+                        {/* Navegação para outras análises */}
+                        <nav
+                            className="services-navigation"
+                            aria-label="Outras análises"
+                        >
+                            <span className="services-navigation-title">
+                                ANÁLISES
+                            </span>
+
+                            <Link
+                                to="/ranking"
+                                className="services-navigation-link"
+                            >
+                                <ChartNoAxesColumn
+                                    size={17}
+                                    strokeWidth={1.8}
+                                />
+
+                                <span>
+                                    <strong>Ranking</strong>
+                                    <small>Impacto por serviço</small>
+                                </span>
+
+                                <span className="services-navigation-arrow">
+                                    →
+                                </span>
+                            </Link>
+
+                            <Link
+                                to="/comparison"
+                                className="services-navigation-link"
+                            >
+                                <GitCompareArrows
+                                    size={17}
+                                    strokeWidth={1.8}
+                                />
+
+                                <span>
+                                    <strong>Comparação</strong>
+                                    <small>Diferenças entre operações</small>
+                                </span>
+
+                                <span className="services-navigation-arrow">
+                                    →
+                                </span>
+                            </Link>
+                        </nav>
+
+                        <div className="services-legend">
+                            <span className="legend-title">
+                                STATUS DOS SERVIÇOS
+                            </span>
+
+                            <div className="legend-items">
+                                <span>
+                                    <i className="status-dot active" />
+                                    Ativos
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            activeCount
+                                        )}
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    <i className="status-dot incomplete" />
+                                    Incompletos
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            incompleteCount
+                                        )}
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    <i className="status-dot inactive" />
+                                    Inativos
+                                    <strong>
+                                        {showSkeleton ? (
+                                            <Skeleton
+                                                width={18}
+                                                height="0.9rem"
+                                                style={inlineSkeleton}
+                                            />
+                                        ) : (
+                                            inactiveCount
+                                        )}
+                                    </strong>
+                                </span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <section className="visualization-column">
+                        <div className="visualization-topline">
+                            {/* Atualização permanece junto à visualização */}
+                            <div className="last-update">
+                                <span>Última atualização:</span>
+
+                                {showSkeleton ? (
+                                    <Skeleton
+                                        width="10rem"
+                                        height="1rem"
+                                    />
+                                ) : (
+                                    <strong>{timeUpdated || "-"}</strong>
+                                )}
+                            </div>
+
+                            <div className="visualization-controls">
+                                <div
+                                    className="view-switch"
+                                    role="group"
+                                    aria-label="Tipo de visualização"
+                                >
+                                    <button
+                                        disabled={showSkeleton}
+                                        type="button"
+                                        className={
+                                            mode === "globe" ? "active" : ""
+                                        }
+                                        onClick={() => setMode("globe")}
+                                        aria-pressed={mode === "globe"}
+                                    >
+                                        <span aria-hidden="true">
+                                            <Globe2 />
+                                        </span>
+                                        Globo
+                                    </button>
+
+                                    <button
+                                        disabled={showSkeleton}
+                                        type="button"
+                                        className={
+                                            mode === "map" ? "active" : ""
+                                        }
+                                        onClick={() => setMode("map")}
+                                        aria-pressed={mode === "map"}
+                                    >
+                                        <span aria-hidden="true">
+                                            <Map />
+                                        </span>
+                                        Mapa
+                                    </button>
+                                </div>
+
+                                {mode === "globe" && (
+                                    <div
+                                        className="globe-view-switch"
+                                        role="group"
+                                        aria-label="Visualização do globo"
+                                    >
+                                        <button
+                                            disabled={showSkeleton}
+                                            type="button"
+                                            className={
+                                                globeVisualization === "services"
+                                                    ? "active"
+                                                    : ""
+                                            }
+                                            onClick={() =>
+                                                setGlobeVisualization("services")
+                                            }
+                                            aria-pressed={
+                                                globeVisualization === "services"
+                                            }
+                                        >
+                                            <span aria-hidden="true">◎</span>
+                                            Serviços
+                                        </button>
+
+                                        <button
+                                            disabled={showSkeleton}
+                                            type="button"
+                                            className={
+                                                globeVisualization === "emissions"
+                                                    ? "active"
+                                                    : ""
+                                            }
+                                            onClick={() =>
+                                                setGlobeVisualization("emissions")
+                                            }
+                                            aria-pressed={
+                                                globeVisualization === "emissions"
+                                            }
+                                        >
+                                            <span aria-hidden="true">◉</span>
+                                            Emissões
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={`visualization-stage mode-${mode}`}>
+                            {showSkeleton ? (
+                                <StageSkeleton mode={mode} />
+                            ) : mode === "globe" ? (
+                                <InteractiveGlobe
+                                    services={services}
+                                    selectedServiceId={selectedService}
+                                    onSelectService={setSelectedService}
+                                    visualization={globeVisualization}
+                                />
+                            ) : (
+                                <MapVisualization
+                                    services={services}
+                                    selectedServiceId={selectedService}
+                                    onSelectService={setSelectedService}
+                                />
+                            )}
+                        </div>
+
+                        <div className="visualization-caption">
+                            <span
+                                className="caption-symbol"
+                                aria-hidden="true"
+                            >
+                                ✳
+                            </span>
+
+                            <p>
+                                {mode === "globe"
+                                    ? globeVisualization === "services"
+                                        ? "Gire o globo e selecione os pontos para explorar cada operação."
+                                        : "Visualize a concentração de emissões de CO₂e nas regiões monitoradas."
+                                    : "Explore o mapa, aproxime as regiões e selecione um ponto para ver seus dados."}
+                            </p>
+
+                            <span className="coordinate-note">
+                                ATMOS ° / CO₂e
+                            </span>
+                        </div>
+                    </section>
+                </section>
+            </main>
+
+            <footer className="homepage-footer">
+                Desenvolvido por Atmos © {new Date().getFullYear()}
+            </footer>
+        </div>
+    );
 }

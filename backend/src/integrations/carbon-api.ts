@@ -4,50 +4,58 @@ import type { ServiceTypes } from "../types/services-types";
 const urlApi = "https://carbon.unilaunch.org/carbon-intensity/";
 const serviceURL = "https://metrics.unilaunch.org/services/";
 
-export async function reqMetrics(serviceId: string) {
-  try {
-    const responseService = await fetch(`https://metrics.unilaunch.org/services/${serviceId}`);
-    const data: ServiceTypes = await responseService.json();
+export interface CarbonApi {
+  reqMetrics(serviceId: string): Promise<ApiCarbon | undefined>;
+  reqCarbonValue(serviceId: string): Promise<number | undefined>;
+  reqRenewablePercent(serviceId: string): Promise<number | undefined>;
+}
 
-    var resp;
-    if(data.location){
-      resp = await fetch(`${urlApi}${data.location.region_code}`);
+export class HttpCarbonApi implements CarbonApi {
+  async reqMetrics(serviceId: string) {
+    try {
+      const responseService = await fetch(`https://metrics.unilaunch.org/services/${serviceId}`);
+      const data: ServiceTypes = await responseService.json();
 
-      const objMetrics: ApiCarbon = await resp.json();
+      var resp;
+      if(data.location){
+        resp = await fetch(`${urlApi}${data.location.region_code}`);
 
-      return objMetrics;
+        const objMetrics: ApiCarbon = await resp.json();
+
+        return objMetrics;
+      }
+    } catch (error: any) {
+      throw new Error(
+        `Ocorreu um erro interno ao buscar as métricas do serviço ${serviceId}.`,
+      );
     }
-  } catch (error: any) {
-    throw new Error(
-      `Ocorreu um erro interno ao buscar as métricas do serviço ${serviceId}.`,
-    );
-  }
-}
-
-export async function reqCarbonValue(serviceId: string): Promise<number|undefined> {
-  const respMetrics = await reqMetrics(serviceId);
-
-  if (!respMetrics) return;
-
-  if (!respMetrics.carbon_intensity_gco2e_per_kwh) {
-    throw new Error(`Ocorreu um erro interno ao capturar a intensidade de carbono do serviço ${serviceId}.`);
   }
 
-  const valueCarbon = respMetrics.carbon_intensity_gco2e_per_kwh;
+  async reqCarbonValue(serviceId: string): Promise<number|undefined> {
+    const respMetrics = await this.reqMetrics(serviceId);
 
-  return valueCarbon;
-}
+    if (!respMetrics) return;
 
-export async function reqRenewablePercent(serviceId: string): Promise<number|undefined> {
-  const respMetrics = await reqMetrics(serviceId);
+    if (!respMetrics.carbon_intensity_gco2e_per_kwh) {
+      throw new Error(`Ocorreu um erro interno ao capturar a intensidade de carbono do serviço ${serviceId}.`);
+    }
 
-  if (!respMetrics) return;
+    const valueCarbon = respMetrics.carbon_intensity_gco2e_per_kwh;
 
-  if (!respMetrics.renewable_share_percent) {
-    throw new Error(`Ocorreu um erro interno ao capturar métricas da porcentagem renovável do serviço ${serviceId}.`);
+    return valueCarbon;
   }
 
-  const valueRenewable = respMetrics.renewable_share_percent;
+  async reqRenewablePercent(serviceId: string): Promise<number|undefined> {
+    const respMetrics = await this.reqMetrics(serviceId);
 
-  return valueRenewable;
+    if (!respMetrics) return;
+
+    if (!respMetrics.renewable_share_percent) {
+      throw new Error(`Ocorreu um erro interno ao capturar métricas da porcentagem renovável do serviço ${serviceId}.`);
+    }
+
+    const valueRenewable = respMetrics.renewable_share_percent;
+
+    return valueRenewable;
+  }
 }
