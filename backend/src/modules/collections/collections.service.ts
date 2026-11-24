@@ -127,7 +127,7 @@ export class CollectionsService implements ICollectionsService {
     const statusCode = statusResult.status;
 
     if (statusCode == 404) {
-      service ? service.status = "deleted" : PassThrough;
+      service ? service.status = "unavailable" : PassThrough;
     }
     if (statusCode == 500) {
       service ? service.status = "inactive" : PassThrough;
