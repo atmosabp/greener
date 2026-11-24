@@ -27,7 +27,7 @@
 .homepage-main {
     width: calc(100% - 6rem);
     max-width: 96.875rem;
-    margin: 80px auto 0;
+    margin: 90px auto 0;
     flex: 1;
     --cols: minmax(15rem, 1fr) minmax(0, 1.2fr);
     --col-gap: 3.25rem;
@@ -239,12 +239,13 @@
     background: #91bd79;
 }
 
-.status-dot.incomplete,
-.status-dot.deleted {
+.status-dot.deleted,
+.status-dot.inactive {
     background: #dfd044;
 }
 
-.status-dot.inactive {
+
+.status-dot.unavailable {
     background: #df7779;
 }
 

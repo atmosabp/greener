@@ -3,10 +3,8 @@ import type { ServiceType } from "../../types/service";
 
 const mapStatusColors: Record<ServiceType["status"], string> = {
   active: "#91bd79",
-  deleted: "#e0d344",
-  incomplete: "#e0d344",
   unavailable: "#df7779",
-  inactive: "#df7779",
+  inactive: "#e0d344",
 };
 
 interface ServiceCardProps {

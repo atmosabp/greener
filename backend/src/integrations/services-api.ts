@@ -56,7 +56,7 @@ export class HttpServicesApi implements ServicesApi {
           `https://metrics.unilaunch.org/metrics/${service.id}`,
         );
         if (statusResult.status == 404) {
-          service.status = "deleted";
+          service.status = "unavailable";
         }
       }
 
