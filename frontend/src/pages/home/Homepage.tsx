@@ -36,10 +36,8 @@ type GlobeVisualization = "services" | "emissions";
 
 const statusLabels: Record<ServiceStatus, string> = {
   active: "Ativo",
-  incomplete: "Incompleto",
   inactive: "Inativo",
-  deleted: "",
-  unavailable: "",
+  unavailable: "Indisponível",
 };
 
 export default function Homepage({ updateTime = 5 }: HomepageProps) {
@@ -107,12 +105,12 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
     (service) => service.status === "active",
   ).length;
 
-  const incompleteCount = services.filter(
-    (service) => service.status === "incomplete",
-  ).length;
-
   const inactiveCount = services.filter(
     (service) => service.status === "inactive",
+  ).length;
+
+  const unavailableCount = services.filter(
+    (service) => service.status === "unavailable",
   ).length;
 
   return (
@@ -297,22 +295,6 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                 </span>
 
                 <span>
-                  <i className="status-dot incomplete" />
-                  Incompletos
-                  <strong>
-                    {showSkeleton ? (
-                      <Skeleton
-                        width={18}
-                        height="0.9rem"
-                        style={inlineSkeleton}
-                      />
-                    ) : (
-                      incompleteCount
-                    )}
-                  </strong>
-                </span>
-
-                <span>
                   <i className="status-dot inactive" />
                   Inativos
                   <strong>
@@ -324,6 +306,22 @@ export default function Homepage({ updateTime = 5 }: HomepageProps) {
                       />
                     ) : (
                       inactiveCount
+                    )}
+                  </strong>
+                </span>
+
+                <span>
+                  <i className="status-dot unavailable" />
+                  Indisponíveis
+                  <strong>
+                    {showSkeleton ? (
+                      <Skeleton
+                        width={18}
+                        height="0.9rem"
+                        style={inlineSkeleton}
+                      />
+                    ) : (
+                      unavailableCount
                     )}
                   </strong>
                 </span>
