@@ -257,8 +257,8 @@ export default function Admin() {
 
   // Carrega a lista ao abrir a tela.
   useEffect(() => {
-    localStorage.setItem("last_page", '/admin');
-    
+    localStorage.setItem("last_page", "/admin");
+
     const fetchData = async () => {
       await getUsers();
       setLoadingUsers(false);
@@ -277,7 +277,23 @@ export default function Admin() {
 
   // Abre o aviso de confirmação antes de deletar.
   const deleteUsers = (ids: number[]) => {
-    setDeleteIds(ids);
+    let noAdmin: boolean = true; //see if there is no admin
+
+    for(let user of users){
+      if(user.is_adm && ids.includes(user.id)){
+        noAdmin = false;
+      }
+    }
+
+    if (users.length > 1 && noAdmin) {
+      setDeleteIds(ids);
+    } else {
+      showToast(
+        "error",
+        "Aviso",
+        "Não é permitido deletar o usuário administrador",
+      );
+    }
   };
 
   // Cadastra um novo usuário.
@@ -453,7 +469,7 @@ export default function Admin() {
     <>
       {isUserAdmin ? (
         <div className="admin-page">
-          {showSkeleton && <Loading/>}
+          {showSkeleton && <Loading />}
           {/* Modais de cada ação. */}
 
           {openCadModal && (
@@ -484,7 +500,7 @@ export default function Admin() {
 
           <main className="admin">
             <NavLink to={"/home"} className="back-link">
-              <ChevronLeft /> <span>Voltar para tela principal</span> 
+              <ChevronLeft /> <span>Voltar para tela principal</span>
             </NavLink>
 
             <div className="start-section">
@@ -600,11 +616,19 @@ export default function Admin() {
                             />
                           </td>
                           <td>
-                            <DeleteButton
-                              name={u.name}
-                              disabled={isSelected}
-                              onClick={() => deleteUsers([u.id])}
-                            />
+                            {u.is_adm ? (
+                              <DeleteButton
+                                name={u.name}
+                                disabled={true}
+                                onClick={() => deleteUsers([u.id])}
+                              />
+                            ) : (
+                              <DeleteButton
+                                name={u.name}
+                                disabled={isSelected}
+                                onClick={() => deleteUsers([u.id])}
+                              />
+                            )}
                           </td>
                         </tr>
                       );
@@ -673,11 +697,19 @@ export default function Admin() {
                                     disabled={isSelected}
                                     onClick={() => editUser(u)}
                                   />
-                                  <DeleteButton
-                                    name={u.name}
-                                    disabled={isSelected}
-                                    onClick={() => deleteUsers([u.id])}
-                                  />
+                                  {u.is_adm ? (
+                                    <DeleteButton
+                                      name={u.name}
+                                      disabled={true}
+                                      onClick={() => deleteUsers([u.id])}
+                                    />
+                                  ) : (
+                                    <DeleteButton
+                                      name={u.name}
+                                      disabled={isSelected}
+                                      onClick={() => deleteUsers([u.id])}
+                                    />
+                                  )}
                                 </span>
                               </div>
                             </div>
